@@ -1,31 +1,29 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col cols="12" md="12">
-        <v-data-table :headers="headers" :items="configs" class="elevation-1">
-          <template v-slot:top>
-            <v-toolbar flat>
-              <v-toolbar-title>Evaluation Configurations</v-toolbar-title>
-              <v-divider class="mx-4" inset vertical></v-divider>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" to="/configs/new">New Configuration</v-btn>
-            </v-toolbar>
-          </template>
-          <template v-slot:item="{ item }">
+    <v-data-table :headers="headers" :items="configs" class="elevation-1">
+      <template v-slot:item="{ item }">
+        <tr>
+          <td>{{ item.application_name }}</td>
+          <td>{{ item.ai_model_name }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.evaluation_date }}</td>
+          <td>
             <v-btn icon @click="editConfig(item)">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
             <v-btn icon @click="deleteConfig(item)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
-          </template>
-        </v-data-table>
-      </v-col>
-    </v-row>
+          </td>
+        </tr>
+      </template>
+    </v-data-table>
   </v-container>
 </template>
 
 <script>
+import evaluationConfigService from "@/services/evaluationConfigService";
+
 export default {
   name: "EvaluationConfigList",
   data() {
@@ -34,18 +32,34 @@ export default {
         { text: "Application Name", value: "application_name" },
         { text: "AI Model Name", value: "ai_model_name" },
         { text: "Description", value: "description" },
+        { text: "Evaluation Date", value: "evaluation_date" },
         { text: "Actions", value: "actions", sortable: false },
       ],
       configs: [], // This will be fetched from the API
     };
   },
   methods: {
-    // editConfig(config) {
-    //   // Navigate to edit page
-    // },
-    // deleteConfig(config) {
-    //   // Call API to delete configuration
-    // }
+    fetchConfigs() {
+      evaluationConfigService
+        .getAllConfigs()
+        .then((response) => {
+          this.configs = response.data;
+        })
+        .catch((error) => {
+          console.error("Error fetching configs:", error);
+        });
+    },
+    editConfig(config) {
+      this.$router.push(`/configs/${config.id}/edit`);
+    },
+    deleteConfig(config) {
+      evaluationConfigService.deleteConfig(config.id).then(() => {
+        this.fetchConfigs(); // Refresh the list after deletion
+      });
+    },
+  },
+  mounted() {
+    this.fetchConfigs();
   },
 };
 </script>
