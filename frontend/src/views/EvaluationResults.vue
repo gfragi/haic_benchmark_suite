@@ -1,30 +1,32 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="12" md="3">
-        <Sidebar />
-      </v-col>
-      <v-col cols="12" md="9">
-        <v-data-table :headers="headers" :items="results" class="elevation-1">
-          <template v-slot:item="{ item }">
-            <v-btn icon @click="viewResult(item)">
-              <v-icon>mdi-eye</v-icon>
-            </v-btn>
-          </template>
-        </v-data-table>
-        <PlotlyChart :data="plotData" :layout="plotLayout" />
-      </v-col>
-    </v-row>
-  </v-container>
+  <BaseLayout>
+    <v-container class="ml-auto">
+      <v-row>
+        <v-col cols="12" md="0">
+          <Sidebar />
+        </v-col>
+        <v-col cols="12" md="9">
+          <v-data-table :headers="headers" :items="results" class="elevation-1">
+            <template v-slot:item="{ item }">
+              <v-btn icon @click="viewResult(item)">
+                <v-icon>mdi-eye</v-icon>
+              </v-btn>
+            </template>
+          </v-data-table>
+          <PlotlyChart :data="plotData" :layout="plotLayout" />
+        </v-col>
+      </v-row>
+    </v-container>
+  </BaseLayout>
 </template>
 
 <script>
-import Sidebar from "@/components/AppSidebar.vue";
 import PlotlyChart from "@/components/PlotlyChart.vue";
+import BaseLayout from "../components/BaseLayout.vue";
 
 export default {
   name: "EvaluationResults",
-  components: { Sidebar, PlotlyChart },
+  components: { PlotlyChart, BaseLayout },
   data() {
     return {
       headers: [

@@ -2,10 +2,15 @@
   <v-app>
     <HeaderComponent @toggleSidebar="drawer = !drawer" />
 
+    <!-- Include NavigationBar
+    <NavigationBar /> -->
+
+    <!-- Sidebar -->
     <v-navigation-drawer v-model="drawer" app temporary color="grey lighten-3">
       <AppSidebar />
     </v-navigation-drawer>
 
+    <!-- Main Content Area -->
     <v-main>
       <v-container class="main-container">
         <slot></slot>
@@ -13,11 +18,14 @@
       </v-container>
     </v-main>
 
+    <!-- Footer -->
     <FooterComponent />
   </v-app>
 </template>
 
 <script>
+// import NavigationBar from "@/components/NavigationBar.vue";
+
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 import AppSidebar from "@/components/AppSidebar.vue";
@@ -28,6 +36,7 @@ export default {
     HeaderComponent,
     FooterComponent,
     AppSidebar,
+    // NavigationBar,
   },
   data() {
     return {
@@ -37,7 +46,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<!-- <style scoped>
 .main-container {
   display: flex;
   justify-content: center;
@@ -46,4 +55,4 @@ export default {
   padding-top: 64px; /* Adjust according to your header height */
   padding-bottom: 64px; /* Adjust according to your footer height */
 }
-</style>
+</style> -->
