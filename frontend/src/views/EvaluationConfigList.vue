@@ -1,31 +1,43 @@
 <template>
-  <v-container>
-    <v-data-table :headers="headers" :items="configs" class="elevation-1">
-      <template v-slot:item="{ item }">
-        <tr>
-          <td>{{ item.application_name }}</td>
-          <td>{{ item.ai_model_name }}</td>
-          <td>{{ item.description }}</td>
-          <td>{{ item.evaluation_date }}</td>
-          <td>
+  <BaseLayout>
+    <v-container>
+      <v-row>
+        <v-col cols="12" class="text-center">
+          <h1>Evaluation Configurations</h1>
+        </v-col>
+        <v-btn color="primary" @click="goToNewConfig" class="ml-auto"
+          >New Configuration</v-btn
+        >
+        <v-data-table
+          :headers="headers"
+          :items="configs"
+          class="elevation-1"
+          :items-per-page="5"
+        >
+          <!-- Scoped slots for customizing the actions column -->
+          <template v-slot:[`item.actions`]="{ item }">
             <v-btn icon @click="editConfig(item)">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon @click="deleteConfig(item)">
+            <v-btn icon color="red" @click="deleteConfig(item)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
-          </td>
-        </tr>
-      </template>
-    </v-data-table>
-  </v-container>
+          </template>
+        </v-data-table>
+      </v-row>
+    </v-container>
+  </BaseLayout>
 </template>
 
 <script>
+import BaseLayout from "@/components/BaseLayout.vue";
 import evaluationConfigService from "@/services/evaluationConfigService";
 
 export default {
   name: "EvaluationConfigList",
+  components: {
+    BaseLayout,
+  },
   data() {
     return {
       headers: [
@@ -56,6 +68,9 @@ export default {
       evaluationConfigService.deleteConfig(config.id).then(() => {
         this.fetchConfigs(); // Refresh the list after deletion
       });
+    },
+    goToNewConfig() {
+      this.$router.push("/configs/new"); // Ensure this route is correctly configured
     },
   },
   mounted() {

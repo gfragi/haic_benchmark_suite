@@ -4,6 +4,7 @@ import EvaluationConfigList from "@/views/EvaluationConfigList.vue";
 import LogIngestion from "@/views/LogIngestion.vue";
 import EvaluationResults from "@/views/EvaluationResults.vue";
 import EvaluationReports from "@/views/EvaluationReports.vue";
+import EvaluationConfigForm from "@/components/EvaluationConfigForm.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -23,6 +24,11 @@ const routes = [
   { path: "/logs", name: "LogIngestion", component: LogIngestion },
   { path: "/results", name: "EvaluationResults", component: EvaluationResults },
   { path: "/reports", name: "EvaluationReports", component: EvaluationReports },
+  {
+    path: "/configs/new",
+    name: "configForm",
+    component: EvaluationConfigForm,
+  },
 ];
 
 const router = createRouter({
