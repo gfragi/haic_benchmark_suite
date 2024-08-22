@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import evaluationConfigService from "@/services/evaluationConfigService"; // Import the service
+import evaluationConfigService from "@/services/evaluationConfigService";
 import BaseLayout from "@/components/BaseLayout.vue";
 
 export default {
@@ -55,14 +55,18 @@ export default {
         metrics: [],
         description: "",
       },
-      availableMetrics: [
-        "Prediction Accuracy",
-        "Response Time",
-        "Teaching Efficiency" /* Add more metrics */,
-      ],
+      availableMetrics: [],
     };
   },
+  mounted() {
+    this.fetchMetrics();
+  },
   methods: {
+    fetchMetrics() {
+      evaluationConfigService.getMetrics().then((response) => {
+        this.availableMetrics = response.data.metrics;
+      });
+    },
     submitForm() {
       evaluationConfigService
         .createConfig(this.config)

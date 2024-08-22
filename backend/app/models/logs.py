@@ -14,8 +14,12 @@ class LogEntry(Base):
     end_time = Column(String)
     interaction_data = Column(JSON)
     retrain_events = Column(JSON)
-    
+    performance_infrastructure = Column(JSON)
+    performance_logs = Column(JSON)
+    ai_model_data = Column(JSON)
+
     evaluation_config_id = Column(Integer, ForeignKey('evaluation_configs.id'))
     evaluation_config = relationship("EvaluationConfig", back_populates="logs")
-    
-    evaluation_results = relationship("EvaluationResult", back_populates="log")
+
+    # Adding the relationship to EvaluationResult
+    # evaluation_results = relationship("EvaluationResult", back_populates="log")

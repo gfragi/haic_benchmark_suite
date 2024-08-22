@@ -8,16 +8,7 @@ class EvaluationResultSchema(BaseModel):
     evaluation_date: Optional[str] = None
 
     class Config:
-        json_schema_extra = {
-            "example": {
-                "log_id": 1,
-                "metrics": {
-                    "Prediction Accuracy": 0.95,
-                    "Response Time": 0.5
-                },
-                "evaluation_date": "2024-06-28T12:30:00Z"
-            }
-        }
+        orm_mode = True
 
 class EvaluationResultQuerySchema(BaseModel):
     start_date: Optional[str] = None
@@ -27,12 +18,4 @@ class EvaluationResultQuerySchema(BaseModel):
     max_accuracy: Optional[float] = None
 
     class Config:
-        json_schema_extra = {
-            "example": {
-                "start_date": "2024-01-01",
-                "end_date": "2024-12-31",
-                "ai_model_name": "TumorDetectionModelV1",
-                "min_accuracy": 0.9,
-                "max_accuracy": 1.0
-            }
-        }
+        orm_mode = True
