@@ -16,4 +16,7 @@ export default {
   deleteConfig(configId) {
     return apiClient.delete(`/evaluation/config/${configId}`);
   },
+  getMetrics() {
+    return apiClient.get("/evaluate/metrics");
+  },
 };

@@ -172,3 +172,30 @@ def calculate_system_reliability(interaction_data):
 
 
 # Add more metric calculation functions as needed
+
+def get_available_metrics():
+    metrics_map = {
+        "Prediction Accuracy": calculate_prediction_accuracy,
+        "Response Time": calculate_response_time,
+        "Teaching Efficiency": calculate_teaching_efficiency,
+        "Overall System Accuracy": calculate_overall_system_accuracy,
+        "Objective Fulfillment Rate": calculate_objective_fulfillment_rate,
+        "Feedback Impact": calculate_feedback_impact,
+        "Adaptability Score": calculate_adaptability_score,
+        "Query Efficiency": calculate_query_efficiency,
+        "Error Reduction Rate": calculate_error_reduction_rate,
+        "Confidence": calculate_confidence,
+        "Model Improvement Rate": calculate_model_improvement_rate,
+        "Resource Utilization": calculate_resource_utilization,
+        "Impact of Corrections": calculate_impact_of_corrections,
+        "Decision Effectiveness": calculate_decision_effectiveness,
+        "Knowledge Retention": calculate_knowledge_retention,
+        "Task Completion Time": calculate_task_completion_time,
+        "Trust Score": calculate_trust_score,
+        "Safety Incidents": calculate_safety_incidents,
+        "Adversarial Robustness": calculate_adversarial_robustness,
+        "Domain Generalization": calculate_domain_generalization,
+        "System Reliability": calculate_system_reliability,
+        # Add more metric calculation functions as needed
+    }
+    return metrics_map.keys()
