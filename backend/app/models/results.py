@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from app.utils.database import Base
 
 class EvaluationResult(Base):
-    __tablename__ = "evaluation_results"
+    __tablename__ = "results"
 
     id = Column(Integer, primary_key=True, index=True)
     # log_id = Column(Integer, ForeignKey('logs.id'), nullable=False)

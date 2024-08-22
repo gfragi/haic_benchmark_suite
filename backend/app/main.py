@@ -1,7 +1,9 @@
 from fastapi import FastAPI
-from app.routers import logs, evaluation_config, evaluate, evaluation_result, reporting
+from app.routers import logs, configuration, evaluate, reporting
 
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.routers import results
 
 app = FastAPI(
     title="Human-AI Benchmark Suite",
@@ -23,9 +25,9 @@ app.add_middleware(
 )
 
 # Import and include your routers
-app.include_router(logs.router, prefix="/logs", tags=["logs"])
-app.include_router(evaluation_config.router, prefix="/evaluation", tags=["evaluation_config"])
-app.include_router(evaluate.router, prefix="/evaluate", tags=["evaluation"])
-app.include_router(evaluation_result.router, prefix="/results", tags=["evaluation_result"])
-app.include_router(reporting.router, prefix="/reporting", tags=["reporting"])
+app.include_router(logs.router, prefix="/logs", tags=["Logs"])
+app.include_router(configuration.router, prefix="/configuration", tags=["Configuration"])
+app.include_router(evaluate.router, prefix="/evaluation", tags=["Evaluation"])
+app.include_router(results.router, prefix="/results", tags=["Results"])
+app.include_router(reporting.router, prefix="/reporting", tags=["Reporting"])
 

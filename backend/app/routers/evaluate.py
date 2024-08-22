@@ -14,7 +14,7 @@ def evaluate_log(log_id: int, db: Session = Depends(get_db)):
     if not log:
         raise HTTPException(status_code=404, detail="Log not found")
 
-    config = log.evaluation_config
+    config = log.configuration
     if not config:
         raise HTTPException(status_code=404, detail="Associated evaluation config not found")
 

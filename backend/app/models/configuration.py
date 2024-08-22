@@ -3,21 +3,16 @@ from sqlalchemy.orm import relationship
 from app.utils.database import Base
 
 
-evaluation_metric_association = Table(
-    'evaluation_metric_association',
+config_metric_association = Table(
+    'config_metric_association',
     Base.metadata,
-    Column('evaluation_config_id', Integer, ForeignKey('evaluation_configs.id', ondelete='CASCADE')),
+    Column('configuration_id', Integer, ForeignKey('configurations.id', ondelete='CASCADE')),
     Column('metric_id', Integer, ForeignKey('metrics.id'))
 )
 
-association_table = Table(
-    'association', Base.metadata,
-    Column('evaluation_config_id', ForeignKey('evaluation_configs.id', ondelete='CASCADE')),
-    Column('metric_id', ForeignKey('metrics.id'))
-)
 
 class EvaluationConfig(Base):
-    __tablename__ = "evaluation_configs"
+    __tablename__ = "configurations"
 
     id = Column(Integer, primary_key=True, index=True)
     application_name = Column(String, index=True)
@@ -29,12 +24,12 @@ class EvaluationConfig(Base):
 
     metrics = relationship(
         "Metric",
-        secondary=association_table,
-        back_populates="evaluation_configs"
+        secondary=config_metric_association,
+        back_populates="configurations"
     )
 
     # Relationship to associate with logs
-    logs = relationship("LogEntry", back_populates="evaluation_config")
+    logs = relationship("LogEntry", back_populates="configuration")
 
 class Metric(Base):
     __tablename__ = "metrics"
@@ -42,8 +37,8 @@ class Metric(Base):
     id = Column(Integer, primary_key=True, index=True)
     metric_name = Column(String, index=True)
 
-    evaluation_configs = relationship(
+    configurations = relationship(
         "EvaluationConfig",
-        secondary=association_table,
+        secondary=config_metric_association,
         back_populates="metrics"
     )

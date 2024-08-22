@@ -3,7 +3,7 @@ from app.main import app
 
 client = TestClient(app)
 
-def test_create_evaluation_config():
+def test_create_configuration():
     response = client.post("/evaluation/config", json={
         "application_name": "RadiologyApp",
         "ai_model_name": "TumorDetectionModelV1",
@@ -19,9 +19,9 @@ def test_create_evaluation_config():
     assert data["application_name"] == "RadiologyApp"
     assert len(data["metrics"]) == 2
 
-def test_get_evaluation_config():
+def test_get_configuration():
     response = client.get("/evaluation/config/1")
     assert response.status_code == 200
     data = response.json()
-    assert data["config_id"] == 1
+    assert data["configuration_id"] == 1
     assert data["application_name"] == "RadiologyApp"
