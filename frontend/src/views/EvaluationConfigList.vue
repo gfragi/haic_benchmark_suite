@@ -19,19 +19,36 @@
             <v-btn icon @click="editConfig(item)">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon color="red" @click="deleteConfig(item)">
+            <v-btn icon color="red" @click="confirmDeleteConfig(item)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
         </v-data-table>
       </v-row>
+      <v-dialog v-model="dialog" max-width="500px">
+        <v-card>
+          <v-card-title class="headline">Confirm Delete</v-card-title>
+          <v-card-text
+            >Are you sure you want to delete this Configuration?</v-card-text
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="dialog = false"
+              >Cancel</v-btn
+            >
+            <v-btn color="blue darken-1" text @click="deleteConfig"
+              >Confirm</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
   </BaseLayout>
 </template>
 
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
-import evaluationConfigService from "@/services/evaluationConfigService";
+import evaluationConfigService from "@/services/configurationService";
 
 export default {
   name: "EvaluationConfigList",
@@ -43,11 +60,16 @@ export default {
       headers: [
         { text: "Application Name", value: "application_name" },
         { text: "AI Model Name", value: "ai_model_name" },
+        { text: "AI Model Type", value: "ai_model_type" },
+        { text: "AI Model Version", value: "ai_model_version" },
         { text: "Description", value: "description" },
         { text: "Evaluation Date", value: "evaluation_date" },
+        { text: "Evaluation Status", value: "evaluation_status" },
         { text: "Actions", value: "actions", sortable: false },
       ],
       configs: [], // This will be fetched from the API
+      dialog: false, // For the delete confirmation dialog
+      configurationToDelete: null, // Temporarily store the configuration to delete
     };
   },
   methods: {
@@ -61,18 +83,31 @@ export default {
           console.error("Error fetching configs:", error);
         });
     },
-    editConfig(config) {
-      this.$router.push(`/configs/${config.id}/edit`);
+    editConfig(configuration) {
+      this.$router.push(`/configuration/${configuration.id}`);
     },
-    deleteConfig(config) {
-      evaluationConfigService.deleteConfig(config.id).then(() => {
-        this.fetchConfigs(); // Refresh the list after deletion
-      });
+    confirmDeleteConfig(configuration) {
+      this.configurationToDelete = configuration;
+      this.dialog = true;
+    },
+    deleteConfig() {
+      if (!this.configurationToDelete) return;
+      evaluationConfigService
+        .deleteConfig(this.configurationToDelete.id)
+        .then(() => {
+          this.fetchConfigs(); // Refresh the list after deletion
+          this.dialog = false;
+          this.configurationToDelete = null; // Clear the temp storage
+        })
+        .catch((error) => {
+          console.error("Error deleting configuration:", error);
+        });
     },
     goToNewConfig() {
-      this.$router.push("/configs/new"); // Ensure this route is correctly configured
+      this.$router.push("/configuration/new"); // Ensure this route is correctly configured
     },
   },
+
   mounted() {
     this.fetchConfigs();
   },

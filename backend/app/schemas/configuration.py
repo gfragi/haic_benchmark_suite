@@ -1,33 +1,36 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Union, Dict
+from datetime import datetime as dt
+import datetime
+from typing import Optional
+from pydantic import BaseModel, Field, validator
 
-class MetricSchema(BaseModel):
-    metric_name: str
 
 class EvaluationConfigSchema(BaseModel):
-    config_id: Optional[int] = Field(None, alias="id")
+    config_id: Optional[int] = Field(default=None, alias="id")
     application_name: str
     ai_model_name: str
-    metrics: List[MetricSchema]
-    evaluation_date: Optional[str] = None
+    ai_model_type: str = Field(..., description="One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other")
+    metrics: list
+    evaluation_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     description: Optional[str] = None
-    config_type: str  # Either 'specific' or 'generic'
+    config_type: str = Field(..., description="Either 'specific' or 'generic'")
+    evaluation_status: str = Field(default="pending", description="Current status of the evaluation")
+
 
     class Config:
+        from_attributes = True  # Allows from_orm to work with ORM models
+
         json_schema_extra = {
             "example": {
                 "application_name": "RadiologyApp",
                 "ai_model_name": "TumorDetectionModelV1",
+                "ai_model_type": "Classification",
                 "metrics": [
                     {"metric_name": "Prediction Accuracy"},
                     {"metric_name": "Response Time"},
                 ],
-                "evaluation_date": "2024-07-01",
+                "evaluation_date": dt.utcnow().isoformat(),
                 "description": "Evaluation of Tumor Detection Model in RadiologyApp",
                 "config_type": "specific",
-                "application_specific_details": {
-                    "specific_field_radiology_1": "Example detail specific to Radiology",
-                    "specific_field_radiology_2": "Another example"
-                },
+                "evaluation_status": "pending"
             }
         }

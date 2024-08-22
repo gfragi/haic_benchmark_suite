@@ -35,7 +35,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 src/
 ├── assets/                     # Static assets (images, fonts, etc.)
 ├── components/                 # Reusable Vue components
-│   ├── EvaluationConfigForm.vue  # Form to create/edit evaluation configs
+│   ├── ConfigForm.vue  # Form to create/edit evaluation configs
 │   ├── EvaluationResultCard.vue  # Card to display a summary of an evaluation result
 │   ├── LogIngestionForm.vue      # Form to upload or input logs
 │   ├── NavigationBar.vue         # Top navigation bar

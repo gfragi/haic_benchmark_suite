@@ -42,6 +42,8 @@
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
     "vue-cli-plugin-vuetify": "~2.5.8",
+    "vue3-form-wizard": "^0.2.4",
+    "vue3-notification": "^0.0.3",
     "webpack-plugin-vuetify": "^2.0.0-alpha.0"
   }
 }

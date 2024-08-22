@@ -70,7 +70,7 @@ async def update_log(log_id: int, file: UploadFile = File(...), db: Session = De
 
     # Read the content of the uploaded file
     content = await file.read()
-    
+
     try:
         # Parse the JSON data from the uploaded file
         json_data = json.loads(content)

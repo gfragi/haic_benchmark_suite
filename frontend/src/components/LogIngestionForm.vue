@@ -1,64 +1,88 @@
 <template>
   <BaseLayout>
-    <!-- <v-container
-      class="d-flex flex-column justify-center align-center"
-      style="height: 100vh"
-    > -->
-    <v-card max-width="500" class="mx-auto">
-      <v-card-title>
-        <h2 class="text-h5">Log Ingestion</h2>
-      </v-card-title>
-      <v-card-text>
-        <v-form @submit.prevent="submitLog">
-          <v-file-input
-            v-model="logFile"
-            label="Upload Log File"
-            prepend-icon="mdi-paperclip"
-            accept=".json"
-            required
-          ></v-file-input>
-          <v-btn type="submit" color="primary" block class="mt-3">
-            Submit Log
-          </v-btn>
-        </v-form>
-      </v-card-text>
-    </v-card>
-    <!-- </v-container> -->
+    <v-container>
+      <v-card class="mx-auto my-12" max-width="600">
+        <v-card-title>
+          <span class="headline">Upload Log File</span>
+        </v-card-title>
+        <v-card-text>
+          <v-form @submit.prevent="submitForm">
+            <v-select
+              v-model="selectedConfigId"
+              :items="configurations"
+              item-text="name"
+              item-value="id"
+              label="Select Configuration"
+              return-object
+              required
+            ></v-select>
+            <v-file-input
+              v-model="file"
+              label="File input"
+              required
+            ></v-file-input>
+            <v-btn
+              :disabled="!file"
+              color="primary"
+              type="submit"
+            >
+              Upload
+            </v-btn>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-container>
   </BaseLayout>
 </template>
 
 <script>
-import BaseLayout from "@/components/BaseLayout.vue";
-import logIngestionService from "@/services/logIngestionService";
+import BaseLayout from '@/components/BaseLayout.vue';
+import evaluationConfigService from '@/services/evaluationConfigService';
 
 export default {
-  name: "LogIngestionForm",
+  name: 'LogUploadForm',
   components: {
-    BaseLayout,
+    BaseLayout
   },
   data() {
     return {
-      logFile: null,
+      configurations: [],
+      selectedConfigId: null,
+      file: null
     };
   },
-  methods: {
-    submitLog() {
-      logIngestionService
-        .uploadLog(this.logFile)
-        .then(() => {
-          this.$router.push({ name: "Home" });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
+  mounted() {
+    this.fetchConfigurations();
   },
+  methods: {
+    fetchConfigurations() {
+      evaluationConfigService.getConfigurations()
+        .then(response => {
+          this.configurations = response.data.map(config => ({
+            id: config.id,
+            name: `${config.application_name} - ${config.ai_model_name}`
+          }));
+        })
+        .catch(error => console.error("Error fetching configurations:", error));
+    },
+    submitForm() {
+      const formData = new FormData();
+      formData.append('file', this.file);
+      formData.append('configuration_id', this.selectedConfigId);
+
+      // Replace with your service method for uploading the file
+      evaluationConfigService.uploadLog(formData)
+        .then(() => {
+          this.$router.push('/'); // Redirect or show success message
+        })
+        .catch(error => {
+          console.error("Failed to upload file:", error);
+        });
+    }
+  }
 };
 </script>
 
 <style scoped>
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
+/* Add your styles here */
 </style>

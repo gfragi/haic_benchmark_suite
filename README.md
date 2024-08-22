@@ -149,7 +149,7 @@ Ensure both the backend and frontend are running simultaneously to fully use the
 - **HeaderComponent.vue** - The header for all pages, includes a toggle for the sidebar.
 - **FooterComponent.vue** - The footer for all pages.
 - **AppSidebar.vue** - The sidebar containing navigation links.
-- **EvaluationConfigForm.vue** - Form for creating/editing evaluation configurations.
+- **ConfigForm.vue** - Form for creating/editing evaluation configurations.
 - **EvaluationConfigList.vue** - Displays a list of evaluation configurations.
 - **LogIngestionForm.vue** - Form to ingest logs.
 
