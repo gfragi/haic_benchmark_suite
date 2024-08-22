@@ -1,182 +1,104 @@
-from pydantic import BaseModel
-from typing import Dict, List, Optional
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Union
+
 
 class SystemMetrics(BaseModel):
-    accuracy: float
-    precision: float
-    recall: float
+    accuracy: Optional[float] = None
+    precision: Optional[float] = None
+    recall: Optional[float] = None
+
 
 class ValidationData(BaseModel):
-    validation_results: str
-    confidence_level: float
-    processing_time_seconds: int
-    validation_time: str
-    system_metrics: SystemMetrics
+    ai_detection_results: Optional[str] = None
+    confidence_scores: Optional[Dict[str, float]] = None
+    validation_results: Optional[str] = None
+    confidence_level: Optional[float] = None
+    processing_time_seconds: Optional[int] = None
+    validation_time: Optional[str] = None
+    system_metrics: Optional[SystemMetrics] = None
+
 
 class AlertData(BaseModel):
-    alert_details: str
-    confidence_level: float
-    alert_time: str
+    alert_details: Optional[str] = None
+    alert_time: Optional[str] = None
+    load_setpoint: Optional[int] = None
+    generation_setpoint: Optional[int] = None
+    predicted_security_state: Optional[str] = None
+    confidence_bound: Optional[float] = None
+
 
 class ReviewData(BaseModel):
-    review_time_seconds: int
-    discrepancy_rate: float
-    operator_decision: str
-    feedback_time: str
+    review_time_seconds: Optional[int] = None
+    detections_confirmed: Optional[int] = None
+    false_positives_identified: Optional[int] = None
+    false_negatives_identified: Optional[int] = None
+    feedback_details: Optional[str] = None
+    time_spent_on_corrections_seconds: Optional[int] = None
+    discrepancy_rate: Optional[float] = None
+    operator_decision: Optional[str] = None
+    feedback_time: Optional[str] = None
+    insecure_instances_confirmed: Optional[int] = None
+    false_positives: Optional[int] = None
+    false_negatives: Optional[int] = None
+    user_satisfaction: Optional[str] = None
+    feedback_provided: Optional[str] = None
+    human_confirmation_rate: Optional[float] = None
 
-class FeedbackData(BaseModel):
-    feedback_details: str
-    correction_actions: str
-    feedback_time: str
-
-class InteractionData(BaseModel):
-    application_id: str
-    justification_documents: str
-    submission_time: str
-    validation_data: ValidationData
-    alert_data: Optional[AlertData] = None
-    review_data: Optional[ReviewData] = None
-    feedback_data: Optional[FeedbackData] = None
-
-class InitialMetrics(BaseModel):
-    detection_accuracy: float
-    false_positive_rate: float
-    false_negative_rate: float
-
-class PostRetrainingMetrics(BaseModel):
-    detection_accuracy: float
-    false_positive_rate: float
-    false_negative_rate: float
 
 class RetrainingDetails(BaseModel):
-    time_taken_seconds: int
-    data_used: str
-    ai_model_version_after_retraining: str
+    time_taken_seconds: Optional[int] = None
+    data_used: Optional[str] = None
+    ai_model_version_after_retraining: Optional[str] = None
+
 
 class RetrainEvent(BaseModel):
-    retraining_time: str
-    initial_metrics: InitialMetrics
-    post_retraining_metrics: PostRetrainingMetrics
-    retraining_details: RetrainingDetails
+    retraining_time: Optional[str] = None
+    initial_metrics: Optional[Dict[str, float]] = None
+    post_retraining_metrics: Optional[Dict[str, float]] = None
+    retraining_details: Optional[RetrainingDetails] = None
+
 
 class PerformanceInfrastructure(BaseModel):
-    hardware_specifications: str
-    software_stack: str
-    network_conditions: str
+    hardware_specifications: Optional[str] = None
+    software_stack: Optional[str] = None
+    network_conditions: Optional[str] = None
+
 
 class PerformanceLogs(BaseModel):
-    processing_time_seconds: Dict[str, int]
-    resource_utilization: Dict[str, int]
-    human_effort_seconds: Dict[str, int]
+    processing_time_seconds: Optional[Dict[str, int]] = None
+    resource_utilization: Optional[Dict[str, int]] = None
+    human_effort_seconds: Optional[Dict[str, int]] = None
+
 
 class AIModelData(BaseModel):
-    ai_model_name: str
-    training_data: str
-    model_size: str
-    inference_time_seconds: int
-    deployment_details: str
+    ai_model_name: Optional[str] = None
+    training_data: Optional[str] = None
+    ai_model_size: Optional[str] = None
+    inference_time_seconds: Optional[int] = None
+    deployment_details: Optional[str] = None
+
+
+class InteractionData(BaseModel):
+    image_id: Optional[str] = None
+    presentation_time: Optional[str] = None
+    validation_data: Optional[ValidationData] = None
+    review_data: Optional[ReviewData] = None
+    application_id: Optional[str] = None
+    justification_documents: Optional[str] = None
+    submission_time: Optional[str] = None
+    load_generation_data: Optional[List[Dict[str, Union[str, int, float]]]] = None
+    alert_data: Optional[Union[AlertData, List[AlertData]]] = None
+
 
 class LogSchema(BaseModel):
     session_id: str
     user_id: str
-    ai_model_version: str
+    ai_model_version: Optional[str] = None
     app_version: str
     start_time: str
     end_time: str
-    interaction_data: InteractionData
-    retrain_events: List[RetrainEvent]
-    performance_infrastructure: PerformanceInfrastructure
-    performance_logs: PerformanceLogs
-    ai_model_data: AIModelData
-    evaluation_config_id: Optional[int] = None  # To link with the evaluation configuration
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "session_id": "unique_session_id",
-                "user_id": "unique_user_id",
-                "ai_model_version": "1.0.0",
-                "app_version": "1.0.0",
-                "start_time": "2024-06-28T12:00:00Z",
-                "end_time": "2024-06-28T12:30:00Z",
-                "interaction_data": {
-                    "application_id": "unique_application_id",
-                    "justification_documents": "document_list",
-                    "submission_time": "2024-06-28T12:00:00Z",
-                    "validation_data": {
-                        "validation_results": "accepted",
-                        "confidence_level": 0.85,
-                        "processing_time_seconds": 300,
-                        "validation_time": "2024-06-28T12:05:00Z",
-                        "system_metrics": {
-                            "accuracy": 0.9,
-                            "precision": 0.85,
-                            "recall": 0.88
-                        }
-                    },
-                    "alert_data": {
-                        "alert_details": "reason_for_alert",
-                        "confidence_level": 0.85,
-                        "alert_time": "2024-06-28T12:06:00Z"
-                    },
-                    "review_data": {
-                        "review_time_seconds": 600,
-                        "discrepancy_rate": 0.05,
-                        "operator_decision": "confirm",
-                        "feedback_time": "2024-06-28T12:16:00Z"
-                    },
-                    "feedback_data": {
-                        "feedback_details": "details_of_feedback",
-                        "correction_actions": "suggested_corrections",
-                        "feedback_time": "2024-06-28T12:18:00Z"
-                    }
-                },
-                "retrain_events": [
-                    {
-                        "retraining_time": "2024-06-29T12:00:00Z",
-                        "initial_metrics": {
-                            "detection_accuracy": 0.75,
-                            "false_positive_rate": 0.10,
-                            "false_negative_rate": 0.05
-                        },
-                        "post_retraining_metrics": {
-                            "detection_accuracy": 0.85,
-                            "false_positive_rate": 0.05,
-                            "false_negative_rate": 0.03
-                        },
-                        "retraining_details": {
-                            "time_taken_seconds": 7200,
-                            "data_used": "feedback and corrections from the session",
-                            "ai_model_version_after_retraining": "1.1.0"
-                        }
-                    }
-                ],
-                "performance_infrastructure": {
-                    "hardware_specifications": "details_of_hardware",
-                    "software_stack": "details_of_software",
-                    "network_conditions": "details_of_network_conditions"
-                },
-                "performance_logs": {
-                    "processing_time_seconds": {
-                        "with_ai": 300,
-                        "without_ai": 600
-                    },
-                    "resource_utilization": {
-                        "with_ai": 100,
-                        "without_ai": 200
-                    },
-                    "human_effort_seconds": {
-                        "with_ai": 600,
-                        "without_ai": 1800
-                    }
-                },
-                "ai_model_data": {
-                    "ai_model_name": "ai_model_name",
-                    "training_data": "details_of_training_data",
-                    "model_size": "size_of_model",
-                    "inference_time_seconds": 2,
-                    "deployment_details": "details_of_deployment"
-                },
-                "evaluation_config_id": 1  # Example of association with an evaluation configuration
-            }
-        }
+    interaction_data: Optional[InteractionData] = None
+    retrain_events: Optional[List[RetrainEvent]] = None
+    performance_infrastructure: Optional[PerformanceInfrastructure] = None
+    performance_logs: Optional[PerformanceLogs] = None
+    ai_model_data: Optional[AIModelData] = None

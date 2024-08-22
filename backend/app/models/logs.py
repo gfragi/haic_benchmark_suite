@@ -18,8 +18,8 @@ class LogEntry(Base):
     performance_logs = Column(JSON)
     ai_model_data = Column(JSON)
 
-    evaluation_config_id = Column(Integer, ForeignKey('evaluation_configs.id'))
-    evaluation_config = relationship("EvaluationConfig", back_populates="logs")
+    configuration_id = Column(Integer, ForeignKey('configurations.id'))
+    configuration = relationship("EvaluationConfig", back_populates="logs")
 
     # Adding the relationship to EvaluationResult
-    # evaluation_results = relationship("EvaluationResult", back_populates="log")
+    #results = relationship("EvaluationResult", back_populates="log")

@@ -8,7 +8,7 @@ class EvaluationResultSchema(BaseModel):
     evaluation_date: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class EvaluationResultQuerySchema(BaseModel):
     start_date: Optional[str] = None
@@ -18,4 +18,4 @@ class EvaluationResultQuerySchema(BaseModel):
     max_accuracy: Optional[float] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
