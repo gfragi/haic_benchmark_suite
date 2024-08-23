@@ -464,7 +464,7 @@ def generate_log(app_type: str, start_datetime: str, end_datetime: str, model_ve
             "deployment_details": "details_of_deployment"
         }
     })
-    
+
     if app_type == "smart_energy":
         log.update({
         "interaction_data": {
@@ -551,6 +551,6 @@ def generate_log(app_type: str, start_datetime: str, end_datetime: str, model_ve
             "deployment_details": "details_of_deployment"
         }
     })
-        
+
 
     return log

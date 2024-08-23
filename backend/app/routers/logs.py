@@ -17,30 +17,38 @@ logger = logging.getLogger(__name__)
 
 @router.post("/upload")
 async def upload_log(configuration_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    # Fetch the configuration to associate with the logs
     config = get_config_by_id(configuration_id, db)
     if not config:
         raise HTTPException(status_code=404, detail="Evaluation configuration not found.")
 
+    # Read the content of the file
     content = await file.read()
+
+    # Attempt to parse the JSON content
     try:
         json_data = json.loads(content.decode('utf-8'))  # Ensure decoding of bytes to string
-    except json.JSONDecodeError as e:
+    except JSONDecodeError as e:
         raise HTTPException(status_code=400, detail=f"Invalid JSON format: {e.msg}")
 
-    try:
-        # Validate against LogSchema
-        validated_log = LogSchema(**json_data)
-    except ValidationError as e:
-        raise HTTPException(status_code=422, detail=f"Log file structure invalid: {e}")
+    # Process each log in the JSON array
+    if not isinstance(json_data, list):
+        raise HTTPException(status_code=400, detail="Expected a list of logs")
 
-    log_entry_data = jsonable_encoder(validated_log)
-    log_entry_data["configuration_id"] = configuration_id
+    # Validate and save each log
+    for log_data in json_data:
+        try:
+            validated_log = LogSchema(**log_data)
+            log_entry_data = jsonable_encoder(validated_log)
+            log_entry_data['configuration_id'] = configuration_id
+            log_entry = LogEntry(**log_entry_data)
+            db.add(log_entry)
+        except ValidationError as e:
+            # If validation fails, you can either stop processing or log the error and continue
+            continue
 
-    # Save the validated log to the database
-    log_entry = LogEntry(**log_entry_data)
-    save_log_entry(log_entry, db)
-
-    return {"detail": "Log file successfully uploaded and associated with evaluation configuration."}
+    db.commit()
+    return {"detail": f"Successfully uploaded {len(json_data)} logs and associated them with configuration ID {configuration_id}."}
 
 
 @router.get("/list/")
