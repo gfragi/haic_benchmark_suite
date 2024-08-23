@@ -37,7 +37,7 @@
           <v-card elevation="2">
             <v-card-title>
               <v-icon left class="mr-2">mdi-file-upload</v-icon>
-              Manage Logs
+              Manage Logs [WIP]
             </v-card-title>
             <v-card-text>Manage your log data.</v-card-text>
             <v-card-actions>
@@ -51,7 +51,7 @@
           <v-card elevation="2">
             <v-card-title>
               <v-icon left class="mr-2">mdi-file-document</v-icon>
-              Generate Reports
+              Generate Reports [WIP]
             </v-card-title>
             <v-card-text>Create and download evaluation reports.</v-card-text>
             <v-card-actions>
@@ -63,7 +63,7 @@
           <v-card elevation="2">
             <v-card-title>
               <v-icon left class="mr-2">mdi-chart-line</v-icon>
-              View Results
+              View Results [WIP]
             </v-card-title>
             <v-card-text>Analyze your evaluation results.</v-card-text>
             <v-card-actions>
