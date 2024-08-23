@@ -27,17 +27,17 @@ def generate_log_endpoint(
     end_date: str = Query("2024-05-10T13:00:00Z", description="End date of the log period"),
     model_version_range: str = Query("1.0.0 - 3.0.0", description="Range of model versions")
 ):
-    
+
     logs = [generate_log(app_type, start_date, end_date, model_version_range) for _ in range(count)]
 
 # Save logs to a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
     with open(temp_file.name, 'w') as f:
         json.dump(logs, f)
-    
+
     return logs
 
-    
+
 
 @router.get("/download/")
 async def download_log(file_path: str):
