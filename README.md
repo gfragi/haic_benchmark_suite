@@ -187,6 +187,52 @@ Run frontend tests using jest:
 cd frontend
 npm run test:unit
 ```
+## New Features
+
+### Evaluation Configuration Wizard
+
+- **Workflow Introduction**: The Human-AI Benchmark Suite now includes a guided wizard that assists users in creating new evaluation configurations and uploading log files seamlessly.
+- **Steps Involved**:
+  1. **Create Configuration**: Users start by creating a new evaluation configuration where they can specify the model type, metrics, and other details.
+  2. **Upload Log Files**: Upon saving the configuration, users are immediately prompted to upload log files associated with the configuration. This ensures a smooth transition and maintains the context of the operation.
+
+### Enhanced Log Management
+
+- **Dynamic Log Processing**: The application now supports dynamic processing of logs based on the configuration set in the previous steps. This allows for real-time evaluation and feedback.
+- **Log Validation**: Logs are validated using a schema to ensure they meet the expected format, enhancing the reliability of data processing.
+
+### Log Generation Tool
+
+The HAIC Evaluation Platform includes a Log Generation Tool designed to create synthetic log data tailored to the specific needs of different application types. This tool is essential for generating realistic interaction data to test and evaluate the performance of various AI models within the platform.
+
+Features of the Log Generation Tool
+- **Application Type Selection**: Users can select from predefined application types such as "smart_cities," each with its unique set of parameters and interaction models.
+
+- **Date Range**: Users can specify the start and end dates for the log entries, allowing the generation of logs over a defined period.
+
+- **Number of Logs**: The tool allows users to specify the number of log entries to generate, facilitating large-scale testing or demonstrations.
+
+- **Model Version Range**: Users can input a range of model versions to simulate logs with different AI model behaviors and characteristics.
+
+### Quick Start Guide
+
+- **Running the Application**:
+  ```bash
+  # Starting the backend
+  uvicorn app.main:app --reload
+```
+
+```bash
+  # Starting the frontend
+  npm run serve
+```
+
+- **Accessing the Application**:
+  - Backend: `http://localhost:8000`
+  - Frontend: `http://localhost:8080`
+
+
+
 
 ## Contributing
 
