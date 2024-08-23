@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import logs, configuration, evaluate, reporting
+from app.routers import logs, configuration, evaluate, reporting, log_generator
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -30,4 +30,5 @@ app.include_router(configuration.router, prefix="/configuration", tags=["Configu
 app.include_router(evaluate.router, prefix="/evaluation", tags=["Evaluation"])
 app.include_router(results.router, prefix="/results", tags=["Results"])
 app.include_router(reporting.router, prefix="/reporting", tags=["Reporting"])
+app.include_router(log_generator.router, prefix="/log-generator", tags=["Log Generator"])
 

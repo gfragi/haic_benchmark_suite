@@ -6,6 +6,7 @@ import EvaluationResults from "@/views/EvaluationResults.vue";
 import EvaluationReports from "@/views/EvaluationReports.vue";
 import ConfigurationForm from "@/components/ConfigurationForm.vue";
 import AboutView from "@/views/AboutView.vue";
+import LogGenerator from "@/components/LogGenerator.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -29,6 +30,7 @@ const routes = [
     name: "configForm",
     component: ConfigurationForm,
   },
+  { path: "/log-generator", name: "LogGenerator", component: LogGenerator },
 ];
 
 const router = createRouter({
