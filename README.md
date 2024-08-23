@@ -220,12 +220,10 @@ Features of the Log Generation Tool
   ```bash
   # Starting the backend
   uvicorn app.main:app --reload
-```
 
-```bash
   # Starting the frontend
   npm run serve
-```
+    ```
 
 - **Accessing the Application**:
   - Backend: `http://localhost:8000`
