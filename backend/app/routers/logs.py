@@ -1,6 +1,7 @@
 import json
 import logging
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from fastapi.encoders import jsonable_encoder
 from jsonschema import ValidationError
 from sqlalchemy.orm import Session
 from app.models import LogEntry, EvaluationConfig
@@ -17,26 +18,22 @@ logger = logging.getLogger(__name__)
 @router.post("/upload")
 async def upload_log(configuration_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
     config = get_config_by_id(configuration_id, db)
-
     if not config:
         raise HTTPException(status_code=404, detail="Evaluation configuration not found.")
 
     content = await file.read()
     try:
-        json_data = json.loads(content)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail="Invalid JSON file.")
+        json_data = json.loads(content.decode('utf-8'))  # Ensure decoding of bytes to string
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON format: {e.msg}")
 
     try:
         # Validate against LogSchema
         validated_log = LogSchema(**json_data)
     except ValidationError as e:
-        raise HTTPException(status_code=400, detail=f"Log file structure invalid: {e}")
+        raise HTTPException(status_code=422, detail=f"Log file structure invalid: {e}")
 
-    # Manually extract the relevant fields to populate LogEntry
-    log_entry_data = validated_log.dict(exclude_unset=True)
-
-    # Associate with the configuration ID
+    log_entry_data = jsonable_encoder(validated_log)
     log_entry_data["configuration_id"] = configuration_id
 
     # Save the validated log to the database
