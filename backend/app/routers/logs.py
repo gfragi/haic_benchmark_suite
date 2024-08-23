@@ -4,7 +4,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.encoders import jsonable_encoder
 from jsonschema import ValidationError
 from sqlalchemy.orm import Session
-from app.models import LogEntry, EvaluationConfig
+from app.models import LogEntry
 from app.schemas.log import LogSchema
 from app.utils.database import get_db
 from app.utils.generic_functions import save_log_entry, get_config_by_id
@@ -28,7 +28,7 @@ async def upload_log(configuration_id: int, file: UploadFile = File(...), db: Se
     # Attempt to parse the JSON content
     try:
         json_data = json.loads(content.decode('utf-8'))  # Ensure decoding of bytes to string
-    except JSONDecodeError as e:
+    except json.JSONDecodeError as e:
         raise HTTPException(status_code=400, detail=f"Invalid JSON format: {e.msg}")
 
     # Process each log in the JSON array

@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from app.models import EvaluationConfig
-from app.utils.database import get_db
 from app.models.logs import LogEntry
 
 
