@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import EvaluationConfigList from "@/views/EvaluationConfigList.vue";
-import LogIngestion from "@/views/LogIngestion.vue";
+import LogUploadForm from "@/components/LogIngestionForm.vue";
 import EvaluationResults from "@/views/EvaluationResults.vue";
 import EvaluationReports from "@/views/EvaluationReports.vue";
 import ConfigurationForm from "@/components/ConfigurationForm.vue";
@@ -21,7 +21,7 @@ const routes = [
     name: "EvaluationConfigList",
     component: EvaluationConfigList,
   },
-  { path: "/logs", name: "LogIngestion", component: LogIngestion },
+  { path: "/logs", name: "LogUploadForm", component: LogUploadForm },
   { path: "/results", name: "EvaluationResults", component: EvaluationResults },
   { path: "/reports", name: "EvaluationReports", component: EvaluationReports },
   {

@@ -42,20 +42,15 @@
               v-model="config.description"
               label="Description"
             ></v-textarea>
-            <v-btn
-              :disabled="isSubmitting"
-              type="submit"
-              color="primary"
-              @click="createConfig"
-            >
+            <v-btn color="success" :disabled="isSubmitting" @click="submitForm">
+              Save Configuration
               <v-progress-circular
+                v-if="isSubmitting"
                 indeterminate
                 color="white"
                 size="20"
-                class="mr-2"
-                v-if="isSubmitting"
+                class="ml-2"
               ></v-progress-circular>
-              Save Configuration
             </v-btn>
           </v-form>
         </v-card-text>
@@ -83,7 +78,7 @@ export default {
         metrics: [],
         description: "",
         config_type: "",
-        evaluation_status: "pending", // Default value
+        evaluation_status: "pending",
         evaluation_date: new Date().toISOString(),
       },
       availableMetrics: [],
@@ -97,6 +92,7 @@ export default {
         "Other",
       ],
       availableConfigTypes: ["specific", "generic"],
+      isSubmitting: false,
     };
   },
   mounted() {
@@ -107,8 +103,7 @@ export default {
       metricsList
         .getMetrics()
         .then((response) => {
-          console.log("Fetched metrics:", response.data.metrics);
-          this.availableMetrics = response.data.metrics; // Assume metrics is an array of objects with `metric_name` field
+          this.availableMetrics = response.data.metrics;
         })
         .catch((error) => {
           console.error("Error fetching metrics:", error);
@@ -117,21 +112,11 @@ export default {
     submitForm() {
       this.isSubmitting = true;
 
-      // Transform the metrics array into the expected format
-      const transformedMetrics = this.config.metrics.map((metric) => ({
-        metric_name: metric,
-      }));
-
-      const configToSubmit = {
-        ...this.config,
-        metrics: transformedMetrics,
-      };
-
       evaluationConfigService
-        .createConfig(configToSubmit)
-        .then(() => {
-          this.$router.push("/configuration/new");
-          this.$router.push("/configs");
+        .createConfig(this.config)
+        .then((response) => {
+          const configId = response.data.id;
+          this.$router.push({ path: "/logs", query: { configId } });
         })
         .catch((error) => {
           console.error("Error while submitting form:", error);
