@@ -6,6 +6,22 @@
         <v-col cols="12" md="4">
           <v-card elevation="2">
             <v-card-title>
+              <v-icon left class="mr-2">mdi-new-box</v-icon>
+              Create New HAIC Evaluation
+            </v-card-title>
+            <v-card-text>
+              Create a new evaluation & upload your log.
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" @click="startConfigurationWizard"
+                >Start New Evaluation</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-card elevation="2">
+            <v-card-title>
               <v-icon left class="mr-2">mdi-cog</v-icon>
               Manage Configurations
             </v-card-title>
@@ -21,23 +37,11 @@
           <v-card elevation="2">
             <v-card-title>
               <v-icon left class="mr-2">mdi-file-upload</v-icon>
-              Ingest Logs
+              Manage Logs
             </v-card-title>
-            <v-card-text> Upload and manage your log data. </v-card-text>
+            <v-card-text> Manage your log data. </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" to="/logs">Go to Log Ingestion</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-card elevation="2">
-            <v-card-title>
-              <v-icon left class="mr-2">mdi-chart-line</v-icon>
-              View Results
-            </v-card-title>
-            <v-card-text> Analyze your evaluation results. </v-card-text>
-            <v-card-actions>
-              <v-btn color="primary" to="/results">Go to Results</v-btn>
+              <v-btn color="primary" to="/logs">Go to Logs</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -55,6 +59,18 @@
             </v-card-actions>
           </v-card>
         </v-col>
+        <v-col cols="12" md="4">
+          <v-card elevation="2">
+            <v-card-title>
+              <v-icon left class="mr-2">mdi-chart-line</v-icon>
+              View Results
+            </v-card-title>
+            <v-card-text> Analyze your evaluation results. </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" to="/results">Go to Results</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
       </v-row>
     </v-container>
   </BaseLayout>
@@ -68,6 +84,11 @@ export default {
     BaseLayout,
   },
   name: "HomeView",
+  methods: {
+    startConfigurationWizard() {
+      this.$router.push("/configuration/new");
+    },
+  },
 };
 </script>
 
