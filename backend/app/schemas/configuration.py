@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 import datetime
 from typing import Optional
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 
 class EvaluationConfigSchema(BaseModel):

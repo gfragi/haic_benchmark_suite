@@ -3,11 +3,7 @@ import tempfile
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from app.schemas.log_generate import LogParams, Log
 import json
-import random
-import uuid
-from datetime import datetime, timedelta
 from app.utils.log_templates import generate_log
 
 router = APIRouter()
