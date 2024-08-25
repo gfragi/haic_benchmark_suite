@@ -16,6 +16,9 @@
         >
           <!-- Scoped slots for customizing the actions column -->
           <template v-slot:[`item.actions`]="{ item }">
+            <v-btn icon color="green" text @click="evaluateConfig(item)">
+              <v-icon>mdi-play-circle</v-icon>
+            </v-btn>
             <v-btn icon @click="editConfig(item)">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
@@ -38,6 +41,9 @@
             >
             <v-btn color="blue darken-1" text @click="deleteConfig"
               >Confirm</v-btn
+            >
+            <v-btn color="blue darken-1" text @click="evaluateConfig(item)"
+              >Run Evaluation</v-btn
             >
           </v-card-actions>
         </v-card>
@@ -105,6 +111,16 @@ export default {
     },
     goToNewConfig() {
       this.$router.push("/configuration/new"); // Ensure this route is correctly configured
+    },
+    evaluateConfig(config) {
+      this.$http
+        .post(`/evaluate/${config.id}`)
+        .then(() => {
+          this.$router.push(`/evaluate/${config.id}/results`);
+        })
+        .catch((error) => {
+          console.error("Error running evaluation:", error);
+        });
     },
   },
 

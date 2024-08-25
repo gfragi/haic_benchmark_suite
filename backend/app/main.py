@@ -27,7 +27,7 @@ app.add_middleware(
 # Import and include your routers
 app.include_router(logs.router, prefix="/logs", tags=["Logs"])
 app.include_router(configuration.router, prefix="/configuration", tags=["Configuration"])
-app.include_router(evaluate.router, prefix="/evaluation", tags=["Evaluation"])
+app.include_router(evaluate.router, prefix="/evaluate", tags=["Evaluation"])
 app.include_router(results.router, prefix="/results", tags=["Results"])
 app.include_router(reporting.router, prefix="/reporting", tags=["Reporting"])
 app.include_router(log_generator.router, prefix="/log-generator", tags=["Log Generator"])

@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 
 class EvaluationConfigSchema(BaseModel):
-    config_id: Optional[int] = Field(default=None, alias="id")
+    configuration_id: Optional[int] = Field(default=None, alias="id")
     application_name: str
     ai_model_name: str
     ai_model_type: str = Field(..., description="One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other")
