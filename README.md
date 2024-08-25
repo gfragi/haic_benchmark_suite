@@ -124,7 +124,7 @@ Ensure both the backend and frontend are running simultaneously to fully use the
 
 - **GET /evaluation/config** - Get all evaluation configs
 - **POST /evaluation/config** - Create a new evaluation config
-- **GET /evaluation/config/{config_id}** - Get an evaluation config by ID
+- **GET /evaluation/config/{configuration_id}** - Get an evaluation config by ID
 
 ### Logs
 

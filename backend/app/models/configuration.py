@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, DateTime, String, Integer, JSON
+from sqlalchemy import Column, DateTime, ForeignKey, String, Integer, JSON
 from sqlalchemy.orm import relationship
 from app.utils.database import Base
 
@@ -19,3 +19,4 @@ class EvaluationConfig(Base):
 
     # Relationship to associate with logs
     logs = relationship("LogEntry", back_populates="configuration")
+    evaluation_results = relationship("EvaluationResult", back_populates="configuration")

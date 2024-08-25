@@ -1,49 +1,60 @@
 <template>
   <BaseLayout>
-    <v-container class="ml-auto">
-      <v-row>
-        <v-col cols="12" md="0">
-          <Sidebar />
-        </v-col>
-        <v-col cols="12" md="9">
-          <v-data-table :headers="headers" :items="results" class="elevation-1">
-            <template v-slot:item="{ item }">
-              <v-btn icon @click="viewResult(item)">
-                <v-icon>mdi-eye</v-icon>
-              </v-btn>
-            </template>
-          </v-data-table>
-          <PlotlyChart :data="plotData" :layout="plotLayout" />
-        </v-col>
-      </v-row>
+    <v-container>
+      <h2>Evaluation Results for {{ configName }}</h2>
+      <v-data-table :headers="headers" :items="results">
+        <template v-slot:[`item.actions`]="{}">
+          <!-- Additional actions if needed -->
+        </template>
+      </v-data-table>
     </v-container>
   </BaseLayout>
 </template>
 
 <script>
-import PlotlyChart from "@/components/PlotlyChart.vue";
-import BaseLayout from "../components/BaseLayout.vue";
+import BaseLayout from "@/components/BaseLayout.vue";
 
 export default {
-  name: "EvaluationResults",
-  components: { PlotlyChart, BaseLayout },
+  components: {
+    BaseLayout,
+  },
   data() {
     return {
+      results: [],
+      configName: "",
       headers: [
+        { text: "Accuracy", value: "accuracy" },
+        { text: "Precision", value: "precision" },
+        { text: "Recall", value: "recall" },
         { text: "Evaluation Date", value: "evaluation_date" },
-        { text: "AI Model Name", value: "ai_model_name" },
-        { text: "Metrics", value: "metrics" },
-        { text: "Actions", value: "actions", sortable: false },
       ],
-      results: [], // This will be fetched from the API
-      plotData: [], // Data for Plotly chart
-      plotLayout: {}, // Layout for Plotly chart
     };
   },
+  mounted() {
+    this.fetchResults();
+  },
   methods: {
-    // viewResult(result) {
-    //   // Navigate to detailed view or open a modal
-    // }
+    fetchResults() {
+      const configId = this.$route.params.configuration_id;
+      this.$http
+        .get(`/evaluation/${configId}/results`)
+        .then((response) => {
+          this.results = response.data;
+          this.configName = this.results.length
+            ? this.results[0].configuration_name
+            : "Unknown Configuration";
+        })
+        .catch((error) => {
+          console.error("Error fetching evaluation results:", error);
+        });
+    },
   },
 };
 </script>
+
+<style scoped>
+.subtitle-1 {
+  margin-top: 25px;
+  color: #757575;
+}
+</style>
