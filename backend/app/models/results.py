@@ -20,7 +20,7 @@ class EvaluationResult(Base):
     query_efficiency = Column(Float, nullable=True)
     error_reduction_rate = Column(Float, nullable=True)
     confidence = Column(Float, nullable=True)
-    model_improvement_rate = Column(Float, nullable=True)
+    ai_model_improvement_rate = Column(Float, nullable=True)
     resource_utilization = Column(Float, nullable=True)
     impact_of_corrections = Column(Float, nullable=True)
     decision_effectiveness = Column(Float, nullable=True)

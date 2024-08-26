@@ -50,8 +50,24 @@ def calculate_error_reduction_rate(interaction_data):
 
 
 def calculate_confidence(interaction_data):
-    high_confidence_correct = sum(1 for item in interaction_data if item.get("confidence_level") >= 0.9 and item.get("result") == "correct")
-    high_confidence_total = sum(1 for item in interaction_data if item.get("confidence_level") >= 0.9)
+    # Ensure interaction_data is a list of dictionaries
+    if not isinstance(interaction_data, list):
+        raise ValueError("interaction_data must be a list")
+
+    # Initialize counters
+    high_confidence_correct = 0
+    high_confidence_total = 0
+
+    # Iterate through the interaction data
+    for item in interaction_data:
+        # Check if 'confidence_level' and 'result' keys exist
+        if "confidence_level" in item and "result" in item:
+            if item["confidence_level"] >= 0.9:
+                high_confidence_total += 1
+                if item["result"] == "correct":
+                    high_confidence_correct += 1
+
+    # Calculate and return the confidence percentage
     return (high_confidence_correct / high_confidence_total) * 100 if high_confidence_total > 0 else 0
 
 

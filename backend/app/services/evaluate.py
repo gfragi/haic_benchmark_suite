@@ -44,7 +44,7 @@ def evaluate_logs(config: EvaluationConfig, log: list[LogEntry]):
             elif metric_name == "Confidence":
                 metrics_results["confidence"] = calculate_confidence(interaction_data)
             elif metric_name == "Model Improvement Rate":
-                metrics_results["model_improvement_rate"] = calculate_model_improvement_rate(interaction_data)
+                metrics_results["ai_model_improvement_rate"] = calculate_model_improvement_rate(interaction_data)
             elif metric_name == "Resource Utilization":
                 metrics_results["resource_utilization"] = calculate_resource_utilization(interaction_data)
             elif metric_name == "Impact of Corrections":
