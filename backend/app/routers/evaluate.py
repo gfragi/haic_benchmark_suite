@@ -9,7 +9,6 @@ from app.utils.generic_functions import get_config_by_id
 
 router = APIRouter()
 
-
 # Trigger Evaluation Endpoint
 @router.post("/{configuration_id}")
 async def evaluate_config(configuration_id: int, db: Session = Depends(get_db)):
@@ -26,14 +25,15 @@ async def evaluate_config(configuration_id: int, db: Session = Depends(get_db)):
     # Run the evaluation
     results = evaluate_logs(config, logs)
 
-    # Save the results in the database
-    for metric_name, value in results.items():
-        db_result = EvaluationResult(
-            configuration_id=configuration_id,
-            evaluation_date=datetime.datetime.utcnow(),
-            **{metric_name: value}
-        )
-        db.add(db_result)
+    # Initialize the EvaluationResult with all calculated metrics
+    db_result = EvaluationResult(
+        configuration_id=configuration_id,
+        evaluation_date=datetime.datetime.utcnow(),
+        **results  # Unpack the results dictionary to match column names in the EvaluationResult model
+    )
+
+    # Add and commit the single instance with all metrics
+    db.add(db_result)
     db.commit()
 
     return {"detail": "Evaluation completed successfully", "results": results}
@@ -45,7 +45,6 @@ async def get_evaluation_results(configuration_id: int, db: Session = Depends(ge
     if not results:
         raise HTTPException(status_code=404, detail="No results found for this configuration")
     return results
-
 
 @router.get("/metrics", response_model=dict)
 def get_metrics():

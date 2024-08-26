@@ -3,6 +3,7 @@ from typing import Optional
 
 class EvaluationResultSchema(BaseModel):
     id: Optional[int] = Field(None, alias="id")
+    configuration_id: int
     log_id: int
     prediction_accuracy: Optional[float] = None
     response_time: Optional[float] = None
@@ -14,7 +15,7 @@ class EvaluationResultSchema(BaseModel):
     query_efficiency: Optional[float] = None
     error_reduction_rate: Optional[float] = None
     confidence: Optional[float] = None
-    model_improvement_rate: Optional[float] = None
+    ai_model_improvement_rate: Optional[float] = None
     resource_utilization: Optional[float] = None
     impact_of_corrections: Optional[float] = None
     decision_effectiveness: Optional[float] = None
