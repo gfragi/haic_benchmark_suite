@@ -29,6 +29,16 @@ const routes = [
     path: "/configuration/new",
     name: "configForm",
     component: ConfigurationForm,
+    props: { mode: "create" }, // This route is for creating a new configuration
+  },
+  {
+    path: "/configuration/edit/:configId",
+    name: "editConfigForm",
+    component: ConfigurationForm,
+    props: (route) => ({
+      mode: "edit",
+      configId: parseInt(route.params.configId),
+    }), // This route is for editing an existing configuration
   },
   { path: "/log-generator", name: "LogGenerator", component: LogGenerator },
 ];

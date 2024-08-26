@@ -7,6 +7,11 @@ from app.utils.database import Base
 class EvaluationConfig(Base):
     __tablename__ = "configurations"
 
+    STATUS_PENDING = "pending"
+    STATUS_RUNNING = "running"
+    STATUS_COMPLETED = "completed"
+    STATUS_FAILED = "failed"
+
     id = Column(Integer, primary_key=True, index=True)
     application_name = Column(String, index=True)
     ai_model_name = Column(String)
@@ -15,7 +20,8 @@ class EvaluationConfig(Base):
     metrics = Column(JSON)  # Directly storing metrics as JSON
     evaluation_date = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     config_type = Column(String, nullable=True)
-    evaluation_status = Column(String, nullable=True)
+    evaluation_status = Column(String,default=STATUS_PENDING)
+
 
     # Relationship to associate with logs
     logs = relationship("LogEntry", back_populates="configuration")

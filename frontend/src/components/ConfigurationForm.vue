@@ -3,7 +3,9 @@
     <v-container class="ml-auto">
       <v-card class="mx-auto my-12" max-width="600">
         <v-card-title>
-          <h2 class="text-h5">Create a New Evaluation Configuration</h2>
+          <h2 class="text-h5">
+            {{ mode === "edit" ? "Edit" : "Create" }} Evaluation Configuration
+          </h2>
         </v-card-title>
         <v-card-text>
           <v-form @submit.prevent="submitForm">
@@ -43,7 +45,7 @@
               label="Description"
             ></v-textarea>
             <v-btn color="success" :disabled="isSubmitting" @click="submitForm">
-              Save Configuration
+              {{ mode === "edit" ? "Update" : "Save" }} Configuration
               <v-progress-circular
                 v-if="isSubmitting"
                 indeterminate
@@ -68,6 +70,16 @@ export default {
   name: "ConfigurationForm",
   components: {
     BaseLayout,
+  },
+  props: {
+    mode: {
+      type: String,
+      default: "create", // Can be 'create' or 'edit'
+    },
+    configId: {
+      type: Number,
+      default: null,
+    },
   },
   data() {
     return {
@@ -97,6 +109,9 @@ export default {
   },
   mounted() {
     this.fetchMetrics();
+    if (this.mode === "edit" && this.configId) {
+      this.loadConfig();
+    }
   },
   methods: {
     fetchMetrics() {
@@ -109,11 +124,24 @@ export default {
           console.error("Error fetching metrics:", error);
         });
     },
+    loadConfig() {
+      evaluationConfigService
+        .getConfigById(this.configId)
+        .then((response) => {
+          this.config = { ...response.data };
+        })
+        .catch((error) => {
+          console.error("Error loading configuration:", error);
+        });
+    },
     submitForm() {
       this.isSubmitting = true;
+      const serviceCall =
+        this.mode === "edit"
+          ? evaluationConfigService.updateConfig(this.configId, this.config)
+          : evaluationConfigService.createConfig(this.config);
 
-      evaluationConfigService
-        .createConfig(this.config)
+      serviceCall
         .then((response) => {
           const configId = response.data.id;
           this.$router.push({ path: "/logs", query: { configId } });
