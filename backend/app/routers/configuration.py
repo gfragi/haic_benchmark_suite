@@ -55,8 +55,8 @@ def update_configuration(configuration_id: int, updated_config: EvaluationConfig
         raise HTTPException(status_code=404, detail="Evaluation configuration not found")
 
     # Update the config fields
-    config.application_name = updated_config.interaction_data.application_id
-    config.ai_model_name = updated_config.ai_model_data.ai_model_name
+    config.application_name = updated_config.application_name
+    config.ai_model_name = updated_config.ai_model_name
     config.description = updated_config.description
     config.evaluation_date = updated_config.evaluation_date
     config.config_type = updated_config.config_type

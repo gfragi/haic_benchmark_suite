@@ -149,7 +149,7 @@ export default {
         });
     },
     editConfig(configuration) {
-      this.$router.push(`/configuration/${configuration.id}`);
+      this.$router.push(`/configuration/edit/${configuration.id}`);
     },
     confirmDeleteConfig(configuration) {
       this.configurationToDelete = configuration;
@@ -174,8 +174,8 @@ export default {
     },
     runConfirmedEvaluation() {
       if (!this.configToEvaluate) return;
-      this.$http
-        .post(`/evaluate/${this.configToEvaluate.id}`)
+      evaluationConfigService
+        .runEvaluation(`${this.configToEvaluate.id}`)
         .then(() => {
           this.fetchConfigs();
           this.confirmDialog = false;
