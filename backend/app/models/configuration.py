@@ -21,6 +21,7 @@ class EvaluationConfig(Base):
     evaluation_date = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     config_type = Column(String, nullable=True)
     evaluation_status = Column(String,default=STATUS_PENDING)
+    minio_path = Column(String, nullable=True)
 
 
     # Relationship to associate with logs
