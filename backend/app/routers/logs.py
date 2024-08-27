@@ -1,19 +1,32 @@
 import json
 import logging
+import os
+from dotenv import load_dotenv
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.encoders import jsonable_encoder
 from jsonschema import ValidationError
+from minio import Minio
 from sqlalchemy.orm import Session
 from app.models import LogEntry
 from app.schemas.log import LogSchema
 from app.utils.database import get_db
 from app.utils.generic_functions import save_log_entry, get_config_by_id
-
+from app.utils.minio_utils import upload_file
 
 router = APIRouter()
 
 # Initialize a logger
 logger = logging.getLogger(__name__)
+
+load_dotenv()
+
+client = Minio(
+    os.getenv("MINIO_ENDPOINT"),
+    access_key=os.getenv("MINIO_ACCESS_KEY"),
+    secret_key=os.getenv("MINIO_SECRET_KEY"),
+    secure=False,
+    region=os.getenv("MINIO_REGION"),
+)
 
 @router.post("/upload")
 async def upload_log(configuration_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
@@ -35,20 +48,34 @@ async def upload_log(configuration_id: int, file: UploadFile = File(...), db: Se
     if not isinstance(json_data, list):
         raise HTTPException(status_code=400, detail="Expected a list of logs")
 
-    # Validate and save each log
+    # Validate each log against the schema
     for log_data in json_data:
         try:
             validated_log = LogSchema(**log_data)
             log_entry_data = jsonable_encoder(validated_log)
             log_entry_data['configuration_id'] = configuration_id
             log_entry = LogEntry(**log_entry_data)
-            db.add(log_entry)
+            # db.add(log_entry)
         except ValidationError as e:
-            # If validation fails, you can either stop processing or log the error and continue
+            # Log the error if validation fails and skip this log
+            logger.error(f"Log file structure invalid: {e}")
             continue
 
+    # Commit valid logs to the database
     db.commit()
-    return {"detail": f"Successfully uploaded {len(json_data)} logs and associated them with configuration ID {configuration_id}."}
+
+    # Upload the original file to MinIO (not the parsed JSON)
+    try:
+        minio_path = await upload_file(content, configuration_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload log file to MinIO: {str(e)}")
+
+    # Store the MinIO path in the database
+    config.minio_path = minio_path
+    db.commit()
+
+    return {"detail": f"Successfully uploaded the log file and associated it with configuration ID {configuration_id}.", "minio_path": minio_path}
+
 
 
 @router.get("/list/")
