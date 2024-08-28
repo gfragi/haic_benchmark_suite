@@ -9,7 +9,7 @@ export default {
           count: params.count,
           start_date: params.start_date,
           end_date: params.end_date,
-          model_version_range: params.model_version_range,
+          ai_model_version_range: params.ai_model_version_range,
         },
       });
       // Save the logs as a JSON file and trigger download
