@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import EvaluationConfigList from "@/views/EvaluationConfigList.vue";
 import LogUploadForm from "@/components/LogIngestionForm.vue";
-import EvaluationResults from "@/views/EvaluationResults.vue";
+import EvaluationResultsList from "@/views/EvaluationResultsList.vue";
+import EvaluationResultDetail from "@/views/EvaluationResultDetail.vue";
 import EvaluationReports from "@/views/EvaluationReports.vue";
 import ConfigurationForm from "@/components/ConfigurationForm.vue";
 import AboutView from "@/views/AboutView.vue";
@@ -23,7 +24,16 @@ const routes = [
     component: EvaluationConfigList,
   },
   { path: "/logs", name: "LogUploadForm", component: LogUploadForm },
-  { path: "/results", name: "EvaluationResults", component: EvaluationResults },
+  {
+    path: "/results",
+    name: "EvaluationResultsList",
+    component: EvaluationResultsList,
+  },
+  {
+    path: "/results/:resultId",
+    name: "ResultDetail",
+    component: EvaluationResultDetail,
+  },
   { path: "/reports", name: "EvaluationReports", component: EvaluationReports },
   {
     path: "/configuration/new",
