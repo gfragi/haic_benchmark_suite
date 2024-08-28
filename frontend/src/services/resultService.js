@@ -2,7 +2,7 @@ import apiClient from "./axios";
 
 export default {
   getAllEvaluationResults() {
-    return apiClient.get(`/evaluate/results`);
+    return apiClient.get(`/results/list`);
   },
   getEvaluationResultsByConfig(configuration_id) {
     return apiClient.get(`/evaluate/${configuration_id}/results`);

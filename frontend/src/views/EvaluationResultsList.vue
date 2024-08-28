@@ -9,8 +9,21 @@
               {{ new Date(item.evaluation_date).toLocaleString() }}
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <v-btn color="primary" @click="viewResultDetails(item)">
+              <v-btn
+                size="small"
+                color="primary"
+                rounded="xl"
+                @click="viewResultDetails(item)"
+              >
                 View Details
+              </v-btn>
+              <v-btn
+                size="small"
+                color="secondary"
+                rounded="xl"
+                @click="viewConfiguration(item)"
+              >
+                View Configuration
               </v-btn>
             </template>
           </v-data-table>
@@ -23,6 +36,7 @@
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
 import evaluationService from "@/services/resultService";
+import configurationService from "@/services/configurationService";
 
 export default {
   components: {
@@ -32,13 +46,15 @@ export default {
     return {
       results: [],
       headers: [
-        { text: "Configuration ID", value: "configuration_id" },
-        { text: "Prediction Accuracy", value: "prediction_accuracy" },
-        { text: "Response Time", value: "response_time" },
-        { text: "Teaching Efficiency", value: "teaching_efficiency" },
-        { text: "Overall System Accuracy", value: "overall_system_accuracy" },
-        { text: "Evaluation Date", value: "evaluation_date" },
-        { text: "Actions", value: "actions", sortable: false },
+        { title: "ID", key: "configuration_id" },
+        { title: "Application Name", key: "application_name" },
+        { title: "AI Model", key: "ai_model_name" },
+        { title: "Prediction Accuracy", key: "prediction_accuracy" },
+        { title: "Response Time", key: "response_time" },
+        { title: "Teaching Efficiency", key: "teaching_efficiency" },
+        { title: "Overall System Accuracy", key: "overall_system_accuracy" },
+        { title: "Evaluation Date", key: "evaluation_date" },
+        { title: "Actions", key: "actions", sortable: false },
       ],
     };
   },
@@ -61,6 +77,19 @@ export default {
         name: "ResultDetail",
         params: { resultId: item.id },
       });
+    },
+    viewConfiguration(item) {
+      configurationService
+        .getConfigById(item.configuration_id)
+        .then((response) => {
+          this.$router.push({
+            name: "ConfigurationDetail",
+            params: { configId: response.data.id },
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching configuration:", error);
+        });
     },
   },
 };
