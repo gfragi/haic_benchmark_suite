@@ -61,7 +61,7 @@
         <v-row>
           <v-col cols="12">
             <v-text-field
-              v-model="formParams.model_version_range"
+              v-model="formParams.ai_model_version_range"
               label="Model Version Range"
               placeholder="1.0.0-3.0.0"
               hint="Enter the range of model versions, e.g., 1.0.0-3.0.0"
@@ -106,7 +106,7 @@ export default {
         count: 1,
         start_date: "2024-02-10",
         end_date: "2024-08-10",
-        model_version_range: "1.0.0-3.0.0",
+        ai_model_version_range: "1.0.0-3.0.0",
       },
       logs: [],
     };
@@ -128,7 +128,7 @@ export default {
           count: this.formParams.count,
           start_date: formattedStartDate,
           end_date: formattedEndDate,
-          model_version_range: this.formParams.model_version_range,
+          ai_model_version_range: this.formParams.ai_model_version_range,
         };
 
         const response = await logGeneratorService.generateLogs(params);
