@@ -83,7 +83,7 @@ logs_templates = {
                 "retraining_details": {
                     "time_taken_seconds": 3600,
                     "data_used": "feedback and corrections from the review",
-                    "model_version_after_retraining": "1.1.0"
+                    "ai_model_version_after_retraining": "1.1.0"
                 }
             }
         ],
@@ -163,7 +163,7 @@ logs_templates = {
                 "retraining_details": {
                     "time_taken_seconds": 7200,
                     "data_used": "feedback and corrections from the session",
-                    "model_version_after_retraining": "1.1.0"
+                    "ai_model_version_after_retraining": "1.1.0"
                 }
             }
         ],
@@ -250,7 +250,7 @@ logs_templates = {
                 "retraining_details": {
                     "time_taken_seconds": 3600,
                     "data_used": "feedback and simulation results",
-                    "model_version_after_retraining": "1.1.0"
+                    "ai_model_version_after_retraining": "1.1.0"
                 }
             }
         ],
@@ -292,13 +292,13 @@ def random_date(start, end):
     random_seconds = random.randrange(int(delta.total_seconds()))
     return start + timedelta(seconds=random_seconds)
 
-def generate_log(app_type: str, start_datetime: str, end_datetime: str, model_version_range: str):
+def generate_log(app_type: str, start_datetime: str, end_datetime: str,ai_model_version_range: str):
     if app_type not in logs_templates:
         raise ValueError(f"Unsupported app type: {app_type}")
 
     start_datetime = datetime.strptime(start_datetime, '%Y-%m-%dT%H:%M:%SZ')
     end_datetime = datetime.strptime(end_datetime, '%Y-%m-%dT%H:%M:%SZ')
-    model_version_start, model_version_end = model_version_range.split('-')
+    ai_model_version_start, ai_model_version_end = ai_model_version_range.split('-')
 
     session_start = random_date(start_datetime, end_datetime)
     session_end = random_date(session_start, end_datetime)
@@ -306,7 +306,7 @@ def generate_log(app_type: str, start_datetime: str, end_datetime: str, model_ve
     log = {
         "session_id": generate_unique_id(),
         "user_id": generate_unique_id(),
-        "model_version": f"{random.randint(int(model_version_start[0]), int(model_version_end[0]))}.{random.randint(int(model_version_start[2]), int(model_version_end[2]))}.{random.randint(int(model_version_start[4]), int(model_version_end[4]))}",
+        "ai_model_version": f"{random.randint(int(ai_model_version_start[0]), int(ai_model_version_end[0]))}.{random.randint(int(ai_model_version_start[2]), int(ai_model_version_end[2]))}.{random.randint(int(ai_model_version_start[4]), int(ai_model_version_end[4]))}",
         "app_version": "1.0.0",
         "start_time": session_start.isoformat() + 'Z',
         "end_time": session_end.isoformat() + 'Z',
