@@ -1,10 +1,10 @@
 from pydantic import BaseModel, Field
 from typing import Optional
+from datetime import datetime
 
 class EvaluationResultSchema(BaseModel):
     id: Optional[int] = Field(None, alias="id")
     configuration_id: int
-    log_id: int
     prediction_accuracy: Optional[float] = None
     response_time: Optional[float] = None
     teaching_efficiency: Optional[float] = None
@@ -34,9 +34,10 @@ class EvaluationResultSchema(BaseModel):
     ai_assistance_rate: Optional[float] = None
     learning_efficiency: Optional[float] = None
     correction_efficiency: Optional[float] = None
-    evaluation_date: Optional[str] = None
-
-
+    evaluation_date: Optional[datetime] = None
 
     class Config:
-        from_attributes = True
+        orm_mode = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat() if v else None
+        }
