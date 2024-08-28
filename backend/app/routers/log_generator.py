@@ -21,10 +21,10 @@ def generate_log_endpoint(
     count: int = Query(100, description="Number of log entries to generate"),
     start_date: str = Query("2024-02-10T13:00:00Z", description="Start date of the log period"),
     end_date: str = Query("2024-05-10T13:00:00Z", description="End date of the log period"),
-    model_version_range: str = Query("1.0.0 - 3.0.0", description="Range of model versions")
+    ai_model_version_range: str = Query("1.0.0 - 3.0.0", description="Range of model versions")
 ):
 
-    logs = [generate_log(app_type, start_date, end_date, model_version_range) for _ in range(count)]
+    logs = [generate_log(app_type, start_date, end_date, ai_model_version_range) for _ in range(count)]
 
 # Save logs to a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
