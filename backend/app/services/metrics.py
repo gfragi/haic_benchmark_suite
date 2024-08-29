@@ -31,7 +31,6 @@ class Metrics:
             performance_t_1 = sum(item.get("performance_at_t_1", 0) for item in interaction_data)
             time_interval = sum(item.get("time_interval", 0) for item in interaction_data)
             return (performance_t - performance_t_1) / time_interval if time_interval > 0 else 0
-        
 
 
     class Efficiency:

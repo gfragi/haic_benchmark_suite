@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.encoders import jsonable_encoder
 from jsonschema import ValidationError
-from minio import Minio
+from minio import Minio, S3Error
 from sqlalchemy.orm import Session
 from app.models import LogEntry
 from app.schemas.log import LogSchema
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-client = Minio(
+minio_client = Minio(
     os.getenv("MINIO_ENDPOINT"),
     access_key=os.getenv("MINIO_ACCESS_KEY"),
     secret_key=os.getenv("MINIO_SECRET_KEY"),
@@ -78,57 +78,32 @@ async def upload_log(configuration_id: int, file: UploadFile = File(...), db: Se
 
 
 
-@router.get("/list/")
-async def list_logs(db: Session = Depends(get_db)):
-    logs = db.query(LogEntry).all()
-    return logs
-
-
-@router.delete("/delete/{log_id}")
-async def delete_log(log_id: int, db: Session = Depends(get_db)):
-    log = db.query(LogEntry).filter(LogEntry.id == log_id).first()
-    if not log:
-        raise HTTPException(status_code=404, detail="Log entry not found.")
-    db.delete(log)
-    db.commit()
-    return {"detail": "Log entry deleted."}
-
-@router.put("/update/{log_id}")
-async def update_log(log_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
-    # Fetch the existing log entry by log_id
-    log = db.query(LogEntry).filter(LogEntry.id == log_id).first()
-    if not log:
-        raise HTTPException(status_code=404, detail="Log entry not found.")
-
-    # Read the content of the uploaded file
-    content = await file.read()
-
+@router.get("/{config_id}")
+def list_logs(config_id: int):
+    # List objects in the config's folder
     try:
-        # Parse the JSON data from the uploaded file
-        json_data = json.loads(content)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail="Invalid JSON file.")
+        objects = minio_client.list_objects(os.getenv("MINIO_BUCKET"), prefix=f"{config_id}/", recursive=True)
+        log_files = [obj.object_name for obj in objects]
+        return {"logs": log_files}
+    except S3Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-    # Validate the JSON data against the LogSchema
+
+@router.get("/download/{config_id}/{log_name}")
+def download_log(config_id: int, log_name: str):
     try:
-        validated_log = LogSchema(**json_data)
-    except ValidationError as e:
-        raise HTTPException(status_code=400, detail=f"Log file structure invalid: {e}")
+        log_path = f"{config_id}/{log_name}"
+        url = minio_client.presigned_get_object(os.getenv("MINIO_BUCKET"), log_path)
+        return {"download_url": url}
+    except S3Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-    # Update the existing log entry with the validated data
-    log.session_id = validated_log.session_id
-    log.user_id = validated_log.user_id
-    log.ai_model_version = validated_log.ai_model_version
-    log.app_version = validated_log.app_version
-    log.start_time = validated_log.start_time
-    log.end_time = validated_log.end_time
-    log.interaction_data = validated_log.interaction_data.dict()  # Convert to dictionary
-    log.retrain_events = [event.dict() for event in validated_log.retrain_events]  # Convert list of objects to list of dictionaries
-    log.performance_infrastructure = validated_log.performance_infrastructure.dict()  # Convert to dictionary
-    log.performance_logs = validated_log.performance_logs.dict()  # Convert to dictionary
-    log.ai_model_data = validated_log.ai_model_data.dict()  # Convert to dictionary
 
-    # Commit the changes to the database
-    db.commit()
-    
-    return {"detail": "Log entry updated successfully."}
+@router.delete("/{config_id}/{log_name}")
+def delete_log(config_id: int, log_name: str):
+    try:
+        log_path = f"{config_id}/{log_name}"
+        minio_client.remove_object(os.getenv("MINIO_BUCKET"), log_path)
+        return {"detail": "Log deleted successfully"}
+    except S3Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
