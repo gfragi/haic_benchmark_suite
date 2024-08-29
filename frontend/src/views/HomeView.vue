@@ -13,9 +13,9 @@
               Create a new evaluation & upload your log.
             </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" @click="startConfigurationWizard"
-                >Start New Evaluation</v-btn
-              >
+              <v-btn color="primary" @click="startConfigurationWizard">
+                Start New Evaluation
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -78,12 +78,26 @@
               <v-icon left class="mr-2">mdi-database-edit</v-icon>
               Log Generation Tool
             </v-card-title>
-            <v-card-text
-              >Generate synthetic logs based on configurable
-              templates.</v-card-text
-            >
+            <v-card-text>
+              Generate synthetic logs based on configurable templates.
+            </v-card-text>
             <v-card-actions>
               <v-btn color="primary" to="/log-generator">Generate Logs</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+        <!-- New Card for Metrics Page -->
+        <v-col cols="12" md="4">
+          <v-card elevation="2">
+            <v-card-title>
+              <v-icon left class="mr-2">mdi-chart-areaspline</v-icon>
+              Explore Metrics
+            </v-card-title>
+            <v-card-text>
+              Explore the different metrics used in HAIC evaluations.
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" to="/metrics">Go to Metrics</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>

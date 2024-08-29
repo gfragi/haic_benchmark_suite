@@ -1,13 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import EvaluationConfigList from "@/views/EvaluationConfigList.vue";
-import LogUploadForm from "@/components/LogIngestionForm.vue";
+import LogManagement from "@/components/LogManagement.vue";
 import EvaluationResultsList from "@/views/EvaluationResultsList.vue";
 import EvaluationResultDetail from "@/views/EvaluationResultDetail.vue";
 import EvaluationReports from "@/views/EvaluationReports.vue";
 import ConfigurationForm from "@/components/ConfigurationForm.vue";
 import AboutView from "@/views/AboutView.vue";
 import LogGenerator from "@/components/LogGenerator.vue";
+import MetricsPage from "@/components/MetricsPage.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -23,7 +24,7 @@ const routes = [
     name: "EvaluationConfigList",
     component: EvaluationConfigList,
   },
-  { path: "/logs", name: "LogUploadForm", component: LogUploadForm },
+  { path: "/logs", name: "LogManagement", component: LogManagement },
   {
     path: "/results",
     name: "EvaluationResultsList",
@@ -51,6 +52,7 @@ const routes = [
     }), // This route is for editing an existing configuration
   },
   { path: "/log-generator", name: "LogGenerator", component: LogGenerator },
+  { path: "/metrics", component: MetricsPage },
 ];
 
 const router = createRouter({

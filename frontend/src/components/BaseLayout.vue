@@ -1,9 +1,7 @@
 <template>
   <v-app>
+    <!-- Header Component -->
     <HeaderComponent @toggleSidebar="drawer = !drawer" />
-
-    <!-- Include NavigationBar
-    <NavigationBar /> -->
 
     <!-- Sidebar -->
     <v-navigation-drawer v-model="drawer" app temporary color="grey lighten-3">
@@ -12,9 +10,9 @@
 
     <!-- Main Content Area -->
     <v-main>
-      <v-container class="main-container">
+      <v-container fluid class="main-container">
         <slot></slot>
-        <!-- This is where the content of each page will be injected -->
+        <!-- Content of each page will be injected here -->
       </v-container>
     </v-main>
 
@@ -24,8 +22,6 @@
 </template>
 
 <script>
-// import NavigationBar from "@/components/NavigationBar.vue";
-
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 import AppSidebar from "@/components/AppSidebar.vue";
@@ -36,7 +32,6 @@ export default {
     HeaderComponent,
     FooterComponent,
     AppSidebar,
-    // NavigationBar,
   },
   data() {
     return {
@@ -46,13 +41,10 @@ export default {
 };
 </script>
 
-<!-- <style scoped>
+<style scoped>
 .main-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh; /* Ensure full page height */
+  min-height: 100vh;
   padding-top: 64px; /* Adjust according to your header height */
   padding-bottom: 64px; /* Adjust according to your footer height */
 }
-</style> -->
+</style>

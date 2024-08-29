@@ -33,7 +33,7 @@ async def evaluate_config(configuration_id: int, background_tasks: BackgroundTas
     return {"detail": "Evaluation started successfully"}
 
 # Fetch Evaluation Results
-@router.get("/{configuration_id}/results")
+@router.get("/results/{configuration_id}")
 async def get_evaluation_results(configuration_id: int, db: Session = Depends(get_db)):
     results = db.query(EvaluationResult).filter(EvaluationResult.configuration_id == configuration_id).all()
     if not results:
