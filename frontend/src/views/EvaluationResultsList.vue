@@ -66,6 +66,7 @@ export default {
       evaluationService
         .getAllEvaluationResults()
         .then((response) => {
+          console.log("Fetched Results:", response.data); // Log to inspect the results
           this.results = response.data;
         })
         .catch((error) => {
@@ -73,9 +74,11 @@ export default {
         });
     },
     viewResultDetails(item) {
+      console.log("Item ID:", item.configuration_id);
+      console.log("Item Object:", item);
       this.$router.push({
         name: "ResultDetail",
-        params: { resultId: item.id },
+        params: { resultId: item.configuration_id },
       });
     },
     viewConfiguration(item) {
