@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models.configuration import EvaluationConfig
 from app.schemas.configuration import EvaluationConfigSchema
+from app.services.metrics import Metrics
 
 router = APIRouter()
 
@@ -14,12 +15,28 @@ logger = logging.getLogger(__name__)
 # POST endpoint to create a new evaluation configuration
 @router.post("/new", response_model=EvaluationConfigSchema)
 def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(get_db)):
+    # Retrieve the selected groups
+    selected_groups = config.metrics
+    
+    # Expand the groups into individual metrics
+    available_metrics = Metrics.get_available_metrics()
+    selected_metrics = []
+
+    for group in selected_groups:
+        if group in available_metrics:
+            selected_metrics.extend(available_metrics[group])
+        else:
+            raise HTTPException(status_code=400, detail=f"Group {group} not found in available metrics.")
+    
+    # Remove duplicates if any (optional, depends on your needs)
+    selected_metrics = list(set(selected_metrics))
+
     new_config = EvaluationConfig(
         application_name=config.application_name,
         ai_model_name=config.ai_model_name,
         ai_model_type=config.ai_model_type,
         description=config.description,
-        metrics=config.metrics,  # Directly assigning JSON-serializable metrics list
+        metrics=selected_metrics,  # Save the expanded list of metrics
         evaluation_date=dt.utcnow(),
         config_type=config.config_type,
         evaluation_status=config.evaluation_status

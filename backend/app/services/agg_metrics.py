@@ -1,7 +1,7 @@
 import datetime
 from sqlalchemy.orm import Session
 from app.models import LogEntry, EvaluationConfig, EvaluationResult
-from app.services.evaluate import calculate_prediction_accuracy, calculate_precision, calculate_recall, calculate_human_ai_agreement_rate, calculate_time_to_resolution, calculate_human_effort_saved, calculate_ai_assistance_rate, calculate_learning_efficiency, calculate_correction_efficiency
+from app.services.metrics import Metrics
 
 def calculate_aggregated_metrics(logs):
     """
@@ -23,15 +23,15 @@ def calculate_aggregated_metrics(logs):
     for log in logs:
         interaction_data = log.interaction_data
 
-        metrics_aggregated["accuracy"].append(calculate_prediction_accuracy(interaction_data))
-        metrics_aggregated["precision"].append(calculate_precision(interaction_data))
-        metrics_aggregated["recall"].append(calculate_recall(interaction_data))
-        metrics_aggregated["human_ai_agreement_rate"].append(calculate_human_ai_agreement_rate(interaction_data))
-        metrics_aggregated["time_to_resolution"].append(calculate_time_to_resolution(interaction_data))
-        metrics_aggregated["human_effort_saved"].append(calculate_human_effort_saved(interaction_data))
-        metrics_aggregated["ai_assistance_rate"].append(calculate_ai_assistance_rate(interaction_data))
-        metrics_aggregated["learning_efficiency"].append(calculate_learning_efficiency(interaction_data))
-        metrics_aggregated["correction_efficiency"].append(calculate_correction_efficiency(interaction_data))
+        metrics_aggregated["accuracy"].append(Metrics.Performance.calculate_prediction_accuracy(interaction_data))
+        metrics_aggregated["precision"].append(Metrics.Performance.calculate_precision(interaction_data))
+        metrics_aggregated["recall"].append(Metrics.Performance.calculate_recall(interaction_data))
+        metrics_aggregated["human_ai_agreement_rate"].append(Metrics.CollaborationAndInteraction.calculate_human_ai_agreement_rate(interaction_data))
+        metrics_aggregated["time_to_resolution"].append(Metrics.CollaborationAndInteraction.calculate_time_to_resolution(interaction_data))
+        metrics_aggregated["human_effort_saved"].append(Metrics.CollaborationAndInteraction.calculate_human_effort_saved(interaction_data))
+        metrics_aggregated["ai_assistance_rate"].append(Metrics.CollaborationAndInteraction.calculate_ai_assistance_rate(interaction_data))
+        metrics_aggregated["learning_efficiency"].append(Metrics.AdaptabilityAndLearning.calculate_learning_efficiency(interaction_data))
+        metrics_aggregated["correction_efficiency"].append(Metrics.Efficiency.calculate_correction_efficiency(interaction_data))
 
     # Calculate the average or final aggregated metric
     aggregated_metrics = {key: sum(values) / len(values) if values else 0 for key, values in metrics_aggregated.items()}
