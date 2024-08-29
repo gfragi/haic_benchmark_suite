@@ -3,12 +3,14 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models import EvaluationResult, LogEntry
-from app.services.metrics import get_available_metrics
+from app.services.metrics import Metrics
 from app.utils.generic_functions import get_config_by_id
 from fastapi import BackgroundTasks
 
 from app.models.configuration import EvaluationConfig
 from app.services.evaluate import run_evaluation
+from app.services.metrics import Metrics
+from app.utils.generic_functions import get_config_by_id
 
 
 router = APIRouter()
@@ -40,5 +42,5 @@ async def get_evaluation_results(configuration_id: int, db: Session = Depends(ge
 
 @router.get("/metrics", response_model=dict)
 def get_metrics():
-    metrics = get_available_metrics()
+    metrics = Metrics.get_available_metrics()
     return {"metrics": list(metrics)}
