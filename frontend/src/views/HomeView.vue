@@ -37,7 +37,7 @@
           <v-card elevation="2">
             <v-card-title>
               <v-icon left class="mr-2">mdi-file-upload</v-icon>
-              Manage Logs [WIP]
+              Manage Logs
             </v-card-title>
             <v-card-text>Manage your log data.</v-card-text>
             <v-card-actions>

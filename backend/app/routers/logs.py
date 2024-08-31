@@ -12,6 +12,7 @@ from app.schemas.log import LogSchema
 from app.utils.database import get_db
 from app.utils.generic_functions import save_log_entry, get_config_by_id
 from app.utils.minio_utils import upload_file
+from app.models.configuration import EvaluationConfig
 
 router = APIRouter()
 
@@ -107,3 +108,17 @@ def delete_log(config_id: int, log_name: str):
         return {"detail": "Log deleted successfully"}
     except S3Error as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Log registration in database
+@router.post("/register")
+def register_log(log: LogSchema, db: Session = Depends(get_db)):
+    config = db.query(EvaluationConfig).filter(EvaluationConfig.id == log.config_id).first()
+    if not config:
+        raise HTTPException(status_code=404, detail="Configuration not found")
+
+    new_log = Log(name=log.name, config_id=log.config_id, minio_path=log.minio_path)
+    db.add(new_log)
+    db.commit()
+    db.refresh(new_log)
+    return new_log
