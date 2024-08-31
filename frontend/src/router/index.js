@@ -9,6 +9,7 @@ import ConfigurationForm from "@/components/ConfigurationForm.vue";
 import AboutView from "@/views/AboutView.vue";
 import LogGenerator from "@/components/LogGenerator.vue";
 import MetricsPage from "@/components/MetricsPage.vue";
+import ResultView from "@/components/ResultView.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -35,6 +36,12 @@ const routes = [
     name: "ResultDetail",
     component: EvaluationResultDetail,
   },
+  {
+    path: "/results/:resultId/view",
+    name: "ResultPlot",
+    component: ResultView,
+  },
+
   { path: "/reports", name: "EvaluationReports", component: EvaluationReports },
   {
     path: "/configuration/new",

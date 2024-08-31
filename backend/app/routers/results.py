@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models import EvaluationResult, LogEntry, EvaluationConfig
 from app.schemas.results import EvaluationResultSchema
-from app.services.evaluate import evaluate_logs_and_save_results
+from app.services.agg_metrics import calculate_metrics_for_group
 
 router = APIRouter()
 
@@ -47,3 +47,10 @@ def query_evaluation_results(
 
     results = query.all()
     return results
+
+
+@router.get("/{config_id}/{group_name}")
+def get_results(config_id: int, group_name: str):
+    # Logic to fetch and calculate the metrics for the selected group
+    results = calculate_metrics_for_group(config_id, group_name)
+    return {"results": results}

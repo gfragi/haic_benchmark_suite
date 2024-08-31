@@ -58,3 +58,19 @@ def save_evaluation_result(db: Session, configuration_id: int, aggregated_metric
 
     db.add(result)
     db.commit()
+
+
+def calculate_metrics_for_group(db: Session, config_id: int, group_name: str):
+    """
+    Calculate metrics for a specific group of logs.
+    """
+    # Fetch logs for the configuration and group
+    logs = db.query(LogEntry).filter(LogEntry.configuration_id == config_id, LogEntry.group_name == group_name).all()
+
+    # Calculate aggregated metrics
+    aggregated_metrics = calculate_aggregated_metrics(logs)
+
+    # Save the evaluation result
+    save_evaluation_result(db, config_id, aggregated_metrics)
+
+    return aggregated_metrics
