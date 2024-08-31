@@ -10,4 +10,7 @@ export default {
   getEvaluationResultDetail(result_id) {
     return apiClient.get(`/evaluate/results/${result_id}`);
   },
+  getResultsByConfigIdAndGroup(configuration_id, group_name) {
+    return apiClient.get(`/results/${configuration_id}/${group_name}`);
+  },
 };

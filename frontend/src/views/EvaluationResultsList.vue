@@ -25,6 +25,14 @@
               >
                 View Configuration
               </v-btn>
+              <v-btn
+                size="small"
+                color="info"
+                rounded="xl"
+                @click="viewResultPlots(item)"
+              >
+                View Plots
+              </v-btn>
             </template>
           </v-data-table>
         </v-col>
@@ -93,6 +101,13 @@ export default {
         .catch((error) => {
           console.error("Error fetching configuration:", error);
         });
+    },
+    viewResultPlots(item) {
+      console.log("Item ID:", item.configuration_id);
+      this.$router.push({
+        name: "ResultPlot",
+        params: { resultId: item.configuration_id },
+      });
     },
   },
 };
