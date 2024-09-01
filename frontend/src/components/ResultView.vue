@@ -7,7 +7,6 @@
             v-model="selectedGroup"
             :items="metricGroups"
             label="Select Metric Group"
-            @change="fetchResults"
             solo
             hide-details
           ></v-select>
@@ -29,14 +28,14 @@ import resultService from "@/services/resultService";
 import BaseLayout from "@/components/BaseLayout.vue";
 
 export default {
-  name: "ResultView",
+  name: "ResultPlot",
   components: {
     BaseLayout,
     PlotlyChart,
   },
   data() {
     return {
-      selectedConfigId: this.$route.params.configId, // Assuming configId is passed as a route parameter
+      selectedConfigId: this.$route.params.configId,
       metricGroups: [
         "Performance",
         "Efficiency",
@@ -52,10 +51,17 @@ export default {
     };
   },
   mounted() {
+    console.log("Selected Config ID:", this.selectedConfigId);
     this.fetchResults();
+  },
+  watch: {
+    selectedGroup() {
+      this.fetchResults();
+    },
   },
   methods: {
     fetchResults() {
+      console.log("Fetching results for Config ID:", this.selectedConfigId);
       if (this.selectedGroup) {
         resultService
           .getResultsByConfigIdAndGroup(
@@ -63,12 +69,14 @@ export default {
             this.selectedGroup
           )
           .then((response) => {
-            this.results = response.data;
-            this.updateChartData();
+            this.results = response.data; // Assign the returned metrics
+            this.updateChartData(); // Update the chart with new data
           })
           .catch((error) => {
             console.error("Error fetching results:", error);
           });
+      } else {
+        console.error("Config ID or Group not defined");
       }
     },
     updateChartData() {

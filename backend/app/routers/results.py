@@ -49,8 +49,12 @@ def query_evaluation_results(
     return results
 
 
-@router.get("/{config_id}/{group_name}")
-def get_results(config_id: int, group_name: str):
-    # Logic to fetch and calculate the metrics for the selected group
-    results = calculate_metrics_for_group(config_id, group_name)
-    return {"results": results}
+@router.get("/results/{configuration_id}/{group_name}")
+async def get_evaluation_results(configuration_id: int, group_name: str, db: Session = Depends(get_db)):
+    # Calculate or fetch the metrics for the specified group
+    metrics = calculate_metrics_for_group(db, configuration_id, group_name)
+
+    if not metrics:
+        raise HTTPException(status_code=404, detail="No results found for this configuration and group")
+
+    return metrics

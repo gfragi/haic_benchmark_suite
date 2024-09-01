@@ -65,12 +65,67 @@ def calculate_metrics_for_group(db: Session, config_id: int, group_name: str):
     Calculate metrics for a specific group of logs.
     """
     # Fetch logs for the configuration and group
-    logs = db.query(LogEntry).filter(LogEntry.configuration_id == config_id, LogEntry.group_name == group_name).all()
+    logs = db.query(LogEntry).filter(LogEntry.configuration_id == config_id).all()
 
-    # Calculate aggregated metrics
-    aggregated_metrics = calculate_aggregated_metrics(logs)
+    if not logs:
+    # If no logs are found, return None or handle it accordingly
+        return None
+    
+    
+# Depending on the selected group, calculate relevant metrics
+    metrics_map = {
+        "Performance": [
+            "calculate_prediction_accuracy",
+            "calculate_precision",
+            "calculate_recall",
+            "calculate_overall_system_accuracy",
+            "calculate_model_improvement_rate"
+        ],
+        "Efficiency": [
+            "calculate_response_time",
+            "calculate_teaching_efficiency",
+            "calculate_query_efficiency",
+            "calculate_resource_utilization",
+            "calculate_task_completion_time",
+            "calculate_correction_efficiency",
+            "calculate_error_reduction_rate",
+            "calculate_knowledge_retention"
+        ],
+        "Adaptability and Learning": [
+            "calculate_feedback_impact",
+            "calculate_adaptability_score",
+            "calculate_impact_of_corrections",
+            "calculate_learning_efficiency",
+            "calculate_objective_fulfillment_rate"
+        ],
+        "Collaboration and Interaction": [
+            "calculate_human_ai_agreement_rate",
+            "calculate_ai_assistance_rate",
+            "calculate_decision_effectiveness",
+            "calculate_time_to_resolution",
+            "calculate_human_effort_saved"
+        ],
+        "Trust and Safety": [
+            "calculate_confidence",
+            "calculate_trust_score",
+            "calculate_safety_incidents",
+            "calculate_system_reliability"
+        ],
+        "Robustness and Generalization": [
+            "calculate_adversarial_robustness",
+            "calculate_domain_generalization"
+        ]
+    }
 
-    # Save the evaluation result
-    save_evaluation_result(db, config_id, aggregated_metrics)
+    # Initialize the result dictionary
+    results = {}
 
-    return aggregated_metrics
+    # Iterate over the metrics in the selected group and calculate each
+    for metric_name in metrics_map.get(group_name, []):
+        # Use getattr to dynamically call the appropriate static method
+        metric_function = getattr(Metrics.__dict__[group_name.replace(" ", "")], metric_name)
+        results[metric_name.replace("calculate_", "").replace("_", " ").title()] = [
+            metric_function(log.interaction_data) for log in logs
+        ]
+
+    return results
