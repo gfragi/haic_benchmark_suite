@@ -1,3 +1,4 @@
+// PlotlyChart.vue
 <template>
   <div ref="chart"></div>
 </template>
@@ -8,6 +9,10 @@ import Plotly from "plotly.js-dist";
 export default {
   name: "PlotlyChart",
   props: ["data", "layout"],
+  watch: {
+    data: "renderChart",
+    layout: "renderChart",
+  },
   mounted() {
     this.renderChart();
   },
