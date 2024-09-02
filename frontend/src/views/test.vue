@@ -1,208 +1,158 @@
 <template>
   <BaseLayout>
-    <v-container>
-      <v-row>
-        <v-col cols="12" class="text-center">
-          <h1>Evaluation Configurations</h1>
-        </v-col>
-        <v-col cols="12" class="text-right">
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-          ></v-text-field>
-        </v-col>
-        <v-btn color="primary" @click="goToNewConfig" class="ml-auto">
-          New Configuration
-        </v-btn>
-        <v-data-table
-          :headers="headers"
-          :items="filteredConfigs"
-          class="elevation-1"
-          :items-per-page="itemsPerPage"
-          :footer-props="{
-            'items-per-page-options': [
-              5,
-              10,
-              15,
-              20,
-              { text: 'All', value: -1 },
-            ],
-          }"
-          :sort-by="[sortBy]"
-          :sort-desc="[sortDesc]"
-        >
-          <!-- Scoped slots for customizing the actions column -->
-          <template v-slot:[`item.evaluation_status`]="{ item }">
-            <v-chip :color="getStatusColor(item.evaluation_status)" dark>
-              {{ item.evaluation_status }}
-            </v-chip>
-          </template>
-          <template v-slot:[`item.actions`]="{ item }">
-            <v-btn icon color="green" text @click="confirmEvaluateConfig(item)">
-              <v-icon>mdi-play-circle</v-icon>
+    <v-container class="ml-auto">
+      <v-card class="mx-auto my-12" max-width="600">
+        <v-card-title>
+          <h2 class="text-h5">
+            {{ mode === "edit" ? "Edit" : "Create" }} Evaluation Configuration
+          </h2>
+        </v-card-title>
+        <v-card-text>
+          <v-form @submit.prevent="submitForm">
+            <v-text-field
+              v-model="config.application_name"
+              label="Application Name"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="config.ai_model_name"
+              label="AI Model Name"
+              required
+            ></v-text-field>
+            <v-select
+              v-model="config.ai_model_type"
+              :items="availableModelTypes"
+              label="AI Model Type"
+              required
+            ></v-select>
+            <v-select
+              v-model="config.config_type"
+              :items="availableConfigTypes"
+              label="Configuration Type"
+              required
+            ></v-select>
+            <v-select
+              v-model="config.metrics"
+              :items="availableMetrics"
+              item-text="metric_name"
+              item-value="metric_name"
+              label="Select Metrics"
+              multiple
+              required
+            ></v-select>
+            <v-textarea
+              v-model="config.description"
+              label="Description"
+            ></v-textarea>
+            <v-btn color="success" :disabled="isSubmitting" @click="submitForm">
+              {{ mode === "edit" ? "Update" : "Save" }} Configuration
+              <v-progress-circular
+                v-if="isSubmitting"
+                indeterminate
+                color="white"
+                size="20"
+                class="ml-2"
+              ></v-progress-circular>
             </v-btn>
-            <v-btn icon @click="editConfig(item)">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-            <v-btn icon color="red" @click="confirmDeleteConfig(item)">
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </template>
-        </v-data-table>
-      </v-row>
-
-      <v-dialog v-model="dialog" max-width="500px">
-        <v-card>
-          <v-card-title class="headline">Confirm Delete</v-card-title>
-          <v-card-text>
-            Are you sure you want to delete this Configuration?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialog = false">
-              Cancel
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="deleteConfig">
-              Confirm
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog v-model="confirmDialog" max-width="500px">
-        <v-card>
-          <v-card-title class="headline">Run Evaluation</v-card-title>
-          <v-card-text>
-            Are you sure you want to run this evaluation?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="confirmDialog = false">
-              Cancel
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="runConfirmedEvaluation">
-              Confirm
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+          </v-form>
+        </v-card-text>
+      </v-card>
     </v-container>
   </BaseLayout>
 </template>
 
 <script>
-import BaseLayout from "@/components/BaseLayout.vue";
 import evaluationConfigService from "@/services/configurationService";
+import metricsList from "@/services/metricsList";
+import BaseLayout from "@/components/BaseLayout.vue";
 
 export default {
-  name: "EvaluationConfigList",
+  name: "ConfigurationForm",
   components: {
     BaseLayout,
   },
+  props: {
+    mode: {
+      type: String,
+      default: "create", // Can be 'create' or 'edit'
+    },
+    configId: {
+      type: Number,
+      default: null,
+    },
+  },
   data() {
     return {
-      headers: [
-        { title: "Application Name", key: "application_name" },
-        { title: "AI Model Name", key: "ai_model_name" },
-        { title: "AI Model Type", key: "ai_model_type" },
-        { title: "AI Model Version", key: "ai_model_version" },
-        { title: "Description", key: "description" },
-        { title: "Evaluation Date Time", key: "evaluation_date" },
-        { title: "Evaluation Status", key: "evaluation_status" },
-        { title: "Actions", key: "actions", sortable: false },
+      config: {
+        application_name: "",
+        ai_model_name: "",
+        ai_model_type: "",
+        metrics: [],
+        description: "",
+        config_type: "",
+        evaluation_status: "pending",
+        evaluation_date: new Date().toISOString(),
+      },
+      availableMetrics: [],
+      availableModelTypes: [
+        "Classification",
+        "Regression",
+        "Clustering",
+        "XAI",
+        "Swarm Learning",
+        "Active Learning",
+        "Other",
       ],
-      configs: [], // This will be fetched from the API
-      dialog: false, // For the delete confirmation dialog
-      confirmDialog: false, // For the evaluation confirmation dialog
-      configurationToDelete: null, // Temporarily store the configuration to delete
-      configToEvaluate: null, // Temporarily store the configuration to evaluate
-      search: "", // For search functionality
-      sortBy: "evaluation_date", // Default sorting column
-      sortDesc: false, // Ascending by default
-      itemsPerPage: 5, // Default items per page
+      availableConfigTypes: ["specific", "generic"],
+      isSubmitting: false,
     };
   },
-  computed: {
-    filteredConfigs() {
-      if (this.search) {
-        return this.configs.filter((config) =>
-          Object.values(config).some((val) =>
-            String(val).toLowerCase().includes(this.search.toLowerCase())
-          )
-        );
-      }
-      return this.configs;
-    },
+  mounted() {
+    this.fetchMetrics();
+    if (this.mode === "edit" && this.configId) {
+      this.loadConfig();
+    }
   },
   methods: {
-    fetchConfigs() {
-      evaluationConfigService
-        .getAllConfigs()
+    fetchMetrics() {
+      metricsList
+        .getMetrics()
         .then((response) => {
-          this.configs = response.data;
+          this.availableMetrics = response.data.metrics;
         })
         .catch((error) => {
-          console.error("Error fetching configs:", error);
+          console.error("Error fetching metrics:", error);
         });
     },
-    editConfig(configuration) {
-      this.$router.push(`/configuration/edit/${configuration.id}`);
-    },
-    confirmDeleteConfig(configuration) {
-      this.configurationToDelete = configuration;
-      this.dialog = true;
-    },
-    deleteConfig() {
-      if (!this.configurationToDelete) return;
+    loadConfig() {
       evaluationConfigService
-        .deleteConfig(this.configurationToDelete.id)
-        .then(() => {
-          this.fetchConfigs(); // Refresh the list after deletion
-          this.dialog = false;
-          this.configurationToDelete = null; // Clear the temp storage
+        .getConfigById(this.configId)
+        .then((response) => {
+          this.config = { ...response.data };
         })
         .catch((error) => {
-          console.error("Error deleting configuration:", error);
+          console.error("Error loading configuration:", error);
         });
     },
-    confirmEvaluateConfig(config) {
-      this.configToEvaluate = config;
-      this.confirmDialog = true;
-    },
-    runConfirmedEvaluation() {
-      if (!this.configToEvaluate) return;
-      evaluationConfigService
-        .runEvaluation(`${this.configToEvaluate.id}`)
-        .then(() => {
-          this.fetchConfigs();
-          this.confirmDialog = false;
-          this.configToEvaluate = null;
+    submitForm() {
+      this.isSubmitting = true;
+      const serviceCall =
+        this.mode === "edit"
+          ? evaluationConfigService.updateConfig(this.configId, this.config)
+          : evaluationConfigService.createConfig(this.config);
+
+      serviceCall
+        .then((response) => {
+          const configId = response.data.id;
+          this.$router.push({ path: "/logs", query: { configId } });
         })
         .catch((error) => {
-          console.error("Error running evaluation:", error);
+          console.error("Error while submitting form:", error);
+        })
+        .finally(() => {
+          this.isSubmitting = false;
         });
     },
-    goToNewConfig() {
-      this.$router.push("/configuration/new"); // Ensure this route is correctly configured
-    },
-    getStatusColor(status) {
-      switch (status) {
-        case "completed":
-          return "green";
-        case "pending":
-          return "orange";
-        case "failed":
-          return "red";
-        default:
-          return "grey";
-      }
-    },
-  },
-  mounted() {
-    this.fetchConfigs();
   },
 };
 </script>
