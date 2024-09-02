@@ -35,9 +35,10 @@ const routes = [
     component: EvaluationResultsList,
   },
   {
-    path: "/results/:resultId",
+    path: "/results/:configId",
     name: "ResultDetail",
     component: EvaluationResultDetail,
+    props: true,
   },
   {
     path: "/results/::configId/view",
