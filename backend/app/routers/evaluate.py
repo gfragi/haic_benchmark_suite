@@ -40,6 +40,18 @@ async def get_evaluation_results(configuration_id: int, db: Session = Depends(ge
         raise HTTPException(status_code=404, detail="No results found for this configuration")
     return results
 
+@router.get("/results/{configuration_id}/{result_id}")
+async def get_evaluation_result(configuration_id: int, result_id: int, db: Session = Depends(get_db)):
+    result = db.query(EvaluationResult).filter(
+        EvaluationResult.configuration_id == configuration_id,
+        EvaluationResult.id == result_id
+    ).first()
+
+    if not result:
+        raise HTTPException(status_code=404, detail="No result found for this configuration and result ID")
+    
+    return result
+
 @router.get("/metrics", response_model=dict)
 def get_metrics():
     metrics = Metrics.get_available_metrics()
