@@ -80,14 +80,6 @@ export default {
     console.log("Config ID:", this.configId); // Debugging line
     this.fetchRunDates();
   },
-  watch: {
-    selectedRun(newRunId) {
-      if (newRunId) {
-        console.log("Watcher triggered for selectedRun: ", newRunId);
-        this.fetchRunMetrics(newRunId);
-      }
-    },
-  },
   methods: {
     fetchRunDates() {
       if (!this.configId) {
@@ -109,11 +101,11 @@ export default {
           console.error("Error fetching evaluation run dates:", error);
         });
     },
-    fetchRunMetrics(runId) {
-      if (runId) {
-        console.log("Fetching metrics for run ID: ", runId); // Log selected run ID
+    fetchRunMetrics() {
+      console.log("Selected Run: ", this.selectedRun); // Log selected run ID
+      if (this.selectedRun) {
         evaluationService
-          .getEvaluationResultDetail(this.configId, runId) // Pass both configId and runId
+          .getEvaluationResultDetail(this.selectedRun)
           .then((response) => {
             console.log("Fetched Run Metrics: ", response.data); // Log fetched metrics data
             this.groupedMetrics = this.groupMetricsByCategory(response.data);

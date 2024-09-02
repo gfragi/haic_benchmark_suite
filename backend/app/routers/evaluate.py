@@ -49,7 +49,7 @@ async def get_evaluation_result(configuration_id: int, result_id: int, db: Sessi
 
     if not result:
         raise HTTPException(status_code=404, detail="No result found for this configuration and result ID")
-    
+
     return result
 
 @router.get("/metrics", response_model=dict)

@@ -41,15 +41,75 @@
             </v-chip>
           </template>
           <template v-slot:[`item.actions`]="{ item }">
-            <v-btn icon color="green" text @click="confirmEvaluateConfig(item)">
-              <v-icon>mdi-play-circle</v-icon>
-            </v-btn>
-            <v-btn icon @click="editConfig(item)">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-            <v-btn icon color="red" @click="confirmDeleteConfig(item)">
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  color="green"
+                  text
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="confirmEvaluateConfig(item)"
+                >
+                  <v-icon>mdi-play-circle</v-icon>
+                </v-btn>
+              </template>
+              <span>Run Evaluation</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  color="primary"
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="viewResults(item)"
+                >
+                  <v-icon>mdi-file-document-outline</v-icon>
+                </v-btn>
+              </template>
+              <span>View Results</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  color="blue"
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="viewPlots(item)"
+                >
+                  <v-icon>mdi-chart-line</v-icon>
+                </v-btn>
+              </template>
+              <span>View Plots</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-bind="attrs" v-on="on" @click="editConfig(item)">
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+              </template>
+              <span>Edit Configuration</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  color="red"
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="confirmDeleteConfig(item)"
+                >
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+              <span>Delete Configuration</span>
+            </v-tooltip>
           </template>
         </v-data-table>
       </v-row>
@@ -92,7 +152,6 @@
     </v-container>
   </BaseLayout>
 </template>
-
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
 import evaluationConfigService from "@/services/configurationService";
