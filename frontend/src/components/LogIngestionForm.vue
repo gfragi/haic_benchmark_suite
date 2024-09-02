@@ -32,7 +32,7 @@
 
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
-import logService from "@/services/loService";
+import logService from "@/services/logService";
 import evaluationConfigService from "@/services/configurationService";
 
 export default {

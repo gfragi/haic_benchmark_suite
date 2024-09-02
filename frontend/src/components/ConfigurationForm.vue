@@ -144,7 +144,7 @@ export default {
       serviceCall
         .then((response) => {
           const configId = response.data.id;
-          this.$router.push({ path: "/logs", query: { configId } });
+          this.$router.push({ path: "/logs/upload", query: { configId } });
         })
         .catch((error) => {
           console.error("Error while submitting form:", error);
