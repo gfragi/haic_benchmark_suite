@@ -186,7 +186,7 @@ export default {
         });
     },
     goToNewConfig() {
-      this.$router.push("/configuration/new"); // Ensure this route is correctly configured
+      this.$router.push("/configuration/new");
     },
     getStatusColor(status) {
       switch (status) {
