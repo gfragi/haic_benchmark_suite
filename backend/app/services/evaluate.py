@@ -7,7 +7,7 @@ from minio import Minio, S3Error
 from sqlmodel import Session
 from app.services.metrics import Metrics
 from app.models import EvaluationConfig, LogEntry
-from app.services.agg_metrics import calculate_aggregated_metrics, save_evaluation_result
+from app.services.agg_metrics import calculate_metrics_for_group, save_evaluation_result
 from app.models.results import EvaluationResult
 from app.utils.database import SessionLocal
 
@@ -179,7 +179,7 @@ def evaluate_logs_and_save_results(configuration_id: int, db: Session):
         raise ValueError("No logs found for this configuration")
 
     # Calculate metrics
-    aggregated_metrics = calculate_aggregated_metrics(logs)
+    aggregated_metrics = calculate_metrics_for_group(logs)
 
     # Save evaluation results
     save_evaluation_result(db, configuration_id, aggregated_metrics)

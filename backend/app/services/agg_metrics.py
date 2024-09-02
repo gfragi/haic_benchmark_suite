@@ -3,63 +3,6 @@ from sqlalchemy.orm import Session
 from app.models import LogEntry, EvaluationConfig, EvaluationResult
 from app.services.metrics import Metrics
 
-def calculate_aggregated_metrics(logs):
-    """
-    Calculate aggregated metrics across multiple logs.
-    """
-    metrics_aggregated = {
-        "accuracy": [],
-        "precision": [],
-        "recall": [],
-        "human_ai_agreement_rate": [],
-        "time_to_resolution": [],
-        "human_effort_saved": [],
-        "ai_assistance_rate": [],
-        "learning_efficiency": [],
-        "correction_efficiency": []
-    }
-
-    # Aggregate the metrics from each log
-    for log in logs:
-        interaction_data = log.interaction_data
-
-        metrics_aggregated["accuracy"].append(Metrics.Performance.calculate_prediction_accuracy(interaction_data))
-        metrics_aggregated["precision"].append(Metrics.Performance.calculate_precision(interaction_data))
-        metrics_aggregated["recall"].append(Metrics.Performance.calculate_recall(interaction_data))
-        metrics_aggregated["human_ai_agreement_rate"].append(Metrics.CollaborationAndInteraction.calculate_human_ai_agreement_rate(interaction_data))
-        metrics_aggregated["time_to_resolution"].append(Metrics.CollaborationAndInteraction.calculate_time_to_resolution(interaction_data))
-        metrics_aggregated["human_effort_saved"].append(Metrics.CollaborationAndInteraction.calculate_human_effort_saved(interaction_data))
-        metrics_aggregated["ai_assistance_rate"].append(Metrics.CollaborationAndInteraction.calculate_ai_assistance_rate(interaction_data))
-        metrics_aggregated["learning_efficiency"].append(Metrics.AdaptabilityAndLearning.calculate_learning_efficiency(interaction_data))
-        metrics_aggregated["correction_efficiency"].append(Metrics.Efficiency.calculate_correction_efficiency(interaction_data))
-
-    # Calculate the average or final aggregated metric
-    aggregated_metrics = {key: sum(values) / len(values) if values else 0 for key, values in metrics_aggregated.items()}
-
-    return aggregated_metrics
-
-def save_evaluation_result(db: Session, configuration_id: int, aggregated_metrics: dict):
-    """
-    Save the calculated metrics to the database.
-    """
-    result = EvaluationResult(
-        configuration_id=configuration_id,
-        accuracy=aggregated_metrics["accuracy"],
-        precision=aggregated_metrics["precision"],
-        recall=aggregated_metrics["recall"],
-        human_ai_agreement_rate=aggregated_metrics["human_ai_agreement_rate"],
-        time_to_resolution=aggregated_metrics["time_to_resolution"],
-        human_effort_saved=aggregated_metrics["human_effort_saved"],
-        ai_assistance_rate=aggregated_metrics["ai_assistance_rate"],
-        learning_efficiency=aggregated_metrics["learning_efficiency"],
-        correction_efficiency=aggregated_metrics["correction_efficiency"],
-        evaluation_date=datetime.datetime.utcnow()
-    )
-
-    db.add(result)
-    db.commit()
-
-
 def calculate_metrics_for_group(db: Session, config_id: int, group_name: str):
     """
     Calculate metrics for a specific group of logs.
@@ -68,64 +11,89 @@ def calculate_metrics_for_group(db: Session, config_id: int, group_name: str):
     logs = db.query(LogEntry).filter(LogEntry.configuration_id == config_id).all()
 
     if not logs:
-    # If no logs are found, return None or handle it accordingly
+        # If no logs are found, return None or handle it accordingly
         return None
-    
-    
-# Depending on the selected group, calculate relevant metrics
+
+    # Mapping of group names to their respective metric methods
     metrics_map = {
         "Performance": [
-            "calculate_prediction_accuracy",
-            "calculate_precision",
-            "calculate_recall",
-            "calculate_overall_system_accuracy",
-            "calculate_model_improvement_rate"
+            Metrics.Performance.calculate_prediction_accuracy,
+            Metrics.Performance.calculate_precision,
+            Metrics.Performance.calculate_recall,
+            Metrics.Performance.calculate_overall_system_accuracy,
+            Metrics.Performance.calculate_model_improvement_rate,
         ],
         "Efficiency": [
-            "calculate_response_time",
-            "calculate_teaching_efficiency",
-            "calculate_query_efficiency",
-            "calculate_resource_utilization",
-            "calculate_task_completion_time",
-            "calculate_correction_efficiency",
-            "calculate_error_reduction_rate",
-            "calculate_knowledge_retention"
+            Metrics.Efficiency.calculate_response_time,
+            Metrics.Efficiency.calculate_teaching_efficiency,
+            Metrics.Efficiency.calculate_query_efficiency,
+            Metrics.Efficiency.calculate_resource_utilization,
+            Metrics.Efficiency.calculate_task_completion_time,
+            Metrics.Efficiency.calculate_correction_efficiency,
+            Metrics.Efficiency.calculate_error_reduction_rate,
+            Metrics.Efficiency.calculate_knowledge_retention,
         ],
         "Adaptability and Learning": [
-            "calculate_feedback_impact",
-            "calculate_adaptability_score",
-            "calculate_impact_of_corrections",
-            "calculate_learning_efficiency",
-            "calculate_objective_fulfillment_rate"
+            Metrics.AdaptabilityAndLearning.calculate_feedback_impact,
+            Metrics.AdaptabilityAndLearning.calculate_adaptability_score,
+            Metrics.AdaptabilityAndLearning.calculate_impact_of_corrections,
+            Metrics.AdaptabilityAndLearning.calculate_learning_efficiency,
+            Metrics.AdaptabilityAndLearning.calculate_objective_fulfillment_rate,
         ],
         "Collaboration and Interaction": [
-            "calculate_human_ai_agreement_rate",
-            "calculate_ai_assistance_rate",
-            "calculate_decision_effectiveness",
-            "calculate_time_to_resolution",
-            "calculate_human_effort_saved"
+            Metrics.CollaborationAndInteraction.calculate_human_ai_agreement_rate,
+            Metrics.CollaborationAndInteraction.calculate_ai_assistance_rate,
+            Metrics.CollaborationAndInteraction.calculate_decision_effectiveness,
+            Metrics.CollaborationAndInteraction.calculate_time_to_resolution,
+            Metrics.CollaborationAndInteraction.calculate_human_effort_saved,
         ],
         "Trust and Safety": [
-            "calculate_confidence",
-            "calculate_trust_score",
-            "calculate_safety_incidents",
-            "calculate_system_reliability"
+            Metrics.TrustAndSafety.calculate_confidence,
+            Metrics.TrustAndSafety.calculate_trust_score,
+            Metrics.TrustAndSafety.calculate_safety_incidents,
+            Metrics.TrustAndSafety.calculate_system_reliability,
         ],
         "Robustness and Generalization": [
-            "calculate_adversarial_robustness",
-            "calculate_domain_generalization"
-        ]
+            Metrics.RobustnessAndGeneralization.calculate_adversarial_robustness,
+            Metrics.RobustnessAndGeneralization.calculate_domain_generalization,
+        ],
     }
 
     # Initialize the result dictionary
     results = {}
 
-    # Iterate over the metrics in the selected group and calculate each
-    for metric_name in metrics_map.get(group_name, []):
-        # Use getattr to dynamically call the appropriate static method
-        metric_function = getattr(Metrics.__dict__[group_name.replace(" ", "")], metric_name)
-        results[metric_name.replace("calculate_", "").replace("_", " ").title()] = [
-            metric_function(log.interaction_data) for log in logs
-        ]
+    # Calculate and aggregate metrics for the selected group
+    for metric_function in metrics_map.get(group_name, []):
+        metric_name = metric_function.__name__.replace("calculate_", "").replace("_", " ").title()
+        results[metric_name] = [metric_function(log.interaction_data) for log in logs]
 
-    return results
+    # Aggregate the results (e.g., average, sum, etc.)
+    aggregated_results = {
+        metric: sum(values) / len(values) if values else 0
+        for metric, values in results.items()
+    }
+
+    return aggregated_results
+
+def save_evaluation_result(db: Session, configuration_id: int, aggregated_metrics: dict):
+    """
+    Save the calculated metrics to the database.
+    """
+    result = EvaluationResult(
+        configuration_id=configuration_id,
+        accuracy=aggregated_metrics.get("Prediction Accuracy", 0),
+        precision=aggregated_metrics.get("Precision", 0),
+        recall=aggregated_metrics.get("Recall", 0),
+        human_ai_agreement_rate=aggregated_metrics.get("Human Ai Agreement Rate", 0),
+        time_to_resolution=aggregated_metrics.get("Time To Resolution", 0),
+        human_effort_saved=aggregated_metrics.get("Human Effort Saved", 0),
+        ai_assistance_rate=aggregated_metrics.get("Ai Assistance Rate", 0),
+        learning_efficiency=aggregated_metrics.get("Learning Efficiency", 0),
+        correction_efficiency=aggregated_metrics.get("Correction Efficiency", 0),
+        evaluation_date=datetime.datetime.utcnow()
+    )
+
+    db.add(result)
+    db.commit()
+
+    return result
