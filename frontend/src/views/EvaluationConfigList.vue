@@ -155,6 +155,7 @@
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
 import evaluationConfigService from "@/services/configurationService";
+// import resultService from "@/services/resultService";
 
 export default {
   name: "EvaluationConfigList",
@@ -243,6 +244,20 @@ export default {
         .catch((error) => {
           console.error("Error running evaluation:", error);
         });
+    },
+    viewResults(item) {
+      console.log("Item ID:", item.configuration_id);
+      console.log("Item Object:", item);
+      this.$router.push({
+        name: "ResultDetail",
+        params: { configId: item.configuration_id },
+      });
+    },
+    viewPlots(configuration_id) {
+      this.$router.push({
+        name: "ResultPlot",
+        params: { configId: configuration_id.id },
+      });
     },
     goToNewConfig() {
       this.$router.push("/configuration/new");
