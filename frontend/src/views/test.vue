@@ -122,7 +122,7 @@ export default {
       search: "", // For search functionality
       sortBy: "evaluation_date", // Default sorting column
       sortDesc: false, // Ascending by default
-      itemsPerPage: 10, // Default items per page
+      itemsPerPage: 5, // Default items per page
     };
   },
   computed: {
