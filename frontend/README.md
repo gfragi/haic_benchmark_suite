@@ -44,7 +44,7 @@ src/
 │   └── ...
 ├── views/                      # Views (pages) of the application
 │   ├── Home.vue                 # Home page with navigation to other pages
-│   ├── EvaluationConfigList.vue # List and manage evaluation configs
+│   ├── ConfigList.vue # List and manage evaluation configs
 │   ├── EvaluationResults.vue    # View and analyze evaluation results
 │   ├── LogIngestion.vue         # Page for log ingestion
 │   ├── Reports.vue              # Generate and download reports

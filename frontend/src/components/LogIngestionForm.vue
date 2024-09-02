@@ -33,7 +33,7 @@
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
 import logService from "@/services/logService";
-import evaluationConfigService from "@/services/configurationService";
+import configurationService from "@/services/configurationService";
 
 export default {
   components: {
@@ -53,7 +53,7 @@ export default {
   methods: {
     async fetchConfigurationDetails() {
       try {
-        const response = await evaluationConfigService.getConfigById(
+        const response = await configurationService.getConfigById(
           this.configId
         );
         if (response.data) {

@@ -62,8 +62,8 @@
 </template>
 
 <script>
-import evaluationConfigService from "@/services/configurationService";
-import metricsList from "@/services/metricsList";
+import configurationService from "@/services/configurationService";
+import metricsList from "@/services/evaluationService";
 import BaseLayout from "@/components/BaseLayout.vue";
 
 export default {
@@ -125,7 +125,7 @@ export default {
         });
     },
     loadConfig() {
-      evaluationConfigService
+      configurationService
         .getConfigById(this.configId)
         .then((response) => {
           this.config = { ...response.data };
@@ -138,8 +138,8 @@ export default {
       this.isSubmitting = true;
       const serviceCall =
         this.mode === "edit"
-          ? evaluationConfigService.updateConfig(this.configId, this.config)
-          : evaluationConfigService.createConfig(this.config);
+          ? configurationService.updateConfig(this.configId, this.config)
+          : configurationService.createConfig(this.config);
 
       serviceCall
         .then((response) => {

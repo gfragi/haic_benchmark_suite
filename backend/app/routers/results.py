@@ -30,12 +30,6 @@ async def get_evaluation_result(configuration_id: int, result_id: int, db: Sessi
 
     return result
 
-# Fetch all Evaluation Results
-@router.get("/list", response_model=List[EvaluationResultSchema])
-def get_all_evaluation_results(db: Session = Depends(get_db)):
-    results = db.query(EvaluationResult).all()
-    return results
-
 
 # Fetch Evaluation Results for a specific group of metrics
 @router.get("/{configuration_id}/{group_name}")
@@ -55,3 +49,9 @@ async def get_evaluation_results(configuration_id: int, group_name: str, db: Ses
 #     if not result:
 #         raise HTTPException(status_code=404, detail="Evaluation result not found")
 #     return result
+
+# # Fetch all Evaluation Results
+# @router.get("/list", response_model=List[EvaluationResultSchema])
+# def get_all_evaluation_results(db: Session = Depends(get_db)):
+#     results = db.query(EvaluationResult).all()
+#     return results
