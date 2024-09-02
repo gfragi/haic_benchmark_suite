@@ -43,7 +43,6 @@
 
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
-import evaluationService from "@/services/resultService";
 import configurationService from "@/services/configurationService";
 
 export default {
@@ -70,17 +69,17 @@ export default {
     this.fetchResults();
   },
   methods: {
-    fetchResults() {
-      evaluationService
-        .getAllEvaluationResults()
-        .then((response) => {
-          console.log("Fetched Results:", response.data); // Log to inspect the results
-          this.results = response.data;
-        })
-        .catch((error) => {
-          console.error("Error fetching evaluation results:", error);
-        });
-    },
+    // fetchResults() {
+    //   evaluationService
+    //     .getAllEvaluationResults()
+    //     .then((response) => {
+    //       console.log("Fetched Results:", response.data); // Log to inspect the results
+    //       this.results = response.data;
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error fetching evaluation results:", error);
+    //     });
+    // },
     viewResultDetails(item) {
       console.log("Item ID:", item.configuration_id);
       console.log("Item Object:", item);

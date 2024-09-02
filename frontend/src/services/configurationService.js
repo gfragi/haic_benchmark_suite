@@ -19,10 +19,4 @@ export default {
   deleteConfig(configuration_id) {
     return apiClient.delete(`/configuration/delete/${configuration_id}`);
   },
-  getMetrics() {
-    return apiClient.get("/evaluate/metrics");
-  },
-  runEvaluation(configuration_id) {
-    return apiClient.post(`/evaluate/${configuration_id}`);
-  },
 };

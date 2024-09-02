@@ -154,8 +154,9 @@
 </template>
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
-import evaluationConfigService from "@/services/configurationService";
-// import resultService from "@/services/resultService";
+import evaluationService from "@/services/evaluationService";
+import configurationService from "@/services/configurationService";
+import resultService from "@/services/resultService";
 
 export default {
   name: "EvaluationConfigList",
@@ -168,9 +169,9 @@ export default {
         { title: "Application Name", key: "application_name" },
         { title: "AI Model Name", key: "ai_model_name" },
         { title: "AI Model Type", key: "ai_model_type" },
-        { title: "AI Model Version", key: "ai_model_version" },
-        { title: "Description", key: "description" },
+        // { title: "AI Model Version", key: "ai_model_version" },
         { title: "Evaluation Date Time", key: "evaluation_date" },
+        { title: "Description", key: "description" },
         { title: "Evaluation Status", key: "evaluation_status" },
         { title: "Actions", key: "actions", sortable: false },
       ],
@@ -180,7 +181,7 @@ export default {
       configurationToDelete: null, // Temporarily store the configuration to delete
       configToEvaluate: null, // Temporarily store the configuration to evaluate
       search: "", // For search functionality
-      sortBy: "evaluation_date", // Default sorting column
+      sortBy: "evaluation_status", // Default sorting column
       sortDesc: false, // Ascending by default
       itemsPerPage: 10, // Default items per page
     };
@@ -199,7 +200,7 @@ export default {
   },
   methods: {
     fetchConfigs() {
-      evaluationConfigService
+      configurationService
         .getAllConfigs()
         .then((response) => {
           this.configs = response.data;
@@ -217,7 +218,7 @@ export default {
     },
     deleteConfig() {
       if (!this.configurationToDelete) return;
-      evaluationConfigService
+      configurationService
         .deleteConfig(this.configurationToDelete.id)
         .then(() => {
           this.fetchConfigs(); // Refresh the list after deletion
@@ -234,7 +235,7 @@ export default {
     },
     runConfirmedEvaluation() {
       if (!this.configToEvaluate) return;
-      evaluationConfigService
+      evaluationService
         .runEvaluation(`${this.configToEvaluate.id}`)
         .then(() => {
           this.fetchConfigs();
@@ -246,12 +247,23 @@ export default {
         });
     },
     viewResults(item) {
-      console.log("Item ID:", item.configuration_id);
-      console.log("Item Object:", item);
-      this.$router.push({
-        name: "ResultDetail",
-        params: { configId: item.configuration_id },
-      });
+      const configId = item.id; // Change from configuration_id to id
+      if (configId) {
+        resultService
+          .getResultsByConfig(configId) // Update the service method accordingly
+          .then((response) => {
+            console.log("Fetched Results:", response.data);
+            this.$router.push({
+              name: "ResultDetail",
+              params: { configId: configId },
+            });
+          })
+          .catch((error) => {
+            console.error("Error fetching results:", error);
+          });
+      } else {
+        console.error("Configuration ID is undefined.");
+      }
     },
     viewPlots(configuration_id) {
       this.$router.push({

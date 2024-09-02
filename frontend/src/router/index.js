@@ -1,9 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
-import EvaluationConfigList from "@/views/EvaluationConfigList.vue";
+import ConfigList from "@/views/ConfigList.vue";
 import LogManagement from "@/components/LogManagement.vue";
-import EvaluationResultsList from "@/views/EvaluationResultsList.vue";
-import EvaluationResultDetail from "@/views/EvaluationResultDetail.vue";
+import ResultDetail from "@/views/ResultDetail.vue";
 import EvaluationReports from "@/views/EvaluationReports.vue";
 import ConfigurationForm from "@/components/ConfigurationForm.vue";
 import AboutView from "@/views/AboutView.vue";
@@ -23,21 +22,15 @@ const routes = [
   },
   {
     path: "/configs",
-    name: "EvaluationConfigList",
-    component: EvaluationConfigList,
+    name: "ConfigList",
+    component: ConfigList,
   },
   { path: "/logs", name: "LogManagement", component: LogManagement },
   { path: "/logs/upload", name: "LogUploadForm", component: LogUploadForm },
-
-  {
-    path: "/results",
-    name: "EvaluationResultsList",
-    component: EvaluationResultsList,
-  },
   {
     path: "/results/:configId",
     name: "ResultDetail",
-    component: EvaluationResultDetail,
+    component: ResultDetail,
     props: true,
   },
   {

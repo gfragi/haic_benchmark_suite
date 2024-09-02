@@ -60,6 +60,7 @@ import BaseLayout from "@/components/BaseLayout.vue";
 import evaluationService from "@/services/resultService";
 
 export default {
+  name: "ResultDetail",
   components: {
     BaseLayout,
   },
@@ -80,6 +81,13 @@ export default {
     console.log("Config ID:", this.configId); // Debugging line
     this.fetchRunDates();
   },
+  watch: {
+    selectedRun(newVal) {
+      if (newVal) {
+        this.fetchRunMetrics(); // Automatically fetch metrics when a new run is selected
+      }
+    },
+  },
   methods: {
     fetchRunDates() {
       if (!this.configId) {
@@ -87,7 +95,7 @@ export default {
         return;
       }
       evaluationService
-        .getEvaluationResultsByConfig(this.configId)
+        .getResultsByConfig(this.configId)
         .then((response) => {
           console.log("Fetched Run Dates: ", response.data); // Log the response data
           // Extract the evaluation dates for selection
@@ -105,7 +113,7 @@ export default {
       console.log("Selected Run: ", this.selectedRun); // Log selected run ID
       if (this.selectedRun) {
         evaluationService
-          .getEvaluationResultDetail(this.selectedRun)
+          .getResultDetail(this.configId, this.selectedRun) // Ensure you're passing both configId and selectedRun
           .then((response) => {
             console.log("Fetched Run Metrics: ", response.data); // Log fetched metrics data
             this.groupedMetrics = this.groupMetricsByCategory(response.data);
