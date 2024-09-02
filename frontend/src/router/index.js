@@ -10,6 +10,7 @@ import AboutView from "@/views/AboutView.vue";
 import LogGenerator from "@/components/LogGenerator.vue";
 import MetricsPage from "@/components/MetricsPage.vue";
 import ResultPlot from "@/components/ResultView.vue";
+import LogUploadForm from "@/components/LogIngestionForm.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -26,6 +27,8 @@ const routes = [
     component: EvaluationConfigList,
   },
   { path: "/logs", name: "LogManagement", component: LogManagement },
+  { path: "/logs/upload", name: "LogUploadForm", component: LogUploadForm },
+
   {
     path: "/results",
     name: "EvaluationResultsList",
