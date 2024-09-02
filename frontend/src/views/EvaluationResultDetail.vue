@@ -2,21 +2,25 @@
   <BaseLayout>
     <v-container>
       <h2>Evaluation Result Details</h2>
-      <v-row v-if="results.length">
-        <v-col v-for="(result, index) in results" :key="index" cols="12">
-          <v-card>
-            <v-card-title>
-              Result {{ index + 1 }} - Configuration ID:
-              {{ result.configuration_id }}
-            </v-card-title>
-            <v-card-subtitle>
-              Evaluation Date:
-              {{ new Date(result.evaluation_date).toLocaleString() }}
-            </v-card-subtitle>
-            <v-card-text>
+      <v-tabs v-model="activeTab">
+        <v-tab v-for="(group, index) in metricGroups" :key="index">
+          {{ group }}
+        </v-tab>
+      </v-tabs>
+
+      <v-tabs-items v-model="activeTab">
+        <v-tab-item v-for="(group, index) in metricGroups" :key="index">
+          <v-row>
+            <v-col cols="12">
+              <PlotlyChart
+                :data="chartData[group]"
+                :layout="chartLayout[group]"
+              ></PlotlyChart>
+            </v-col>
+            <v-col cols="12">
               <v-data-table
                 :headers="metricHeaders"
-                :items="getMetrics(result)"
+                :items="getMetrics(group)"
                 class="elevation-1"
               >
                 <template v-slot:[`item.metric`]="{ item }">
@@ -26,30 +30,38 @@
                   {{ item.value }}
                 </template>
               </v-data-table>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row v-else>
-        <v-col cols="12">
-          <p>No results available.</p>
-        </v-col>
-      </v-row>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+      </v-tabs-items>
     </v-container>
   </BaseLayout>
 </template>
 
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
+import PlotlyChart from "@/components/PlotlyChart.vue";
 import evaluationService from "@/services/resultService";
 
 export default {
   components: {
     BaseLayout,
+    PlotlyChart,
   },
   data() {
     return {
-      results: [], // Should be 'results' not 'result'
+      activeTab: 0,
+      results: {},
+      metricGroups: [
+        "Performance",
+        "Efficiency",
+        "Adaptability and Learning",
+        "Collaboration and Interaction",
+        "Trust and Safety",
+        "Robustness and Generalization",
+      ],
+      chartData: {},
+      chartLayout: {},
       metricHeaders: [
         { text: "Metric", value: "metric" },
         { text: "Value", value: "value" },
@@ -65,22 +77,43 @@ export default {
       evaluationService
         .getEvaluationResultsByConfig(resultId)
         .then((response) => {
-          this.results = response.data;
-          console.log("Fetched Results: ", this.results); // Log the results to see their structure
+          this.results = response.data || {}; // Ensure results are always an object
+          console.log("Fetched Results: ", this.results);
+          this.prepareChartsAndTables();
         })
         .catch((error) => {
           console.error("Error fetching evaluation result detail:", error);
         });
     },
-    getMetrics(result) {
-      // Exclude properties that are not metrics
-      const excludedKeys = ["id", "configuration_id", "evaluation_date"];
-      return Object.keys(result)
-        .filter((key) => !excludedKeys.includes(key))
-        .map((key) => ({
-          metric: key.replace(/_/g, " ").toUpperCase(), // Optional: Format the metric names
-          value: result[key],
-        }));
+    getMetrics(group) {
+      if (!this.results || !this.results[group]) {
+        return [];
+      }
+
+      const metrics = this.results[group];
+      return Object.keys(metrics).map((key) => ({
+        metric: key.replace(/_/g, " ").toUpperCase(),
+        value: metrics[key],
+      }));
+    },
+    prepareChartsAndTables() {
+      this.metricGroups.forEach((group) => {
+        const metrics = this.results[group] || {}; // Default to an empty object if undefined
+        this.chartData[group] = this.prepareChartData(metrics);
+        this.chartLayout[group] = {
+          title: `${group} Metrics`,
+          xaxis: { title: "Metric" },
+          yaxis: { title: "Value" },
+        };
+      });
+    },
+    prepareChartData(metrics) {
+      return Object.keys(metrics).map((metric) => ({
+        x: [metric],
+        y: [metrics[metric]],
+        type: "bar",
+        name: metric,
+      }));
     },
   },
 };
