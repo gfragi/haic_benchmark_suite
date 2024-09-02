@@ -41,7 +41,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/results/::configId/view",
+    path: "/results/:configId/plot",
     name: "ResultPlot",
     component: ResultPlot,
   },
