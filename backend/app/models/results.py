@@ -1,7 +1,44 @@
 import datetime
-from sqlalchemy import Column, DateTime, Float, Integer, ForeignKey
+from sqlalchemy import Column, DateTime, Float, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship
 from app.utils.database import Base
+
+
+class MetricGroup(Base):
+    __tablename__ = 'metric_groups'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(String, nullable=True)
+
+    # Relationship with Metric
+    metrics = relationship("Metric", back_populates="group")
+
+
+class Metric(Base):
+    __tablename__ = 'metrics'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(String, nullable=True)
+
+    # Relationship with MetricGroup
+    group_id = Column(Integer, ForeignKey('metric_groups.id'))
+    group = relationship("MetricGroup", back_populates="metrics")
+
+
+class EvaluationResultMetric(Base):
+    __tablename__ = 'evaluation_result_metrics'
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Foreign keys for association
+    result_id = Column(Integer, ForeignKey('evaluation_results.id', ondelete='CASCADE'), nullable=False)
+    metric_id = Column(Integer, ForeignKey('metrics.id'), nullable=False)
+
+    value = Column(Float, nullable=True)  # Value for the particular metric
+
+    # Establish relationships
+    result = relationship("EvaluationResult", back_populates="metrics")
+    metric = relationship("Metric")
+
 
 class EvaluationResult(Base):
     __tablename__ = "evaluation_results"
@@ -9,38 +46,11 @@ class EvaluationResult(Base):
     id = Column(Integer, primary_key=True, index=True)
     configuration_id = Column(Integer, ForeignKey('configurations.id', ondelete='CASCADE'), nullable=False)
 
-    # AI Model Performance Metrics
-    prediction_accuracy = Column(Float, nullable=True)
-    response_time = Column(Float, nullable=True)
-    teaching_efficiency = Column(Float, nullable=True)
-    overall_system_accuracy = Column(Float, nullable=True)
-    objective_fulfillment_rate = Column(Float, nullable=True)
-    feedback_impact = Column(Float, nullable=True)
-    adaptability_score = Column(Float, nullable=True)
-    query_efficiency = Column(Float, nullable=True)
-    error_reduction_rate = Column(Float, nullable=True)
-    confidence = Column(Float, nullable=True)
-    ai_model_improvement_rate = Column(Float, nullable=True)
-    resource_utilization = Column(Float, nullable=True)
-    impact_of_corrections = Column(Float, nullable=True)
-    decision_effectiveness = Column(Float, nullable=True)
-    knowledge_retention = Column(Float, nullable=True)
-    task_completion_time = Column(Float, nullable=True)
-    trust_score = Column(Float, nullable=True)
-    safety_incidents = Column(Float, nullable=True)
-    adversarial_robustness = Column(Float, nullable=True)
-    domain_generalization = Column(Float, nullable=True)
-    system_reliability = Column(Float, nullable=True)
-    precision = Column(Float, nullable=True)
-    recall = Column(Float, nullable=True)
-    human_ai_agreement_rate = Column(Float, nullable=True)
-    time_to_resolution = Column(Float, nullable=True)
-    human_effort_saved = Column(Float, nullable=True)
-    ai_assistance_rate = Column(Float, nullable=True)
-    learning_efficiency = Column(Float, nullable=True)
-    correction_efficiency = Column(Float, nullable=True)
-
+    # Date of the evaluation
     evaluation_date = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    result_minio_path = Column(String, nullable=True)
 
-    # Establish a relationship with the Configuration table
+
+    # Relationships
     configuration = relationship("EvaluationConfig", back_populates="evaluation_results")
+    metrics = relationship("EvaluationResultMetric", back_populates="result", cascade="all, delete-orphan")
