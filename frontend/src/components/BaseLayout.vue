@@ -43,8 +43,10 @@ export default {
 
 <style scoped>
 .main-container {
-  min-height: 100vh;
+  min-height: 10vh;
   padding-top: 64px; /* Adjust according to your header height */
   padding-bottom: 64px; /* Adjust according to your footer height */
+  padding-left: 0;
+  padding-right: 0;
 }
 </style>

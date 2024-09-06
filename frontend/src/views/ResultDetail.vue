@@ -10,11 +10,23 @@
             :headers="runHeaders"
             :items="runDates"
             class="elevation-1"
-            @click:row="onRunSelected"
             hide-default-footer
           >
-            <template v-slot:[`item.evaluation_date`]="{ item }">
-              {{ new Date(item.evaluation_date).toLocaleString() }}
+            <!-- Correct v-slot usage for making the row clickable -->
+            <template v-slot:item="{ item }">
+              <tr @click="selectRun(item.id)" style="cursor: pointer">
+                <!-- Make entire row clickable -->
+                <td>{{ item.id }}</td>
+                <td>{{ new Date(item.evaluation_date).toLocaleString() }}</td>
+                <td>{{ item.status }}</td>
+                <td>{{ item.execution_time }}</td>
+                <td>{{ item.run_description }}</td>
+                <td>
+                  <v-btn @click.stop="downloadResult(item.result_link)"
+                    >Download</v-btn
+                  >
+                </td>
+              </tr>
             </template>
           </v-data-table>
         </v-col>
@@ -39,72 +51,54 @@ export default {
       runHeaders: [
         { title: "Run ID", value: "id" },
         { title: "Evaluation Date", value: "evaluation_date" },
+        { title: "Status", value: "status" }, // Add status column
+        { title: "Execution Time", value: "execution_time" }, // Add execution time column
+        { title: "Description", value: "run_description" }, // Add description column
+        { title: "Download Results", value: "result_link" }, // Add result download link
       ],
     };
   },
   mounted() {
     console.log("Mounted ResultList. Config ID:", this.$route.params.configId);
     this.configId = this.$route.params.configId;
-    this.fetchRunDates();
+    this.fetchRunDates(); // Fetch the runs once the component is mounted
   },
   methods: {
     fetchRunDates() {
-      if (!this.configId) {
-        console.error("Config ID is undefined.");
-        return;
-      }
       resultService
         .getResultsByConfig(this.configId)
         .then((response) => {
+          console.log("API Response Data:", response.data);
           this.runDates = response.data.map((run) => ({
-            id: run.id || run.run_id, // Make sure this matches your API response
-            evaluation_date: run.evaluation_date,
+            id: run.id, // Use the actual run ID from the response
+            evaluation_date: run.evaluation_date, // Use the returned evaluation date
+            status: run.status || "Completed", // If the status is returned #TODO: Check the actual field name
+            execution_time: run.execution_time || "N/A", // If execution time is available #TODO: Check the actual field name
+            run_description: run.description || "No description available", // Description of the run TODO: Check the actual field name
+            result_link: run.result_minio_path, // Assuming result link is in this field TODO: Check the actual field name
           }));
+          console.log("Mapped Run Dates:", this.runDates);
         })
         .catch((error) => {
           console.error("Error fetching evaluation run dates:", error);
         });
     },
-    onRunSelected(item) {
-      console.log("Selected item:", item); // Log the entire item for debugging
-
-      if (!item) {
-        console.error("Invalid run selected: item is undefined");
+    selectRun(runId) {
+      console.log("Run selected:", runId); // Log the selected runId
+      if (!runId) {
+        console.error("Invalid run selected: runId is undefined");
         return;
       }
 
-      const runId = item.id || item.run_id; // Try both potential property names
-      if (typeof runId === "undefined") {
-        console.error(
-          "Invalid run selected: item.id and item.run_id are undefined",
-          item
-        );
-        return;
-      }
-
-      console.log(
-        "Run selected:",
-        runId,
-        "Navigating to RunDetail with configId:",
-        this.configId
-      );
-
-      resultService
-        .getResultDetail(this.configId, runId)
-        .then((response) => {
-          console.log("Fetched Run Detail:", response.data);
-          this.$router.push({
-            name: "RunDetail",
-            params: { configId: this.configId, runId: runId },
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching run detail:", error);
-          if (error.response) {
-            console.error("Response data:", error.response.data);
-            console.error("Response status:", error.response.status);
-          }
-        });
+      // Navigate to RunDetail
+      this.$router.push({
+        name: "RunDetail",
+        params: { configId: this.configId, runId: runId },
+      });
+    },
+    downloadResult(resultLink) {
+      // Trigger the download for the result from the link
+      window.open(resultLink, "_blank");
     },
   },
 };

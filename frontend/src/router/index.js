@@ -38,7 +38,7 @@ const routes = [
     path: "/results/:configId/:runId",
     name: "RunDetail",
     component: RunDetail,
-    props: true, // This passes the route params as props to the component
+    props: true,
   },
   {
     path: "/results/:configId/plot",
