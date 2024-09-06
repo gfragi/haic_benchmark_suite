@@ -261,7 +261,7 @@ export default {
     },
     viewPlots(configuration_id) {
       this.$router.push({
-        name: "ResultPlot",
+        name: "Visualization",
         params: { configId: configuration_id.id },
       });
     },
