@@ -32,7 +32,7 @@ async def evaluate_config(configuration_id: int, background_tasks: BackgroundTas
 
     return {"detail": "Evaluation started successfully"}
 
-@router.get("/metrics", response_model=dict)
+@router.get("/metrics", response_model=dict) # TODO: Add the logic to get the metrics from the Metrics class
 def get_metrics():
     metrics = Metrics.get_available_metrics()
     return {"metrics": list(metrics)}
