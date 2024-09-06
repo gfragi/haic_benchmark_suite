@@ -25,32 +25,18 @@ class Metric(Base):
     group = relationship("MetricGroup", back_populates="metrics")
 
 
-class EvaluationResultMetric(Base):
-    __tablename__ = 'evaluation_result_metrics'
-    id = Column(Integer, primary_key=True, index=True)
-
-    # Foreign keys for association
-    result_id = Column(Integer, ForeignKey('evaluation_results.id', ondelete='CASCADE'), nullable=False)
-    metric_id = Column(Integer, ForeignKey('metrics.id'), nullable=False)
-
-    value = Column(Float, nullable=True)  # Value for the particular metric
-
-    # Establish relationships
-    result = relationship("EvaluationResult", back_populates="metrics")
-    metric = relationship("Metric")
-
 
 class EvaluationResult(Base):
-    __tablename__ = "evaluation_results"
+    __tablename__ = "results"
 
     id = Column(Integer, primary_key=True, index=True)
     configuration_id = Column(Integer, ForeignKey('configurations.id', ondelete='CASCADE'), nullable=False)
 
     # Date of the evaluation
     evaluation_date = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
-    result_minio_path = Column(String, nullable=True)
 
+    # Path to the JSON result file stored in MinIO or other storage
+    result_minio_path = Column(String, nullable=False)
 
     # Relationships
-    configuration = relationship("EvaluationConfig", back_populates="evaluation_results")
-    metrics = relationship("EvaluationResultMetric", back_populates="result", cascade="all, delete-orphan")
+    configuration = relationship("EvaluationConfig", back_populates="results")

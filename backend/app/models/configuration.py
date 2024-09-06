@@ -26,4 +26,4 @@ class EvaluationConfig(Base):
 
     # Relationship to associate with logs
     logs = relationship("LogEntry", back_populates="configuration")
-    evaluation_results = relationship("EvaluationResult", back_populates="configuration")
+    results = relationship("EvaluationResult", back_populates="configuration")

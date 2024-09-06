@@ -23,13 +23,7 @@
           class="elevation-1"
           :items-per-page="itemsPerPage"
           :footer-props="{
-            'items-per-page-options': [
-              5,
-              10,
-              15,
-              20,
-              { text: 'All', value: -1 },
-            ],
+            'items-per-page-options': [10, 15, 20, { text: 'All', value: -1 }],
           }"
           :sort-by="[sortBy]"
           :sort-desc="[sortDesc]"

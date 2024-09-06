@@ -9,7 +9,7 @@ from sqlmodel import Session
 from app.services.metrics import Metrics
 from app.models import EvaluationConfig, LogEntry
 from app.services.agg_metrics import calculate_metrics_for_group, save_evaluation_result
-from app.models.results import EvaluationResult, EvaluationResultMetric, Metric, MetricGroup
+from app.models.results import EvaluationResult, MetricGroup
 from app.utils.database import SessionLocal
 
 

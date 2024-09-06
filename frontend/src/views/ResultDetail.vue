@@ -3,52 +3,20 @@
     <v-container>
       <h2>Evaluation Results for Configuration ID: {{ configId }}</h2>
 
-      <!-- List of Runs -->
+      <!-- List of Runs in a Table -->
       <v-row>
-        <v-col cols="12" md="4">
-          <v-autocomplete
-            v-model="selectedRun"
-            :items="runDates"
-            item-title="text"
-            item-value="value"
-            label="Select Evaluation Run"
-            @change="fetchRunMetrics"
-            solo
-            hide-details
-          ></v-autocomplete>
-        </v-col>
-      </v-row>
-
-      <!-- Display Metrics Grouped -->
-      <v-row v-if="selectedRun && groupedMetrics">
-        <v-col
-          cols="12"
-          v-for="(metrics, groupName) in groupedMetrics"
-          :key="groupName"
-        >
-          <v-card>
-            <v-card-title>{{ groupName }}</v-card-title>
-            <v-card-text>
-              <v-data-table
-                :headers="metricHeaders"
-                :items="metrics"
-                class="elevation-1"
-              >
-                <template v-slot:[`item.metric`]="{ item }">
-                  {{ item.metric }}
-                </template>
-                <template v-slot:[`item.value`]="{ item }">
-                  {{ item.value }}
-                </template>
-              </v-data-table>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-
-      <v-row v-else>
         <v-col cols="12">
-          <p>Please select a run to view metrics.</p>
+          <v-data-table
+            :headers="runHeaders"
+            :items="runDates"
+            class="elevation-1"
+            @click:row="onRunSelected"
+            hide-default-footer
+          >
+            <template v-slot:[`item.evaluation_date`]="{ item }">
+              {{ new Date(item.evaluation_date).toLocaleString() }}
+            </template>
+          </v-data-table>
         </v-col>
       </v-row>
     </v-container>
@@ -57,10 +25,10 @@
 
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
-import evaluationService from "@/services/resultService";
+import resultService from "@/services/resultService";
 
 export default {
-  name: "ResultDetail",
+  name: "ResultList",
   components: {
     BaseLayout,
   },
@@ -68,25 +36,16 @@ export default {
     return {
       configId: null,
       runDates: [],
-      selectedRun: null,
-      groupedMetrics: null,
-      metricHeaders: [
-        { text: "Metric", value: "metric" },
-        { text: "Value", value: "value" },
+      runHeaders: [
+        { title: "Run ID", value: "id" },
+        { title: "Evaluation Date", value: "evaluation_date" },
       ],
     };
   },
   mounted() {
-    this.configId = this.$route.params.configId; // Ensure configId is set from the route params
-    console.log("Config ID:", this.configId); // Debugging line
+    console.log("Mounted ResultList. Config ID:", this.$route.params.configId);
+    this.configId = this.$route.params.configId;
     this.fetchRunDates();
-  },
-  watch: {
-    selectedRun(newVal) {
-      if (newVal) {
-        this.fetchRunMetrics(); // Automatically fetch metrics when a new run is selected
-      }
-    },
   },
   methods: {
     fetchRunDates() {
@@ -94,97 +53,58 @@ export default {
         console.error("Config ID is undefined.");
         return;
       }
-      evaluationService
+      resultService
         .getResultsByConfig(this.configId)
         .then((response) => {
-          console.log("Fetched Run Dates: ", response.data); // Log the response data
-          // Extract the evaluation dates for selection
           this.runDates = response.data.map((run) => ({
-            text: `Run on ${new Date(run.evaluation_date).toLocaleString()}`,
-            value: run.id,
+            id: run.id || run.run_id, // Make sure this matches your API response
+            evaluation_date: run.evaluation_date,
           }));
-          console.log("Mapped Run Dates: ", this.runDates); // Log the mapped run dates
         })
         .catch((error) => {
           console.error("Error fetching evaluation run dates:", error);
         });
     },
-    fetchRunMetrics() {
-      console.log("Selected Run: ", this.selectedRun); // Log selected run ID
-      if (this.selectedRun) {
-        evaluationService
-          .getResultDetail(this.configId, this.selectedRun) // Ensure you're passing both configId and selectedRun
-          .then((response) => {
-            console.log("Fetched Run Metrics: ", response.data); // Log fetched metrics data
-            this.groupedMetrics = this.groupMetricsByCategory(response.data);
-          })
-          .catch((error) => {
-            console.error("Error fetching evaluation run metrics:", error);
-          });
+    onRunSelected(item) {
+      console.log("Selected item:", item); // Log the entire item for debugging
+
+      if (!item) {
+        console.error("Invalid run selected: item is undefined");
+        return;
       }
-    },
-    groupMetricsByCategory(result) {
-      const groupedMetrics = {
-        Performance: [],
-        Efficiency: [],
-        "Adaptability and Learning": [],
-        "Collaboration and Interaction": [],
-        "Trust and Safety": [],
-        "Robustness and Generalization": [],
-      };
 
-      console.log("Raw Metrics Data: ", result); // Log raw result data
-      const excludedKeys = ["id", "configuration_id", "evaluation_date"];
-      const metrics = Object.keys(result)
-        .filter((key) => !excludedKeys.includes(key))
-        .map((key) => ({
-          metric: key.replace(/_/g, " ").toUpperCase(),
-          value: result[key],
-        }));
+      const runId = item.id || item.run_id; // Try both potential property names
+      if (typeof runId === "undefined") {
+        console.error(
+          "Invalid run selected: item.id and item.run_id are undefined",
+          item
+        );
+        return;
+      }
 
-      metrics.forEach((metric) => {
-        console.log("Processing Metric: ", metric); // Log each metric being processed
-        if (
-          groupedMetrics["Performance"].some(
-            (item) => item.metric === metric.metric
-          )
-        ) {
-          groupedMetrics["Performance"].push(metric);
-        } else if (
-          groupedMetrics["Efficiency"].some(
-            (item) => item.metric === metric.metric
-          )
-        ) {
-          groupedMetrics["Efficiency"].push(metric);
-        } else if (
-          groupedMetrics["Adaptability and Learning"].some(
-            (item) => item.metric === metric.metric
-          )
-        ) {
-          groupedMetrics["Adaptability and Learning"].push(metric);
-        } else if (
-          groupedMetrics["Collaboration and Interaction"].some(
-            (item) => item.metric === metric.metric
-          )
-        ) {
-          groupedMetrics["Collaboration and Interaction"].push(metric);
-        } else if (
-          groupedMetrics["Trust and Safety"].some(
-            (item) => item.metric === metric.metric
-          )
-        ) {
-          groupedMetrics["Trust and Safety"].push(metric);
-        } else if (
-          groupedMetrics["Robustness and Generalization"].some(
-            (item) => item.metric === metric.metric
-          )
-        ) {
-          groupedMetrics["Robustness and Generalization"].push(metric);
-        }
-      });
+      console.log(
+        "Run selected:",
+        runId,
+        "Navigating to RunDetail with configId:",
+        this.configId
+      );
 
-      console.log("Grouped Metrics: ", groupedMetrics); // Log the final grouped metrics
-      return groupedMetrics;
+      resultService
+        .getResultDetail(this.configId, runId)
+        .then((response) => {
+          console.log("Fetched Run Detail:", response.data);
+          this.$router.push({
+            name: "RunDetail",
+            params: { configId: this.configId, runId: runId },
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching run detail:", error);
+          if (error.response) {
+            console.error("Response data:", error.response.data);
+            console.error("Response status:", error.response.status);
+          }
+        });
     },
   },
 };

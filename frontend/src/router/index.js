@@ -10,6 +10,7 @@ import LogGenerator from "@/components/LogGenerator.vue";
 import MetricsPage from "@/components/MetricsPage.vue";
 import ResultPlot from "@/components/ResultView.vue";
 import LogUploadForm from "@/components/LogIngestionForm.vue";
+import RunDetail from "@/views/RunDetail.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -32,6 +33,12 @@ const routes = [
     name: "ResultDetail",
     component: ResultDetail,
     props: true,
+  },
+  {
+    path: "/results/:configId/:runId",
+    name: "RunDetail",
+    component: RunDetail,
+    props: true, // This passes the route params as props to the component
   },
   {
     path: "/results/:configId/plot",
