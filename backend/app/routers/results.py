@@ -8,7 +8,6 @@ from minio import Minio, S3Error
 from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models import EvaluationResult
-from app.schemas.results import EvaluationResultSchema
 from app.services.agg_metrics import calculate_metrics_for_group
 
 router = APIRouter()
