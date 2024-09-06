@@ -1,4 +1,6 @@
 import datetime
+from typing import List, Optional
+from pydantic import BaseModel
 from sqlalchemy import Column, DateTime, Float, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship
 from app.utils.database import Base
@@ -24,7 +26,17 @@ class Metric(Base):
     group_id = Column(Integer, ForeignKey('metric_groups.id'))
     group = relationship("MetricGroup", back_populates="metrics")
 
+# Pydantic model to structure the response
+class MetricResponse(BaseModel):
+    name: str
+    description: Optional[str] = "No description"
 
+class MetricGroupResponse(BaseModel):
+    group_description: Optional[str] = "No description"
+    metrics: List[MetricResponse]
+
+    class Config:
+        orm_mode = True
 
 class EvaluationResult(Base):
     __tablename__ = "results"
