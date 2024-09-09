@@ -241,14 +241,14 @@ export default {
         });
     },
     viewResults(item) {
-      const configId = item.id; // Change from configuration_id to id
+      const configId = item.id;
       if (configId) {
         resultService
-          .getResultsByConfig(configId) // Update the service method accordingly
+          .getResultsByConfig(configId)
           .then((response) => {
             console.log("Fetched Results:", response.data);
             this.$router.push({
-              name: "ResultDetail",
+              name: "ResultDetail", // #TODO: Create error information if not found (404)
               params: { configId: configId },
             });
           })

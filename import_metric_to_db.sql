@@ -1,5 +1,5 @@
 -- Insert the metric groups
-INSERT INTO metric_groups (group_name) VALUES
+INSERT INTO metric_groups (name) VALUES
     ('Performance'),
     ('Efficiency'),
     ('Adaptability and Learning'),
@@ -9,7 +9,7 @@ INSERT INTO metric_groups (group_name) VALUES
 
 -- Insert the metrics for each group
 -- Group 1: Performance
-INSERT INTO metrics (metric_name, group_id) VALUES
+INSERT INTO metrics (name, group_id) VALUES
     ('Prediction Accuracy', 1),
     ('Precision', 1),
     ('Recall', 1),
@@ -17,7 +17,7 @@ INSERT INTO metrics (metric_name, group_id) VALUES
     ('Model Improvement Rate', 1);
 
 -- Group 2: Efficiency
-INSERT INTO metrics (metric_name, group_id) VALUES
+INSERT INTO metrics (name, group_id) VALUES
     ('Response Time', 2),
     ('Teaching Efficiency', 2),
     ('Query Efficiency', 2),
@@ -28,7 +28,7 @@ INSERT INTO metrics (metric_name, group_id) VALUES
     ('Knowledge Retention', 2);
 
 -- Group 3: Adaptability and Learning
-INSERT INTO metrics (metric_name, group_id) VALUES
+INSERT INTO metrics (name, group_id) VALUES
     ('Feedback Impact', 3),
     ('Adaptability Score', 3),
     ('Impact of Corrections', 3),
@@ -36,7 +36,7 @@ INSERT INTO metrics (metric_name, group_id) VALUES
     ('Objective Fulfillment Rate', 3);
 
 -- Group 4: Collaboration and Interaction
-INSERT INTO metrics (metric_name, group_id) VALUES
+INSERT INTO metrics (name, group_id) VALUES
     ('Human-AI Agreement Rate', 4),
     ('AI Assistance Rate', 4),
     ('Decision Effectiveness', 4),
@@ -44,13 +44,13 @@ INSERT INTO metrics (metric_name, group_id) VALUES
     ('Human Effort Saved', 4);
 
 -- Group 5: Trust and Safety
-INSERT INTO metrics (metric_name, group_id) VALUES
+INSERT INTO metrics (name, group_id) VALUES
     ('Confidence', 5),
     ('Trust Score', 5),
     ('Safety Incidents', 5),
     ('System Reliability', 5);
 
 -- Group 6: Robustness and Generalization
-INSERT INTO metrics (metric_name, group_id) VALUES
+INSERT INTO metrics (name, group_id) VALUES
     ('Adversarial Robustness', 6),
     ('Domain Generalization', 6);

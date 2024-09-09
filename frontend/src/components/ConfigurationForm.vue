@@ -34,9 +34,9 @@
             <v-select
               v-model="config.metrics"
               :items="availableMetrics"
-              item-text="metric_name"
-              item-value="metric_name"
-              label="Select Metrics"
+              item-title="group_name"
+              item-value="group_name"
+              label="Select Metrics Group"
               multiple
               required
             ></v-select>
@@ -118,7 +118,11 @@ export default {
       metricsList
         .getMetrics()
         .then((response) => {
-          this.availableMetrics = response.data.metrics;
+          const metricGroups = Object.keys(response.data);
+          this.availableMetrics = metricGroups.map((group) => ({
+            group_name: group,
+            metrics: response.data[group].metrics,
+          }));
         })
         .catch((error) => {
           console.error("Error fetching metrics:", error);
