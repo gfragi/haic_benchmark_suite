@@ -24,7 +24,7 @@
         <v-col cols="3">
           <v-list dense>
             <v-list-item
-              v-for="(metrics, groupName) in groupedMetrics"
+              v-for="(group, groupName) in groupedMetrics"
               :key="groupName"
               @click="selectGroup(groupName)"
               :class="{ 'selected-group': selectedGroup === groupName }"
@@ -32,12 +32,12 @@
             >
               <v-list-item-icon>
                 <v-icon>{{ getGroupIcon(groupName) }}</v-icon>
-                <!-- Group Icon -->
               </v-list-item-icon>
               <v-list-item-title>{{ groupName }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-col>
+
         <!-- Main Content Area for Metrics -->
         <v-col cols="6">
           <v-card v-if="selectedGroup">
@@ -45,18 +45,16 @@
             <v-card-text>
               <v-list dense>
                 <v-list-item
-                  v-for="(metric, index) in groupedMetrics[selectedGroup]"
+                  v-for="(metric, index) in groupedMetrics[selectedGroup]
+                    .metrics"
                   :key="index"
                 >
                   <v-list-item-content>
-                    <v-list-item-title>{{ metric.metric }}</v-list-item-title>
+                    <v-list-item-title>{{ metric.name }}</v-list-item-title>
                     <v-list-item-subtitle>
-                      <strong>Value:</strong> {{ metric.value }}
+                      <strong>Description:</strong>
+                      {{ metric.description || "No description available" }}
                     </v-list-item-subtitle>
-                    <!-- Add a brief explanation for each metric -->
-                    <p class="metric-description">
-                      {{ getMetricExplanation(metric.metric) }}
-                    </p>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -64,7 +62,7 @@
           </v-card>
         </v-col>
 
-        <!-- Description Panel -->
+        <!-- Description Panel for the selected group -->
         <v-col cols="3">
           <v-card v-if="selectedGroup">
             <v-card-title>{{ selectedGroup }} Explanation</v-card-title>
@@ -80,8 +78,8 @@
 
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
-import evaluationService from "@/services/resultService";
-import configService from "@/services/configurationService";
+import evaluationService from "@/services/evaluationService";
+import configurationService from "@/services/configurationService";
 
 export default {
   components: {
@@ -93,23 +91,21 @@ export default {
     return {
       groupedMetrics: null,
       selectedGroup: null,
+      applicationName: "", // To display application name
     };
   },
   mounted() {
-    console.log("Config ID:", this.configId);
-    console.log("Run ID:", this.runId);
-    this.fetchRunMetrics();
-    this.fetchConfigDetails(); // Fetch the application name from config details
+    this.fetchRunMetrics(); // Fetch the metrics
+    this.fetchConfigDetails(); // Fetch the application name (optional)
   },
   methods: {
+    // Fetch metrics from the backend
     fetchRunMetrics() {
       evaluationService
-        .getResultDetail(this.configId, this.runId)
+        .getMetrics() // Call the /evaluate/metrics endpoint
         .then((response) => {
-          console.log("Fetched Run Metrics Data:", response.data);
-          this.groupedMetrics = this.groupMetricsByCategory(
-            response.data.metrics
-          );
+          console.log("Fetched Metrics Data:", response.data);
+          this.groupedMetrics = response.data; // Backend response already grouped
           console.log("Grouped Metrics:", this.groupedMetrics);
 
           // Set the first group as selected by default
@@ -119,9 +115,38 @@ export default {
           console.error("Error fetching run metrics:", error);
         });
     },
+    // Fetch metric values from the relevant JSON file
+    fetchMetricValues() {
+      evaluationService
+        .getResultDetail(this.configId, this.runId) // Fetch metric values from JSON
+        .then((response) => {
+          const metricValues = response.data.metrics; // Assuming metrics are in the "metrics" field
+          console.log("Fetched Metric Values from JSON:", metricValues);
+
+          // Iterate through groups and match values with their metrics
+          for (const groupName in this.groupedMetrics) {
+            const metricsList = this.groupedMetrics[groupName].metrics;
+
+            // Iterate through each metric in the group
+            metricsList.forEach((metric) => {
+              // Find and assign the value from the JSON file to the corresponding metric
+              if (metricValues[metric.name]) {
+                metric.value = metricValues[metric.name];
+              } else {
+                metric.value = "No value available"; // Fallback if no value found
+              }
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching metric values from JSON:", error);
+        });
+    },
+
     fetchConfigDetails() {
-      configService
-        .getConfigById(this.configId) // Assuming this service fetches the config details
+      // Assuming you have a service to fetch configuration details by configId
+      configurationService
+        .getConfigById(this.configId)
         .then((response) => {
           this.applicationName = response.data.application_name;
         })
@@ -129,60 +154,15 @@ export default {
           console.error("Error fetching configuration details:", error);
         });
     },
-    groupMetricsByCategory(metricsData) {
-      const groupedMetrics = {};
-
-      // Helper function to capitalize metric names
-      function capitalizeFirstLetter(string) {
-        return string
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
-      }
-
-      // Iterate through each metric category and format for display
-      for (const category in metricsData) {
-        groupedMetrics[category] = Object.entries(metricsData[category]).map(
-          ([metricName, value]) => ({
-            metric: capitalizeFirstLetter(metricName),
-            value,
-          })
-        );
-      }
-
-      return groupedMetrics;
-    },
     selectGroup(groupName) {
       this.selectedGroup = groupName;
     },
-    getMetricExplanation(metricName) {
-      // Add explanations for different metrics
-      const explanations = {
-        // TODO: Update with actual descriptions form DB
-        "Prediction Accuracy":
-          "Measures the accuracy of the system's predictions.",
-        Precision:
-          "The proportion of positive identifications that were actually correct.",
-        Recall:
-          "The proportion of actual positives that were correctly identified.",
-        "Overall System Accuracy":
-          "The overall correctness of the system's outputs.",
-        // Add more explanations for other metrics here
-      };
-
-      return explanations[metricName] || "No description available.";
-    },
     getGroupExplanation(groupName) {
-      // Add group explanations to provide more context
-      const explanations = {
-        Performance:
-          "This category contains metrics related to the overall accuracy and precision of the AI system.", // TODO: Update with actual descriptions form DB
-        Efficiency:
-          "These metrics measure the resource usage, time performance, and system efficiency.",
-        // Add more explanations for other groups here
-      };
-
-      return explanations[groupName] || "No description available.";
+      // Return the group description from the API response
+      return (
+        this.groupedMetrics[groupName]?.group_description ||
+        "No description available."
+      );
     },
     getGroupIcon(groupName) {
       // Return appropriate icons for metric groups
