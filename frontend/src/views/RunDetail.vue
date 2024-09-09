@@ -55,6 +55,10 @@
                       <strong>Description:</strong>
                       {{ metric.description || "No description available" }}
                     </v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      <strong>Value:</strong>
+                      {{ metric.value || "No value available" }}
+                    </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -99,7 +103,7 @@ export default {
     this.fetchConfigDetails(); // Fetch the application name (optional)
   },
   methods: {
-    // Fetch metrics from the backend
+    // Fetch the grouped metrics from the database
     fetchRunMetrics() {
       evaluationService
         .getMetrics() // Call the /evaluate/metrics endpoint
@@ -108,6 +112,9 @@ export default {
           this.groupedMetrics = response.data; // Backend response already grouped
           console.log("Grouped Metrics:", this.groupedMetrics);
 
+          // Fetch metric values and match them
+          this.fetchMetricValues();
+
           // Set the first group as selected by default
           this.selectedGroup = Object.keys(this.groupedMetrics)[0];
         })
@@ -115,7 +122,8 @@ export default {
           console.error("Error fetching run metrics:", error);
         });
     },
-    // Fetch metric values from the relevant JSON file
+
+    // Fetch the metric values from the relevant JSON file
     fetchMetricValues() {
       evaluationService
         .getResultDetail(this.configId, this.runId) // Fetch metric values from JSON
@@ -129,7 +137,7 @@ export default {
 
             // Iterate through each metric in the group
             metricsList.forEach((metric) => {
-              // Find and assign the value from the JSON file to the corresponding metric
+              // Check if the fetched metric value exists, then assign it
               if (metricValues[metric.name]) {
                 metric.value = metricValues[metric.name];
               } else {
@@ -137,14 +145,17 @@ export default {
               }
             });
           }
+
+          console.log(
+            "Updated Grouped Metrics with values:",
+            this.groupedMetrics
+          );
         })
         .catch((error) => {
           console.error("Error fetching metric values from JSON:", error);
         });
     },
-
     fetchConfigDetails() {
-      // Assuming you have a service to fetch configuration details by configId
       configurationService
         .getConfigById(this.configId)
         .then((response) => {
@@ -154,18 +165,22 @@ export default {
           console.error("Error fetching configuration details:", error);
         });
     },
+
+    // Handle group selection
     selectGroup(groupName) {
       this.selectedGroup = groupName;
     },
+
+    // Return the group explanation from the API response
     getGroupExplanation(groupName) {
-      // Return the group description from the API response
       return (
         this.groupedMetrics[groupName]?.group_description ||
         "No description available."
       );
     },
+
+    // Return appropriate icons for metric groups
     getGroupIcon(groupName) {
-      // Return appropriate icons for metric groups
       const icons = {
         Performance: "mdi-chart-line",
         Efficiency: "mdi-speedometer",

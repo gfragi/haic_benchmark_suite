@@ -7,4 +7,7 @@ export default {
   runEvaluation(configuration_id) {
     return apiClient.post(`/evaluate/${configuration_id}`);
   },
+  getResultDetail(configId, runId) {
+    return apiClient.get(`/results/${configId}/${runId}`);
+  },
 };
