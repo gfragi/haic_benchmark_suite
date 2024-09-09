@@ -46,14 +46,14 @@ def get_metrics(db: Session = Depends(get_db)):
     for group in metric_groups:
         group_name = group.name  # Get the group name
         group_description = group.description  # Get the group description
-        
+
         # Initialize the group if it's not in the dictionary
         if group_name not in grouped_metrics:
             grouped_metrics[group_name] = {
                 "group_description": group_description if group_description else "No description",
                 "metrics": []
             }
-        
+
         # Add metrics belonging to this group
         for metric in group.metrics:
             grouped_metrics[group_name]["metrics"].append({

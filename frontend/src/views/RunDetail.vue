@@ -57,7 +57,11 @@
                     </v-list-item-subtitle>
                     <v-list-item-subtitle>
                       <strong>Value:</strong>
-                      {{ metric.value || "No value available" }}
+                      {{
+                        metric.value !== null && metric.value !== undefined
+                          ? metric.value
+                          : "No value available"
+                      }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
@@ -126,7 +130,7 @@ export default {
     // Fetch the metric values from the relevant JSON file
     fetchMetricValues() {
       evaluationService
-        .getResultDetail(this.configId, this.runId) // Fetch metric values from JSON
+        .getResultDetail(this.configId, this.runId)
         .then((response) => {
           const metricValues = response.data.metrics; // Assuming metrics are in the "metrics" field
           console.log("Fetched Metric Values from JSON:", metricValues);
@@ -137,14 +141,25 @@ export default {
 
             // Iterate through each metric in the group
             metricsList.forEach((metric) => {
-              // Check if the fetched metric value exists, then assign it
-              if (metricValues[metric.name]) {
-                metric.value = metricValues[metric.name];
+              console.log("Checking metric:", metric.name); // Debugging
+
+              // Check if the metric name exists in the JSON for the group and handle `0` values properly
+              if (
+                metricValues[groupName] &&
+                metricValues[groupName][metric.name] !== undefined &&
+                metricValues[groupName][metric.name] !== null
+              ) {
+                metric.value = metricValues[groupName][metric.name];
+                console.log(`Assigned value to ${metric.name}:`, metric.value); // Debugging
               } else {
                 metric.value = "No value available"; // Fallback if no value found
+                console.log(`${metric.name} not found in fetched values`); // Debugging
               }
             });
           }
+
+          // Force Vue to detect changes (optional, depending on your reactivity setup)
+          this.groupedMetrics = { ...this.groupedMetrics };
 
           console.log(
             "Updated Grouped Metrics with values:",
