@@ -10,9 +10,17 @@ import {
   PointElement,
   LinearScale,
   Title,
+  CategoryScale, // Import CategoryScale
 } from "chart.js";
 
-Chart.register(LineController, LineElement, PointElement, LinearScale, Title);
+Chart.register(
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Title,
+  CategoryScale
+); // Register CategoryScale
 
 export default {
   props: {
@@ -38,8 +46,33 @@ export default {
   },
   methods: {
     renderChart() {
-      const ctx = document.getElementById(this.chartId).getContext("2d");
-      new Chart(ctx, {
+      console.log("Rendering chart with ID:", this.chartId);
+      console.log("Chart data:", JSON.stringify(this.chartData, null, 2));
+
+      if (
+        !this.chartData ||
+        !this.chartData.datasets ||
+        this.chartData.datasets.length === 0
+      ) {
+        console.error(
+          "Invalid chart data structure for chart ID:",
+          this.chartId
+        );
+        return;
+      }
+
+      const ctx = document.getElementById(this.chartId);
+      if (!ctx) {
+        console.error("Canvas element not found for chart ID:", this.chartId);
+        return;
+      }
+
+      // Clear previous chart instance if it exists
+      if (this.chartInstance) {
+        this.chartInstance.destroy();
+      }
+
+      this.chartInstance = new Chart(ctx, {
         type: "line",
         data: this.chartData,
         options: {
@@ -53,8 +86,15 @@ export default {
               text: "Metric Plot",
             },
           },
+          scales: {
+            x: {
+              type: "category", // Ensure the x-axis uses the category scale
+            },
+          },
         },
       });
+
+      console.log("Chart instance created:", this.chartInstance);
     },
   },
 };
