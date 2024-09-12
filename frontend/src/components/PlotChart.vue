@@ -68,13 +68,7 @@ export default {
 
       this.chartInstance = new Chart(ctx, {
         type: "line",
-        data: {
-          ...this.chartData,
-          datasets: this.chartData.datasets.map((dataset) => ({
-            ...dataset,
-            borderColor: this.chartColor,
-          })),
-        },
+        data: this.chartData, // Use the chartData directly without modification
         options: {
           responsive: true,
           maintainAspectRatio: false,
