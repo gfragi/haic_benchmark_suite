@@ -10,21 +10,11 @@
 
       <!-- Metric Group Dropdown -->
       <v-row>
-        <v-col cols="6">
+        <v-col cols="12">
           <v-select
             v-model="selectedGroup"
             :items="groupOptions"
             label="Select a metric group to plot"
-            @change="fetchData"
-          ></v-select>
-        </v-col>
-
-        <!-- X-Axis Dropdown (Evaluation Date/Model Version) -->
-        <v-col cols="6">
-          <v-select
-            v-model="selectedXAxis"
-            :items="xAxisOptions"
-            label="Select X-Axis (Evaluation Date/AI Model Version)"
             @change="fetchData"
           ></v-select>
         </v-col>
@@ -65,16 +55,12 @@ export default {
     return {
       configId: null,
       selectedGroup: null,
-      selectedXAxis: "evaluation_date",
       groupOptions: [],
-      xAxisOptions: [
-        { title: "Evaluation Date", value: "evaluation_date" },
-        { title: "AI Model Version", value: "ai_model_version" },
-      ],
       groupedMetrics: {},
       chartData: {},
       labels: [],
       selectedMetrics: [],
+      runData: [], // Add this to store all run data
     };
   },
   mounted() {
@@ -93,23 +79,32 @@ export default {
             value: group,
           }));
           this.selectedGroup = this.groupOptions[0].value;
-          this.selectedMetrics = this.groupedMetrics[
-            this.selectedGroup
-          ].metrics.map((metric) => metric.name);
+          this.updateSelectedMetrics();
           this.fetchData();
         })
         .catch((error) => {
           console.error("Error fetching metric groups:", error);
         });
     },
+
+    updateSelectedMetrics() {
+      if (this.selectedGroup && this.groupedMetrics[this.selectedGroup]) {
+        this.selectedMetrics = this.groupedMetrics[
+          this.selectedGroup
+        ].metrics.map((metric) => metric.name);
+      } else {
+        this.selectedMetrics = [];
+      }
+    },
+
     fetchData() {
       resultService
         .getResultsByConfig(this.configId)
         .then((response) => {
-          const runs = response.data;
-          this.labels = runs.map((run) => run[this.selectedXAxis]);
+          this.runData = response.data;
+          this.labels = this.runData.map((run) => run.ai_model_version);
           this.chartData = {}; // Clear existing chart data
-          runs.forEach((run) => {
+          this.runData.forEach((run) => {
             if (run.id) {
               this.fetchRunDetails(run.id);
             } else {
@@ -131,17 +126,13 @@ export default {
             console.error("Metrics data is missing in run details", resultData);
             return;
           }
-          if (!this.selectedMetrics || this.selectedMetrics.length === 0) {
-            console.error("No selected metrics to prepare chart data.");
-            return;
-          }
-          this.prepareChartData(resultData.metrics);
+          this.prepareChartData(resultData.metrics, runId);
         })
         .catch((error) => {
           console.error("Error fetching run details:", error);
         });
     },
-    prepareChartData(metrics) {
+    prepareChartData(metrics, runId) {
       console.log(
         "Preparing chart data for metrics:",
         JSON.stringify(metrics, null, 2)
@@ -153,36 +144,28 @@ export default {
         );
         return;
       }
-      if (!this.selectedMetrics || this.selectedMetrics.length === 0) {
-        console.error("No selected metrics to prepare chart data.");
-        return;
-      }
-      this.chartData = {};
+
       this.selectedMetrics.forEach((metric) => {
-        console.log("Processing metric:", metric);
-        console.log(
-          "Available metrics for group:",
-          metrics[this.selectedGroup]
-        );
-        // Use the original metric name to access the data
         const metricData = metrics[this.selectedGroup][metric];
         if (metricData !== undefined) {
-          this.chartData[metric] = {
-            labels: this.labels,
-            datasets: [
-              {
-                label: metric,
-                data: metricData, // Adjust this based on your data structure
-                fill: false,
-                borderColor: "rgb(75, 192, 192)",
-                tension: 0.1,
-              },
-            ],
-          };
-          console.log(
-            "Prepared chartData for plotting:",
-            JSON.stringify(this.chartData[metric], null, 2)
-          );
+          if (!this.chartData[metric]) {
+            this.chartData[metric] = {
+              labels: this.labels,
+              datasets: [
+                {
+                  label: metric,
+                  data: new Array(this.labels.length).fill(null),
+                  fill: false,
+                  borderColor: "rgb(75, 192, 192)",
+                  tension: 0.1,
+                },
+              ],
+            };
+          }
+          const runIndex = this.runData.findIndex((run) => run.id === runId);
+          if (runIndex !== -1) {
+            this.chartData[metric].datasets[0].data[runIndex] = metricData;
+          }
         } else {
           console.error(
             "Metric data not found for:",
@@ -192,7 +175,17 @@ export default {
           );
         }
       });
+
+      // Force update of chartData
+      this.chartData = { ...this.chartData };
       console.log("Final chartData:", JSON.stringify(this.chartData, null, 2));
+    },
+  },
+
+  watch: {
+    selectedGroup() {
+      this.updateSelectedMetrics();
+      this.fetchData();
     },
   },
 };
