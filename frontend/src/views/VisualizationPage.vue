@@ -25,6 +25,7 @@
             v-model="selectedXAxis"
             :items="xAxisOptions"
             label="Select X-Axis (Evaluation Date/AI Model Version)"
+            @change="fetchData"
           ></v-select>
         </v-col>
       </v-row>
@@ -56,10 +57,12 @@
 import PlotChart from "@/components/PlotChart.vue"; // Import the reusable PlotChart component
 import resultService from "@/services/resultService"; // Assuming this service fetches the results
 import evaluationService from "@/services/evaluationService"; // Assuming this service fetches the metrics
+import BaseLayout from "@/components/BaseLayout.vue";
 
 export default {
   components: {
     PlotChart,
+    BaseLayout,
   },
   data() {
     return {
@@ -82,9 +85,10 @@ export default {
     this.fetchMetricGroups(); // Fetch the available metrics
   },
   watch: {
-    selectedGroup(newGroup) {
-      if (newGroup) {
-        this.onGroupSelect();
+    $route(to, from) {
+      if (to.params.configId !== from.params.configId) {
+        this.configId = to.params.configId;
+        this.fetchData();
       }
     },
   },
@@ -103,6 +107,7 @@ export default {
 
           // Trigger the data fetching for the first group by default
           this.selectedGroup = this.groupOptions[0].value;
+          this.onGroupSelect();
         })
         .catch((error) => {
           console.error("Error fetching metric groups:", error);
@@ -123,9 +128,11 @@ export default {
 
     // Fetch results data (evaluation runs) from the backend
     fetchData() {
+      if (!this.configId || !this.selectedGroup) return;
+
       // Fetch all available runs for the current configId
       resultService
-        .getResultDetail(this.configId) // Modify this to fetch all runs for the config
+        .getResultsByConfig(this.configId) // Modify this to fetch all runs for the config
         .then((response) => {
           const runs = response.data; // This contains all the runs for the given config
 
@@ -138,43 +145,26 @@ export default {
           this.labels = runs.map((run) => run[this.selectedXAxis]); // e.g., 'evaluation_date' or 'ai_model_version'
 
           // Initialize chart data for each metric
-          this.selectedMetrics.forEach((metric) => {
-            const metricKey = metric.replace(/ /g, "_").toLowerCase();
-            this.chartData[metricKey] = []; // Initialize array for each metric's data
-          });
+          // this.selectedMetrics.forEach((metric) => {
+          //   const metricKey = metric.replace(/ /g, "_").toLowerCase();
+          //   this.chartData[metric] = []; // Initialize array for each metric's data
+          // });
 
           // Loop through each run and retrieve its data
           runs.forEach((run) => {
-            resultService
-              .getResultDetail(this.configId, run.id) // Fetch result for each run
-              .then((runData) => {
-                // For each metric in the selected group, add the data from the run
-                this.selectedMetrics.forEach((metric) => {
-                  const metricKey = metric.replace(/ /g, "_").toLowerCase();
+            this.selectedMetrics.forEach((metric) => {
+              const metricKey = metric.replace(/ /g, "_").toLowerCase();
 
-                  // Ensure the interaction_data object has the metric key before accessing it
-                  if (
-                    runData.data.interaction_data &&
-                    metricKey in runData.data.interaction_data
-                  ) {
-                    this.chartData[metricKey].push(
-                      runData.data.interaction_data[metricKey]
-                    );
-                  } else {
-                    this.chartData[metricKey].push(null); // Push null if the metric data is missing
-                  }
-                });
-
-                console.log("Chart Data:", this.chartData);
-              })
-              .catch((error) => {
-                console.error(
-                  "Error fetching run data for run:",
-                  run.id,
-                  error
-                );
-              });
+              // Ensure the interaction_data object has the metric key before accessing it
+              if (run.interaction_data && metricKey in run.interaction_data) {
+                this.chartData[metric].push(run.interaction_data[metricKey]);
+              } else {
+                this.chartData[metric].push(null); // Push null if the metric data is missing
+              }
+            });
           });
+
+          console.log("Chart Data:", this.chartData);
         })
         .catch((error) => {
           console.error("Error fetching run data:", error);

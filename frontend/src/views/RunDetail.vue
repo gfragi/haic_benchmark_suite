@@ -8,7 +8,10 @@
             <v-card-title class="headline">
               Run Details: Configuration ID {{ configId }}, Run ID {{ runId
               }}<br />
-              Application: {{ applicationName }}
+              Application: {{ applicationName }}, Application Version:
+              {{ applicationVersion }} <br />
+              AI Model: {{ aiModelName }}, AI Model Version:
+              {{ aiModelVersion }}
             </v-card-title>
             <v-card-subtitle>
               This page displays metrics for the selected run. You can explore
@@ -99,7 +102,10 @@ export default {
     return {
       groupedMetrics: null,
       selectedGroup: null,
-      applicationName: "", // To display application name
+      applicationName: "",
+      applicationVersion: "", // To display application name
+      aiModelName: "", // To display AI model name
+      aiModelVersion: "", // To display AI model version
     };
   },
   mounted() {
@@ -132,7 +138,10 @@ export default {
       evaluationService
         .getResultDetail(this.configId, this.runId)
         .then((response) => {
-          const metricValues = response.data.metrics; // Assuming metrics are in the "metrics" field
+          const metricValues = response.data.metrics;
+          this.applicationVersion = response.data.app_version;
+          this.aiModelVersion = response.data.ai_model_version;
+
           console.log("Fetched Metric Values from JSON:", metricValues);
 
           // Iterate through groups and match values with their metrics
@@ -175,6 +184,7 @@ export default {
         .getConfigById(this.configId)
         .then((response) => {
           this.applicationName = response.data.application_name;
+          this.aiModelName = response.data.ai_model_name;
         })
         .catch((error) => {
           console.error("Error fetching configuration details:", error);
