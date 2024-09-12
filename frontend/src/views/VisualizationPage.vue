@@ -1,42 +1,73 @@
 <template>
   <BaseLayout>
-    <v-container>
-      <!-- Page Title -->
+    <v-container fluid>
+      <!-- Run Information Title -->
       <v-row>
-        <v-col cols="12">
-          <h2>Visualization for Configuration ID: {{ configId }}</h2>
+        <v-col>
+          <h1 class="text-h4 mb-2">
+            Visualization for Configuration ID: {{ configId }}
+          </h1>
+          <p class="subtitle-1 mb-4">
+            This page displays visualizations for the selected configuration.
+            You can explore the metric groups on the left to see the
+            performance, efficiency, and more.
+          </p>
         </v-col>
       </v-row>
 
-      <!-- Metric Group Dropdown -->
       <v-row>
-        <v-col cols="12">
-          <v-select
-            v-model="selectedGroup"
-            :items="groupOptions"
-            label="Select a metric group to plot"
-            @change="fetchData"
-          ></v-select>
+        <!-- Left Sidebar for Metric Groups -->
+        <v-col cols="1">
+          <v-list dense>
+            <v-list-item
+              v-for="group in groupOptions"
+              :key="group.value"
+              @click="selectedGroup = group.value"
+              :class="{ 'selected-group': selectedGroup === group.value }"
+              style="cursor: pointer"
+            >
+              <v-list-item-icon>
+                <v-icon>{{ getGroupIcon(group.value) }}</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title class="text-caption">{{
+                group.title
+              }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
         </v-col>
-      </v-row>
 
-      <!-- Render Charts for Each Metric in the Selected Group -->
-      <v-row v-if="selectedGroup && Object.keys(chartData).length > 0">
-        <v-col
-          v-for="(metric, index) in selectedMetrics"
-          :key="index"
-          cols="12"
-          md="6"
-        >
-          <ChartComponent
-            v-if="chartData[metric]"
-            :chartId="'chart-' + index"
-            :chartData="chartData[metric]"
-          />
-          <div v-else>No data available for {{ metric }}</div>
+        <!-- Main Content Area for Charts -->
+        <v-col cols="11">
+          <v-row>
+            <v-col
+              v-for="(metric, index) in selectedMetrics"
+              :key="index"
+              cols="10"
+              md="6"
+            >
+              <h3 class="text-h6 mb-2">{{ metric }}</h3>
+              <ChartComponent
+                v-if="chartData[metric]"
+                :chartId="'chart-' + index"
+                :chartData="chartData[metric]"
+                :chartColor="getChartColor(index)"
+              />
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
+
+    <v-overlay :value="isLoading">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
+
+    <v-snackbar v-model="snackbar" :color="snackbarColor" top>
+      {{ snackbarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="snackbar = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </BaseLayout>
 </template>
 
@@ -60,16 +91,20 @@ export default {
       chartData: {},
       labels: [],
       selectedMetrics: [],
-      runData: [], // Add this to store all run data
+      runData: [],
+      isLoading: false,
+      snackbar: false,
+      snackbarText: "",
+      snackbarColor: "info",
     };
   },
   mounted() {
     this.configId = this.$route.params.configId;
     this.fetchMetricGroups();
-    this.fetchData();
   },
   methods: {
     fetchMetricGroups() {
+      this.isLoading = true;
       evaluationService
         .getMetrics()
         .then((response) => {
@@ -84,9 +119,15 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching metric groups:", error);
+          this.showMessage(
+            "Error fetching metric groups. Please try again.",
+            "error"
+          );
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
-
     updateSelectedMetrics() {
       if (this.selectedGroup && this.groupedMetrics[this.selectedGroup]) {
         this.selectedMetrics = this.groupedMetrics[
@@ -96,14 +137,14 @@ export default {
         this.selectedMetrics = [];
       }
     },
-
     fetchData() {
+      this.isLoading = true;
       resultService
         .getResultsByConfig(this.configId)
         .then((response) => {
           this.runData = response.data;
           this.labels = this.runData.map((run) => run.ai_model_version);
-          this.chartData = {}; // Clear existing chart data
+          this.chartData = {};
           this.runData.forEach((run) => {
             if (run.id) {
               this.fetchRunDetails(run.id);
@@ -114,10 +155,13 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching run data:", error);
+          this.showMessage("Error fetching data. Please try again.", "error");
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
     fetchRunDetails(runId) {
-      console.log("Fetching details for run ID:", runId);
       resultService
         .getResultDetail(this.configId, runId)
         .then((response) => {
@@ -130,13 +174,13 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching run details:", error);
+          this.showMessage(
+            "Error fetching run details. Please try again.",
+            "error"
+          );
         });
     },
     prepareChartData(metrics, runId) {
-      console.log(
-        "Preparing chart data for metrics:",
-        JSON.stringify(metrics, null, 2)
-      );
       if (!metrics[this.selectedGroup]) {
         console.error(
           "No metrics found for the selected group:",
@@ -145,7 +189,7 @@ export default {
         return;
       }
 
-      this.selectedMetrics.forEach((metric) => {
+      this.selectedMetrics.forEach((metric, index) => {
         const metricData = metrics[this.selectedGroup][metric];
         if (metricData !== undefined) {
           if (!this.chartData[metric]) {
@@ -156,7 +200,7 @@ export default {
                   label: metric,
                   data: new Array(this.labels.length).fill(null),
                   fill: false,
-                  borderColor: "rgb(75, 192, 192)",
+                  borderColor: this.getChartColor(index),
                   tension: 0.1,
                 },
               ],
@@ -176,12 +220,38 @@ export default {
         }
       });
 
-      // Force update of chartData
       this.chartData = { ...this.chartData };
-      console.log("Final chartData:", JSON.stringify(this.chartData, null, 2));
+    },
+    showMessage(text, color = "info") {
+      this.snackbarText = text;
+      this.snackbarColor = color;
+      this.snackbar = true;
+    },
+    getGroupIcon(groupName) {
+      const icons = {
+        Performance: "mdi-chart-line",
+        Efficiency: "mdi-speedometer",
+        "Adaptability and Learning": "mdi-brain",
+        "Collaboration and Interaction": "mdi-human-handsup",
+        "Trust and Safety": "mdi-shield",
+        "Robustness and Generalization": "mdi-robot",
+      };
+      return icons[groupName] || "mdi-information";
+    },
+    getChartColor(index) {
+      const colors = [
+        "#4CAF50", // Green
+        "#2196F3", // Blue
+        "#FFC107", // Amber
+        "#E91E63", // Pink
+        "#9C27B0", // Purple
+        "#00BCD4", // Cyan
+        "#FF5722", // Deep Orange
+        "#795548", // Brown
+      ];
+      return colors[index % colors.length];
     },
   },
-
   watch: {
     selectedGroup() {
       this.updateSelectedMetrics();
@@ -190,3 +260,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.selected-group {
+  background-color: #e0e0e0;
+}
+</style>

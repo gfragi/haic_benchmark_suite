@@ -1,5 +1,7 @@
 <template>
-  <canvas :id="chartId"></canvas>
+  <v-card class="ma-4 pa-4">
+    <canvas :id="chartId"></canvas>
+  </v-card>
 </template>
 
 <script>
@@ -10,7 +12,9 @@ import {
   PointElement,
   LinearScale,
   Title,
-  CategoryScale, // Import CategoryScale
+  CategoryScale,
+  Legend,
+  Tooltip,
 } from "chart.js";
 
 Chart.register(
@@ -19,8 +23,10 @@ Chart.register(
   PointElement,
   LinearScale,
   Title,
-  CategoryScale
-); // Register CategoryScale
+  CategoryScale,
+  Legend,
+  Tooltip
+);
 
 export default {
   props: {
@@ -31,6 +37,10 @@ export default {
     chartData: {
       type: Object,
       required: true,
+    },
+    chartColor: {
+      type: String,
+      default: "rgb(75, 192, 192)",
     },
   },
   mounted() {
@@ -46,59 +56,95 @@ export default {
   },
   methods: {
     renderChart() {
-      console.log("Rendering chart with ID:", this.chartId);
-      console.log("Chart data:", JSON.stringify(this.chartData, null, 2));
-
-      if (
-        !this.chartData ||
-        !this.chartData.datasets ||
-        this.chartData.datasets.length === 0
-      ) {
-        console.error(
-          "Invalid chart data structure for chart ID:",
-          this.chartId
-        );
-        return;
-      }
-
       const ctx = document.getElementById(this.chartId);
       if (!ctx) {
         console.error("Canvas element not found for chart ID:", this.chartId);
         return;
       }
 
-      // Clear previous chart instance if it exists
       if (this.chartInstance) {
         this.chartInstance.destroy();
       }
 
       this.chartInstance = new Chart(ctx, {
         type: "line",
-        data: this.chartData,
+        data: {
+          ...this.chartData,
+          datasets: this.chartData.datasets.map((dataset) => ({
+            ...dataset,
+            borderColor: this.chartColor,
+          })),
+        },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               position: "top",
+              labels: {
+                font: {
+                  size: 14,
+                  weight: "bold",
+                },
+              },
             },
             title: {
               display: true,
-              text: this.chartData.datasets[0].label, // Use the metric name as the title
+              text: this.chartData.datasets[0].label,
+              font: {
+                size: 18,
+                weight: "bold",
+              },
+            },
+            tooltip: {
+              enabled: true,
+              mode: "index",
+              intersect: false,
             },
           },
           scales: {
             x: {
               type: "category",
+              title: {
+                display: true,
+                text: "AI Model Version",
+                font: {
+                  size: 14,
+                  weight: "bold",
+                },
+              },
+              ticks: {
+                font: {
+                  size: 12,
+                },
+              },
             },
             y: {
               beginAtZero: true,
+              title: {
+                display: true,
+                text: "Value",
+                font: {
+                  size: 14,
+                  weight: "bold",
+                },
+              },
+              ticks: {
+                font: {
+                  size: 12,
+                },
+              },
             },
           },
         },
       });
-
-      console.log("Chart instance created:", this.chartInstance);
     },
   },
 };
 </script>
+
+<style scoped>
+canvas {
+  min-height: 300px;
+}
+</style>
