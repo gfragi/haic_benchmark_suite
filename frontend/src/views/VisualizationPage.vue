@@ -189,6 +189,15 @@ export default {
         return;
       }
 
+      // Process labels (versions) to remove duplicates and sort
+      this.labels = [...new Set(this.labels)].sort((a, b) => {
+        // Compare versions as strings
+        return a.localeCompare(b, undefined, {
+          numeric: true,
+          sensitivity: "base",
+        });
+      });
+
       this.selectedMetrics.forEach((metric, index) => {
         const metricData = metrics[this.selectedGroup][metric];
         if (metricData !== undefined) {
@@ -206,9 +215,11 @@ export default {
               ],
             };
           }
-          const runIndex = this.runData.findIndex((run) => run.id === runId);
-          if (runIndex !== -1) {
-            this.chartData[metric].datasets[0].data[runIndex] = metricData;
+          const versionIndex = this.labels.indexOf(
+            this.runData.find((run) => run.id === runId).ai_model_version
+          );
+          if (versionIndex !== -1) {
+            this.chartData[metric].datasets[0].data[versionIndex] = metricData;
           }
         } else {
           console.error(
