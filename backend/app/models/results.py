@@ -34,9 +34,11 @@ class MetricResponse(BaseModel):
 class MetricGroupResponse(BaseModel):
     group_description: Optional[str] = "No description"
     metrics: List[MetricResponse]
-
+    
+    # app_version: Optional[str]
+    # ai_model_version: Optional[str]
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class EvaluationResult(Base):
     __tablename__ = "results"
@@ -49,6 +51,9 @@ class EvaluationResult(Base):
 
     # Path to the JSON result file stored in MinIO or other storage
     result_minio_path = Column(String, nullable=False)
+
+    app_version = Column(String, nullable=True)
+    ai_model_version = Column(String, nullable=True)
 
     # Relationships
     configuration = relationship("EvaluationConfig", back_populates="results")

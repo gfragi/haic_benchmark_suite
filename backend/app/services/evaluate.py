@@ -25,11 +25,31 @@ minio_client = Minio(
 
 
 def evaluate_logs(config: EvaluationConfig, logs_data: list, db: Session):
+    
+    # Initialize sets to track unique versions
+    unique_app_versions = set()
+    unique_ai_model_versions = set()
+    
     # Aggregating interaction data across all sessions
     all_interaction_data = []
     for session in logs_data:
         interaction_data = session.get("interaction_data", {})
         all_interaction_data.append(interaction_data)
+
+    # Iterate through logs to collect versions and compute metrics
+    for entry in logs_data:
+        # Collect the app version and AI model version from the main entry
+        app_version = entry.get('app_version', "Unknown")
+        ai_model_version = entry.get('ai_model_version', "Unknown")
+        unique_app_versions.add(app_version)
+        unique_ai_model_versions.add(ai_model_version)
+
+        # Check retrain events and collect AI model versions after retraining
+        # if 'retrain_events' in entry:
+        #     for event in entry['retrain_events']:
+        #         retrained_version = event.get('retraining_details', {}).get('ai_model_version_after_retraining')
+        #         if retrained_version:
+        #             unique_ai_model_versions.add(retrained_version)
 
     # Initialize the dictionary to hold metrics grouped by metric group
     metrics_results_by_group = {}
@@ -104,87 +124,99 @@ def evaluate_logs(config: EvaluationConfig, logs_data: list, db: Session):
         # Save the results of this group into the final results dictionary
         metrics_results_by_group[group.name] = group_results
 
-    return metrics_results_by_group
 
+    # Convert sets to lists for JSON serialization
+    unique_app_versions = list(unique_app_versions)
+    unique_ai_model_versions = list(unique_ai_model_versions)
+
+    return metrics_results_by_group, unique_app_versions, unique_ai_model_versions
+
+
+
+def split_logs_by_ai_model_version(logs_data: list):
+    # Create a dictionary to hold logs by AI model version
+    logs_by_ai_version = {}
+
+    # Iterate through the logs and separate them by AI model version
+    for entry in logs_data:
+        ai_model_version = entry.get('ai_model_version', "Unknown")
+
+        if ai_model_version not in logs_by_ai_version:
+            logs_by_ai_version[ai_model_version] = []
+
+        # Append the log entry to the corresponding version list
+        logs_by_ai_version[ai_model_version].append(entry)
+
+        # Also check for retrain events and track those versions
+        # if 'retrain_events' in entry:
+        #     for event in entry['retrain_events']:
+        #         retrained_version = event.get('retraining_details', {}).get('ai_model_version_after_retraining')
+        #         if retrained_version:
+        #             if retrained_version not in logs_by_ai_version:
+        #                 logs_by_ai_version[retrained_version] = []
+        #             logs_by_ai_version[retrained_version].append(event)
+
+    return logs_by_ai_version
 
 
 
 def run_evaluation(config_id: int):
-    # Create a new session for the background task
     new_session = SessionLocal()
 
     try:
-        # Re-fetch the configuration within the new session using the configuration ID
         config = new_session.query(EvaluationConfig).get(config_id)
         if not config:
             raise ValueError("Configuration not found")
 
-        # Use the `minio_path` from the database to fetch the configuration file
-        config_minio_path = config.minio_path
-        if not config_minio_path:
-            raise ValueError("MinIO path for configuration not found in the database for this configuration")
+        # Fetch logs from MinIO (existing logic)
+        logs_file_object = minio_client.get_object(os.getenv("MINIO_BUCKET"), config.minio_path)
+        logs_data = json.load(io.BytesIO(logs_file_object.read()))
 
-        # Fetch the configuration file from MinIO
-        try:
-            config_file_object = minio_client.get_object(os.getenv("MINIO_BUCKET"), config_minio_path)
-            config_data = json.load(io.BytesIO(config_file_object.read()))
-        except S3Error as e:
-            raise ValueError(f"Error fetching configuration file from MinIO: {str(e)}")
+        # Split logs by AI model version
+        logs_by_ai_version = split_logs_by_ai_model_version(logs_data)
 
-        # Fetch the associated logs path from the `minio_path` field in the database
-        minio_path = config.minio_path
-        if not minio_path:
-            raise ValueError("MinIO path for logs not found in the database for this configuration")
+        # Evaluate logs for each AI model version separately
+        for ai_model_version, logs in logs_by_ai_version.items():
+            print(f"Evaluating AI model version: {ai_model_version}")
+            results_by_group, app_versions, _ = evaluate_logs(config, logs, new_session)
 
-        # Fetch the logs file from MinIO
-        try:
-            logs_file_object = minio_client.get_object(os.getenv("MINIO_BUCKET"), minio_path)
-            logs_data = json.load(io.BytesIO(logs_file_object.read()))
-        except S3Error as e:
-            raise ValueError(f"Error fetching logs file from MinIO: {str(e)}")
+            # Join the app versions into a comma-separated string
+            app_version_str = ', '.join(app_versions)
 
-        if not isinstance(logs_data, list):
-            raise ValueError("Invalid logs format. Expected a list of log entries.")
+            result_data = {
+                'configuration_id': config.id,
+                'evaluation_date': str(datetime.datetime.utcnow()),
+                'app_version': app_version_str,  # List of unique app versions
+                'ai_model_version': ai_model_version,  # Single AI model version for this evaluation
+                'metrics': results_by_group,
+            }
 
-        # Pass the db session (new_session) to the evaluate_logs function
-        results_by_group = evaluate_logs(config, logs_data, new_session)
+            # Save results to MinIO
+            result_file_path = f"{config.id}/results/{uuid.uuid4()}.json"
+            result_json = json.dumps(result_data)
+            minio_client.put_object(
+                bucket_name=os.getenv("MINIO_BUCKET"),
+                object_name=result_file_path,
+                data=io.BytesIO(result_json.encode('utf-8')),
+                length=len(result_json)
+            )
 
-        # Prepare the result data
-        result_data = {
-            'configuration_id': config.id,
-            'evaluation_date': str(datetime.datetime.utcnow()),
-            'metrics': results_by_group  # Save grouped results
-        }
+            # Save EvaluationResult with the current AI model version
+            db_result = EvaluationResult(
+                configuration_id=config.id,
+                evaluation_date=datetime.datetime.utcnow(),
+                result_minio_path=result_file_path,
+                app_version=app_version_str,  # Store app versions as a comma-separated string
+                ai_model_version=ai_model_version  # Single AI model version for this evaluation
+            )
+            new_session.add(db_result)
+            new_session.commit()
 
-        # Store the evaluation result in MinIO under `config_id/results/result_id.json`
-        result_file_path = f"{config.id}/results/{uuid.uuid4()}.json"
-        result_json = json.dumps(result_data)
-
-        minio_client.put_object(
-            bucket_name=os.getenv("MINIO_BUCKET"),
-            object_name=result_file_path,
-            data=io.BytesIO(result_json.encode('utf-8')),
-            length=len(result_json)
-        )
-
-        # Create a new EvaluationResult and save the MinIO path
-        db_result = EvaluationResult(
-            configuration_id=config.id,
-            evaluation_date=datetime.datetime.utcnow(),
-            result_minio_path=result_file_path  # Store the path of the results
-        )
-
-        # Add the EvaluationResult to the session and commit
-        new_session.add(db_result)
-        new_session.commit()
-
-        # Mark evaluation as complete
         config.evaluation_status = EvaluationConfig.STATUS_COMPLETED
 
     except Exception as e:
-        # Update the status to failed if there was an error
         config.evaluation_status = EvaluationConfig.STATUS_FAILED
         print(f"Error during evaluation: {e}")
     finally:
         new_session.commit()
-        new_session.close()  # Close the session when done
+        new_session.close()
