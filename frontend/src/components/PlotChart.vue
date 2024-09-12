@@ -83,12 +83,15 @@ export default {
             },
             title: {
               display: true,
-              text: "Metric Plot",
+              text: this.chartData.datasets[0].label, // Use the metric name as the title
             },
           },
           scales: {
             x: {
-              type: "category", // Ensure the x-axis uses the category scale
+              type: "category",
+            },
+            y: {
+              beginAtZero: true,
             },
           },
         },
