@@ -1,185 +1,279 @@
 <template>
   <BaseLayout>
-    <v-container>
-      <!-- Page Title -->
+    <v-container fluid>
+      <!-- Run Information Title -->
       <v-row>
-        <v-col cols="12">
-          <h2>Visualization for Configuration ID: {{ configId }}</h2>
+        <v-col>
+          <h1 class="text-h4 mb-2">
+            Visualization for Configuration ID: {{ configId }}
+          </h1>
+          <p class="subtitle-1 mb-4">
+            This page displays visualizations for the selected configuration.
+            You can explore the metric groups on the left to see the
+            performance, efficiency, and more.
+          </p>
         </v-col>
       </v-row>
 
-      <!-- Metric Group Dropdown -->
       <v-row>
-        <v-col cols="6">
-          <v-select
-            v-model="selectedGroup"
-            :items="groupOptions"
-            label="Select a metric group to plot"
-            @change="onGroupSelect"
-          ></v-select>
+        <!-- Left Sidebar for Metric Groups -->
+        <v-col cols="1">
+          <v-list dense>
+            <v-list-item
+              v-for="group in groupOptions"
+              :key="group.value"
+              @click="selectedGroup = group.value"
+              :class="{ 'selected-group': selectedGroup === group.value }"
+              style="cursor: pointer"
+            >
+              <v-list-item-icon>
+                <v-icon>{{ getGroupIcon(group.value) }}</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title class="text-caption">{{
+                group.title
+              }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
         </v-col>
 
-        <!-- X-Axis Dropdown (Evaluation Date/Model Version) -->
-        <v-col cols="6">
-          <v-select
-            v-model="selectedXAxis"
-            :items="xAxisOptions"
-            label="Select X-Axis (Evaluation Date/AI Model Version)"
-          ></v-select>
-        </v-col>
-      </v-row>
-
-      <!-- Render Charts for Each Metric in the Selected Group -->
-      <v-row v-if="selectedMetrics.length > 0">
-        <v-col
-          v-for="(metric, index) in selectedMetrics"
-          :key="index"
-          cols="12"
-          md="6"
-        >
-          <!-- Render PlotChart only if chartData is available for that metric -->
-          <PlotChart
-            v-if="chartData[metric]"
-            :chartData="chartData[metric]"
-            :labels="labels"
-            :xAxisLabel="selectedXAxis"
-            :yAxisLabel="metric"
-            chartType="line"
-          />
+        <!-- Main Content Area for Charts -->
+        <v-col cols="11">
+          <v-row>
+            <v-col
+              v-for="(metric, index) in selectedMetrics"
+              :key="index"
+              cols="10"
+              md="6"
+            >
+              <h3 class="text-h6 mb-2">{{ metric }}</h3>
+              <ChartComponent
+                v-if="chartData[metric]"
+                :chartId="'chart-' + index"
+                :chartData="chartData[metric]"
+                :chartColor="getChartColor(index)"
+              />
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
+
+    <v-overlay :value="isLoading">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
+
+    <v-snackbar v-model="snackbar" :color="snackbarColor" top>
+      {{ snackbarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="snackbar = false">Close</v-btn>
+      </template>
+    </v-snackbar>
   </BaseLayout>
 </template>
 
 <script>
-import PlotChart from "@/components/PlotChart.vue"; // Import the reusable PlotChart component
-import resultService from "@/services/resultService"; // Assuming this service fetches the results
-import evaluationService from "@/services/evaluationService"; // Assuming this service fetches the metrics
+import ChartComponent from "@/components/PlotChart.vue";
+import resultService from "@/services/resultService";
+import evaluationService from "@/services/evaluationService";
+import BaseLayout from "@/components/BaseLayout.vue";
 
 export default {
   components: {
-    PlotChart,
+    ChartComponent,
+    BaseLayout,
   },
   data() {
     return {
-      configId: null, // Holds the passed configId
-      selectedGroup: null, // Holds the selected metric group
-      selectedXAxis: "evaluation_date", // Default X-axis option
-      groupOptions: [], // To be dynamically fetched
-      xAxisOptions: [
-        { title: "Evaluation Date", value: "evaluation_date" },
-        { title: "AI Model Version", value: "ai_model_version" },
-      ],
-      groupedMetrics: {}, // Metrics from the /evaluate/metrics API
-      selectedMetrics: [], // Metrics under the selected group
-      chartData: {}, // Object to store the data for each metric
-      labels: [], // Labels for the X-axis (e.g., evaluation dates or AI model versions)
+      configId: null,
+      selectedGroup: null,
+      groupOptions: [],
+      groupedMetrics: {},
+      chartData: {},
+      labels: [],
+      selectedMetrics: [],
+      runData: [],
+      isLoading: false,
+      snackbar: false,
+      snackbarText: "",
+      snackbarColor: "info",
     };
   },
   mounted() {
-    this.configId = this.$route.params.configId; // Retrieve configId from the route
-    this.fetchMetricGroups(); // Fetch the available metrics
-  },
-  watch: {
-    selectedGroup(newGroup) {
-      if (newGroup) {
-        this.onGroupSelect();
-      }
-    },
+    this.configId = this.$route.params.configId;
+    this.fetchMetricGroups();
   },
   methods: {
-    // Fetch metric groups from the /evaluate/metrics endpoint
     fetchMetricGroups() {
+      this.isLoading = true;
       evaluationService
         .getMetrics()
         .then((response) => {
-          this.groupedMetrics = response.data; // Assuming it's in the structure you showed
+          this.groupedMetrics = response.data;
           this.groupOptions = Object.keys(this.groupedMetrics).map((group) => ({
             title: group,
             value: group,
           }));
-          console.log("Fetched Grouped Metrics:", this.groupedMetrics);
-
-          // Trigger the data fetching for the first group by default
           this.selectedGroup = this.groupOptions[0].value;
+          this.updateSelectedMetrics();
+          this.fetchData();
         })
         .catch((error) => {
           console.error("Error fetching metric groups:", error);
+          this.showMessage(
+            "Error fetching metric groups. Please try again.",
+            "error"
+          );
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
-
-    // Handle the selection of a metric group and load the related metrics
-    onGroupSelect() {
+    updateSelectedMetrics() {
       if (this.selectedGroup && this.groupedMetrics[this.selectedGroup]) {
-        // Set the metrics for the selected group
-        this.selectedMetrics = this.groupedMetrics[this.selectedGroup];
-        console.log("Selected Metrics:", this.selectedMetrics);
-
-        // Fetch the data for the selected metrics
-        this.fetchData();
+        this.selectedMetrics = this.groupedMetrics[
+          this.selectedGroup
+        ].metrics.map((metric) => metric.name);
+      } else {
+        this.selectedMetrics = [];
       }
     },
-
-    // Fetch results data (evaluation runs) from the backend
     fetchData() {
-      // Fetch all available runs for the current configId
+      this.isLoading = true;
       resultService
-        .getResultDetail(this.configId) // Modify this to fetch all runs for the config
+        .getResultsByConfig(this.configId)
         .then((response) => {
-          const runs = response.data; // This contains all the runs for the given config
-
-          if (!runs || runs.length === 0) {
-            console.error("No run data available");
-            return;
-          }
-
-          // Map the labels based on the selected X-axis field (e.g., evaluation_date)
-          this.labels = runs.map((run) => run[this.selectedXAxis]); // e.g., 'evaluation_date' or 'ai_model_version'
-
-          // Initialize chart data for each metric
-          this.selectedMetrics.forEach((metric) => {
-            const metricKey = metric.replace(/ /g, "_").toLowerCase();
-            this.chartData[metricKey] = []; // Initialize array for each metric's data
-          });
-
-          // Loop through each run and retrieve its data
-          runs.forEach((run) => {
-            resultService
-              .getResultDetail(this.configId, run.id) // Fetch result for each run
-              .then((runData) => {
-                // For each metric in the selected group, add the data from the run
-                this.selectedMetrics.forEach((metric) => {
-                  const metricKey = metric.replace(/ /g, "_").toLowerCase();
-
-                  // Ensure the interaction_data object has the metric key before accessing it
-                  if (
-                    runData.data.interaction_data &&
-                    metricKey in runData.data.interaction_data
-                  ) {
-                    this.chartData[metricKey].push(
-                      runData.data.interaction_data[metricKey]
-                    );
-                  } else {
-                    this.chartData[metricKey].push(null); // Push null if the metric data is missing
-                  }
-                });
-
-                console.log("Chart Data:", this.chartData);
-              })
-              .catch((error) => {
-                console.error(
-                  "Error fetching run data for run:",
-                  run.id,
-                  error
-                );
-              });
+          this.runData = response.data;
+          this.labels = this.runData.map((run) => run.ai_model_version);
+          this.chartData = {};
+          this.runData.forEach((run) => {
+            if (run.id) {
+              this.fetchRunDetails(run.id);
+            } else {
+              console.error("Run ID is undefined or null", run);
+            }
           });
         })
         .catch((error) => {
           console.error("Error fetching run data:", error);
+          this.showMessage("Error fetching data. Please try again.", "error");
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
+    },
+    fetchRunDetails(runId) {
+      resultService
+        .getResultDetail(this.configId, runId)
+        .then((response) => {
+          const resultData = response.data;
+          if (!resultData || !resultData.metrics) {
+            console.error("Metrics data is missing in run details", resultData);
+            return;
+          }
+          this.prepareChartData(resultData.metrics, runId);
+        })
+        .catch((error) => {
+          console.error("Error fetching run details:", error);
+          this.showMessage(
+            "Error fetching run details. Please try again.",
+            "error"
+          );
+        });
+    },
+    prepareChartData(metrics, runId) {
+      if (!metrics[this.selectedGroup]) {
+        console.error(
+          "No metrics found for the selected group:",
+          this.selectedGroup
+        );
+        return;
+      }
+
+      // Process labels (versions) to remove duplicates and sort
+      this.labels = [...new Set(this.labels)].sort((a, b) => {
+        // Compare versions as strings
+        return a.localeCompare(b, undefined, {
+          numeric: true,
+          sensitivity: "base",
+        });
+      });
+
+      this.selectedMetrics.forEach((metric, index) => {
+        const metricData = metrics[this.selectedGroup][metric];
+        if (metricData !== undefined) {
+          if (!this.chartData[metric]) {
+            this.chartData[metric] = {
+              labels: this.labels,
+              datasets: [
+                {
+                  label: metric,
+                  data: new Array(this.labels.length).fill(null),
+                  fill: false,
+                  borderColor: this.getChartColor(index),
+                  tension: 0.1,
+                },
+              ],
+            };
+          }
+          const versionIndex = this.labels.indexOf(
+            this.runData.find((run) => run.id === runId).ai_model_version
+          );
+          if (versionIndex !== -1) {
+            this.chartData[metric].datasets[0].data[versionIndex] = metricData;
+          }
+        } else {
+          console.error(
+            "Metric data not found for:",
+            metric,
+            "in group:",
+            this.selectedGroup
+          );
+        }
+      });
+
+      this.chartData = { ...this.chartData };
+    },
+    showMessage(text, color = "info") {
+      this.snackbarText = text;
+      this.snackbarColor = color;
+      this.snackbar = true;
+    },
+    getGroupIcon(groupName) {
+      const icons = {
+        Performance: "mdi-chart-line",
+        Efficiency: "mdi-speedometer",
+        "Adaptability and Learning": "mdi-brain",
+        "Collaboration and Interaction": "mdi-human-handsup",
+        "Trust and Safety": "mdi-shield",
+        "Robustness and Generalization": "mdi-robot",
+      };
+      return icons[groupName] || "mdi-information";
+    },
+    getChartColor(index) {
+      const colors = [
+        "#4CAF50", // Green
+        "#2196F3", // Blue
+        "#FFC107", // Amber
+        "#E91E63", // Pink
+        "#9C27B0", // Purple
+        "#00BCD4", // Cyan
+        "#FF5722", // Deep Orange
+        "#795548", // Brown
+      ];
+      return colors[index % colors.length];
+    },
+  },
+  watch: {
+    selectedGroup() {
+      this.updateSelectedMetrics();
+      this.fetchData();
     },
   },
 };
 </script>
+
+<style scoped>
+.selected-group {
+  background-color: #e0e0e0;
+}
+</style>
