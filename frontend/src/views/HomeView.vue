@@ -47,7 +47,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" md="4">
+        <!-- <v-col cols="12" md="4">
           <v-card elevation="2">
             <v-card-title>
               <v-icon left class="mr-2">mdi-file-document</v-icon>
@@ -58,8 +58,8 @@
               <v-btn color="primary" to="/reports">Go to Reports</v-btn>
             </v-card-actions>
           </v-card>
-        </v-col>
-        <v-col cols="12" md="4">
+        </v-col> -->
+        <!-- <v-col cols="12" md="4">
           <v-card elevation="2">
             <v-card-title>
               <v-icon left class="mr-2">mdi-chart-line</v-icon>
@@ -70,7 +70,7 @@
               <v-btn color="primary" to="/results">Go to Results</v-btn>
             </v-card-actions>
           </v-card>
-        </v-col>
+        </v-col> -->
         <!-- New Card for Log Generation Tool -->
         <v-col cols="12" md="4">
           <v-card elevation="2">
