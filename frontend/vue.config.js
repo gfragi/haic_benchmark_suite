@@ -1,8 +1,10 @@
-const { defineConfig } = require("@vue/cli-service");
 const webpack = require("webpack");
 
-module.exports = defineConfig({
-  transpileDependencies: true,
+module.exports = {
+  transpileDependencies: [
+    // List of packages you want to transpile
+    "vuetify"
+  ],
 
   pluginOptions: {
     vuetify: {
@@ -16,4 +18,4 @@ module.exports = defineConfig({
       }),
     ],
   },
-});
+};

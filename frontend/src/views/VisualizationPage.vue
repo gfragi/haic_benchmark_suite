@@ -17,7 +17,7 @@
 
       <v-row>
         <!-- Left Sidebar for Metric Groups -->
-        <v-col cols="1">
+        <v-col cols="2">
           <v-list dense>
             <v-list-item
               v-for="group in groupOptions"
@@ -37,7 +37,7 @@
         </v-col>
 
         <!-- Main Content Area for Charts -->
-        <v-col cols="11">
+        <v-col cols="10">
           <v-row>
             <v-col
               v-for="(metric, index) in selectedMetrics"
