@@ -1,8 +1,8 @@
-"""add ai_model_version and app_version in the results
+"""add new col
 
-Revision ID: 80d482baecce
-Revises: 77f45c2e1cc8
-Create Date: 2024-09-12 11:42:59.592527
+Revision ID: 40dc8526227d
+Revises: 
+Create Date: 2024-09-13 10:24:57.801567
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '80d482baecce'
-down_revision: Union[str, None] = '77f45c2e1cc8'
+revision: str = '40dc8526227d'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
