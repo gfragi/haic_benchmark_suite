@@ -44,8 +44,13 @@
               v-model="config.description"
               label="Description"
             ></v-textarea>
-            <v-btn color="success" :disabled="isSubmitting" @click="submitForm">
-              {{ mode === "edit" ? "Update" : "Save" }} Configuration
+            <v-btn
+              color="success"
+              :disabled="isSubmitting"
+              @click="submitForm"
+              class="justify-end"
+            >
+              {{ mode === "edit" ? "Update" : "Next" }} Step
               <v-progress-circular
                 v-if="isSubmitting"
                 indeterminate

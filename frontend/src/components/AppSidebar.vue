@@ -30,14 +30,14 @@ export default {
         { title: "Configurations", icon: "mdi-cog", route: "/configs" },
         { title: "Log Management", icon: "mdi-file-import", route: "/logs" },
         {
-          title: "Explore Metrics",
-          icon: "mdi-chart-areaspline",
-          route: "/metrics",
-        },
-        {
           title: "Log Generation",
           icon: "mdi-database-edit",
           route: "/log-generator",
+        },
+        {
+          title: "Explore Metrics",
+          icon: "mdi-chart-areaspline",
+          route: "/metrics",
         },
         { title: "About", icon: "mdi-information", route: "/about" },
       ],
