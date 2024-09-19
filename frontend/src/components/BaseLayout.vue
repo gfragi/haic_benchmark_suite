@@ -1,7 +1,11 @@
 <template>
-  <v-app>
+  <v-app :theme="currentTheme">
     <!-- Header Component -->
-    <HeaderComponent @toggleSidebar="drawer = !drawer" />
+    <HeaderComponent
+      @toggleSidebar="drawer = !drawer"
+      @toggleTheme="toggleTheme"
+      :isDarkTheme="isDarkTheme"
+    />
 
     <!-- Sidebar -->
     <v-navigation-drawer v-model="drawer" app color="primary" class="sidebar">
@@ -26,6 +30,7 @@
 </template>
 
 <script>
+import { ref, computed, onMounted } from "vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 import AppSidebar from "@/components/AppSidebar.vue";
@@ -37,9 +42,28 @@ export default {
     FooterComponent,
     AppSidebar,
   },
-  data() {
+  setup() {
+    const isDarkTheme = ref(false);
+
+    const currentTheme = computed(() => (isDarkTheme.value ? "dark" : "light"));
+
+    const toggleTheme = () => {
+      isDarkTheme.value = !isDarkTheme.value;
+      localStorage.setItem("isDarkTheme", isDarkTheme.value);
+    };
+
+    onMounted(() => {
+      const savedTheme = localStorage.getItem("isDarkTheme");
+      if (savedTheme !== null) {
+        isDarkTheme.value = savedTheme === "true";
+      }
+    });
+
     return {
-      drawer: true, // Default state of the sidebar is open
+      drawer: ref(true),
+      isDarkTheme,
+      currentTheme,
+      toggleTheme,
     };
   },
 };
@@ -54,8 +78,8 @@ export default {
   min-height: 10vh;
   padding-top: 64px; /* Adjust according to your header height */
   padding-bottom: 64px; /* Adjust according to your footer height */
-  padding-left: 0;
-  padding-right: 0;
+  padding-left: 0px;
+  padding-right: 180px;
   margin-left: 80px; /* Adjust to match the sidebar width */
 }
 </style>

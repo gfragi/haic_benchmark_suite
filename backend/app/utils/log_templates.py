@@ -5,7 +5,7 @@ import uuid
 from fastapi import HTTPException
 
 logs_templates = {
-    "radiologist": {
+    "dss_img_recog": {
         "interaction_data": {
             "image_id": "unique_image_id",
             "presentation_time": "2024-07-01T09:01:00Z",
@@ -114,7 +114,7 @@ logs_templates = {
             "deployment_details": "details_of_deployment"
         }
     },
-    "smart_cities": {
+    "dss_smart_cities": {
         "interaction_data": {
             "application_id": "unique_application_id",
             "justification_documents": "document_list",
@@ -194,7 +194,7 @@ logs_templates = {
             "deployment_details": "details_of_deployment"
         }
     },
-    "smart_energy": {
+    "dss_smart_energy": {
         "interaction_data": {
             "load_generation_data": [
                 {
@@ -313,13 +313,13 @@ def generate_log(app_type: str, start_datetime: str, end_datetime: str,ai_model_
     }
 
     # Now add the specific interaction data based on the app type
-    if app_type == "radiologist":
-        log.update(logs_templates["radiologist"])
+    if app_type == "dss_img_recog":
+        log.update(logs_templates["dss_img_recog"])
 
-    elif app_type == "smart_cities":
-        log.update(logs_templates["smart_cities"])
+    elif app_type == "dss_smart_cities":
+        log.update(logs_templates["dss_smart_cities"])
 
-    elif app_type == "smart_energy":
-        log.update(logs_templates["smart_energy"])
+    elif app_type == "dss_smart_energy":
+        log.update(logs_templates["dss_smart_energy"])
 
     return log

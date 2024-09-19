@@ -1,22 +1,25 @@
 FROM node:18-alpine
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the package.json and package-lock.json
+# Copy the package.json and package-lock.json files
 COPY package*.json ./
 
-# Install dependencies
+# Install the dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the rest of the application code into the container
 COPY . .
 
 # Build the application
 RUN npm run build
 
-# Expose the port that the app runs on
-EXPOSE 80
+# Install a simple HTTP server to serve the static files
+RUN npm install -g serve
+
+# Expose the port the app runs on
+EXPOSE 5000
 
 # Command to run the application
-CMD ["npx", "http-server", "dist"]
+CMD ["serve", "-s", "dist"]
