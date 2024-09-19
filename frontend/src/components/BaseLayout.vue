@@ -4,13 +4,17 @@
     <HeaderComponent @toggleSidebar="drawer = !drawer" />
 
     <!-- Sidebar -->
-    <v-navigation-drawer v-model="drawer" app temporary color="grey lighten-3">
+    <v-navigation-drawer v-model="drawer" app color="primary" class="sidebar">
       <AppSidebar />
     </v-navigation-drawer>
 
     <!-- Main Content Area -->
     <v-main>
-      <v-container fluid class="main-container">
+      <v-container
+        fluid
+        class="main-container"
+        :class="{ 'drawer-open': drawer }"
+      >
         <slot></slot>
         <!-- Content of each page will be injected here -->
       </v-container>
@@ -35,18 +39,23 @@ export default {
   },
   data() {
     return {
-      drawer: false, // Default state of the sidebar is closed
+      drawer: true, // Default state of the sidebar is open
     };
   },
 };
 </script>
 
 <style scoped>
+.sidebar {
+  width: 240px; /* Adjust the width as needed */
+}
+
 .main-container {
   min-height: 10vh;
   padding-top: 64px; /* Adjust according to your header height */
   padding-bottom: 64px; /* Adjust according to your footer height */
   padding-left: 0;
   padding-right: 0;
+  margin-left: 80px; /* Adjust to match the sidebar width */
 }
 </style>

@@ -4,7 +4,7 @@
       <h1 class="text-center my-4">Welcome to the HAIC Evaluation Platform</h1>
       <v-row>
         <v-col cols="12" md="4">
-          <v-card elevation="2">
+          <v-card elevation="2" color="blue lighten-4">
             <v-card-title>
               <v-icon left class="mr-2">mdi-new-box</v-icon>
               Create New HAIC Evaluation
@@ -13,7 +13,8 @@
               Create a new evaluation & upload your log.
             </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" @click="startConfigurationWizard">
+              <v-btn color="black lighten-2" @click="startConfigurationWizard">
+                <v-icon left class="mr-2">mdi-play-circle</v-icon>
                 Start New Evaluation
               </v-btn>
             </v-card-actions>
@@ -26,10 +27,13 @@
               Manage Configurations
             </v-card-title>
             <v-card-text>
-              Create and manage your evaluation configurations.
+              Manage your evaluation configurations and check your results.
             </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" to="/configs">Go to Configurations</v-btn>
+              <v-btn color="primary" to="/configs">
+                <v-icon left class="mr-2">mdi-cog</v-icon>
+                Go to Configurations
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -39,9 +43,49 @@
               <v-icon left class="mr-2">mdi-file-upload</v-icon>
               Manage Logs
             </v-card-title>
-            <v-card-text>Manage your log data.</v-card-text>
+            <v-card-text>Manage your log data and result files.</v-card-text>
             <v-card-actions>
-              <v-btn color="primary" to="/logs">Go to Logs</v-btn>
+              <v-btn color="primary" to="/logs">
+                <v-icon left class="mr-2">mdi-file-upload</v-icon>
+                Go to Logs
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="4"></v-col>
+        <v-col cols="12" md="4">
+          <v-card elevation="2">
+            <v-card-title>
+              <v-icon left class="mr-2">mdi-database-edit</v-icon>
+              Log Generation Tool
+            </v-card-title>
+            <v-card-text>
+              Generate synthetic logs based on configurable templates.
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" to="/log-generator">
+                <v-icon left class="mr-2">mdi-database-edit</v-icon>
+                Generate Logs
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-card elevation="2">
+            <v-card-title>
+              <v-icon left class="mr-2">mdi-chart-areaspline</v-icon>
+              Explore Metrics
+            </v-card-title>
+            <v-card-text>
+              Explore the different metrics used in HAIC evaluations.
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" to="/metrics">
+                <v-icon left class="mr-2">mdi-chart-areaspline</v-icon>
+                Go to Metrics
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -55,7 +99,10 @@
             </v-card-title>
             <v-card-text>Create and download evaluation reports.</v-card-text>
             <v-card-actions>
-              <v-btn color="primary" to="/reports">Go to Reports</v-btn>
+              <v-btn color="primary" to="/reports">
+                <v-icon left class="mr-2">mdi-file-document</v-icon>
+                Go to Reports
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col> -->
@@ -67,40 +114,13 @@
             </v-card-title>
             <v-card-text>Analyze your evaluation results.</v-card-text>
             <v-card-actions>
-              <v-btn color="primary" to="/results">Go to Results</v-btn>
+              <v-btn color="primary" to="/results">
+                <v-icon left class="mr-2">mdi-chart-line</v-icon>
+                Go to Results
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col> -->
-        <!-- New Card for Log Generation Tool -->
-        <v-col cols="12" md="4">
-          <v-card elevation="2">
-            <v-card-title>
-              <v-icon left class="mr-2">mdi-database-edit</v-icon>
-              Log Generation Tool
-            </v-card-title>
-            <v-card-text>
-              Generate synthetic logs based on configurable templates.
-            </v-card-text>
-            <v-card-actions>
-              <v-btn color="primary" to="/log-generator">Generate Logs</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-        <!-- New Card for Metrics Page -->
-        <v-col cols="12" md="4">
-          <v-card elevation="2">
-            <v-card-title>
-              <v-icon left class="mr-2">mdi-chart-areaspline</v-icon>
-              Explore Metrics
-            </v-card-title>
-            <v-card-text>
-              Explore the different metrics used in HAIC evaluations.
-            </v-card-text>
-            <v-card-actions>
-              <v-btn color="primary" to="/metrics">Go to Metrics</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
       </v-row>
     </v-container>
   </BaseLayout>
