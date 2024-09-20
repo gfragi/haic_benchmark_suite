@@ -56,18 +56,25 @@
           </v-row>
         </v-col>
       </v-row>
+
+      <!-- Back Button -->
+      <v-row>
+        <v-col cols="12" class="text-center">
+          <v-btn color="primary" @click="goBack">Back</v-btn>
+        </v-col>
+      </v-row>
+
+      <v-overlay :value="isLoading">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
+
+      <v-snackbar v-model="snackbar" :color="snackbarColor" top>
+        {{ snackbarText }}
+        <template v-slot:action="{ attrs }">
+          <v-btn text v-bind="attrs" @click="snackbar = false">Close</v-btn>
+        </template>
+      </v-snackbar>
     </v-container>
-
-    <v-overlay :value="isLoading">
-      <v-progress-circular indeterminate size="64"></v-progress-circular>
-    </v-overlay>
-
-    <v-snackbar v-model="snackbar" :color="snackbarColor" top>
-      {{ snackbarText }}
-      <template v-slot:action="{ attrs }">
-        <v-btn text v-bind="attrs" @click="snackbar = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </BaseLayout>
 </template>
 
@@ -261,6 +268,9 @@ export default {
         "#795548", // Brown
       ];
       return colors[index % colors.length];
+    },
+    goBack() {
+      this.$router.go(-1);
     },
   },
   watch: {

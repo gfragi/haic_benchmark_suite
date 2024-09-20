@@ -4,8 +4,14 @@
       <v-row>
         <v-col cols="12" class="text-center">
           <h1>Evaluation Configurations</h1>
+          <p class="subtitle-1 mb-4">
+            Here you can manage your evaluation configurations. Use the search
+            field to find specific configurations or create a new one.
+          </p>
         </v-col>
-        <v-col cols="12" class="text-right">
+      </v-row>
+      <v-row>
+        <v-col cols="6" class="text-left">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -14,98 +20,114 @@
             hide-details
           ></v-text-field>
         </v-col>
-        <v-btn color="primary" @click="goToNewConfig" class="ml-auto">
-          New Configuration
-        </v-btn>
-        <v-data-table
-          :headers="headers"
-          :items="filteredConfigs"
-          class="elevation-1"
-          :items-per-page="itemsPerPage"
-          :footer-props="{
-            'items-per-page-options': [10, 15, 20, { text: 'All', value: -1 }],
-          }"
-          :sort-by="[sortBy]"
-          :sort-desc="[sortDesc]"
-        >
-          <!-- Scoped slots for customizing the actions column -->
-          <template v-slot:[`item.evaluation_status`]="{ item }">
-            <v-chip :color="getStatusColor(item.evaluation_status)" dark>
-              {{ item.evaluation_status }}
-            </v-chip>
-          </template>
-          <template v-slot:[`item.actions`]="{ item }">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  color="green"
-                  text
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="confirmEvaluateConfig(item)"
-                >
-                  <v-icon>mdi-play-circle</v-icon>
-                </v-btn>
-              </template>
-              <span>Run Evaluation</span>
-            </v-tooltip>
+        <v-col cols="6" class="text-left">
+          <v-btn color="orange" @click="goToNewConfig" class="ml-2">
+            New Configuration
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-data-table
+            :headers="headers"
+            :items="filteredConfigs"
+            class="elevation-1"
+            :items-per-page="itemsPerPage"
+            :footer-props="{
+              'items-per-page-options': [
+                10,
+                15,
+                20,
+                { text: 'All', value: -1 },
+              ],
+            }"
+            :sort-by="[sortBy]"
+            :sort-desc="[sortDesc]"
+          >
+            <!-- Scoped slots for customizing the actions column -->
+            <template v-slot:[`item.evaluation_status`]="{ item }">
+              <v-chip :color="getStatusColor(item.evaluation_status)" dark>
+                {{ item.evaluation_status }}
+              </v-chip>
+            </template>
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    color="green"
+                    text
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="confirmEvaluateConfig(item)"
+                  >
+                    <v-icon>mdi-play-circle</v-icon>
+                  </v-btn>
+                </template>
+                <span>Run Evaluation</span>
+              </v-tooltip>
 
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  color="primary"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="viewResults(item)"
-                >
-                  <v-icon>mdi-file-document-outline</v-icon>
-                </v-btn>
-              </template>
-              <span>View Results</span>
-            </v-tooltip>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    color="primary"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="viewResults(item)"
+                  >
+                    <v-icon>mdi-file-document-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>View Results</span>
+              </v-tooltip>
 
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  color="blue"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="viewPlots(item)"
-                >
-                  <v-icon>mdi-chart-line</v-icon>
-                </v-btn>
-              </template>
-              <span>View Plots</span>
-            </v-tooltip>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    color="blue"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="viewPlots(item)"
+                  >
+                    <v-icon>mdi-chart-line</v-icon>
+                  </v-btn>
+                </template>
+                <span>View Plots</span>
+              </v-tooltip>
 
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn icon v-bind="attrs" v-on="on" @click="editConfig(item)">
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-              </template>
-              <span>Edit Configuration</span>
-            </v-tooltip>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="editConfig(item)"
+                  >
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+                <span>Edit Configuration</span>
+              </v-tooltip>
 
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  color="red"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="confirmDeleteConfig(item)"
-                >
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </template>
-              <span>Delete Configuration</span>
-            </v-tooltip>
-          </template>
-        </v-data-table>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    color="red"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="confirmDeleteConfig(item)"
+                  >
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </template>
+                <span>Delete Configuration</span>
+              </v-tooltip>
+            </template>
+          </v-data-table>
+        </v-col>
       </v-row>
 
       <v-dialog v-model="dialog" max-width="500px">

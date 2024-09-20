@@ -43,6 +43,13 @@
           ></v-pagination>
         </v-col>
       </v-row>
+
+      <!-- Back Button -->
+      <v-row>
+        <v-col cols="12" class="text-center">
+          <v-btn color="primary" @click="goBack">Back</v-btn>
+        </v-col>
+      </v-row>
     </v-container>
   </BaseLayout>
 </template>
@@ -113,6 +120,10 @@ export default {
     downloadResult(resultLink) {
       // Trigger the download for the result from the link
       window.open(resultLink, "_blank");
+    },
+    // Navigate back to the previous page
+    goBack() {
+      this.$router.go(-1);
     },
   },
 };

@@ -1,7 +1,7 @@
 <template>
   <BaseLayout>
     <v-container>
-      <v-card class="mx-auto my-5" max-width="900">
+      <v-card class="mx-auto my-5" max-width="1200" outlined>
         <v-card-title class="text-h5">
           Human-AI Collaboration Metrics
         </v-card-title>
