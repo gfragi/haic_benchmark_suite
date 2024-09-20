@@ -100,9 +100,19 @@ export default {
   },
   data() {
     return {
-      appTypes: ["radiologist", "smart_cities", "smart_energy"],
+      appTypes: [
+        { title: "DSS with image recognition", value: "dss_img_recog" },
+        {
+          title: "Smart City AI Decision Support System",
+          value: "dss_smart_cities",
+        },
+        {
+          title: "Smart Grid AI Decision Support System",
+          value: "dss_smart_energy",
+        },
+      ],
       formParams: {
-        app_type: "radiologist",
+        app_type: "dss_img_recog",
         count: 1,
         start_date: "2024-02-10",
         end_date: "2024-08-10",
