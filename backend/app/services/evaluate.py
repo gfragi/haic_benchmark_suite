@@ -25,11 +25,11 @@ minio_client = Minio(
 
 
 def evaluate_logs(config: EvaluationConfig, logs_data: list, db: Session):
-    
+
     # Initialize sets to track unique versions
     unique_app_versions = set()
     unique_ai_model_versions = set()
-    
+
     # Aggregating interaction data across all sessions
     all_interaction_data = []
     for session in logs_data:
