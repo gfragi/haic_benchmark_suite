@@ -12,7 +12,8 @@ app = FastAPI(
 )
 
 origins = [
-    "http://localhost:8080",  # The URL of the frontend
+    "http://localhost:8080",
+    "http://127.0.0.1:8080", # The URL of the frontend
     # Add other origins if needed
 ]
 

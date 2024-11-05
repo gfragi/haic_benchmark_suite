@@ -1,298 +1,101 @@
 from datetime import datetime, timedelta
 import random
 import uuid
-
 from fastapi import HTTPException
+from app.utils.generic_functions import random_date
 
+def generate_simple_unique_id(prefix: str) -> str:
+    return f"{prefix}-{uuid.uuid4()}"
+
+# Template with placeholders to be dynamically replaced
 logs_templates = {
     "dss_img_recog": {
         "interaction_data": {
-            "image_id": "unique_image_id",
-            "presentation_time": "2024-07-01T09:01:00Z",
-            "result": "true_positive",
-            "response_time": 120,
-            "performance_improvement": 15,
-            "time_spent": 5,
-            "outcome": "correct",
-            "objective_status": "achieved",
-            "pre_feedback_performance": 80,
-            "post_feedback_performance": 85,
-            "pre_adaptation_performance": 78,
-            "post_adaptation_performance": 82,
-            "reached_target_accuracy": True,
-            "errors_before": 5,
-            "errors_after": 2,
-            "confidence_level": 0.95,
-            "performance_at_t": 0.9,
-            "performance_at_t_1": 0.85,
-            "time_interval": 5,
-            "resources_used": 120,
-            "total_resources": 150,
-            "pre_correction_performance": 75,
-            "post_correction_performance": 85,
-            "decision_outcome": "successful",
-            "pre_retention_performance": 90,
-            "post_retention_performance": 85,
-            "time_without_ai": 300,
-            "time_with_ai": 200,
-            "trust_rating": 8,
+            "image_id": "img-" + str(uuid.uuid4()),  # Unique ID for each image
+            "presentation_time": lambda: random_date(datetime.now() - timedelta(days=1), datetime.now()).isoformat(),
+            "result": lambda: random.choice(["true_positive", "false_positive", "true_negative", "false_negative"]),
+            "ai_detection_results": lambda: random.choice(["true_positive", "false_positive", "true_negative", "false_negative"]),
+            "outcome": lambda: random.choice(["correct", "incorrect"]),
+            "performance_at_t": lambda: random.uniform(0.7, 0.9),
+            "performance_at_t_1": lambda: random.uniform(0.6, 0.7),
+            "time_interval": lambda: random.randint(1800, 7200),  # Time interval in seconds
+            
+            # Efficiency metrics
+            "response_time": lambda: random.uniform(100, 500),  # Response time in milliseconds
+            "performance_improvement": lambda: random.uniform(0.01, 0.1),
+            "time_spent": lambda: random.randint(1000, 5000),  # Time spent in seconds
+            "reached_target_accuracy": lambda: random.choice([True, False]),
+            "resources_used": lambda: random.randint(20, 100),
+            "total_resources": 100,  # Assuming a fixed maximum resource value for simplicity
+            "time_without_ai": lambda: random.randint(300, 600),
+            "time_with_ai": lambda: random.randint(150, 400),
+            "correction_effectiveness": lambda: random.uniform(0.5, 1.0),
+            "correction_time": lambda: random.randint(50, 200),
+            "errors_before": lambda: random.randint(5, 15),
+            "errors_after": lambda: random.randint(0, 10),
+            "pre_retention_performance": lambda: random.uniform(0.6, 0.8),
+            "post_retention_performance": lambda: random.uniform(0.75, 0.9),
+            
+            # Adaptability and Learning metrics
+            "pre_feedback_performance": lambda: random.uniform(0.6, 0.7),
+            "post_feedback_performance": lambda: random.uniform(0.7, 0.85),
+            "pre_adaptation_performance": lambda: random.uniform(0.6, 0.75),
+            "post_adaptation_performance": lambda: random.uniform(0.75, 0.85),
+            "pre_correction_performance": lambda: random.uniform(0.6, 0.8),
+            "post_correction_performance": lambda: random.uniform(0.75, 0.9),
+            "learning_gain": lambda: random.uniform(0.01, 0.05),
+            "learning_time": lambda: random.randint(200, 1000),
+            "objective_status": lambda: random.choice(["achieved", "not achieved"]),
+            
+            # Collaboration and Interaction metrics
+            "human_decision": lambda: random.choice(["approve", "reject"]),
+            "ai_suggestion": lambda: random.choice(["approve", "reject"]),
+            "ai_assisted": lambda: random.choice([True, False]),
+            "decision_outcome": lambda: random.choice(["successful", "unsuccessful"]),
+            "resolution_time": lambda: random.randint(50, 300),
+            "effort_without_ai": lambda: random.randint(5, 15),
+            "effort_with_ai": lambda: random.randint(1, 10),
+            
+            # Trust and Safety metrics
+            "confidence_level": lambda: random.uniform(0.0, 1.0),
+            "trust_rating": lambda: random.randint(6, 10),
             "trust_scale_maximum": 10,
-            "safety_incidents": 0,
-            "performance_adversarial": 0.85,
-            "performance_normal": 0.9,
-            "performance_across_domains": 0.88,
-            "baseline_performance": 0.9,
-            "uptime": 99.9,
-            "total_time": 100,
-            "validation_data": {
-                "ai_detection_results": "detection_summary",
-                "confidence_scores": {
-                    "detection_1": 0.85,
-                    "detection_2": 0.9
-                },
-                "processing_time_seconds": 180,
-                "validation_time": "2024-07-01T09:03:00Z",
-                "system_metrics": {
-                    "accuracy": 0.88,
-                    "precision": 0.86,
-                    "recall": 0.9
-                }
-            },
-            "review_data": {
-                "review_time_seconds": 300,
-                "detections_confirmed": 5,
-                "false_positives_identified": 2,
-                "false_negatives_identified": 1,
-                "feedback_details": "detailed_feedback_provided",
-                "time_spent_on_corrections_seconds": 120
-            }
+            "safety_incidents": lambda: random.randint(0, 2),
+            "uptime": lambda: random.randint(4500, 5000),
+            "total_time": 6000,
+            
+            # Robustness and Generalization metrics
+            "performance_adversarial": lambda: random.uniform(0.6, 0.8),
+            "performance_normal": lambda: random.uniform(0.8, 0.95),
+            "performance_across_domains": lambda: random.uniform(0.7, 0.9),
+            "baseline_performance": lambda: random.uniform(0.65, 0.8),
         },
         "retrain_events": [
             {
-                "retraining_time": "2024-07-02T09:00:00Z",
+                "retraining_time": lambda: random_date(datetime.now() - timedelta(days=365), datetime.now()).isoformat(),
                 "initial_metrics": {
-                    "detection_accuracy": 0.75,
-                    "false_positive_rate": 0.10,
-                    "false_negative_rate": 0.08
+                    "detection_accuracy": lambda: random.uniform(0.6, 0.8),
+                    "false_positive_rate": lambda: random.uniform(0.05, 0.15),
+                    "false_negative_rate": lambda: random.uniform(0.05, 0.15),
                 },
                 "post_retraining_metrics": {
-                    "detection_accuracy": 0.85,
-                    "false_positive_rate": 0.05,
-                    "false_negative_rate": 0.04
+                    "detection_accuracy": lambda: random.uniform(0.8, 0.95),
+                    "false_positive_rate": lambda: random.uniform(0.02, 0.1),
+                    "false_negative_rate": lambda: random.uniform(0.02, 0.1),
                 },
                 "retraining_details": {
-                    "time_taken_seconds": 3600,
+                    "time_taken_seconds": lambda: random.randint(1800, 7200),  # Retraining time in seconds
                     "data_used": "feedback and corrections from the review",
-                    "ai_model_version_after_retraining": "1.1.0"
-                }
+                    "ai_model_version_after_retraining": lambda: f"{random.randint(1, 5)}.{random.randint(0, 9)}.{random.randint(0, 9)}",
+                },
             }
-        ],
-        "performance_infrastructure": {
-            "hardware_specifications": "details_of_hardware",
-            "software_stack": "details_of_software",
-            "network_conditions": "details_of_network_conditions"
-        },
-        "performance_logs": {
-            "processing_time_seconds": {
-                "with_ai": random.randint(100, 300),
-                "without_ai": random.randint(300, 600)
-            },
-            "resource_utilization": {
-                "with_ai": random.randint(50, 100),
-                "without_ai": random.randint(100, 200)
-            },
-            "human_effort_seconds": {
-                "with_ai": random.randint(300, 900),
-                "without_ai": random.randint(600, 1800)
-            }
-        },
-        "ai_model_data": {
-            "model_name": "detection_model_name",
-            "training_data": "details_of_training_data",
-            "model_size": "size_of_model",
-            "inference_time_seconds": random.randint(1, 5),
-            "deployment_details": "details_of_deployment"
-        }
+        ]
     },
-    "dss_smart_cities": {
-        "interaction_data": {
-            "application_id": "unique_application_id",
-            "justification_documents": "document_list",
-            "submission_time": "2024-06-28T12:00:00Z",
-            "validation_data": {
-                "validation_results": "accepted/rejected",
-                "confidence_level": 0.85,
-                "processing_time_seconds": 300,
-                "validation_time": "2024-06-28T12:05:00Z",
-                "system_metrics": {
-                    "accuracy": 0.9,
-                    "precision": 0.85,
-                    "recall": 0.88
-                }
-            },
-            "alert_data": {
-                "alert_details": "reason_for_alert",
-                "confidence_level": 0.85,
-                "alert_time": "2024-06-28T12:06:00Z"
-            },
-            "review_data": {
-                "review_time_seconds": 600,
-                "discrepancy_rate": 0.05,
-                "operator_decision": "confirm/reject",
-                "feedback_time": "2024-06-28T12:16:00Z"
-            },
-            "feedback_data": {
-                "feedback_details": "details_of_feedback",
-                "correction_actions": "suggested_corrections",
-                "feedback_time": "2024-06-28T12:18:00Z"
-            }
-        },
-        "retrain_events": [
-            {
-                "retraining_time": "2024-06-29T12:00:00Z",
-                "initial_metrics": {
-                    "detection_accuracy": 0.75,
-                    "false_positive_rate": 0.10,
-                    "false_negative_rate": 0.05
-                },
-                "post_retraining_metrics": {
-                    "detection_accuracy": 0.85,
-                    "false_positive_rate": 0.05,
-                    "false_negative_rate": 0.03
-                },
-                "retraining_details": {
-                    "time_taken_seconds": 7200,
-                    "data_used": "feedback and corrections from the session",
-                    "ai_model_version_after_retraining": "1.1.0"
-                }
-            }
-        ],
-        "performance_infrastructure": {
-            "hardware_specifications": "details_of_hardware",
-            "software_stack": "details_of_software",
-            "network_conditions": "details_of_network_conditions"
-        },
-        "performance_logs": {
-            "processing_time_seconds": {
-                "with_ai": random.randint(200, 600),
-                "without_ai": random.randint(400, 900)
-            },
-            "resource_utilization": {
-                "with_ai": random.randint(100, 200),
-                "without_ai": random.randint(200, 400)
-            },
-            "human_effort_seconds": {
-                "with_ai": random.randint(300, 900),
-                "without_ai": random.randint(900, 2700)
-            }
-        },
-        "ai_model_data": {
-            "model_name": "model_name",
-            "training_data": "details_of_training_data",
-            "model_size": "size_of_model",
-            "inference_time_seconds": random.randint(1, 5),
-            "deployment_details": "details_of_deployment"
-        }
-    },
-    "dss_smart_energy": {
-        "interaction_data": {
-            "load_generation_data": [
-                {
-                    "timestamp": "2024-07-10T10:01:00Z",
-                    "load_setpoint": 150,
-                    "generation_setpoint": 140,
-                    "security_state": "secure",
-                    "predicted_security_state": "insecure",
-                    "confidence_bound": 0.75
-                },
-                {
-                    "timestamp": "2024-07-10T10:05:00Z",
-                    "load_setpoint": 155,
-                    "generation_setpoint": 150,
-                    "security_state": "secure",
-                    "predicted_security_state": "secure",
-                    "confidence_bound": 0.90
-                }
-            ],
-            "alert_data": [
-                {
-                    "alert_time": "2024-07-10T10:02:00Z",
-                    "load_setpoint": 150,
-                    "generation_setpoint": 140,
-                    "predicted_security_state": "insecure",
-                    "confidence_bound": 0.75
-                }
-            ],
-            "review_data": {
-                "review_time_seconds": 300,
-                "insecure_instances_confirmed": 1,
-                "false_positives": 0,
-                "false_negatives": 1,
-                "user_satisfaction": "high",
-                "feedback_provided": "detailed_feedback",
-                "time_spent_on_corrections_seconds": 120,
-                "human_confirmation_rate": 0.95
-            }
-        },
-        "retrain_events": [
-            {
-                "retraining_time": "2024-07-11T10:00:00Z",
-                "initial_metrics": {
-                    "detection_accuracy": 0.80,
-                    "false_positive_rate": 0.05,
-                    "false_negative_rate": 0.10
-                },
-                "post_retraining_metrics": {
-                    "detection_accuracy": 0.90,
-                    "false_positive_rate": 0.03,
-                    "false_negative_rate": 0.05
-                },
-                "retraining_details": {
-                    "time_taken_seconds": 3600,
-                    "data_used": "feedback and simulation results",
-                    "ai_model_version_after_retraining": "1.1.0"
-                }
-            }
-        ],
-        "performance_infrastructure": {
-            "hardware_specifications": "details_of_hardware",
-            "software_stack": "details_of_software",
-            "network_conditions": "details_of_network_conditions"
-        },
-        "performance_logs": {
-            "processing_time_seconds": {
-                "with_ai": random.randint(100, 300),
-                "without_ai": random.randint(300, 600)
-            },
-            "resource_utilization": {
-                "with_ai": random.randint(50, 100),
-                "without_ai": random.randint(100, 200)
-            },
-            "human_effort_seconds": {
-                "with_ai": random.randint(300, 900),
-                "without_ai": random.randint(600, 1800)
-            }
-        },
-        "ai_model_data": {
-            "model_name": "grid_security_model",
-            "training_data": "details_of_training_data",
-            "model_size": "size_of_model",
-            "inference_time_seconds": random.randint(1, 5),
-            "deployment_details": "details_of_deployment"
-        }
-    }
+    # Additional templates for dss_smart_cities, dss_smart_energy, etc. can follow the same structure.
 }
 
-def generate_unique_id():
-    return str(uuid.uuid4())
-
-def random_date(start, end):
-    """Generate a random datetime between `start` and `end`."""
-    delta = end - start
-    random_seconds = random.randrange(int(delta.total_seconds()))
-    return start + timedelta(seconds=random_seconds)
-
-def generate_log(app_type: str, start_datetime: str, end_datetime: str,ai_model_version_range: str):
+# Log generation function with dynamic field generation
+def generate_log(app_type: str, start_datetime: str, end_datetime: str, ai_model_version_range: str, custom_data=None):
     if app_type not in logs_templates:
         raise ValueError(f"Unsupported app type: {app_type}")
 
@@ -304,22 +107,31 @@ def generate_log(app_type: str, start_datetime: str, end_datetime: str,ai_model_
     session_end = random_date(session_start, end_datetime)
 
     log = {
-        "session_id": generate_unique_id(),
-        "user_id": generate_unique_id(),
+        "session_id": generate_simple_unique_id(app_type),
+        "user_id": generate_simple_unique_id(app_type),
         "ai_model_version": f"{random.randint(int(ai_model_version_start[0]), int(ai_model_version_end[0]))}.{random.randint(int(ai_model_version_start[2]), int(ai_model_version_end[2]))}.{random.randint(int(ai_model_version_start[4]), int(ai_model_version_end[4]))}",
         "app_version": "1.0.0",
         "start_time": session_start.isoformat() + 'Z',
         "end_time": session_end.isoformat() + 'Z',
     }
 
-    # Now add the specific interaction data based on the app type
-    if app_type == "dss_img_recog":
-        log.update(logs_templates["dss_img_recog"])
+    # Populate interaction data with dynamic values
+    interaction_data = logs_templates[app_type]["interaction_data"]
+    log["interaction_data"] = {
+        key: (custom_data[key] if custom_data and key in custom_data else (value() if callable(value) else value))
+        for key, value in interaction_data.items()
+    }
 
-    elif app_type == "dss_smart_cities":
-        log.update(logs_templates["dss_smart_cities"])
-
-    elif app_type == "dss_smart_energy":
-        log.update(logs_templates["dss_smart_energy"])
+    # Populate retrain events with dynamic values
+    retrain_events_template = logs_templates[app_type]["retrain_events"]
+    log["retrain_events"] = [
+        {
+            "retraining_time": event["retraining_time"](),
+            "initial_metrics": {k: (v() if callable(v) else v) for k, v in event["initial_metrics"].items()},
+            "post_retraining_metrics": {k: (v() if callable(v) else v) for k, v in event["post_retraining_metrics"].items()},
+            "retraining_details": {k: (v() if callable(v) else v) for k, v in event["retraining_details"].items()}
+        }
+        for event in retrain_events_template
+    ]
 
     return log
