@@ -16,12 +16,12 @@ def calculate_metrics_for_group(db: Session, config_id: int, group_name: str):
 
     # Mapping of group names to their respective metric methods
     metrics_map = {
-        "Performance": [
-            Metrics.Performance.calculate_prediction_accuracy,
-            Metrics.Performance.calculate_precision,
-            Metrics.Performance.calculate_recall,
-            Metrics.Performance.calculate_overall_system_accuracy,
-            Metrics.Performance.calculate_model_improvement_rate,
+        "Effectiveness": [
+            Metrics.Effectiveness.calculate_prediction_accuracy,
+            Metrics.Effectiveness.calculate_precision,
+            Metrics.Effectiveness.calculate_recall,
+            Metrics.Effectiveness.calculate_overall_system_accuracy,
+            Metrics.Effectiveness.calculate_model_improvement_rate,
         ],
         "Efficiency": [
             Metrics.Efficiency.calculate_response_time,

@@ -24,7 +24,7 @@ logs_templates = {
             "response_time": lambda: random.uniform(100, 500),  # Response time in milliseconds
             "performance_improvement": lambda: random.uniform(0.01, 0.1),
             "time_spent": lambda: random.randint(1000, 5000),  # Time spent in seconds
-            "reached_target_accuracy": lambda: random.choice([True, False]),
+            "reached_target": lambda: random.choice([True, False]),
             "resources_used": lambda: random.randint(20, 100),
             "total_resources": 100,  # Assuming a fixed maximum resource value for simplicity
             "time_without_ai": lambda: random.randint(300, 600),

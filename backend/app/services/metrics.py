@@ -1,5 +1,5 @@
 class Metrics:
-    class Performance:
+    class Effectiveness:
         @staticmethod
         def calculate_prediction_accuracy(interaction_data):
             tp = sum(1 for item in interaction_data if item.get("result") == "true_positive")
@@ -49,7 +49,7 @@ class Metrics:
         @staticmethod
         def calculate_query_efficiency(interaction_data):
             total_queries = len(interaction_data)
-            queries_to_target_accuracy = sum(1 for item in interaction_data if item.get("reached_target_accuracy", False))
+            queries_to_target_accuracy = sum(1 for item in interaction_data if item.get("reached_target", False))
             return total_queries / queries_to_target_accuracy if queries_to_target_accuracy > 0 else 0
 
         @staticmethod
@@ -186,7 +186,7 @@ class Metrics:
     @staticmethod
     def get_available_metrics():
         return {
-            "Performance": [
+            "Effectiveness": [
                 "Prediction Accuracy",
                 "Precision",
                 "Recall",

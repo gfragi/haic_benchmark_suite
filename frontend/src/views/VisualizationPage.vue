@@ -247,7 +247,7 @@ export default {
     },
     getGroupIcon(groupName) {
       const icons = {
-        Performance: "mdi-chart-line",
+        Effectiveness: "mdi-chart-line",
         Efficiency: "mdi-speedometer",
         "Adaptability and Learning": "mdi-brain",
         "Collaboration and Interaction": "mdi-human-handsup",
