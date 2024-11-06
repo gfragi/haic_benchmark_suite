@@ -2,7 +2,7 @@ from sqlalchemy import MetaData, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "postgresql://postgres:CHANGEME123@localhost/test_bench"
+DATABASE_URL = "postgresql://postgres:CHANGEME123@localhost:5434/test_bench"
 metadata = MetaData()
 
 engine = create_engine(DATABASE_URL)

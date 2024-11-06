@@ -7,11 +7,11 @@
         </v-card-title>
         <v-card-text>
           <v-expansion-panels multiple>
-            <!-- Performance Metrics -->
+            <!-- Effectiveness Metrics -->
             <v-expansion-panel>
               <v-expansion-panel-title>
                 <v-icon left>mdi-chart-line</v-icon>
-                Performance Metrics
+                Effectiveness Metrics
               </v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-list dense>
@@ -65,7 +65,7 @@
                   <MetricItem
                     title="Query Efficiency"
                     description="Number of queries needed to reach a target accuracy."
-                    formula="Query Efficiency = Total Queries / Queries to Reach Target Accuracy"
+                    formula="Query Efficiency = Total Queries / Queries to Reach Target"
                   />
                   <MetricItem
                     title="Resource Utilization"

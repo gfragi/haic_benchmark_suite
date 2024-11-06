@@ -1,10 +1,10 @@
 export function groupMetricsByCategory(result) {
   const metricMapping = {
-    "Prediction Accuracy": "Performance",
-    Precision: "Performance",
-    Recall: "Performance",
-    "Overall System Accuracy": "Performance",
-    "Model Improvement Rate": "Performance",
+    "Prediction Accuracy": "Effectiveness",
+    Precision: "Effectiveness",
+    Recall: "Effectiveness",
+    "Overall System Accuracy": "Effectiveness",
+    "Model Improvement Rate": "Effectiveness",
     "Response Time": "Efficiency",
     "Teaching Efficiency": "Efficiency",
     "Query Efficiency": "Efficiency",
@@ -32,7 +32,7 @@ export function groupMetricsByCategory(result) {
   };
 
   const groupedMetrics = {
-    Performance: [],
+    Effectiveness: [],
     Efficiency: [],
     "Adaptability and Learning": [],
     "Collaboration and Interaction": [],

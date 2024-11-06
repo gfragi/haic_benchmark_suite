@@ -63,13 +63,13 @@ def evaluate_logs(config: EvaluationConfig, logs_data: list, db: Session):
 
         for metric in group.metrics:
             if metric.name == "Prediction Accuracy":
-                group_results["Prediction Accuracy"] = Metrics.Performance.calculate_prediction_accuracy(all_interaction_data)
+                group_results["Prediction Accuracy"] = Metrics.Effectiveness.calculate_prediction_accuracy(all_interaction_data)
             elif metric.name == "Response Time":
                 group_results["Response Time"] = Metrics.Efficiency.calculate_response_time(all_interaction_data)
             elif metric.name == "Teaching Efficiency":
                 group_results["Teaching Efficiency"] = Metrics.Efficiency.calculate_teaching_efficiency(all_interaction_data)
             elif metric.name == "Overall System Accuracy":
-                group_results["Overall System Accuracy"] = Metrics.Performance.calculate_overall_system_accuracy(all_interaction_data)
+                group_results["Overall System Accuracy"] = Metrics.Effectiveness.calculate_overall_system_accuracy(all_interaction_data)
             elif metric.name == "Objective Fulfillment Rate":
                 group_results["Objective Fulfillment Rate"] = Metrics.AdaptabilityAndLearning.calculate_objective_fulfillment_rate(all_interaction_data)
             elif metric.name == "Feedback Impact":
@@ -83,7 +83,7 @@ def evaluate_logs(config: EvaluationConfig, logs_data: list, db: Session):
             elif metric.name == "Confidence":
                 group_results["Confidence"] = Metrics.TrustAndSafety.calculate_confidence(all_interaction_data)
             elif metric.name == "Model Improvement Rate":
-                group_results["Model Improvement Rate"] = Metrics.Performance.calculate_model_improvement_rate(all_interaction_data)
+                group_results["Model Improvement Rate"] = Metrics.Effectiveness.calculate_model_improvement_rate(all_interaction_data)
             elif metric.name == "Resource Utilization":
                 group_results["Resource Utilization"] = Metrics.Efficiency.calculate_resource_utilization(all_interaction_data)
             elif metric.name == "Impact of Corrections":
@@ -105,9 +105,9 @@ def evaluate_logs(config: EvaluationConfig, logs_data: list, db: Session):
             elif metric.name == "System Reliability":
                 group_results["System Reliability"] = Metrics.TrustAndSafety.calculate_system_reliability(all_interaction_data)
             elif metric.name == "Precision":
-                group_results["Precision"] = Metrics.Performance.calculate_precision(all_interaction_data)
+                group_results["Precision"] = Metrics.Effectiveness.calculate_precision(all_interaction_data)
             elif metric.name == "Recall":
-                group_results["Recall"] = Metrics.Performance.calculate_recall(all_interaction_data)
+                group_results["Recall"] = Metrics.Effectiveness.calculate_recall(all_interaction_data)
             elif metric.name == "Human-AI Agreement Rate":
                 group_results["Human-AI Agreement Rate"] = Metrics.CollaborationAndInteraction.calculate_human_ai_agreement_rate(all_interaction_data)
             elif metric.name == "Time to Resolution":
