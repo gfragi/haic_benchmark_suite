@@ -25,12 +25,12 @@
               label="AI Model Type"
               required
             ></v-select>
-            <v-select
+            <!-- <v-select #TODO: Add this field
               v-model="config.config_type"
               :items="availableConfigTypes"
               label="Configuration Type"
               required
-            ></v-select>
+            ></v-select> -->
             <v-select
               v-model="config.metrics"
               :items="availableMetrics"
