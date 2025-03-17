@@ -1,0 +1,52 @@
+{
+    "session_id": "123e4567-e89b-12d3-a456-426614174000",
+    "user_id": "987e6543-e21b-45d2-b789-123456789abc",
+    "session_start": 1700000000000,
+    "session_end": 1700000600000,
+    "session_end_type": "taskCompletion",
+    "session_duration": 600000,
+    "engagement": {
+      "idle_time": 120000,
+      "active_time": 480000,
+      "engagement_time": 450000
+    },
+    "feedback": {
+      "positive_feedback_count": 5,
+      "negative_feedback_count": 1,
+      "total_bot_messages_count": 20,
+      "total_feedback_count": 6,
+      "positive_feedback_ratio": 0.25,
+      "negative_feedback_ratio": 0.05,
+      "total_feedback_ratio": 0.3,
+      "positive_follow_up_count": 2,
+      "feedback_incorporation_rate": 0.67
+    },
+    "response_time": {
+      "user_response_time": 4000,
+      "user_typing_start_time": 1700000200000,
+      "average_user_response_time": 3500,
+      "average_user_typing_start_time": 1500
+    },
+    "sentiment": {
+      "sentiment_score": 2.3,
+      "normalized_sentiment_score": 0.65,
+      "average_sentiment_score": 1.8,
+      "average_normalized_sentiment_score": 0.55
+    },
+    "grammar": {
+      "total_words_count": 500,
+      "mistakes_count": 15,
+      "grammatical_mistakes_frequency": 0.03
+    },
+    "language_complexity": {
+      "average_sentence_length": 12.5,
+      "type_token_ratio": 0.78,
+      "complexity_of_language": 8.9
+    },
+    "typing_speed": {
+      "duration": 7000,
+      "message_length": 50,
+      "typing_speed": 7.14
+    }
+  }
+  
