@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: haic-postgres
+    environment:
+        MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+        MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+        MINIO_ENDPOINT=${MINIO_ENDPOINT}
+        MINIO_BUCKET=${MINIO_BUCKET}
+        MINIO_REGION=${MINIO_REGION}
+        DB_HOST=${DB_HOST}
+        DB_PORT=${DB_PORT}
+        DB_PASSWORD=${DB_PASSWORD}
+        DB_NAME=${DB_NAME}
+        DB_USER=${DB_USER}
+        LOG_LEVEL=${LOG_LEVEL}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/db-init:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+
+  volumes:
+    postgres_data:
+
+  minio:
+    image: minio/minio
+    container_name: haic-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+      - ./docker/minio-init:/minio-init
+    entrypoint: sh
+    command: >
+      -c '
+        mkdir -p /data/humaine &&
+        cp -r /minio-init/humaine/* /data/humaine &&
+        /usr/bin/minio server /data --console-address ":9001"
+      '
+
+  volumes:
+    minio_data:
+
+
+#   backend:
+#     container_name: backend
+#     build: ./backend
+#     ports:
+#       - "8000:8000"
+#     volumes:
+#       - ./backend:/app
+#     environment:
+#       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+#       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+#       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+#       - MINIO_BUCKET=${MINIO_BUCKET}
+#       - MINIO_REGION=${MINIO_REGION}
+#       - DB_HOST=${DB_HOST}
+#       - DB_PORT=${DB_PORT}
+#       - DB_PASSWORD=${DB_PASSWORD}
+#       - DB_NAME=${DB_NAME}
+#       - DB_USER=${DB_USER}
+#       - LOG_LEVEL=${LOG_LEVEL}
+#     networks:
+#       - app-network
+
+#   frontend:
+#     container_name: frontend
+#     build: ./frontend
+#     ports:
+#       - "8080:5000"
+#     networks:
+#       - app-network
+
+#   db:
+#     image: postgres:15
+#     restart: always
+#     container_name: hua_bench_db
+
+#     volumes:
+#       - ./pg-data:/var/lib/mysql
+#       # - ./database/resources:/docker-entrypoint-initdb.d
+#     ports:
+#       - "5432:5432"
+#     environment:
+#         POSTGRES_USER: postgres
+#         POSTGRES_PASSWORD: CHANGEME123
+#         POSTGRES_DB: test_bench
+#   minio:
+#     image: quay.io/minio/minio
+#     command: server /data --console-address ":9001"
+#     container_name: minio
+#     restart: always
+#     ports:
+#       - "9000:9000"
+#       - "9001:9001"
+#     environment:
+#       MINIO_ROOT_USER: ROOTNAME
+#       MINIO_ROOT_PASSWORD: CHANGEME123
+#     volumes:
+#         - ./minio-data:/data
+
+# networks:
+#   app-network:
+#     driver: bridge

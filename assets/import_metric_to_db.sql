@@ -1,4 +1,24 @@
--- Insert the metric groups
+-- Create schema if it does not exist
+CREATE SCHEMA IF NOT EXISTS public;
+
+-- Drop tables if exist (useful to start fresh)
+-- DROP TABLE IF EXISTS metrics CASCADE;
+-- DROP TABLE IF EXISTS metric_groups CASCADE;
+
+-- -- Create table metric_groups
+-- CREATE TABLE metric_groups (
+--     id SERIAL PRIMARY KEY,
+--     name VARCHAR(100) NOT NULL UNIQUE
+-- );
+
+-- Create table metrics
+-- CREATE TABLE metrics (
+--     id SERIAL PRIMARY KEY,
+--     name VARCHAR(100) NOT NULL,
+--     group_id INTEGER REFERENCES metric_groups(id)
+-- );
+
+-- Insert metric groups first (ensures IDs start from 1)
 INSERT INTO metric_groups (name) VALUES
     ('Performance'),
     ('Efficiency'),
@@ -7,7 +27,7 @@ INSERT INTO metric_groups (name) VALUES
     ('Trust and Safety'),
     ('Robustness and Generalization');
 
--- Insert the metrics for each group
+-- Insert the metrics (aligned correctly with group_id)
 -- Group 1: Performance
 INSERT INTO metrics (name, group_id) VALUES
     ('Prediction Accuracy', 1),
