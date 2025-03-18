@@ -43,6 +43,13 @@ services:
         cp -r /minio-init/humaine/* /data/humaine &&
         /usr/bin/minio server /data --console-address ":9001"
       '
+  migrations:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.backend
+    command: alembic upgrade head
+    depends_on:
+      - db
 
   backend:
     build:
