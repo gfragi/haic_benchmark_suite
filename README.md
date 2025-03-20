@@ -4,19 +4,38 @@ An application to evaluate Human-AI collaboration by logging interactions, confi
 
 ## Table of Contents
 
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Backend Setup](#backend-setup)
-- [Frontend Setup](#frontend-setup)
-- [Running the Application](#running-the-application)
-- [API Endpoints](#api-endpoints)
-- [Frontend Components](#frontend-components)
-- [Usage](#usage)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [License](#license)
+- [Human-AI Benchmark Suite](#human-ai-benchmark-suite)
+  - [Table of Contents](#table-of-contents)
+  - [Project Structure](#project-structure)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+  - [Backend Setup](#backend-setup)
+  - [Frontend Setup](#frontend-setup)
+  - [Running the Application](#running-the-application)
+  - [API Endpoints](#api-endpoints)
+    - [Evaluation Config](#evaluation-config)
+    - [Logs](#logs)
+    - [Evaluation Result](#evaluation-result)
+    - [Reporting](#reporting)
+  - [Frontend Components](#frontend-components)
+    - [Components](#components)
+    - [Views](#views)
+  - [Usage](#usage)
+  - [Testing](#testing)
+    - [Backend](#backend)
+    - [Frontend](#frontend)
+  - [New Features](#new-features)
+    - [Evaluation Configuration Wizard](#evaluation-configuration-wizard)
+    - [Enhanced Log Management](#enhanced-log-management)
+    - [Log Generation Tool](#log-generation-tool)
+    - [Quick Start Guide](#quick-start-guide)
+- [Starting the backend](#starting-the-backend)
+- [Starting the frontend](#starting-the-frontend)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Project Structure
+
 ```bash
 human-ai-benchmark-suite/
 ├── backend/
@@ -44,7 +63,6 @@ human-ai-benchmark-suite/
 ├── README.md
 ├── vue.config.js
 ```
-
 
 ## Installation
 
@@ -183,10 +201,12 @@ pytest
 ### Frontend
 
 Run frontend tests using jest:
+
 ```bash
 cd frontend
 npm run test:unit
 ```
+
 ## New Features
 
 ### Evaluation Configuration Wizard
@@ -206,6 +226,7 @@ npm run test:unit
 The HAIC Evaluation Platform includes a Log Generation Tool designed to create synthetic log data tailored to the specific needs of different application types. This tool is essential for generating realistic interaction data to test and evaluate the performance of various AI models within the platform.
 
 Features of the Log Generation Tool
+
 - **Application Type Selection**: Users can select from predefined application types such as "smart_cities," each with its unique set of parameters and interaction models.
 
 - **Date Range**: Users can specify the start and end dates for the log entries, allowing the generation of logs over a defined period.
@@ -217,6 +238,7 @@ Features of the Log Generation Tool
 ### Quick Start Guide
 
 - **Running the Application**:
+
   ```bash
   # Starting the backend
   uvicorn app.main:app --reload
@@ -228,9 +250,6 @@ Features of the Log Generation Tool
 - **Accessing the Application**:
   - Backend: `http://localhost:8000`
   - Frontend: `http://localhost:8080`
-
-
-
 
 ## Contributing
 
@@ -245,4 +264,3 @@ Contributions are welcome! Please follow these steps to contribute:
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-

@@ -1,0 +1,6 @@
+{
+    "name": "haic-node-red",
+    "description": "HumAIne HAIC Node-RED Integration",
+    "version": "0.0.1",
+    "private": true
+}
