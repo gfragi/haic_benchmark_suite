@@ -11,8 +11,6 @@ import app
 import importlib
 
 
-
-
 for _, modname, _ in pkgutil.walk_packages(app.models.__path__, app.models.__name__ + "."):
     importlib.import_module(modname)
 
