@@ -12,8 +12,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./docker/db-init:/docker-entrypoint-initdb.d
-      - postgres_data:/var/lib/postgresql/data
+      - ./docker/db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # - postgres_data:/var/lib/postgresql/data
 
   minio:
     image: minio/minio
@@ -34,13 +34,12 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - minio_data:/data
-      - ./docker/minio-init:/minio-init
+      # - minio_data:/data
+      - ./docker/minio-init/data:/data
     entrypoint: sh
     command: >
       -c '
         mkdir -p /data/humaine &&
-        cp -r /minio-init/humaine/* /data/humaine &&
         /usr/bin/minio server /data --console-address ":9001"
       '
   migrations:
@@ -57,18 +56,6 @@ services:
       dockerfile: ./docker/Dockerfile.backend
     container_name: haic-backend
     env_file: .env
-    environment:
-      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_BUCKET: ${MINIO_BUCKET}
-      MINIO_REGION: ${MINIO_REGION}
-      LOG_LEVEL: ${LOG_LEVEL}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
     ports:
       - "8000:8000"
     depends_on:
