@@ -22,9 +22,9 @@ class EvaluationConfigSchema(BaseModel):
             "application_name": "My Application",
             "ai_model_name": "My AI Model",
             "ai_model_type": "Classification",
-            "metrics": ["accuracy", "precision", "recall"],
-            "evaluation_date": dt.now().isoformat(),
-            "description": "This is a sample evaluation configuration.",
+            "metrics": ["Effectiveness", "Efficiency"],
+            "evaluation_date": "2025-03-21T10:00:00Z",
+            "description": "Sample configuration.",
             "config_type": "specific",
             "evaluation_status": "pending"
-        }
+            }
