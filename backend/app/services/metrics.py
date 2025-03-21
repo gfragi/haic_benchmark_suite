@@ -186,7 +186,7 @@ class Metrics:
     @staticmethod
     def get_available_metrics():
         return {
-            "Effectiveness": [
+            "Perfromance": [
                 "Prediction Accuracy",
                 "Precision",
                 "Recall",
