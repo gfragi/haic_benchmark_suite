@@ -3,9 +3,15 @@ from sqlalchemy import MetaData, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# DATABASE_URL = os.getenv("DATABASE_URL") # Use for production
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "CHANGEME123")
+DB_NAME = os.getenv("DB_NAME", "test_bench")
 
-DATABASE_URL = "postgresql://postgres:CHANGEME123@localhost:5432/test_bench" # Use for local development
+DATABASE_URL = os.getenv("DATABASE_URL", f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+
+# DATABASE_URL = "postgresql://postgres:CHANGEME123@localhost:5432/test_bench" # Use for local development
 
 metadata = MetaData()
 
