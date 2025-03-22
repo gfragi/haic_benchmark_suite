@@ -1,0 +1,9 @@
+{
+    ".": {
+        "spec": "./api_clients/haic_client/dist",
+        "module": ".",
+        "subpath": "/api_clients",
+        "builtin": false,
+        "known": false
+    }
+}

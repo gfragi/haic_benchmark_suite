@@ -97,19 +97,7 @@ services:
       - "8080:8080"
     depends_on:
       - backend
-  
-  # Run only for the integration with HAIC
-  node-red:
-    image: nodered/node-red
-    container_name: haic-node-red
-    ports:
-      - "1880:1880"
-    volumes:
-      - ./node-red:/data
-    environment:
-      TZ: "Europe/Athens"
-    depends_on:
-      - backend
+
 
 volumes:
   postgres_data:

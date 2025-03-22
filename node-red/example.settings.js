@@ -402,7 +402,7 @@ module.exports = {
          * See https://github.com/node-red-contrib-themes/theme-collection for
          * a collection of themes to chose from.
          */
-        //theme: "",
+        theme: "dracula",
 
         /** To disable the 'Welcome to Node-RED' tour that is displayed the first
          * time you access the editor for each release of Node-RED, set this to false
@@ -511,6 +511,8 @@ module.exports = {
      */
     functionGlobalContext: {
         // os:require('os'),
+        HaicClient: require('./api_clients/haic_client/dist'),
+        KubeFlowClient: require('./api_clients/kubeflow_client/dist'),
     },
 
     /** The maximum number of messages nodes will buffer internally as part of their

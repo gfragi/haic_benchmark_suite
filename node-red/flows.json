@@ -1,0 +1,237 @@
+[
+    {
+        "id": "3f025920437f7905",
+        "type": "tab",
+        "label": "Test HAIC Client",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "5cd3e556e55bdc82",
+        "type": "tab",
+        "label": "Test KF Client",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "6d5f83638870930c",
+        "type": "subflow",
+        "name": "HAIC Benchmark Suite",
+        "info": "",
+        "category": "HumAIne HAIC Benchmark Suite",
+        "in": [
+            {
+                "x": 60,
+                "y": 60,
+                "wires": [
+                    {
+                        "id": "f382319ee574b271"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 340,
+                "y": 60,
+                "wires": [
+                    {
+                        "id": "f382319ee574b271",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#58A69F",
+        "icon": "node-red-dashboard/ui_gauge.png"
+    },
+    {
+        "id": "36d9140454085321",
+        "type": "subflow",
+        "name": "KubeFlow Pipeline",
+        "info": "",
+        "category": "KubeFlow",
+        "in": [
+            {
+                "x": 80,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "83a3c05684e3279a"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 280,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "83a3c05684e3279a",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#0A3B71"
+    },
+    {
+        "id": "f382319ee574b271",
+        "type": "function",
+        "z": "6d5f83638870930c",
+        "name": "test_call",
+        "func": "const { ConfigurationService } = global.get(\"HaicClient\");\nmsg.payload = global.get(\"HaicClient\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 200,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "83a3c05684e3279a",
+        "type": "function",
+        "z": "36d9140454085321",
+        "name": "test_call",
+        "func": "const { ConfigurationService } = global.get(\"KubeFlowClient\");\nmsg.payload = global.get(\"KubeFlowClient\");\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "457db4028a714336",
+        "type": "subflow:6d5f83638870930c",
+        "z": "3f025920437f7905",
+        "name": "",
+        "x": 380,
+        "y": 120,
+        "wires": [
+            [
+                "c9bb7246093ce076"
+            ]
+        ]
+    },
+    {
+        "id": "3b6235c29d63c275",
+        "type": "inject",
+        "z": "3f025920437f7905",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 180,
+        "y": 120,
+        "wires": [
+            [
+                "457db4028a714336"
+            ]
+        ]
+    },
+    {
+        "id": "c9bb7246093ce076",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "1599caf449da9654",
+        "type": "subflow:36d9140454085321",
+        "z": "5cd3e556e55bdc82",
+        "name": "",
+        "x": 290,
+        "y": 60,
+        "wires": [
+            [
+                "13813eddeab8c36f"
+            ]
+        ]
+    },
+    {
+        "id": "9ad15b44d7591cf2",
+        "type": "inject",
+        "z": "5cd3e556e55bdc82",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 60,
+        "wires": [
+            [
+                "1599caf449da9654"
+            ]
+        ]
+    },
+    {
+        "id": "13813eddeab8c36f",
+        "type": "debug",
+        "z": "5cd3e556e55bdc82",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 60,
+        "wires": []
+    }
+]

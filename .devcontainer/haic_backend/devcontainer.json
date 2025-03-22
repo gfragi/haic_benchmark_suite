@@ -1,0 +1,35 @@
+{
+    "name": "Human AI Collaboration - Benchmark Suite (Backend)",
+    "dockerComposeFile": "../dev.docker-compose.yml",
+    "service": "backend",
+    "workspaceFolder": "/app",
+    "remoteUser": "root",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.debugpy",
+                "donjayamanne.python-extension-pack",
+                "mgesbert.python-path",
+                "streetsidesoftware.code-spell-checker",
+                "timonwong.shellcheck",
+                "njpwerner.autodocstring",
+                "rogalmic.bash-debug",
+                "lizebang.bash-extension-pack",
+                "mads-hartmann.bash-ide-vscode",
+                "ms-python.black-formatter",
+                "christian-kohler.path-intellisense",
+                "ms-python.pylint",
+                "redhat.vscode-yaml",
+                "mhutchie.git-graph"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python"
+            }
+        }
+    },
+    "postCreateCommand": "pip install -r dev_requirements.txt",
+    "forwardPorts": [
+        8001
+    ]
+}

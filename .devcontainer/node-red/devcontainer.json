@@ -1,0 +1,28 @@
+{
+    "name": "Human AI Collaboration - Benchmark Suite (Frontend)",
+    "dockerComposeFile": "../dev.docker-compose.yml",
+    "service": "frontend",
+    "workspaceFolder": "/app",
+    "remoteUser": "root",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // ADD THE EXTENSIONS NEEDED FOR THE NODE-RED HERE
+                "streetsidesoftware.code-spell-checker",
+                "timonwong.shellcheck",
+                "njpwerner.autodocstring",
+                "rogalmic.bash-debug",
+                "lizebang.bash-extension-pack",
+                "mads-hartmann.bash-ide-vscode",
+                "christian-kohler.path-intellisense",
+                "redhat.vscode-yaml",
+                "mhutchie.git-graph"
+            ],
+            "settings": {
+                // ADD THE SETTINGS NEEDED FOR THE NODE-RED HERE
+            }
+        }
+    },
+    "postCreateCommand": "echo 'Frontend container created'", // ADD THE COMMANDS NEEDED FOR THE NODE-RED HERE
+    "forwardPorts": [] // ADD THE PORTS NEEDED FOR THE NODE-RED HERE
+}
