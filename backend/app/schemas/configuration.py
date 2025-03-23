@@ -18,19 +18,13 @@ class EvaluationConfigSchema(BaseModel):
 
     class Config:
         from_attributes = True  # Allows from_orm to work with ORM models
-
-        json_schema_extra = {
-            "example": {
-                "application_name": "RadiologyApp",
-                "ai_model_name": "TumorDetectionModelV1",
-                "ai_model_type": "Classification",
-                "metrics": [
-                    {"metric_name": "Prediction Accuracy"},
-                    {"metric_name": "Response Time"},
-                ],
-                "evaluation_date": dt.utcnow().isoformat(),
-                "description": "Evaluation of Tumor Detection Model in RadiologyApp",
-                "config_type": "specific",
-                "evaluation_status": "pending"
+        example = {
+            "application_name": "My Application",
+            "ai_model_name": "My AI Model",
+            "ai_model_type": "Classification",
+            "metrics": ["Effectiveness", "Efficiency"],
+            "evaluation_date": "2025-03-21T10:00:00Z",
+            "description": "Sample configuration.",
+            "config_type": "specific",
+            "evaluation_status": "pending"
             }
-        }

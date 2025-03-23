@@ -2,11 +2,19 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+import pkgutil
 
 from alembic import context
+from app.utils.database import Base
+from app import models
+import app
+import importlib
 
-from app.models import Base  # adjust the import as needed
 
+for _, modname, _ in pkgutil.walk_packages(app.models.__path__, app.models.__name__ + "."):
+    importlib.import_module(modname)
+
+target_metadata = Base.metadata
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -21,12 +29,13 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+# target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+print(f"Loaded models: {target_metadata.tables.keys()}")
 
 
 def run_migrations_offline() -> None:
