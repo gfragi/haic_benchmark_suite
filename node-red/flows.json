@@ -2,7 +2,7 @@
     {
         "id": "3f025920437f7905",
         "type": "tab",
-        "label": "HAIC Client Examples",
+        "label": "HAIC Client Example",
         "disabled": false,
         "info": "",
         "env": []
@@ -50,6 +50,16 @@
                         "port": 0
                     }
                 ]
+            },
+            {
+                "x": 350,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "7765b9231cda2faa",
+                        "port": 0
+                    }
+                ]
             }
         ],
         "env": [],
@@ -59,9 +69,10 @@
             "HAIC API Setup trigger"
         ],
         "outputLabels": [
-            "HAIC API connection status"
+            "HAIC API connection status",
+            "Error"
         ],
-        "icon": "node-red-dashboard/ui_gauge.png"
+        "icon": "node-red-contrib-custom-icons/haic_icon_small.svg"
     },
     {
         "id": "36d9140454085321",
@@ -319,12 +330,273 @@
         "icon": "node-red-contrib-custom-icons/kfp.svg"
     },
     {
+        "id": "3e0b79a15665c98a",
+        "type": "subflow",
+        "name": "Evaluation Config",
+        "info": "",
+        "category": "HumAIne HAIC Benchmark Suite",
+        "in": [
+            {
+                "x": 50,
+                "y": 30,
+                "wires": [
+                    {
+                        "id": "64122fae851b3b9d"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 370,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "64122fae851b3b9d",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 330,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "0f4f17ea709a96d7",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#58A69F",
+        "inputLabels": [
+            "Evaluation Config"
+        ],
+        "outputLabels": [
+            "Status",
+            "Error"
+        ],
+        "icon": "node-red-contrib-custom-icons/haic_icon_small.svg"
+    },
+    {
+        "id": "9e615b8a6da73d11",
+        "type": "subflow",
+        "name": "Add Evaluation Log",
+        "info": "",
+        "category": "HumAIne HAIC Benchmark Suite",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "cfbf9857f9fb93cb"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 460,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "cfbf9857f9fb93cb",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 430,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "ed9cacde7a5dc142",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#58A69F",
+        "inputLabels": [
+            "Evaluation Log"
+        ],
+        "outputLabels": [
+            "Addition Status",
+            "Error"
+        ],
+        "icon": "node-red-contrib-custom-icons/haic_icon_small.svg"
+    },
+    {
+        "id": "3cc374149e5165e4",
+        "type": "subflow",
+        "name": "Access Evaluation Logs",
+        "info": "",
+        "category": "HumAIne HAIC Benchmark Suite",
+        "in": [
+            {
+                "x": 50,
+                "y": 30,
+                "wires": [
+                    {
+                        "id": "3245c173b6b43c11"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 440,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "3245c173b6b43c11",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 410,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "b6c8cc7e3b585676",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#58A69F",
+        "inputLabels": [
+            "Request Logs"
+        ],
+        "outputLabels": [
+            "Evaluation Logs",
+            "Error"
+        ],
+        "icon": "node-red-contrib-custom-icons/haic_icon_small.svg"
+    },
+    {
+        "id": "ee62c2e2054b032c",
+        "type": "subflow",
+        "name": "Evaluation Trigger",
+        "info": "",
+        "category": "HumAIne HAIC Benchmark Suite",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "5f1f4fb85e5e103c"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 470,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "5f1f4fb85e5e103c",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 390,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "e96dee35d8b21030",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#58A69F",
+        "inputLabels": [
+            "Evaluation Trigger"
+        ],
+        "outputLabels": [
+            "Evaluation Trigger Status",
+            "Error"
+        ],
+        "icon": "node-red-contrib-custom-icons/haic_icon_small.svg"
+    },
+    {
+        "id": "e260c7f298a6dd52",
+        "type": "subflow",
+        "name": "Access Evaluation Results",
+        "info": "",
+        "category": "HumAIne HAIC Benchmark Suite",
+        "in": [
+            {
+                "x": 50,
+                "y": 30,
+                "wires": [
+                    {
+                        "id": "f0bbc6d24216e546"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 470,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "f0bbc6d24216e546",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 430,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "7cc74023a28179ee",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#58A69F",
+        "inputLabels": [
+            "Request Evaluation Results"
+        ],
+        "outputLabels": [
+            "Evaluation Results",
+            "Error"
+        ],
+        "icon": "node-red-contrib-custom-icons/haic_icon_small.svg"
+    },
+    {
         "id": "352dada70d1a3bc5",
         "type": "minio-config",
         "name": "MinIO Instance",
         "host": "minio",
         "port": "9000",
         "useSsl": false
+    },
+    {
+        "id": "4e6412a56bb04544",
+        "type": "websocket-listener",
+        "path": "/ws/add_eval_log",
+        "wholemsg": "false"
     },
     {
         "id": "f382319ee574b271",
@@ -345,6 +617,19 @@
         ],
         "x": 180,
         "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7765b9231cda2faa",
+        "type": "catch",
+        "z": "6d5f83638870930c",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 200,
+        "y": 120,
         "wires": [
             []
         ]
@@ -543,23 +828,230 @@
         ]
     },
     {
+        "id": "64122fae851b3b9d",
+        "type": "function",
+        "z": "3e0b79a15665c98a",
+        "name": "Set Evaluation Config",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 200,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0f4f17ea709a96d7",
+        "type": "catch",
+        "z": "3e0b79a15665c98a",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 180,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ed9cacde7a5dc142",
+        "type": "catch",
+        "z": "9e615b8a6da73d11",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 220,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cfbf9857f9fb93cb",
+        "type": "function",
+        "z": "9e615b8a6da73d11",
+        "name": "Add Evaluation Log",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 210,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3245c173b6b43c11",
+        "type": "function",
+        "z": "3cc374149e5165e4",
+        "name": "Access Evaluation Logs",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 210,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b6c8cc7e3b585676",
+        "type": "catch",
+        "z": "3cc374149e5165e4",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 240,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5f1f4fb85e5e103c",
+        "type": "function",
+        "z": "ee62c2e2054b032c",
+        "name": "Trigger Evaluation Process",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e96dee35d8b21030",
+        "type": "catch",
+        "z": "ee62c2e2054b032c",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 260,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f0bbc6d24216e546",
+        "type": "function",
+        "z": "e260c7f298a6dd52",
+        "name": "Access Evaluation Results",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7cc74023a28179ee",
+        "type": "catch",
+        "z": "e260c7f298a6dd52",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 280,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "457db4028a714336",
         "type": "subflow:6d5f83638870930c",
         "z": "3f025920437f7905",
         "name": "",
-        "x": 380,
-        "y": 120,
+        "x": 370,
+        "y": 40,
         "wires": [
             [
-                "c9bb7246093ce076"
+                "8535dcb7749d12d4"
+            ],
+            [
+                "0c24b71d92ae68aa"
             ]
         ]
     },
     {
-        "id": "3b6235c29d63c275",
+        "id": "8535dcb7749d12d4",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "HAIC API Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 560,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "0c24b71d92ae68aa",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 560,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "ac74fc14fb8fd09f",
+        "type": "websocket in",
+        "z": "3f025920437f7905",
+        "name": "Add Evaluation Log",
+        "server": "4e6412a56bb04544",
+        "client": "",
+        "x": 110,
+        "y": 320,
+        "wires": [
+            [
+                "a32e3be57ce24c24"
+            ]
+        ]
+    },
+    {
+        "id": "2ea3a7e8a30bbbe4",
         "type": "inject",
         "z": "3f025920437f7905",
-        "name": "",
+        "name": "trigger",
         "props": [
             {
                 "p": "payload"
@@ -576,28 +1068,444 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 180,
-        "y": 120,
+        "x": 110,
+        "y": 180,
         "wires": [
             [
-                "457db4028a714336"
+                "427d9cbd4d8bf008"
             ]
         ]
     },
     {
-        "id": "c9bb7246093ce076",
+        "id": "427d9cbd4d8bf008",
+        "type": "function",
+        "z": "3f025920437f7905",
+        "name": "Prepare HAIC Evaluation Config",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 180,
+        "wires": [
+            [
+                "d8b8d134790fcc86"
+            ]
+        ]
+    },
+    {
+        "id": "d8b8d134790fcc86",
+        "type": "subflow:3e0b79a15665c98a",
+        "z": "3f025920437f7905",
+        "name": "",
+        "x": 550,
+        "y": 180,
+        "wires": [
+            [
+                "79861fc8ba4d35a0",
+                "548572b61b01ba84"
+            ],
+            [
+                "6eb1cea41e534e9e"
+            ]
+        ]
+    },
+    {
+        "id": "79861fc8ba4d35a0",
         "type": "debug",
         "z": "3f025920437f7905",
-        "name": "debug 1",
+        "name": "Config Status",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 600,
-        "y": 120,
+        "x": 800,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "6eb1cea41e534e9e",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "548572b61b01ba84",
+        "type": "function",
+        "z": "3f025920437f7905",
+        "name": "Evaluation Config Set",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a32e3be57ce24c24",
+        "type": "function",
+        "z": "3f025920437f7905",
+        "name": "Prepare evaluation log",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 320,
+        "wires": [
+            [
+                "177c20dc63803101"
+            ]
+        ]
+    },
+    {
+        "id": "177c20dc63803101",
+        "type": "subflow:9e615b8a6da73d11",
+        "z": "3f025920437f7905",
+        "name": "",
+        "x": 550,
+        "y": 320,
+        "wires": [
+            [
+                "cdb477a98e9f7dc5"
+            ],
+            [
+                "5895e7226e85fd39"
+            ]
+        ]
+    },
+    {
+        "id": "9999681aa081c4b7",
+        "type": "inject",
+        "z": "3f025920437f7905",
+        "name": "trigger",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 500,
+        "wires": [
+            [
+                "fd7faa26aa52eb78"
+            ]
+        ]
+    },
+    {
+        "id": "fd7faa26aa52eb78",
+        "type": "function",
+        "z": "3f025920437f7905",
+        "name": "pre-trigger logic",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 500,
+        "wires": [
+            [
+                "bb8d8e3c93033918"
+            ]
+        ]
+    },
+    {
+        "id": "bb8d8e3c93033918",
+        "type": "subflow:ee62c2e2054b032c",
+        "z": "3f025920437f7905",
+        "name": "",
+        "x": 510,
+        "y": 500,
+        "wires": [
+            [
+                "e5d5871e033a236e"
+            ],
+            [
+                "f34c2af2de0a46a1"
+            ]
+        ]
+    },
+    {
+        "id": "e5d5871e033a236e",
+        "type": "function",
+        "z": "3f025920437f7905",
+        "name": "post-trigger logic",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 520,
+        "wires": [
+            [
+                "4b58f8cefa56a306"
+            ]
+        ]
+    },
+    {
+        "id": "f34c2af2de0a46a1",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 540,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "946fee3081b4c03a",
+        "type": "http in",
+        "z": "3f025920437f7905",
+        "name": "Get Evaluation Log",
+        "url": "/evaluation_log/{{id}}",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 420,
+        "wires": [
+            [
+                "b6375845c5da5c22"
+            ]
+        ]
+    },
+    {
+        "id": "4ac61f62232da56d",
+        "type": "http response",
+        "z": "3f025920437f7905",
+        "name": "Send Evaluation Logs",
+        "statusCode": "",
+        "headers": {},
+        "x": 960,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "de0960e0207b8c65",
+        "type": "subflow:3cc374149e5165e4",
+        "z": "3f025920437f7905",
+        "name": "",
+        "x": 520,
+        "y": 420,
+        "wires": [
+            [
+                "538c98c93dc4ec4e"
+            ],
+            [
+                "56502e1af53b33e3"
+            ]
+        ]
+    },
+    {
+        "id": "b6375845c5da5c22",
+        "type": "function",
+        "z": "3f025920437f7905",
+        "name": "Request access",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 420,
+        "wires": [
+            [
+                "de0960e0207b8c65"
+            ]
+        ]
+    },
+    {
+        "id": "538c98c93dc4ec4e",
+        "type": "function",
+        "z": "3f025920437f7905",
+        "name": "parse and prepare",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 420,
+        "wires": [
+            [
+                "4ac61f62232da56d"
+            ]
+        ]
+    },
+    {
+        "id": "5895e7226e85fd39",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "56502e1af53b33e3",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "cdb477a98e9f7dc5",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "Log Addition Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 750,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "4b58f8cefa56a306",
+        "type": "subflow:e260c7f298a6dd52",
+        "z": "3f025920437f7905",
+        "name": "",
+        "x": 210,
+        "y": 680,
+        "wires": [
+            [
+                "72822ea23e2002d7"
+            ],
+            [
+                "35885cb058ac622f"
+            ]
+        ]
+    },
+    {
+        "id": "35885cb058ac622f",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 440,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "72822ea23e2002d7",
+        "type": "function",
+        "z": "3f025920437f7905",
+        "name": "Parse Evaluation Results",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 660,
+        "wires": [
+            [
+                "e736dc111c27129f"
+            ]
+        ]
+    },
+    {
+        "id": "e736dc111c27129f",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "Evaluation Results",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 660,
         "wires": []
     },
     {
