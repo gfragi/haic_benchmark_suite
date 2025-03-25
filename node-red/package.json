@@ -8,9 +8,12 @@
         "@reggae_ulli/node-red-contrib-minio-all-fix": "~0.0.4",
         "@types/node-fetch": "^2.6.12",
         "form-data": "^4.0.2",
+        "human_ai_benchmark_suite": "file:human_ai_benchmark_suite/human_ai_benchmark_suite-1.0.0.tgz",
+        "kubeflow_pipelines_api": "file:kubeflow_pipelines_api/kubeflow_pipelines_api-2.4.1.tgz",
         "minio": "^8.0.5",
         "node-fetch": "^3.3.2",
         "node-red-contrib-crypto-js": "0.1.1",
+        "node-red-contrib-custom-icons": "file:node-red-contrib-custom-icons/node-red-contrib-custom-icons-1.0.0.tgz",
         "node-red-contrib-mp-function": "~1.1.1",
         "node-red-contrib-python-function": "0.0.5",
         "node-red-dashboard": "^3.6.5"

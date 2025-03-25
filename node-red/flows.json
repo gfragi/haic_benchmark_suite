@@ -18,7 +18,7 @@
     {
         "id": "6d5f83638870930c",
         "type": "subflow",
-        "name": "HAIC Benchmark Suite",
+        "name": "HAIC API Config",
         "info": "",
         "category": "HumAIne HAIC Benchmark Suite",
         "in": [
@@ -34,7 +34,7 @@
         ],
         "out": [
             {
-                "x": 340,
+                "x": 400,
                 "y": 60,
                 "wires": [
                     {
@@ -47,17 +47,23 @@
         "env": [],
         "meta": {},
         "color": "#58A69F",
+        "inputLabels": [
+            "HAIC API Setup trigger"
+        ],
+        "outputLabels": [
+            "HAIC API connection status"
+        ],
         "icon": "node-red-dashboard/ui_gauge.png"
     },
     {
         "id": "36d9140454085321",
         "type": "subflow",
-        "name": "KubeFlow Pipeline",
+        "name": "KubeFlow Pipelines Configuration",
         "info": "",
         "category": "KubeFlow",
         "in": [
             {
-                "x": 80,
+                "x": 100,
                 "y": 40,
                 "wires": [
                     {
@@ -68,7 +74,7 @@
         ],
         "out": [
             {
-                "x": 280,
+                "x": 480,
                 "y": 40,
                 "wires": [
                     {
@@ -80,21 +86,33 @@
         ],
         "env": [],
         "meta": {},
-        "color": "#0A3B71"
+        "color": "#4179F4",
+        "inputLabels": [
+            "(Re-) Configuration Trigger"
+        ],
+        "outputLabels": [
+            "Configuration Status"
+        ],
+        "icon": "node-red-contrib-custom-icons/kfp.svg"
     },
     {
         "id": "f382319ee574b271",
         "type": "function",
         "z": "6d5f83638870930c",
-        "name": "test_call",
+        "name": "HAIC API Setup",
         "func": "const { ConfigurationService } = global.get(\"HaicClient\");\nmsg.payload = global.get(\"HaicClient\");\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
-        "libs": [],
-        "x": 200,
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
+        "x": 180,
         "y": 60,
         "wires": [
             []
@@ -104,15 +122,20 @@
         "id": "83a3c05684e3279a",
         "type": "function",
         "z": "36d9140454085321",
-        "name": "test_call",
-        "func": "const { ConfigurationService } = global.get(\"KubeFlowClient\");\nmsg.payload = global.get(\"KubeFlowClient\");\nreturn msg;",
+        "name": "KFP Client Configuration",
+        "func": "msg.payload = global.get(\"KubeFlowClient\");\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst { ConfigurationService } = global.get(\"KubeFlowClient\");",
         "finalize": "",
-        "libs": [],
-        "x": 180,
+        "libs": [
+            {
+                "var": "kubeflowPipelinesApi",
+                "module": "kubeflow_pipelines_api"
+            }
+        ],
+        "x": 250,
         "y": 40,
         "wires": [
             []
@@ -181,7 +204,7 @@
         "type": "subflow:36d9140454085321",
         "z": "5cd3e556e55bdc82",
         "name": "",
-        "x": 290,
+        "x": 360,
         "y": 60,
         "wires": [
             [
@@ -230,7 +253,7 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 480,
+        "x": 620,
         "y": 60,
         "wires": []
     }

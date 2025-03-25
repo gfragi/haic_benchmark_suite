@@ -862,5 +862,24 @@
                 "file": "/data/node_modules/node-red-dashboard/nodes/ui_spacer.js"
             }
         }
+    },
+    "node-red-contrib-custom-icons": {
+        "name": "node-red-contrib-custom-icons",
+        "version": "1.0.0",
+        "local": true,
+        "user": true,
+        "nodes": {
+            "custom-icon-node": {
+                "name": "custom-icon-node",
+                "types": [
+                    "custom-icon-node"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-custom-icons",
+                "file": "/data/node_modules/node-red-contrib-custom-icons/custom-icon-node.js"
+            }
+        }
     }
 }

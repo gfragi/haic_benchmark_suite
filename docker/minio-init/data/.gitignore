@@ -1,0 +1,6 @@
+.minio.sys/buckets/*
+.minio.sys/buckets/*/
+.minio.sys/buckets/*/*
+.minio.sys/tmp/*
+.minio.sys/tmp/*/
+.minio.sys/tmp/*/*

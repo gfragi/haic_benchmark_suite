@@ -166,4 +166,5 @@ frontend/node_modules/
 *.temp.*
 
 .vscode/
-docker/minio-init/data/.minio.sys
+docker/minio-init/data/.minio.sys/
+docker/minio-init/data/.minio.sys/*
