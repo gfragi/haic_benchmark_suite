@@ -2,7 +2,7 @@
     {
         "id": "3f025920437f7905",
         "type": "tab",
-        "label": "Test HAIC Client",
+        "label": "HAIC Client Examples",
         "disabled": false,
         "info": "",
         "env": []
@@ -10,7 +10,15 @@
     {
         "id": "5cd3e556e55bdc82",
         "type": "tab",
-        "label": "Test KF Client",
+        "label": "KF Client Dynamic Triggering examples",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "7dfe840f35691401",
+        "type": "tab",
+        "label": "KF Client Schedule",
         "disabled": false,
         "info": "",
         "env": []
@@ -82,6 +90,16 @@
                         "port": 0
                     }
                 ]
+            },
+            {
+                "x": 430,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "c742a98e16e9b20f",
+                        "port": 0
+                    }
+                ]
             }
         ],
         "env": [],
@@ -91,9 +109,222 @@
             "(Re-) Configuration Trigger"
         ],
         "outputLabels": [
-            "Configuration Status"
+            "Configuration Status",
+            "Error"
         ],
         "icon": "node-red-contrib-custom-icons/kfp.svg"
+    },
+    {
+        "id": "6c8e8b38498d052d",
+        "type": "subflow",
+        "name": "Pipeline Trigger",
+        "info": "",
+        "category": "KubeFlow",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "ea404d026ea6c63a"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 360,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "ea404d026ea6c63a",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 350,
+                "y": 140,
+                "wires": [
+                    {
+                        "id": "c7dc64994037a163",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#4179F4",
+        "inputLabels": [
+            "Trigger Input"
+        ],
+        "outputLabels": [
+            "Trigger Status",
+            "Error"
+        ],
+        "icon": "node-red-contrib-custom-icons/kfp.svg"
+    },
+    {
+        "id": "56428973cc4e2070",
+        "type": "subflow",
+        "name": "Pipeline Run Results",
+        "info": "",
+        "category": "KubeFlow",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "ff9ffccc9764366b"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 390,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "ff9ffccc9764366b",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 370,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "b61e73202a6550ff",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#4179F4",
+        "inputLabels": [
+            "Pipeline ID Inputs"
+        ],
+        "outputLabels": [
+            "Run Results",
+            "Error"
+        ],
+        "icon": "node-red-contrib-custom-icons/kfp.svg"
+    },
+    {
+        "id": "9c7d38f8544a5123",
+        "type": "subflow",
+        "name": "Recurring Pipeline Schedule",
+        "info": "",
+        "category": "KubeFlow",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "321dbfcfb8648578"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 400,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "321dbfcfb8648578",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 370,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "6dd0ee0c462e2b1d",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#4179F4",
+        "inputLabels": [
+            "Pipeline Schedule Inputs"
+        ],
+        "outputLabels": [
+            "Schedule Status",
+            "Error"
+        ],
+        "icon": "node-red-contrib-custom-icons/kfp.svg"
+    },
+    {
+        "id": "d6a71f5d83bb6739",
+        "type": "subflow",
+        "name": "Recurring Pipeline Event Listener",
+        "info": "",
+        "category": "KubeFlow",
+        "in": [
+            {
+                "x": 40,
+                "y": 60,
+                "wires": [
+                    {
+                        "id": "30f6723eaede75a4"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 420,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "e1fa44bd0d122a37",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 350,
+                "y": 180,
+                "wires": [
+                    {
+                        "id": "82dd63aacba71e6b",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#4179F4",
+        "inputLabels": [
+            "Listener Setup Inputs"
+        ],
+        "outputLabels": [
+            "Recurring Pipeline Results",
+            "Error"
+        ],
+        "icon": "node-red-contrib-custom-icons/kfp.svg"
+    },
+    {
+        "id": "352dada70d1a3bc5",
+        "type": "minio-config",
+        "name": "MinIO Instance",
+        "host": "minio",
+        "port": "9000",
+        "useSsl": false
     },
     {
         "id": "f382319ee574b271",
@@ -123,11 +354,11 @@
         "type": "function",
         "z": "36d9140454085321",
         "name": "KFP Client Configuration",
-        "func": "msg.payload = global.get(\"KubeFlowClient\");\nreturn msg;",
+        "func": "\n// msg.payload = global.get(\"KubeFlowClient\"); ALTERNATIVE\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst { ConfigurationService } = global.get(\"KubeFlowClient\");",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n// Use this one AS ALTERNATIVE ONLY...\n// const { ConfigurationService } = global.get(\"KubeFlowClient\");",
         "finalize": "",
         "libs": [
             {
@@ -137,6 +368,176 @@
         ],
         "x": 250,
         "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c742a98e16e9b20f",
+        "type": "catch",
+        "z": "36d9140454085321",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 280,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ea404d026ea6c63a",
+        "type": "function",
+        "z": "6c8e8b38498d052d",
+        "name": "Trigger Pipeline",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "kubeflowPipelinesApi",
+                "module": "kubeflow_pipelines_api"
+            }
+        ],
+        "x": 180,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c7dc64994037a163",
+        "type": "catch",
+        "z": "6c8e8b38498d052d",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 200,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ff9ffccc9764366b",
+        "type": "function",
+        "z": "56428973cc4e2070",
+        "name": "Get Pipeline Run Results",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "kubeflowPipelinesApi",
+                "module": "kubeflow_pipelines_api"
+            }
+        ],
+        "x": 190,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b61e73202a6550ff",
+        "type": "catch",
+        "z": "56428973cc4e2070",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 220,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "321dbfcfb8648578",
+        "type": "function",
+        "z": "9c7d38f8544a5123",
+        "name": "Set KF Pipeline Schedule",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "kubeflowPipelinesApi",
+                "module": "kubeflow_pipelines_api"
+            }
+        ],
+        "x": 190,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6dd0ee0c462e2b1d",
+        "type": "catch",
+        "z": "9c7d38f8544a5123",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 220,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "30f6723eaede75a4",
+        "type": "function",
+        "z": "d6a71f5d83bb6739",
+        "name": "Dynamic Listener Setup",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 190,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e1fa44bd0d122a37",
+        "type": "function",
+        "z": "d6a71f5d83bb6739",
+        "name": "Event Listener",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 200,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "82dd63aacba71e6b",
+        "type": "catch",
+        "z": "d6a71f5d83bb6739",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 200,
+        "y": 180,
         "wires": [
             []
         ]
@@ -204,19 +605,267 @@
         "type": "subflow:36d9140454085321",
         "z": "5cd3e556e55bdc82",
         "name": "",
-        "x": 360,
-        "y": 60,
+        "x": 460,
+        "y": 40,
         "wires": [
             [
                 "13813eddeab8c36f"
+            ],
+            [
+                "cc23d5fc6263dc6a"
             ]
         ]
     },
     {
-        "id": "9ad15b44d7591cf2",
-        "type": "inject",
+        "id": "13813eddeab8c36f",
+        "type": "debug",
+        "z": "5cd3e556e55bdc82",
+        "name": "KFP Config output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "11128e9c7d6dd2ed",
+        "type": "subflow:6c8e8b38498d052d",
         "z": "5cd3e556e55bdc82",
         "name": "",
+        "x": 460,
+        "y": 160,
+        "wires": [
+            [
+                "609b6d104945490d"
+            ],
+            [
+                "9295bb9c94f0a7db"
+            ]
+        ]
+    },
+    {
+        "id": "237781b0b7656957",
+        "type": "function",
+        "z": "5cd3e556e55bdc82",
+        "name": "pre-trigger logic",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 140,
+        "wires": [
+            [
+                "11128e9c7d6dd2ed"
+            ]
+        ]
+    },
+    {
+        "id": "609b6d104945490d",
+        "type": "function",
+        "z": "5cd3e556e55bdc82",
+        "name": "post-trigger logic",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 200,
+        "wires": [
+            [
+                "2bb7e852f87c8b53"
+            ]
+        ]
+    },
+    {
+        "id": "2bb7e852f87c8b53",
+        "type": "subflow:56428973cc4e2070",
+        "z": "5cd3e556e55bdc82",
+        "name": "",
+        "x": 180,
+        "y": 320,
+        "wires": [
+            [
+                "332a6dfe8e76b2cb"
+            ],
+            [
+                "3e94ae6d252fee4b"
+            ]
+        ]
+    },
+    {
+        "id": "332a6dfe8e76b2cb",
+        "type": "function",
+        "z": "5cd3e556e55bdc82",
+        "name": "results processing",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 300,
+        "wires": [
+            [
+                "2c630bd1ad1a2a57"
+            ]
+        ]
+    },
+    {
+        "id": "2c630bd1ad1a2a57",
+        "type": "objects",
+        "z": "5cd3e556e55bdc82",
+        "objects_name": "Fetch artifacts",
+        "host": "352dada70d1a3bc5",
+        "objects_operation": "",
+        "objects_bucket": "",
+        "objects_object": "",
+        "objects_offset": "",
+        "objects_length": "",
+        "objects_stream": "",
+        "objects_size": "",
+        "objects_metadata": "",
+        "objects_sourceobject": "",
+        "objects_conditions": "",
+        "objects_objectslist": [],
+        "objects_prefix": "",
+        "objects_etag": "",
+        "objects_datetime": "",
+        "x": 580,
+        "y": 320,
+        "wires": [
+            [
+                "add5991e472a331f"
+            ],
+            [
+                "a409828808a1c865"
+            ]
+        ]
+    },
+    {
+        "id": "add5991e472a331f",
+        "type": "function",
+        "z": "5cd3e556e55bdc82",
+        "name": "artifact processing",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 300,
+        "wires": [
+            [
+                "6f52d4549c064574"
+            ]
+        ]
+    },
+    {
+        "id": "a409828808a1c865",
+        "type": "debug",
+        "z": "5cd3e556e55bdc82",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "6f52d4549c064574",
+        "type": "debug",
+        "z": "5cd3e556e55bdc82",
+        "name": "Outputs",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 980,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "cc23d5fc6263dc6a",
+        "type": "debug",
+        "z": "5cd3e556e55bdc82",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "9295bb9c94f0a7db",
+        "type": "debug",
+        "z": "5cd3e556e55bdc82",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "3e94ae6d252fee4b",
+        "type": "debug",
+        "z": "5cd3e556e55bdc82",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 380,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "b3fc56cd1e764d50",
+        "type": "inject",
+        "z": "5cd3e556e55bdc82",
+        "name": "trigger",
         "props": [
             {
                 "p": "payload"
@@ -233,28 +882,449 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 100,
-        "y": 60,
+        "x": 110,
+        "y": 140,
         "wires": [
             [
-                "1599caf449da9654"
+                "237781b0b7656957"
             ]
         ]
     },
     {
-        "id": "13813eddeab8c36f",
+        "id": "a511bfe93e5327a9",
+        "type": "subflow:36d9140454085321",
+        "z": "7dfe840f35691401",
+        "name": "",
+        "x": 400,
+        "y": 40,
+        "wires": [
+            [
+                "fe38910234b95533"
+            ],
+            [
+                "a7629b075f1384f2"
+            ]
+        ]
+    },
+    {
+        "id": "fe38910234b95533",
         "type": "debug",
-        "z": "5cd3e556e55bdc82",
-        "name": "debug 2",
+        "z": "7dfe840f35691401",
+        "name": "KFP Config output",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 620,
+        "x": 650,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "a7629b075f1384f2",
+        "type": "debug",
+        "z": "7dfe840f35691401",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
         "y": 60,
         "wires": []
+    },
+    {
+        "id": "0fa8b36b53e25456",
+        "type": "subflow:9c7d38f8544a5123",
+        "z": "7dfe840f35691401",
+        "name": "",
+        "x": 420,
+        "y": 220,
+        "wires": [
+            [
+                "8812f7b13e8f5507",
+                "7b7d94d1bb31b3e9"
+            ],
+            [
+                "9d27245a1ecae3d5"
+            ]
+        ]
+    },
+    {
+        "id": "dda9d22fd484ba6a",
+        "type": "subflow:d6a71f5d83bb6739",
+        "z": "7dfe840f35691401",
+        "name": "",
+        "x": 260,
+        "y": 380,
+        "wires": [
+            [
+                "4e7f390cdeee1170"
+            ],
+            [
+                "f2305eca07a1873e"
+            ]
+        ]
+    },
+    {
+        "id": "a819adfd0ee320b5",
+        "type": "inject",
+        "z": "7dfe840f35691401",
+        "name": "trigger",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 90,
+        "y": 180,
+        "wires": [
+            [
+                "03c3d1dc8ea5ce25"
+            ]
+        ]
+    },
+    {
+        "id": "03c3d1dc8ea5ce25",
+        "type": "function",
+        "z": "7dfe840f35691401",
+        "name": "New Schedule",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 200,
+        "y": 220,
+        "wires": [
+            [
+                "0fa8b36b53e25456"
+            ]
+        ]
+    },
+    {
+        "id": "8812f7b13e8f5507",
+        "type": "debug",
+        "z": "7dfe840f35691401",
+        "name": "Schedule Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "9d27245a1ecae3d5",
+        "type": "debug",
+        "z": "7dfe840f35691401",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "7b7d94d1bb31b3e9",
+        "type": "function",
+        "z": "7dfe840f35691401",
+        "name": "Post-Schedule-Setup logic ",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "00bc166ffb1d11d4",
+        "type": "function",
+        "z": "7dfe840f35691401",
+        "name": "Event listener setup",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 190,
+        "y": 320,
+        "wires": [
+            [
+                "dda9d22fd484ba6a"
+            ]
+        ]
+    },
+    {
+        "id": "f2305eca07a1873e",
+        "type": "debug",
+        "z": "7dfe840f35691401",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 440,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "4a531a5265ca0325",
+        "type": "subflow:56428973cc4e2070",
+        "z": "7dfe840f35691401",
+        "name": "",
+        "x": 200,
+        "y": 600,
+        "wires": [
+            [
+                "586cbb888fa5bd91"
+            ],
+            [
+                "195ddca70458b516"
+            ]
+        ]
+    },
+    {
+        "id": "586cbb888fa5bd91",
+        "type": "function",
+        "z": "7dfe840f35691401",
+        "name": "results processing",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 580,
+        "wires": [
+            [
+                "957036aa52cde219"
+            ]
+        ]
+    },
+    {
+        "id": "957036aa52cde219",
+        "type": "objects",
+        "z": "7dfe840f35691401",
+        "objects_name": "Fetch artifacts",
+        "host": "352dada70d1a3bc5",
+        "objects_operation": "",
+        "objects_bucket": "",
+        "objects_object": "",
+        "objects_offset": "",
+        "objects_length": "",
+        "objects_stream": "",
+        "objects_size": "",
+        "objects_metadata": "",
+        "objects_sourceobject": "",
+        "objects_conditions": "",
+        "objects_objectslist": [],
+        "objects_prefix": "",
+        "objects_etag": "",
+        "objects_datetime": "",
+        "x": 600,
+        "y": 600,
+        "wires": [
+            [
+                "307c948af17b4fa5"
+            ],
+            [
+                "be6bd314cd98aaba"
+            ]
+        ]
+    },
+    {
+        "id": "307c948af17b4fa5",
+        "type": "function",
+        "z": "7dfe840f35691401",
+        "name": "artifact processing",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 790,
+        "y": 580,
+        "wires": [
+            [
+                "4280ddf0a787c1cb"
+            ]
+        ]
+    },
+    {
+        "id": "be6bd314cd98aaba",
+        "type": "debug",
+        "z": "7dfe840f35691401",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "4280ddf0a787c1cb",
+        "type": "debug",
+        "z": "7dfe840f35691401",
+        "name": "Outputs",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1000,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "195ddca70458b516",
+        "type": "debug",
+        "z": "7dfe840f35691401",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "4e7f390cdeee1170",
+        "type": "function",
+        "z": "7dfe840f35691401",
+        "name": "pipeline run event processing",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 380,
+        "wires": [
+            [
+                "4a531a5265ca0325"
+            ]
+        ]
+    },
+    {
+        "id": "57df40ef27be3b5e",
+        "type": "inject",
+        "z": "7dfe840f35691401",
+        "name": "trigger",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 90,
+        "y": 280,
+        "wires": [
+            [
+                "00bc166ffb1d11d4"
+            ]
+        ]
+    },
+    {
+        "id": "2b9a06751384180f",
+        "type": "inject",
+        "z": "7dfe840f35691401",
+        "name": "trigger",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 40,
+        "wires": [
+            [
+                "a511bfe93e5327a9"
+            ]
+        ]
     }
 ]
