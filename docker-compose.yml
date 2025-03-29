@@ -15,40 +15,40 @@ services:
       - ./docker/db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
       # - postgres_data:/var/lib/postgresql/data
 
-  minio:
-    image: minio/minio
-    container_name: haic-minio
-    env_file: .env
-    environment:
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_BUCKET: ${MINIO_BUCKET}
-      MINIO_REGION: ${MINIO_REGION}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      LOG_LEVEL: ${LOG_LEVEL}
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      # - minio_data:/data
-      - ./docker/minio-init/data:/data
-    entrypoint: sh
-    command: >
-      -c '
-        mkdir -p /data/humaine &&
-        /usr/bin/minio server /data --console-address ":9001"
-      '
-  migrations:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.backend
-    command: alembic upgrade head
-    depends_on:
-      - db
+  # minio:
+  #   image: minio/minio
+  #   container_name: haic-minio
+  #   env_file: .env
+  #   environment:
+  #     MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+  #     MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+  #     MINIO_BUCKET: ${MINIO_BUCKET}
+  #     MINIO_REGION: ${MINIO_REGION}
+  #     DB_HOST: ${DB_HOST}
+  #     DB_PORT: ${DB_PORT}
+  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_NAME: ${DB_NAME}
+  #     DB_USER: ${DB_USER}
+  #     LOG_LEVEL: ${LOG_LEVEL}
+  #   ports:
+  #     - "9000:9000"
+  #     - "9001:9001"
+  #   volumes:
+  #     - minio_data:/data
+  #     # - ./docker/minio-init/data:/data
+  #   entrypoint: sh
+  #   command: >
+  #     -c '
+  #       mkdir -p /data/humaine &&
+  #       /usr/bin/minio server /data --console-address ":9001"
+  #     '
+  # migrations:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/Dockerfile.backend
+  #   command: alembic upgrade head
+  #   depends_on:
+  #     - db
 
   backend:
     build:
@@ -60,7 +60,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
-      - minio
+      # - minio
 
   frontend:
     build:
