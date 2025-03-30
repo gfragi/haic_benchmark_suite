@@ -3,7 +3,7 @@ const webpack = require("webpack");
 module.exports = {
   transpileDependencies: [
     // List of packages you want to transpile
-    "vuetify"
+    "vuetify",
   ],
 
   pluginOptions: {
