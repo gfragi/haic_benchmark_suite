@@ -11,6 +11,7 @@
   "dependencies": {
     "@mdi/font": "5.9.55",
     "core-js": "^3.8.3",
+    "keycloak-js": "^26.1.4",
     "roboto-fontface": "*",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
@@ -27,6 +28,7 @@
     "@vue/cli-plugin-unit-jest": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "@vue/compiler-sfc": "^3.5.13",
     "@vue/test-utils": "^2.0.0-0",
     "@vue/vue3-jest": "^27.0.0-alpha.1",
     "axios": "^1.7.4",
