@@ -10,7 +10,7 @@ import logging
 
 load_dotenv(dotenv_path="../../.env")  # Load environment variables from .env file
 
-AUTH_URL = os.getenv("AUTH_URL", "https://humaine-minio-api.euprojects.net/auth/auth")
+AUTH_URL = os.getenv("AUTH_URL")
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
 MINIO_SECURE = os.getenv("MINIO_SECURE", "false").lower() == "true"
 MINIO_REGION = os.getenv("MINIO_REGION")
@@ -19,9 +19,9 @@ MINIO_PASSWORD = os.getenv("MINIO_PASSWORD")
 MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 
-logging.debug("MINIO_ENDPOINT: %s", MINIO_ENDPOINT)
-logging.debug("MINIO_SECURE: %s", MINIO_SECURE)
-print("MINIO_ENDPOINT:", MINIO_ENDPOINT)
+# logging.debug("MINIO_ENDPOINT: %s", MINIO_ENDPOINT)
+# logging.debug("MINIO_SECURE: %s", MINIO_SECURE)
+# print("MINIO_ENDPOINT:", MINIO_ENDPOINT)
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -30,7 +30,7 @@ def get_auth_token():
         "username": MINIO_USERNAME,
         "password": MINIO_PASSWORD
     }
-    logging.debug("Auth payload: %s", payload)
+    # logging.debug("Auth payload: %s", payload)
 
     # URL-encode the payload for form submission
     encoded_payload = urllib.parse.urlencode(payload)
@@ -40,7 +40,7 @@ def get_auth_token():
     }
 
     response = requests.post(AUTH_URL, data=encoded_payload, headers=headers)
-    logging.debug("Request body: %s", response.request.body)
+    # logging.debug("Request body: %s", response.request.body)
 
     if response.status_code != 200:
         logging.error("Auth request failed: %s - %s", response.status_code, response.text)
