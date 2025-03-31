@@ -152,7 +152,7 @@ def split_logs_by_ai_model_version(logs_data: list):
         #                 logs_by_ai_version[retrained_version] = []
         #             logs_by_ai_version[retrained_version].append(event)
 
-    return logs_by_ai_version   
+    return logs_by_ai_version
 
 
 

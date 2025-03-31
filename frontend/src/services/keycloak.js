@@ -1,9 +1,9 @@
 import Keycloak from "keycloak-js";
 
 const keycloak = new Keycloak({
-  url: "https://keycloak.humaine-horizon.eu/",
-  realm: "humaine",
-  clientId: "minio",
+  url: "https://idp.studyingreece.edu.gr/",
+  realm: "hua",
+  clientId: "benchmark",
 });
 
 export default keycloak;

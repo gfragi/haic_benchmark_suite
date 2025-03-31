@@ -19,7 +19,7 @@ logs_templates = {
             "performance_at_t": lambda: random.uniform(0.7, 0.9),
             "performance_at_t_1": lambda: random.uniform(0.6, 0.7),
             "time_interval": lambda: random.randint(1800, 7200),  # Time interval in seconds
-            
+
             # Efficiency metrics
             "response_time": lambda: random.uniform(100, 500),  # Response time in milliseconds
             "performance_improvement": lambda: random.uniform(0.01, 0.1),
@@ -35,7 +35,7 @@ logs_templates = {
             "errors_after": lambda: random.randint(0, 10),
             "pre_retention_performance": lambda: random.uniform(0.6, 0.8),
             "post_retention_performance": lambda: random.uniform(0.75, 0.9),
-            
+
             # Adaptability and Learning metrics
             "pre_feedback_performance": lambda: random.uniform(0.6, 0.7),
             "post_feedback_performance": lambda: random.uniform(0.7, 0.85),
@@ -46,7 +46,7 @@ logs_templates = {
             "learning_gain": lambda: random.uniform(0.01, 0.05),
             "learning_time": lambda: random.randint(200, 1000),
             "objective_status": lambda: random.choice(["achieved", "not achieved"]),
-            
+
             # Collaboration and Interaction metrics
             "human_decision": lambda: random.choice(["approve", "reject"]),
             "ai_suggestion": lambda: random.choice(["approve", "reject"]),
@@ -55,7 +55,7 @@ logs_templates = {
             "resolution_time": lambda: random.randint(50, 300),
             "effort_without_ai": lambda: random.randint(5, 15),
             "effort_with_ai": lambda: random.randint(1, 10),
-            
+
             # Trust and Safety metrics
             "confidence_level": lambda: random.uniform(0.0, 1.0),
             "trust_rating": lambda: random.randint(6, 10),
@@ -63,7 +63,7 @@ logs_templates = {
             "safety_incidents": lambda: random.randint(0, 2),
             "uptime": lambda: random.randint(4500, 5000),
             "total_time": 6000,
-            
+
             # Robustness and Generalization metrics
             "performance_adversarial": lambda: random.uniform(0.6, 0.8),
             "performance_normal": lambda: random.uniform(0.8, 0.95),

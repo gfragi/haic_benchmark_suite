@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from app.routers import logs, configuration, evaluate, reporting, log_generator
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from fastapi.middleware.cors import CORSMiddleware
+from .utils.keycloak_utils import decode_jwt_token
 
 from app.routers import results
 
@@ -10,6 +12,8 @@ app = FastAPI(
     description="An application to evaluate Human-AI collaboration.",
     version="1.0.0",
 )
+security = HTTPBearer()
+
 
 origins = [
     "http://localhost:8080",
@@ -34,3 +38,17 @@ app.include_router(results.router, prefix="/results", tags=["Results"])
 app.include_router(reporting.router, prefix="/reporting", tags=["Reporting"])
 app.include_router(log_generator.router, prefix="/log-generator", tags=["Log Generator"])
 
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    token = credentials.credentials
+    payload = decode_jwt_token(token)
+    # You could map this payload to a user model or simply return the payload
+    return payload
+
+@app.get("/protected")
+def protected_route(current_user=Depends(get_current_user)):
+    return {
+        "message": "You have accessed a protected route!",
+        "user": current_user
+    }
