@@ -1,0 +1,50 @@
+{
+    "configuration_id": 42,
+    "evaluation_date": "2025-04-07T10:15:00Z",
+    "app_version": "SmartTicketing v1.2",       // Could be a comma-separated list if multiple versions
+    "ai_model_version": "2.4",
+    "metrics": {
+      "Effectiveness": {
+        // Example: these come from the "Effectiveness" class in metrics.py
+        "Prediction Accuracy": 0.82,
+        "Precision": 0.70,
+        "Recall": 0.65,
+        "Overall System Accuracy": 79.0,     // if stored as percentage
+        "Model Improvement Rate": 0.05      // difference or slope over time
+      },
+      "Efficiency": {
+        "Response Time": 3.45,             // e.g., average response time (seconds or ms)
+        "Teaching Efficiency": 0.2,        // ratio: performance_improvement / time_spent
+        "Query Efficiency": 5.0,           // total_queries / queries_to_target_accuracy
+        "Resource Utilization": 40.5,      // e.g., percent
+        "Task Completion Time": 120.0,     // difference in seconds (time_without_ai - time_with_ai)
+        "Correction Efficiency": 0.75,
+        "Error Reduction Rate": 10.0,      // percentage
+        "Knowledge Retention": 95.0
+      },
+      "Adaptability and Learning": {
+        "Feedback Impact": 0.03,
+        "Adaptability Score": 0.05,
+        "Impact of Corrections": 0.04,
+        "Learning Efficiency": 0.2,
+        "Objective Fulfillment Rate": 0.9
+      },
+      "Collaboration and Interaction": {
+        "Human-AI Agreement Rate": 0.88,
+        "AI Assistance Rate": 0.6,
+        "Decision Effectiveness": 85.0,     // percent
+        "Time to Resolution": 110.0,       // average in seconds
+        "Human Effort Saved": 20           // effort difference (minutes or other unit)
+      },
+      "Trust and Safety": {
+        "Confidence": 76.2,               // e.g., % of high-confidence correct
+        "Trust Score": 80.0,              // e.g., rating scaled to 100
+        "Safety Incidents": 0,
+        "System Reliability": 98.9
+      },
+      "Robustness and Generalization": {
+        "Adversarial Robustness": 0.95,
+        "Domain Generalization": 0.88
+      }
+    }
+  }

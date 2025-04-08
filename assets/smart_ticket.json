@@ -1,0 +1,52 @@
+[
+    {
+      "app_version": "SmartTicketing v1.2",
+      "ai_model_version": "Transformer-2.3",
+      "environment": "production",
+      "timestamp": "2025-04-01T12:34:56Z",
+      "user_id": "employee_145",
+      "user_role": "support_agent",
+      "ticket_id": "TICK-1001",
+      "ticket_metadata": {
+        "title": "Printer not working",
+        "priority": "High",
+        "category": "IT Support",
+        "status": "Open"
+      },
+      "interaction_data": {
+        "human_decision": "Restart printer driver",
+        "ai_suggestion": "Update printer driver",
+        "decision_outcome": "successful",
+        "resolution_time": 150
+      },
+      "ai_predictions": [
+        {
+          "predicted_label": "hardware_issue",
+          "confidence": 0.85
+        },
+        {
+          "predicted_label": "software_issue",
+          "confidence": 0.1
+        }
+      ],
+      "al_strategy": "uncertainty_sampling",
+      "retrain_events": [
+        {
+          "timestamp": "2025-04-01T12:40:00Z",
+          "correction": "It was a driver mismatch, not hardware",
+          "ai_model_version_after_retraining": "Transformer-2.4"
+        }
+      ],
+      "performance_at_t": 0.82,
+      "performance_at_t_1": 0.80,
+      "time_interval": 1,
+      "human_decision": "Replace driver",
+      "ai_suggestion": "Install new driver",
+      "effort_without_ai": 30,
+      "effort_with_ai": 10,
+      "trust_rating": 4,
+      "trust_scale_maximum": 5,
+      "safety_incidents": 0,
+      "uptime": 3600,
+      "total_time": 3700
+    }
