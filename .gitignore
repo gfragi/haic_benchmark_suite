@@ -166,3 +166,5 @@ bench-env/
 frontend/node_modules/
 
 .vscode/
+
+docker/minio-init
