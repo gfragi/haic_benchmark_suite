@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(get_db)):
     # Retrieve the selected groups
     selected_groups = config.metrics
-    
+
     # Expand the groups into individual metrics
     available_metrics = Metrics.get_available_metrics()
     selected_metrics = []
@@ -27,7 +27,7 @@ def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(g
             selected_metrics.extend(available_metrics[group])
         else:
             raise HTTPException(status_code=400, detail=f"Group {group} not found in available metrics.")
-    
+
     # Remove duplicates if any (optional, depends on your needs)
     selected_metrics = list(set(selected_metrics))
 

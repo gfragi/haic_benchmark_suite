@@ -11,17 +11,13 @@ from app.models import EvaluationConfig, LogEntry
 from app.services.agg_metrics import calculate_metrics_for_group, save_evaluation_result
 from app.models.results import EvaluationResult, MetricGroup
 from app.utils.database import SessionLocal
+from app.utils.minio_client_keycloak import get_minio_client
 
 
 load_dotenv()
 
-minio_client = Minio(
-    os.getenv("MINIO_ENDPOINT"),
-    access_key=os.getenv("MINIO_ACCESS_KEY"),
-    secret_key=os.getenv("MINIO_SECRET_KEY"),
-    secure=False,
-    region=os.getenv("MINIO_REGION"),
-)
+minio_client = get_minio_client()
+
 
 
 def evaluate_logs(config: EvaluationConfig, logs_data: list, db: Session):

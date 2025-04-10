@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: benchmark-service
+  labels:
+    app: benchmark-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: benchmark-service
+  template:
+    metadata:
+      labels:
+        app: benchmark-service
+    spec:
+      containers:
+      - name: benchmark-container
+        image: <your-registry>/<repo-name>:<tag>
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080  # or whatever port your container listens on
+        env:
+        - name: SOME_ENV_VARIABLE
+          value: "some-value"
+        # Add more environment variables or configuration as needed
