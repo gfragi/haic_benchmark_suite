@@ -9,18 +9,14 @@ from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models import EvaluationResult
 from app.services.agg_metrics import calculate_metrics_for_group
+from app.utils.minio_client_keycloak import get_minio_client
 
 router = APIRouter()
 
 load_dotenv()
 
-minio_client = Minio(
-    os.getenv("MINIO_ENDPOINT"),
-    access_key=os.getenv("MINIO_ACCESS_KEY"),
-    secret_key=os.getenv("MINIO_SECRET_KEY"),
-    secure=False,
-    region=os.getenv("MINIO_REGION"),
-)
+minio_client = get_minio_client()
+
 
 # Fetch Evaluation Results grouped by configuration ID
 @router.get("/{configuration_id}")

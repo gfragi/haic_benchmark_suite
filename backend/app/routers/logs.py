@@ -13,6 +13,7 @@ from app.utils.database import get_db
 from app.utils.generic_functions import save_log_entry, get_config_by_id
 from app.utils.minio_utils import upload_file
 from app.models.configuration import EvaluationConfig
+from app.utils.minio_client_keycloak import get_minio_client
 
 router = APIRouter()
 
@@ -21,13 +22,8 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-minio_client = Minio(
-    os.getenv("MINIO_ENDPOINT"),
-    access_key=os.getenv("MINIO_ACCESS_KEY"),
-    secret_key=os.getenv("MINIO_SECRET_KEY"),
-    secure=False,
-    region=os.getenv("MINIO_REGION"),
-)
+minio_client = get_minio_client()
+
 
 @router.post("/upload")
 async def upload_log(configuration_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
