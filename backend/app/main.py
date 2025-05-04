@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from .utils.keycloak_utils import decode_jwt_token
 
 from app.routers import results
+from app.routers import survey 
+
 
 app = FastAPI(
     title="Human-AI Benchmark Suite",
@@ -37,6 +39,7 @@ app.include_router(evaluate.router, prefix="/evaluate", tags=["Evaluation"])
 app.include_router(results.router, prefix="/results", tags=["Results"])
 app.include_router(reporting.router, prefix="/reporting", tags=["Reporting"])
 app.include_router(log_generator.router, prefix="/log-generator", tags=["Log Generator"])
+app.include_router(survey.router , prefix="/survey", tags=["Survey"])
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security)
@@ -52,3 +55,5 @@ def protected_route(current_user=Depends(get_current_user)):
         "message": "You have accessed a protected route!",
         "user": current_user
     }
+
+
