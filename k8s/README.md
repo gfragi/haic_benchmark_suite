@@ -23,3 +23,16 @@ kubectl create secret generic benchmarking-secret \
   --namespace=benchmarking
 ```
 
+## Build the Frontend Image
+
+``` bash
+docker build -f Dockerfile.frontend -t ghcr.io/gfragi/haic-frontend:latest .
+```
+
+## Authenticate to GHCR
+
+``` bash
+source k8s/.env 
+echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+```
+

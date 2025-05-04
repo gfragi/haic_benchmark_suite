@@ -22,4 +22,7 @@ spec:
         - containerPort: 8000
         env:
         - name: DATABASE_URL
-          value: postgresql://admin:secret@postgres:5432/benchmarking
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: DATABASE_URL
