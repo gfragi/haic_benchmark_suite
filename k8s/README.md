@@ -19,7 +19,7 @@ To generate a Kubernetes secret from a file, use the following command:
 
 ```bash
 kubectl create secret generic benchmarking-secret \
-  --from-env-file=.env \
+  --from-env-file=k8s\.env \
   --namespace=benchmarking
 ```
 

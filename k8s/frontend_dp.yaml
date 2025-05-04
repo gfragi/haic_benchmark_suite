@@ -13,8 +13,10 @@ spec:
       labels:
         app: frontend
     spec:
+      imagePullSecrets:
+        - name: ghcr-pull-secret
       containers:
       - name: frontend
-        image: your-dockerhub-user/your-frontend-image:latest
+        image: ghcr.io/gfragi/haic-frontend:latest
         ports:
         - containerPort: 80
