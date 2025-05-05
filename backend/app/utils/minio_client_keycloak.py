@@ -8,7 +8,7 @@ from minio import Minio
 from dotenv import load_dotenv
 import logging
 
-load_dotenv(dotenv_path="../../.env")  # Load environment variables from .env file
+load_dotenv()  # Load environment variables from .env file
 
 AUTH_URL = os.getenv("AUTH_URL")
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
