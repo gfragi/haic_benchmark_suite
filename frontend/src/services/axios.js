@@ -13,7 +13,7 @@ axios.interceptors.request.use(
 );
 
 const apiClient = axios.create({
-  baseURL: "backend.benchmarking.svc.cluster.local:8000", // Update with backend URL
+  baseURL: "import.meta.env.VUE_APP_API_BASE_URL",
   withCredentials: false,
   headers: {
     Accept: "application/json",

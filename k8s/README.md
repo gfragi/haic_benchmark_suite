@@ -42,3 +42,9 @@ source k8s/.env
 echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 ```
 
+## Push the Images to GHCR
+
+``` bash
+docker push ghcr.io/gfragi/haic-backend:latest
+docker push ghcr.io/gfragi/haic-frontend:latest
+```
