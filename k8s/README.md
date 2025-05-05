@@ -19,7 +19,7 @@ To generate a Kubernetes secret from a file, use the following command:
 
 ```bash
 kubectl create secret generic benchmarking-secret \
-  --from-env-file=k8s\.env \
+  --from-env-file=k8s/.env \
   --namespace=benchmarking
 ```
 
@@ -29,6 +29,12 @@ kubectl create secret generic benchmarking-secret \
 docker build -f Dockerfile.frontend -t ghcr.io/gfragi/haic-frontend:latest .
 ```
 
+## Build the Backend Image
+
+``` bash
+docker build -f Dockerfile.backend -t ghcr.io/gfragi/haic-backend:latest .
+```
+
 ## Authenticate to GHCR
 
 ``` bash
@@ -36,3 +42,10 @@ source k8s/.env
 echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 ```
 
+
+## Push the Images to GHCR
+
+``` bash
+docker push ghcr.io/gfragi/haic-frontend:latest
+docker push ghcr.io/gfragi/haic-backend:latest
+```
