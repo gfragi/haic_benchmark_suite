@@ -47,6 +47,6 @@
     "vue3-form-wizard": "^0.2.4",
     "vue3-notification": "^0.0.3",
     "webpack": "^5.94.0",
-    "webpack-plugin-vuetify": "^2.0.0-alpha.0"
+    "webpack-plugin-vuetify": "^3.1.1"
   }
 }

@@ -3,7 +3,7 @@
 set -e
 
 # Load environment variables
-if [ -f .env ]; then
+if [ -f ../k8s/.env ]; then
   export $(cat .env | xargs)
 else
   echo ".env file not found!"
