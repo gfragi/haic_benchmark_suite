@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-db
+  namespace: benchmarking
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      volumes:
+        - name: init-sql
+          configMap:
+            name: init-db-script
+      containers:
+        - name: init-db
+          image: postgres:15
+          command: ["sh", "-c", "until pg_isready -h postgres.benchmarking.svc.cluster.local -U $POSTGRES_USER; do sleep 2; done && psql -h postgres.benchmarking.svc.cluster.local -U $POSTGRES_USER -d postgres -c \"CREATE DATABASE \\\"$POSTGRES_DB\\\";\"; psql -h postgres.benchmarking.svc.cluster.local -U $POSTGRES_USER -d $POSTGRES_DB -f /init/init.sql"]
+
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: benchmarking-secret
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: benchmarking-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: benchmarking-secret
+                  key: POSTGRES_PASSWORD
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: benchmarking-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: init-sql
+              mountPath: /init

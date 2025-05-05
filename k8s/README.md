@@ -36,3 +36,17 @@ source k8s/.env
 echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 ```
 
+
+## Postgres 
+
+Create a db script as a configmap
+
+```bash
+kubectl create configmap init-db-script \
+  --from-file=init.sql=./init.sql \
+  --namespace=benchmarking
+```
+
+- PostgreSQL service must already be running (name: postgres in benchmarking namespace).
+- Create the ConfigMap using the path above.
+- Apply the init-db job manifest.
