@@ -257,7 +257,7 @@ ALTER TABLE ONLY public.results ALTER COLUMN id SET DEFAULT nextval('public.resu
 
 -- COPY public.configurations (id, application_name, ai_model_name, ai_model_type, description, metrics, evaluation_date, config_type, evaluation_status, minio_path) FROM stdin;
 -- 1	Image recognition app	ImageModel	Classification	Short description.	["Confidence", "Knowledge Retention", "AI Assistance Rate", "Feedback Impact", "Decision Effectiveness", "Trust Score", "Learning Efficiency", "Time to Resolution", "Error Reduction Rate", "Correction Efficiency", "Human-AI Agreement Rate", "Adaptability Score", "Objective Fullfillemnt Rate", "Resource Utilization", "Adversarial Robustness", "Human Effort Saved", "Response Time", "Query Efficiency", "Task Completion Time", "System Reliability", "Domain Generalization", "Safety Incidents", "Teaching Efficiency", "Impact of Corrections"]	2025-03-21 21:28:54.837558		completed	1/config_1.json
-\.
+-- \.
 
 
 --

@@ -1,8 +1,15 @@
 {
-    "CodeGPT.apiKey": "CodeGPT Plus Beta",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "[python]": {
+        "editor.formatOnPaste": false,
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
     "cSpell.words": [
         "codegen",
         "haic",
         "kubeflow"
-    ]
+    ],
+    "ruff.enable": false
 }

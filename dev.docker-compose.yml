@@ -15,91 +15,67 @@ services:
       - ./docker/db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
       # - postgres_data:/var/lib/postgresql/data
 
-  minio:
-    image: minio/minio
-    container_name: haic-minio
-    env_file: .env
-    environment:
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_BUCKET: ${MINIO_BUCKET}
-      MINIO_REGION: ${MINIO_REGION}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      LOG_LEVEL: ${LOG_LEVEL}
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      # - minio_data:/data
-      - ./docker/minio-init/data:/data
-    entrypoint: sh
-    command: >
-      -c '
-        mkdir -p /data/humaine &&
-        /usr/bin/minio server /data --console-address ":9001"
-      '
-  migrations:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.backend
-    command: alembic upgrade head
-    env_file: .env
-    environment:
-      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_BUCKET: ${MINIO_BUCKET}
-      MINIO_REGION: ${MINIO_REGION}
-      LOG_LEVEL: ${LOG_LEVEL}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-    volumes:
-      - ./backend:/app
-    depends_on:
-      - db
+  # minio:
+  #   image: minio/minio
+  #   container_name: haic-minio
+  #   env_file: .env
+  #   environment:
+  #     MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+  #     MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+  #     MINIO_BUCKET: ${MINIO_BUCKET}
+  #     MINIO_REGION: ${MINIO_REGION}
+  #     DB_HOST: ${DB_HOST}
+  #     DB_PORT: ${DB_PORT}
+  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_NAME: ${DB_NAME}
+  #     DB_USER: ${DB_USER}
+  #     LOG_LEVEL: ${LOG_LEVEL}
+  #   ports:
+  #     - "9000:9000"
+  #     - "9001:9001"
+  #   volumes:
+  #     - minio_data:/data
+  #     # - ./docker/minio-init/data:/data
+  #   entrypoint: sh
+  #   command: >
+  #     -c '
+  #       mkdir -p /data/humaine &&
+  #       /usr/bin/minio server /data --console-address ":9001"
+  #     '
+  # migrations:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile.backend
+  #   command: alembic upgrade head
+  #   env_file: .env
+  #   depends_on:
+  #     - db
+  #   # NOTE: Volume is required because alembic is not installed in the base image
+  #   volumes:
+  #     - ./backend:/app
 
   backend:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.backend
+      dockerfile: ./Dockerfile.backend
     container_name: haic-backend
     env_file: .env
-    environment:
-      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_BUCKET: ${MINIO_BUCKET}
-      MINIO_REGION: ${MINIO_REGION}
-      LOG_LEVEL: ${LOG_LEVEL}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/app
     depends_on:
       - db
-      - minio
+      # - minio
+    # NOTE: Volume is required for changes to take effect
+    volumes:
+      - ./backend:/app
 
   frontend:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.frontend
+      dockerfile: ./Dockerfile.frontend
     container_name: haic-frontend
     ports:
       - "8080:8080"
-    volumes:
-      - ./frontend:/app
     depends_on:
       - backend
   

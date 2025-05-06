@@ -1,5 +1,7 @@
 from fastapi import UploadFile
 from minio import Minio
+
+# from logging import getLogger
 import uuid
 import io
 
@@ -8,15 +10,25 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
- # MinIO setup
+# MinIO setup
+
+# logger = getLogger(__name__)
+
+print(
+    "Loading MinIO configuration from environment variables:",
+    os.getenv("MINIO_ENDPOINT"),
+    os.getenv("MINIO_ACCESS_KEY"),
+    os.getenv("MINIO_SECRET_KEY"),
+    os.getenv("MINIO_REGION"),
+)
 
 
 client = Minio(
-        os.getenv("MINIO_ENDPOINT"),
-        access_key=os.getenv("MINIO_ACCESS_KEY"),
-        secret_key=os.getenv("MINIO_SECRET_KEY"),
-        secure=False,
-        region=os.getenv("MINIO_REGION"),
+    os.getenv("MINIO_ENDPOINT"),
+    access_key=os.getenv("MINIO_ACCESS_KEY"),
+    secret_key=os.getenv("MINIO_SECRET_KEY"),
+    secure=True,
+    region=os.getenv("MINIO_REGION"),
 )
 
 
@@ -33,6 +45,3 @@ async def upload_file(file_data: bytes, config_id: int) -> str:
 
     file_path = object_name  # Return the path to the file in MinIO
     return file_path
-
-
-
