@@ -168,3 +168,8 @@ frontend/node_modules/
 .vscode/
 docker/minio-init/data/.minio.sys/
 docker/minio-init/data/.minio.sys/*
+
+.vscode/
+
+docker/minio-initdocker/minio-init/data/.minio.sys
+docker/minio-init/data/.minio.sys

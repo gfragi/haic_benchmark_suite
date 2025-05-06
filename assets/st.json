@@ -1,0 +1,123 @@
+[
+    {
+      // The version of the Smart Ticketing application (from app config or build info)
+      "app_version": "SmartTicketing v1.2",
+  
+      // The version of the AI model that generated suggestions (from model registry or deployment pipeline)
+      "ai_model_version": "2.3",
+  
+      // The environment from which this log was collected (dev, staging, production, etc.)
+      "environment": "production",
+  
+      // ISO-8601 timestamp marking when this entry was created (from system clock / logging middleware)
+      "timestamp": "2025-04-01T12:34:56Z",
+  
+      // An identifier for the user who initiated or handled the ticket (from authentication/session data)
+      "user_id": "employee_145",
+  
+      // The role of that user in the system (support agent, end user, admin, etc.)
+      "user_role": "support_agent",
+  
+      // A unique ticket identifier from the ticketing system
+      "ticket_id": "TICK-1001",
+  
+      // Additional metadata about the ticket (from ticketing DB or creation form)
+      "ticket_metadata": {
+        // The short description or title of the ticket
+        "title": "Printer not working",
+  
+        // Urgency or priority assigned (user-defined or auto-labeled by business rules)
+        "priority": "High",
+  
+        // Categorization label (e.g., IT Support, Billing) assigned by the user or system
+        "category": "IT Support",
+  
+        // Current ticket status in the workflow (Open, In Progress, Resolved, etc.)
+        "status": "Open"
+      },
+  
+      // High-level info about the final (or intermediate) interaction between human & AI
+      "interaction_data": {
+        // The action or decision ultimately taken by the human user
+        "human_decision": "Restart printer driver",
+  
+        // The recommendation suggested by the AI assistant
+        "ai_suggestion": "Update printer driver",
+  
+        // Outcome of the ticket after applying the decision (e.g., successful, failed)
+        "decision_outcome": "successful",
+  
+        // Time (in seconds) it took to reach resolution once the ticket was addressed
+        "resolution_time": 150
+      },
+  
+      // Detailed AI predictions with confidence scores
+      // (from the model's inference results)
+      "ai_predictions": [
+        {
+          "predicted_label": "hardware_issue",
+          "confidence": 0.85
+        },
+        {
+          "predicted_label": "software_issue",
+          "confidence": 0.1
+        }
+      ],
+  
+      // The Active Learning strategy in use (set by  AL pipeline config)
+      "al_strategy": "uncertainty_sampling",
+  
+      // Log of retraining events triggered (from pipeline or model update service)
+      "retrain_events": [
+        {
+          // When the correction or retraining was initiated
+          "timestamp": "2025-04-01T12:40:00Z",
+  
+          // A note explaining the correction the human provided to the AI model
+          "correction": "It was a driver mismatch, not hardware",
+  
+          // AI model version after retraining was applied
+          "ai_model_version_after_retraining": "2.4"
+        }
+      ],
+  
+      // Performance measure at time t (the current cycle or iteration)
+      // (e.g., accuracy, F1 score, etc. - from model evaluation metrics)
+      "performance_at_t": 0.82,
+  
+      // Performance measure at time t-1 (the previous cycle or baseline)
+      "performance_at_t_1": 0.80,
+  
+      // Elapsed time (in whatever units you’re using) between t and t-1
+      "time_interval": 1,
+  
+      // (Redundant in this example) Another representation of the final human decision
+      "human_decision": "Replace driver",
+  
+      // (Redundant in this example) Another representation of the AI suggestion
+      "ai_suggestion": "Install new driver",
+  
+      // Estimated or measured effort if the task was done without AI assistance (in minutes, for example)
+      "effort_without_ai": 30,
+  
+      // Estimated or measured effort with AI assistance
+      "effort_with_ai": 10,
+  
+      // A user-provided score indicating trust in the AI's suggestions (from a feedback form or star rating)
+      "trust_rating": 4,
+  
+      // The maximum scale for the trust rating (e.g., 5 stars)
+      "trust_scale_maximum": 5,
+  
+      // Number of safety-related incidents or flags triggered (for tracking near-miss or actual issues)
+      "safety_incidents": 0,
+  
+      // How long the system was up (in seconds) during the relevant period (for reliability metrics)
+      "uptime": 3600,
+  
+      // The total measurement window (for reliability metrics), e.g., total time the system was being monitored
+      "total_time": 3700
+    }
+    // ... additional entries (logs) in this array
+  ]
+  

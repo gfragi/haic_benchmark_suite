@@ -1,7 +1,19 @@
 import axios from "axios";
+import keycloak from "./keycloak";
+
+axios.interceptors.request.use(
+  (config) => {
+    const token = keycloak.token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:8000", // Update with backend URL
+  baseURL: "import.meta.env.VUE_APP_API_BASE_URL",
   withCredentials: false,
   headers: {
     Accept: "application/json",

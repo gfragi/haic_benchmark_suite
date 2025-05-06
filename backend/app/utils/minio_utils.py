@@ -36,16 +36,3 @@ async def upload_file(file_data: bytes, config_id: int) -> str:
 
 
 
-# async def upload_dataset(dataset_file: UploadFile, task_id: int) -> str:
-
-#     # Generate a unique filename with task_id prefix
-#     filename = f"task_{task_id}_{uuid.uuid4()}.csv"
-#     object_name = os.path.join(str(task_id), filename)
-
-#     # Upload the dataset file
-#     data = await dataset_file.read()  # Read the file data
-#     client.put_object(
-#         os.getenv("MINIO_BUCKET"), object_name, io.BytesIO(data), len(data),
-#     )
-#     dataset_path = object_name  # Return the path to the dataset file in MinIO
-#     return dataset_path
