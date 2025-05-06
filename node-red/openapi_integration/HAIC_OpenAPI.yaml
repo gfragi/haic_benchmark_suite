@@ -22,19 +22,19 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Body_upload_log_logs_upload_post'
+              $ref: "#/components/schemas/Body_upload_log_logs_upload_post"
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /logs/{config_id}:
     get:
       tags:
@@ -49,17 +49,17 @@ paths:
             type: integer
             title: Config Id
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /logs/download/{config_id}/{log_name}:
     get:
       tags:
@@ -80,17 +80,17 @@ paths:
             type: string
             title: Log Name
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /logs/{config_id}/{log_name}:
     delete:
       tags:
@@ -111,17 +111,17 @@ paths:
             type: string
             title: Log Name
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /logs/register:
     post:
       tags:
@@ -132,20 +132,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LogSchema'
+              $ref: "#/components/schemas/LogSchema"
         required: true
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /configuration/new:
     post:
       tags:
@@ -156,21 +156,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EvaluationConfigSchema'
+              $ref: "#/components/schemas/EvaluationConfigSchema"
         required: true
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EvaluationConfigSchema'
-        '422':
+                $ref: "#/components/schemas/EvaluationConfigSchema"
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /configuration/{configuration_id}:
     get:
       tags:
@@ -185,18 +185,18 @@ paths:
             type: integer
             title: Configuration Id
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EvaluationConfigSchema'
-        '422':
+                $ref: "#/components/schemas/EvaluationConfigSchema"
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /configuration/list/:
     get:
       tags:
@@ -204,13 +204,13 @@ paths:
       summary: Get All Configurations
       operationId: get_all_configurations_configuration_list__get
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/EvaluationConfigSchema'
+                  $ref: "#/components/schemas/EvaluationConfigSchema"
                 type: array
                 title: Response Get All Configurations Configuration List  Get
   /configuration/update/{configuration_id}:
@@ -231,20 +231,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EvaluationConfigSchema'
+              $ref: "#/components/schemas/EvaluationConfigSchema"
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EvaluationConfigSchema'
-        '422':
+                $ref: "#/components/schemas/EvaluationConfigSchema"
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /configuration/delete/{configuration_id}:
     delete:
       tags:
@@ -259,7 +259,7 @@ paths:
             type: integer
             title: Configuration Id
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
@@ -268,12 +268,12 @@ paths:
                 title: >-
                   Response Delete Configuration Configuration Delete 
                   Configuration Id  Delete
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /evaluate/{configuration_id}:
     post:
       tags:
@@ -288,17 +288,17 @@ paths:
             type: integer
             title: Configuration Id
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /evaluate/metrics:
     get:
       tags:
@@ -306,13 +306,13 @@ paths:
       summary: Get Metrics
       operationId: get_metrics_evaluate_metrics_get
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema:
                 additionalProperties:
-                  $ref: '#/components/schemas/MetricGroupResponse'
+                  $ref: "#/components/schemas/MetricGroupResponse"
                 type: object
                 title: Response Get Metrics Evaluate Metrics Get
   /results/{configuration_id}:
@@ -329,17 +329,17 @@ paths:
             type: integer
             title: Configuration Id
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /results/{configuration_id}/{result_id}:
     get:
       tags:
@@ -360,17 +360,17 @@ paths:
             type: integer
             title: Result Id
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /results/{configuration_id}/group/{group_name}:
     get:
       tags:
@@ -392,17 +392,17 @@ paths:
             type: string
             title: Group Name
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /reporting/aggregate-by-date:
     get:
       tags:
@@ -410,7 +410,7 @@ paths:
       summary: Get Aggregated Results
       operationId: get_aggregated_results_reporting_aggregate_by_date_get
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
@@ -422,7 +422,7 @@ paths:
       summary: Get Time Series Data
       operationId: get_time_series_data_reporting_time_series_data_get
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
@@ -434,7 +434,7 @@ paths:
       summary: Generate Pdf Report
       operationId: generate_pdf_report_reporting_generate_report_get
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
@@ -470,7 +470,7 @@ paths:
           schema:
             type: string
             description: Start date of the log period
-            default: '2024-02-10T13:00:00Z'
+            default: "2024-02-10T13:00:00Z"
             title: Start Date
           description: Start date of the log period
         - name: end_date
@@ -479,7 +479,7 @@ paths:
           schema:
             type: string
             description: End date of the log period
-            default: '2024-05-10T13:00:00Z'
+            default: "2024-05-10T13:00:00Z"
             title: End Date
           description: End date of the log period
         - name: ai_model_version_range
@@ -492,17 +492,17 @@ paths:
             title: Ai Model Version Range
           description: Range of model versions
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
   /log-generator/download/:
     get:
       tags:
@@ -517,17 +517,73 @@ paths:
             type: string
             title: File Path
       responses:
-        '200':
+        "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-        '422':
+        "422":
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
+                $ref: "#/components/schemas/HTTPValidationError"
+  /survey:
+    post:
+      tags:
+        - Survey
+        - Survey
+      summary: Submit a survey response
+      operationId: submit_survey_survey_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SurveyCreate"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /survey/aggregate:
+    get:
+      tags:
+        - Survey
+        - Survey
+      summary: Get aggregated survey metrics
+      description: |-
+        Returns aggregated survey metrics grouped by pilot tag.
+        For each pilot, it returns:
+          - average SUS score
+          - average Ethics score
+          - number of responses collected
+      operationId: get_aggregated_metrics_survey_aggregate_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /protected:
+    get:
+      summary: Protected Route
+      operationId: protected_route_protected_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+        - HTTPBearer: []
 components:
   schemas:
     AIModelData:
@@ -535,27 +591,27 @@ components:
         ai_model_name:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Ai Model Name
         training_data:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Training Data
         ai_model_size:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Ai Model Size
         inference_time_seconds:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: Inference Time Seconds
         deployment_details:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Deployment Details
       type: object
       title: AIModelData
@@ -564,32 +620,32 @@ components:
         alert_details:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Alert Details
         alert_time:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Alert Time
         load_setpoint:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: Load Setpoint
         generation_setpoint:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: Generation Setpoint
         predicted_security_state:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Predicted Security State
         confidence_bound:
           anyOf:
             - type: number
-            - type: 'null'
+            - type: "null"
           title: Confidence Bound
       type: object
       title: AlertData
@@ -603,12 +659,62 @@ components:
       required:
         - file
       title: Body_upload_log_logs_upload_post
+    EthicsResponses:
+      properties:
+        q_fairness:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Q Fairness
+          description: >-
+            Fairness: The system handles different tasks (or users, data)
+            without bias.
+        q_transparency:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Q Transparency
+          description: >-
+            Transparency: I understand how the system/AI arrives at its
+            suggestions or decisions.
+        q_privacy:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Q Privacy
+          description: >-
+            Privacy: I feel confident that sensitive or personal data is
+            protected by this system.
+        q_accountability:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Q Accountability
+          description: >-
+            Accountability: It is clear who or what is responsible if the system
+            makes a mistake.
+        q_trust:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Q Trust
+          description: >-
+            Trust: Overall, I trust this system to operate ethically and in my
+            best interest.
+      type: object
+      required:
+        - q_fairness
+        - q_transparency
+        - q_privacy
+        - q_accountability
+        - q_trust
+      title: EthicsResponses
     EvaluationConfigSchema:
       properties:
         id:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: Id
         application_name:
           type: string
@@ -633,7 +739,7 @@ components:
         description:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Description
         config_type:
           type: string
@@ -652,22 +758,11 @@ components:
         - metrics
         - config_type
       title: EvaluationConfigSchema
-      examples:
-        - ai_model_name: TumorDetectionModelV1
-          ai_model_type: Classification
-          application_name: RadiologyApp
-          config_type: specific
-          description: Evaluation of Tumor Detection Model in RadiologyApp
-          evaluation_date: '2025-03-20T15:26:39.515693'
-          evaluation_status: pending
-          metrics:
-            - metric_name: Prediction Accuracy
-            - metric_name: Response Time
     HTTPValidationError:
       properties:
         detail:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: "#/components/schemas/ValidationError"
           type: array
           title: Detail
       type: object
@@ -677,35 +772,35 @@ components:
         image_id:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Image Id
         presentation_time:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Presentation Time
         validation_data:
           anyOf:
-            - $ref: '#/components/schemas/ValidationData'
-            - type: 'null'
+            - $ref: "#/components/schemas/ValidationData"
+            - type: "null"
         review_data:
           anyOf:
-            - $ref: '#/components/schemas/ReviewData'
-            - type: 'null'
+            - $ref: "#/components/schemas/ReviewData"
+            - type: "null"
         application_id:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Application Id
         justification_documents:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Justification Documents
         submission_time:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Submission Time
         load_generation_data:
           anyOf:
@@ -717,15 +812,15 @@ components:
                     - type: number
                 type: object
               type: array
-            - type: 'null'
+            - type: "null"
           title: Load Generation Data
         alert_data:
           anyOf:
-            - $ref: '#/components/schemas/AlertData'
+            - $ref: "#/components/schemas/AlertData"
             - items:
-                $ref: '#/components/schemas/AlertData'
+                $ref: "#/components/schemas/AlertData"
               type: array
-            - type: 'null'
+            - type: "null"
           title: Alert Data
       type: object
       title: InteractionData
@@ -740,7 +835,7 @@ components:
         ai_model_version:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Ai Model Version
         app_version:
           type: string
@@ -753,27 +848,27 @@ components:
           title: End Time
         interaction_data:
           anyOf:
-            - $ref: '#/components/schemas/InteractionData'
-            - type: 'null'
+            - $ref: "#/components/schemas/InteractionData"
+            - type: "null"
         retrain_events:
           anyOf:
             - items:
-                $ref: '#/components/schemas/RetrainEvent'
+                $ref: "#/components/schemas/RetrainEvent"
               type: array
-            - type: 'null'
+            - type: "null"
           title: Retrain Events
         performance_infrastructure:
           anyOf:
-            - $ref: '#/components/schemas/PerformanceInfrastructure'
-            - type: 'null'
+            - $ref: "#/components/schemas/PerformanceInfrastructure"
+            - type: "null"
         performance_logs:
           anyOf:
-            - $ref: '#/components/schemas/PerformanceLogs'
-            - type: 'null'
+            - $ref: "#/components/schemas/PerformanceLogs"
+            - type: "null"
         ai_model_data:
           anyOf:
-            - $ref: '#/components/schemas/AIModelData'
-            - type: 'null'
+            - $ref: "#/components/schemas/AIModelData"
+            - type: "null"
       type: object
       required:
         - session_id
@@ -787,12 +882,12 @@ components:
         group_description:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Group Description
           default: No description
         metrics:
           items:
-            $ref: '#/components/schemas/MetricResponse'
+            $ref: "#/components/schemas/MetricResponse"
           type: array
           title: Metrics
       type: object
@@ -807,7 +902,7 @@ components:
         description:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Description
           default: No description
       type: object
@@ -819,17 +914,17 @@ components:
         hardware_specifications:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Hardware Specifications
         software_stack:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Software Stack
         network_conditions:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Network Conditions
       type: object
       title: PerformanceInfrastructure
@@ -840,21 +935,21 @@ components:
             - additionalProperties:
                 type: integer
               type: object
-            - type: 'null'
+            - type: "null"
           title: Processing Time Seconds
         resource_utilization:
           anyOf:
             - additionalProperties:
                 type: integer
               type: object
-            - type: 'null'
+            - type: "null"
           title: Resource Utilization
         human_effort_seconds:
           anyOf:
             - additionalProperties:
                 type: integer
               type: object
-            - type: 'null'
+            - type: "null"
           title: Human Effort Seconds
       type: object
       title: PerformanceLogs
@@ -863,26 +958,26 @@ components:
         retraining_time:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Retraining Time
         initial_metrics:
           anyOf:
             - additionalProperties:
                 type: number
               type: object
-            - type: 'null'
+            - type: "null"
           title: Initial Metrics
         post_retraining_metrics:
           anyOf:
             - additionalProperties:
                 type: number
               type: object
-            - type: 'null'
+            - type: "null"
           title: Post Retraining Metrics
         retraining_details:
           anyOf:
-            - $ref: '#/components/schemas/RetrainingDetails'
-            - type: 'null'
+            - $ref: "#/components/schemas/RetrainingDetails"
+            - type: "null"
       type: object
       title: RetrainEvent
     RetrainingDetails:
@@ -890,17 +985,17 @@ components:
         time_taken_seconds:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: Time Taken Seconds
         data_used:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Data Used
         ai_model_version_after_retraining:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Ai Model Version After Retraining
       type: object
       title: RetrainingDetails
@@ -909,137 +1004,270 @@ components:
         review_time_seconds:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: Review Time Seconds
         detections_confirmed:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: Detections Confirmed
         false_positives_identified:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: False Positives Identified
         false_negatives_identified:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: False Negatives Identified
         feedback_details:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Feedback Details
         time_spent_on_corrections_seconds:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: Time Spent On Corrections Seconds
         discrepancy_rate:
           anyOf:
             - type: number
-            - type: 'null'
+            - type: "null"
           title: Discrepancy Rate
         operator_decision:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Operator Decision
         feedback_time:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Feedback Time
         insecure_instances_confirmed:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: Insecure Instances Confirmed
         false_positives:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: False Positives
         false_negatives:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: False Negatives
         user_satisfaction:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: User Satisfaction
         feedback_provided:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Feedback Provided
         human_confirmation_rate:
           anyOf:
             - type: number
-            - type: 'null'
+            - type: "null"
           title: Human Confirmation Rate
       type: object
       title: ReviewData
+    SurveyCreate:
+      properties:
+        survey_id:
+          type: string
+          title: Survey Id
+        user_id:
+          type: string
+          title: User Id
+          description: An anonymized identifier for the respondent
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+        pilot_tag:
+          type: string
+          title: Pilot Tag
+          description: >-
+            A tag indicating from which pilot this survey is received (e.g.,
+            'SmartTicketing', 'SmartEnergy', etc.)
+        app_version:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: App Version
+          description: Version of the pilot's application
+        ai_model_version:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Ai Model Version
+          description: Version of the AI model being used
+        tam_sus_responses:
+          $ref: "#/components/schemas/TAMSUSResponses"
+        ethics_responses:
+          $ref: "#/components/schemas/EthicsResponses"
+        domain_specific:
+          anyOf:
+            - additionalProperties:
+                type: integer
+              type: object
+            - type: "null"
+          title: Domain Specific
+          description: >-
+            Optional domain-specific responses, e.g., for pilot-specific
+            questions
+      type: object
+      required:
+        - user_id
+        - pilot_tag
+        - tam_sus_responses
+        - ethics_responses
+      title: SurveyCreate
     SystemMetrics:
       properties:
         accuracy:
           anyOf:
             - type: number
-            - type: 'null'
+            - type: "null"
           title: Accuracy
         precision:
           anyOf:
             - type: number
-            - type: 'null'
+            - type: "null"
           title: Precision
         recall:
           anyOf:
             - type: number
-            - type: 'null'
+            - type: "null"
           title: Recall
       type: object
       title: SystemMetrics
+    TAMSUSResponses:
+      properties:
+        sus_q1:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Sus Q1
+          description: I think that I would like to use this system frequently.
+        sus_q2:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Sus Q2
+          description: I found the system unnecessarily complex.
+        sus_q3:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Sus Q3
+          description: I thought the system was easy to use.
+        sus_q4:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Sus Q4
+          description: >-
+            I think that I would need the support of a technical person to be
+            able to use this system.
+        sus_q5:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Sus Q5
+          description: I found the various functions in this system were well integrated.
+        sus_q6:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Sus Q6
+          description: I thought there was too much inconsistency in this system.
+        sus_q7:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Sus Q7
+          description: >-
+            I would imagine that most people would learn to use this system very
+            quickly.
+        sus_q8:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Sus Q8
+          description: I found the system to be very difficult to use.
+        sus_q9:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Sus Q9
+          description: I felt very confident using the system.
+        sus_q10:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Sus Q10
+          description: >-
+            I needed to learn many things before I could get going with this
+            system.
+      type: object
+      required:
+        - sus_q1
+        - sus_q2
+        - sus_q3
+        - sus_q4
+        - sus_q5
+        - sus_q6
+        - sus_q7
+        - sus_q8
+        - sus_q9
+        - sus_q10
+      title: TAMSUSResponses
     ValidationData:
       properties:
         ai_detection_results:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Ai Detection Results
         confidence_scores:
           anyOf:
             - additionalProperties:
                 type: number
               type: object
-            - type: 'null'
+            - type: "null"
           title: Confidence Scores
         validation_results:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Validation Results
         confidence_level:
           anyOf:
             - type: number
-            - type: 'null'
+            - type: "null"
           title: Confidence Level
         processing_time_seconds:
           anyOf:
             - type: integer
-            - type: 'null'
+            - type: "null"
           title: Processing Time Seconds
         validation_time:
           anyOf:
             - type: string
-            - type: 'null'
+            - type: "null"
           title: Validation Time
         system_metrics:
           anyOf:
-            - $ref: '#/components/schemas/SystemMetrics'
-            - type: 'null'
+            - $ref: "#/components/schemas/SystemMetrics"
+            - type: "null"
       type: object
       title: ValidationData
     ValidationError:
@@ -1063,4 +1291,7 @@ components:
         - msg
         - type
       title: ValidationError
-
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

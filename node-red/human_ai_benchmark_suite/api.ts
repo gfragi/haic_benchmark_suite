@@ -12,9 +12,11 @@
  * Do not edit the class manually.
  */
 export * from './apis/configuration-api';
+export * from './apis/default-api';
 export * from './apis/evaluation-api';
 export * from './apis/log-generator-api';
 export * from './apis/logs-api';
 export * from './apis/reporting-api';
 export * from './apis/results-api';
+export * from './apis/survey-api';
 

@@ -1,8 +1,8 @@
 {
   "name": "human_ai_benchmark_suite",
   "version": "1.0.0",
-  "description": "OpenAPI client for human_ai_benchmark_suite",
-  "author": "OpenAPI-Generator Contributors",
+  "description": "OpenAPI client for API to evaluate Human-AI collaboration",
+  "author": "Human-AI Collaboration Benchmark Suite - OpenAPI-Generator Contributors",
   "keywords": [
     "axios",
     "typescript",

@@ -1,6 +1,7 @@
 export * from './aimodel-data';
 export * from './alert-data';
 export * from './body-upload-log-logs-upload-post';
+export * from './ethics-responses';
 export * from './evaluation-config-schema';
 export * from './httpvalidation-error';
 export * from './interaction-data';
@@ -12,6 +13,8 @@ export * from './performance-logs';
 export * from './retrain-event';
 export * from './retraining-details';
 export * from './review-data';
+export * from './survey-create';
 export * from './system-metrics';
+export * from './tamsusresponses';
 export * from './validation-data';
 export * from './validation-error';
