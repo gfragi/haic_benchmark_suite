@@ -42,7 +42,7 @@
         ],
         "out": [
             {
-                "x": 400,
+                "x": 440,
                 "y": 60,
                 "wires": [
                     {
@@ -52,17 +52,109 @@
                 ]
             },
             {
-                "x": 350,
-                "y": 120,
+                "x": 330,
+                "y": 200,
                 "wires": [
                     {
-                        "id": "7765b9231cda2faa",
-                        "port": 0
+                        "id": "f382319ee574b271",
+                        "port": 1
                     }
                 ]
             }
         ],
-        "env": [],
+        "env": [
+            {
+                "name": "Use Globally",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "bool"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "Use HTTPS",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "bool"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "IP Address",
+                "type": "str",
+                "value": "127.0.0.1",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "Port",
+                "type": "num",
+                "value": "8000",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "Username",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "Password",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "Options",
+                "type": "json",
+                "value": "{}",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "json"
+                        ]
+                    }
+                }
+            }
+        ],
         "meta": {},
         "color": "#58A69F",
         "inputLabels": [
@@ -603,11 +695,11 @@
         "type": "function",
         "z": "6d5f83638870930c",
         "name": "HAIC API Setup",
-        "func": "const { ConfigurationService } = global.get(\"HaicClient\");\nmsg.payload = global.get(\"HaicClient\");\nreturn msg;",
-        "outputs": 1,
+        "func": "const haic_setup = context.get(\"haic_setup\");\n\nconst {\n    clientConfig,\n    testResponse,\n    error,\n} = await haic_setup(\n    msg.payload.IP_Address,\n    msg.payload.Port,\n    msg.payload.Username,\n    msg.payload.Password,\n    msg.payload.Options,\n    msg.payload.Use_HTTP,\n);\n\nlet useGlobally = env.get(\"Use Globally\");\n\nif (Object.hasOwn(msg.payload, \"Use_Globally\")){\n    useGlobally = msg.payload.Use_Globally;\n}\n\nif (error == null) {\n    // Successful setup\n    msg.HaicApiClientConfiguration = clientConfig;\n    msg.payload = \"HAIC Client Configuration setup successful!\";\n    msg.HaicTestCallOutput = testResponse;\n    msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    msg.useGlobally = useGlobally;\n\n    return [msg, null];\n} else {\n    // Error during setup\n    msg.error = error;\n    msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    msg.FailedHaicApiClientConfiguration = clientConfig;\n\n    return [null, msg];\n}\nreturn msg;",
+        "outputs": 2,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst init_msg = {};\n\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n\n    return true;\n}\n\nconst haic_setup = async (ip, port, username, password, options, use_https = true) => {\n    const scheme = use_https ? 'https://' : \"http://\";\n\n    const configParams = {\n        basePath: `${scheme}${ip}:${port}`,\n    };\n\n    if (username && password) {\n        configParams.username = username;\n        configParams.password = password;\n    }\n\n    if (!isEmpty(options)) {\n        configParams.options = options;\n    }\n\n    const config = new Configuration(configParams);\n    const testClient = new ConfigurationApi(config);\n    let response = null;\n    let err_msg = null;\n\n    try {\n        response = await testClient.getAllConfigurationsConfigurationListGet();\n    } catch (err) {\n        err_msg = `Failed to connect to HAIC Benchmarking Suite! Configuration must be invalid! ${err}`;\n        node.error(err_msg);\n    }\n\n    return {\n        \"clientConfig\": config,\n        \"testResponse\": response,\n        \"error\": err_msg\n    };\n\n\n};\n\ncontext.set(\n    \"haic_setup\",\n    haic_setup\n);\n\nconst {\n    clientConfig,\n    testResponse,\n    error,\n} = await haic_setup(\n    env.get(\"IP Address\"),\n    env.get(\"Port\"),\n    env.get(\"Username\"),\n    env.get(\"Password\"),\n    env.get(\"Options\"),\n    env.get(\"Use HTTPS\")\n);\n\nif (error == null) {\n    // Successful setup\n    init_msg.HaicApiClientConfiguration = clientConfig;\n    init_msg.payload = \"HAIC Client Configuration setup successful!\";\n    init_msg.HaicTestCallOutput = testResponse;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.useGlobally = env.get(\"Use Globally\");\n\n    node.send([init_msg, null]);\n} else {\n    // Error during setup\n    init_msg.payload = error;\n    init_msg.error = error;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.FailedHaicApiClientConfiguration = clientConfig;\n\n    node.send([null, init_msg]);\n}",
         "finalize": "",
         "libs": [
             {
@@ -618,21 +710,28 @@
         "x": 180,
         "y": 60,
         "wires": [
+            [
+                "e9e39ea536989380"
+            ],
             []
         ]
     },
     {
-        "id": "7765b9231cda2faa",
-        "type": "catch",
+        "id": "e9e39ea536989380",
+        "type": "function",
         "z": "6d5f83638870930c",
-        "name": "",
-        "scope": null,
-        "uncaught": false,
-        "x": 200,
+        "name": "Set HAIC API Client Config",
+        "func": "if(msg.useGlobally) {\n    global.set(\"HaicApiClientConfiguration\", msg.HaicApiClientConfiguration);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClientConfiguration\", msg.HaicApiClientConfiguration);\n    context.set(\"useGlobally\", false);\n}",
+        "outputs": 0,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "// Code added here will be run when the\n// node is being stopped or re-deployed.\nconst useGlobally = context.get(\"useGlobally\");\n\nif (useGlobally) {\n    global.set(\"HaicApiClientConfiguration\", undefined);\n} else {\n    flow.set(\"$parent.HaicApiClientConfiguration\", undefined);\n}",
+        "libs": [],
+        "x": 440,
         "y": 120,
-        "wires": [
-            []
-        ]
+        "wires": [],
+        "icon": "font-awesome/fa-floppy-o"
     },
     {
         "id": "83a3c05684e3279a",
@@ -987,6 +1086,18 @@
         "type": "subflow:6d5f83638870930c",
         "z": "3f025920437f7905",
         "name": "",
+        "env": [
+            {
+                "name": "Use Globally",
+                "value": "true",
+                "type": "bool"
+            },
+            {
+                "name": "IP Address",
+                "value": "backend",
+                "type": "str"
+            }
+        ],
         "x": 370,
         "y": 40,
         "wires": [
@@ -1013,23 +1124,6 @@
         "statusType": "auto",
         "x": 560,
         "y": 20,
-        "wires": []
-    },
-    {
-        "id": "0c24b71d92ae68aa",
-        "type": "debug",
-        "z": "3f025920437f7905",
-        "name": "Error handling",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 560,
-        "y": 60,
         "wires": []
     },
     {
@@ -1506,6 +1600,23 @@
         "statusType": "auto",
         "x": 710,
         "y": 660,
+        "wires": []
+    },
+    {
+        "id": "0c24b71d92ae68aa",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 60,
         "wires": []
     },
     {

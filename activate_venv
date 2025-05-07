@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Use it with source, when current directory it the one with the file!
+
+# shellcheck disable=SC1091
+source bench-env/bin/activate
+
+alias python='python3'
+# ADD ANY AUTO-COMPLETION CODE AND OTHER TOOLS HERE
