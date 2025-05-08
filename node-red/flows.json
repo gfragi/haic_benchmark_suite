@@ -699,7 +699,7 @@
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst init_msg = {};\n\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n\n    return true;\n}\n\nconst haic_setup = async (ip, port, username, password, options, use_https = true) => {\n    const scheme = use_https ? 'https://' : \"http://\";\n\n    const configParams = {\n        basePath: `${scheme}${ip}:${port}`,\n    };\n\n    if (username && password) {\n        configParams.username = username;\n        configParams.password = password;\n    }\n\n    if (!isEmpty(options)) {\n        configParams.options = options;\n    }\n\n    const config = new Configuration(configParams);\n    const testClient = new ConfigurationApi(config);\n    let response = null;\n    let err_msg = null;\n\n    try {\n        response = await testClient.getAllConfigurationsConfigurationListGet();\n    } catch (err) {\n        err_msg = `Failed to connect to HAIC Benchmarking Suite! Configuration must be invalid! ${err}`;\n        node.error(err_msg);\n    }\n\n    return {\n        \"clientConfig\": config,\n        \"testResponse\": response,\n        \"error\": err_msg\n    };\n\n\n};\n\ncontext.set(\n    \"haic_setup\",\n    haic_setup\n);\n\nconst {\n    clientConfig,\n    testResponse,\n    error,\n} = await haic_setup(\n    env.get(\"IP Address\"),\n    env.get(\"Port\"),\n    env.get(\"Username\"),\n    env.get(\"Password\"),\n    env.get(\"Options\"),\n    env.get(\"Use HTTPS\")\n);\n\nif (error == null) {\n    // Successful setup\n    init_msg.HaicApiClientConfiguration = clientConfig;\n    init_msg.payload = \"HAIC Client Configuration setup successful!\";\n    init_msg.HaicTestCallOutput = testResponse;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.useGlobally = env.get(\"Use Globally\");\n\n    node.send([init_msg, null]);\n} else {\n    // Error during setup\n    init_msg.payload = error;\n    init_msg.error = error;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.FailedHaicApiClientConfiguration = clientConfig;\n\n    node.send([null, init_msg]);\n}",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst RETRIES_NUM = 3;\nconst RETRIES_INTERVAL = 1000;\n\nconst init_msg = {};\n\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};\n\nconst haic_setup = async (ip, port, username, password, options, use_https = true) => {\n    const scheme = use_https ? 'https://' : \"http://\";\n\n    const configParams = {\n        basePath: `${scheme}${ip}:${port}`,\n    };\n\n    if (username && password) {\n        configParams.username = username;\n        configParams.password = password;\n    }\n\n    if (!isEmpty(options)) {\n        configParams.options = options;\n    }\n\n    const config = new Configuration(configParams);\n    const testClient = new ConfigurationApi(config);\n    let response = null;\n    let err_msg = null;\n\n    try {\n        response = await retryWithDelay(\n            // A test call, given the complete HAIC API client instance.\n            async () => {\n               await testClient.getAllConfigurationsConfigurationListGet();\n            },\n            RETRIES_NUM,\n            RETRIES_INTERVAL,\n        );\n    } catch (err) {\n        err_msg = `Failed to connect to HAIC Benchmarking Suite! Configuration must be invalid! ${err}`;\n        node.error(err_msg);\n    }\n\n    return {\n        \"clientConfig\": config,\n        \"testResponse\": response,\n        \"error\": err_msg\n    };\n\n\n};\n\ncontext.set(\n    \"haic_setup\",\n    haic_setup\n);\n\nconst {\n    clientConfig,\n    testResponse,\n    error,\n} = await haic_setup(\n    env.get(\"IP Address\"),\n    env.get(\"Port\"),\n    env.get(\"Username\"),\n    env.get(\"Password\"),\n    env.get(\"Options\"),\n    env.get(\"Use HTTPS\")\n);\n\nif (error == null) {\n    // Successful setup\n    init_msg.HaicApiClientConfiguration = clientConfig;\n    init_msg.payload = \"HAIC Client Configuration setup successful!\";\n    init_msg.HaicTestCallOutput = testResponse;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.useGlobally = env.get(\"Use Globally\");\n\n    node.send([init_msg, null]);\n} else {\n    // Error during setup\n    init_msg.payload = error;\n    init_msg.error = error;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.FailedHaicApiClientConfiguration = clientConfig;\n\n    node.send([null, init_msg]);\n}",
         "finalize": "",
         "libs": [
             {
@@ -707,7 +707,7 @@
                 "module": "human_ai_benchmark_suite"
             }
         ],
-        "x": 180,
+        "x": 200,
         "y": 60,
         "wires": [
             [
@@ -728,7 +728,7 @@
         "initialize": "",
         "finalize": "// Code added here will be run when the\n// node is being stopped or re-deployed.\nconst useGlobally = context.get(\"useGlobally\");\n\nif (useGlobally) {\n    global.set(\"HaicApiClientConfiguration\", undefined);\n} else {\n    flow.set(\"$parent.HaicApiClientConfiguration\", undefined);\n}",
         "libs": [],
-        "x": 440,
+        "x": 460,
         "y": 120,
         "wires": [],
         "icon": "font-awesome/fa-floppy-o"
@@ -1098,7 +1098,7 @@
                 "type": "str"
             }
         ],
-        "x": 370,
+        "x": 350,
         "y": 40,
         "wires": [
             [
