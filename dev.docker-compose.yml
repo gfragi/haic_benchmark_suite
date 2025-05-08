@@ -72,10 +72,11 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: ./Dockerfile.frontend
+      dockerfile: ./Dockerfile.dev.frontend
     container_name: haic-frontend
+    env_file: .env
     ports:
-      - "8080:8080"
+      - "3000:3000"
     depends_on:
       - backend
   

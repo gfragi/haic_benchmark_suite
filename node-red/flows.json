@@ -24,6 +24,14 @@
         "env": []
     },
     {
+        "id": "9db4af518e108976",
+        "type": "tab",
+        "label": "Feedback Consolidation Pattern",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "6d5f83638870930c",
         "type": "subflow",
         "name": "HAIC API Config",
@@ -691,6 +699,16 @@
         "wholemsg": "false"
     },
     {
+        "id": "8a0706320fa877e8",
+        "type": "amqp-broker",
+        "name": "humaine in",
+        "host": "10.100.59.183",
+        "port": "5672",
+        "vhost": "humaine",
+        "tls": false,
+        "credsFromSettings": false
+    },
+    {
         "id": "f382319ee574b271",
         "type": "function",
         "z": "6d5f83638870930c",
@@ -1087,11 +1105,6 @@
         "z": "3f025920437f7905",
         "name": "",
         "env": [
-            {
-                "name": "Use Globally",
-                "value": "true",
-                "type": "bool"
-            },
             {
                 "name": "IP Address",
                 "value": "backend",
@@ -1615,7 +1628,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 580,
+        "x": 560,
         "y": 60,
         "wires": []
     },
@@ -2345,5 +2358,277 @@
                 "a511bfe93e5327a9"
             ]
         ]
+    },
+    {
+        "id": "fa5d8bc1d91e9134",
+        "type": "inject",
+        "z": "9db4af518e108976",
+        "name": "GOOD FEEDBACK",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "routingKey",
+                "v": "activelearning.app1.model1",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"modelID\":4,\"feedback\":\"ok\",\"imageID\":1,\"doctorID\":5,\"patientID\":3}",
+        "payloadType": "json",
+        "x": 130,
+        "y": 240,
+        "wires": [
+            [
+                "e6119a46b815c12e",
+                "0de11f879fda3761"
+            ]
+        ]
+    },
+    {
+        "id": "aee36c513c25a05d",
+        "type": "function",
+        "z": "9db4af518e108976",
+        "name": "create parts",
+        "func": "msg.parts={};\nmsg.parts.id = msg.payload.imageID+msg.payload.patientID;\nmsg.parts.count=2;\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 400,
+        "wires": [
+            [
+                "4469175c609b2986"
+            ]
+        ]
+    },
+    {
+        "id": "4469175c609b2986",
+        "type": "join",
+        "z": "9db4af518e108976",
+        "name": "Join in One",
+        "mode": "auto",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "comparisonField",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 710,
+        "y": 400,
+        "wires": [
+            [
+                "c060845de5c1d46a",
+                "e4542c729bb3c791"
+            ]
+        ]
+    },
+    {
+        "id": "c060845de5c1d46a",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "name": "debug 34",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 840,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "ec2d362d0bc3e89a",
+        "type": "inject",
+        "z": "9db4af518e108976",
+        "name": "BAD FEEDBACK",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "routingKey",
+                "v": "activelearning.app1.model1",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"modelID\":4,\"feedback\":\"wrong\",\"imageID\":1,\"doctorID\":6,\"patientID\":2}",
+        "payloadType": "json",
+        "x": 140,
+        "y": 280,
+        "wires": [
+            [
+                "e6119a46b815c12e"
+            ]
+        ]
+    },
+    {
+        "id": "e4542c729bb3c791",
+        "type": "function",
+        "z": "9db4af518e108976",
+        "name": "compare feedbacks",
+        "func": "if ((msg.payload[0].feedback)==(msg.payload[1].feedback)) {\n    return [msg,null];\n} else {\n    return [null,msg];\n}\n",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 400,
+        "wires": [
+            [
+                "120b2d00836d1305"
+            ],
+            [
+                "341745117b49659b"
+            ]
+        ]
+    },
+    {
+        "id": "120b2d00836d1305",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "name": "NORMAL",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1080,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "341745117b49659b",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "name": "ALERT",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1080,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "eb36a511c7513007",
+        "type": "comment",
+        "z": "9db4af518e108976",
+        "name": "Feedback Consolidation Pattern",
+        "info": "",
+        "x": 150,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "0de11f879fda3761",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "name": "debug 37",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "bb12b82d05721bca",
+        "type": "amqp-in",
+        "z": "9db4af518e108976",
+        "name": "",
+        "broker": "8a0706320fa877e8",
+        "prefetch": 0,
+        "noAck": true,
+        "exchangeName": "feedback",
+        "exchangeType": "topic",
+        "exchangeRoutingKey": "activelearning.app1.model1",
+        "exchangeDurable": true,
+        "queueName": "feedback",
+        "queueExclusive": false,
+        "queueDurable": true,
+        "queueAutoDelete": false,
+        "headers": "{}",
+        "x": 170,
+        "y": 400,
+        "wires": [
+            [
+                "aee36c513c25a05d"
+            ]
+        ]
+    },
+    {
+        "id": "e6119a46b815c12e",
+        "type": "amqp-out",
+        "z": "9db4af518e108976",
+        "name": "",
+        "broker": "8a0706320fa877e8",
+        "exchangeName": "feedback",
+        "exchangeType": "topic",
+        "exchangeRoutingKey": "",
+        "exchangeRoutingKeyType": "str",
+        "exchangeDurable": true,
+        "amqpProperties": "{ \"headers\": {} }",
+        "rpcTimeoutMilliseconds": 3000,
+        "outputs": 0,
+        "x": 460,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "66943fcd7a86b071",
+        "type": "comment",
+        "z": "9db4af518e108976",
+        "name": "Testing part",
+        "info": "",
+        "x": 90,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "fbfee0756d74b05a",
+        "type": "comment",
+        "z": "9db4af518e108976",
+        "name": "Main Implementation",
+        "info": "",
+        "x": 110,
+        "y": 500,
+        "wires": []
     }
 ]

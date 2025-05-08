@@ -881,5 +881,57 @@
                 "file": "/data/node_modules/node-red-contrib-custom-icons/custom-icon-node.js"
             }
         }
+    },
+    "@greyorange/node-red-contrib-amqp": {
+        "name": "@greyorange/node-red-contrib-amqp",
+        "version": "2.6.0",
+        "local": true,
+        "user": true,
+        "nodes": {
+            "amqp-in": {
+                "name": "amqp-in",
+                "types": [
+                    "amqp-in"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "@greyorange/node-red-contrib-amqp",
+                "file": "/data/node_modules/@greyorange/node-red-contrib-amqp/build/src/nodes/amqp-in.js"
+            },
+            "amqp-out": {
+                "name": "amqp-out",
+                "types": [
+                    "amqp-out"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "@greyorange/node-red-contrib-amqp",
+                "file": "/data/node_modules/@greyorange/node-red-contrib-amqp/build/src/nodes/amqp-out.js"
+            },
+            "amqp-broker": {
+                "name": "amqp-broker",
+                "types": [
+                    "amqp-broker"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "@greyorange/node-red-contrib-amqp",
+                "file": "/data/node_modules/@greyorange/node-red-contrib-amqp/build/src/nodes/amqp-broker.js"
+            },
+            "amqp-in-manual-ack": {
+                "name": "amqp-in-manual-ack",
+                "types": [
+                    "amqp-in-manual-ack"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "@greyorange/node-red-contrib-amqp",
+                "file": "/data/node_modules/@greyorange/node-red-contrib-amqp/build/src/nodes/amqp-in-manual-ack.js"
+            }
+        }
     }
 }
