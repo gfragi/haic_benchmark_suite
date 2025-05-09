@@ -32,6 +32,14 @@
         "env": []
     },
     {
+        "id": "e3fd273272a37452",
+        "type": "tab",
+        "label": "HAIC Client Dev+Tests",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "6d5f83638870930c",
         "type": "subflow",
         "name": "HAIC API Config",
@@ -50,8 +58,8 @@
         ],
         "out": [
             {
-                "x": 440,
-                "y": 60,
+                "x": 460,
+                "y": 40,
                 "wires": [
                     {
                         "id": "f382319ee574b271",
@@ -60,8 +68,8 @@
                 ]
             },
             {
-                "x": 330,
-                "y": 200,
+                "x": 390,
+                "y": 100,
                 "wires": [
                     {
                         "id": "f382319ee574b271",
@@ -448,7 +456,7 @@
         ],
         "out": [
             {
-                "x": 370,
+                "x": 490,
                 "y": 40,
                 "wires": [
                     {
@@ -458,12 +466,12 @@
                 ]
             },
             {
-                "x": 330,
-                "y": 120,
+                "x": 490,
+                "y": 140,
                 "wires": [
                     {
-                        "id": "0f4f17ea709a96d7",
-                        "port": 0
+                        "id": "64122fae851b3b9d",
+                        "port": 1
                     }
                 ]
             }
@@ -513,8 +521,8 @@
                 "y": 120,
                 "wires": [
                     {
-                        "id": "ed9cacde7a5dc142",
-                        "port": 0
+                        "id": "cfbf9857f9fb93cb",
+                        "port": 1
                     }
                 ]
             }
@@ -550,7 +558,7 @@
         ],
         "out": [
             {
-                "x": 440,
+                "x": 500,
                 "y": 40,
                 "wires": [
                     {
@@ -560,12 +568,12 @@
                 ]
             },
             {
-                "x": 410,
+                "x": 470,
                 "y": 120,
                 "wires": [
                     {
-                        "id": "b6c8cc7e3b585676",
-                        "port": 0
+                        "id": "3245c173b6b43c11",
+                        "port": 1
                     }
                 ]
             }
@@ -601,7 +609,7 @@
         ],
         "out": [
             {
-                "x": 470,
+                "x": 590,
                 "y": 40,
                 "wires": [
                     {
@@ -611,12 +619,12 @@
                 ]
             },
             {
-                "x": 390,
-                "y": 120,
+                "x": 510,
+                "y": 140,
                 "wires": [
                     {
-                        "id": "e96dee35d8b21030",
-                        "port": 0
+                        "id": "5f1f4fb85e5e103c",
+                        "port": 1
                     }
                 ]
             }
@@ -652,7 +660,7 @@
         ],
         "out": [
             {
-                "x": 470,
+                "x": 610,
                 "y": 40,
                 "wires": [
                     {
@@ -662,12 +670,12 @@
                 ]
             },
             {
-                "x": 430,
+                "x": 550,
                 "y": 120,
                 "wires": [
                     {
-                        "id": "7cc74023a28179ee",
-                        "port": 0
+                        "id": "f0bbc6d24216e546",
+                        "port": 1
                     }
                 ]
             }
@@ -717,7 +725,7 @@
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst RETRIES_NUM = 3;\nconst RETRIES_INTERVAL = 1000;\n\nconst init_msg = {};\n\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};\n\nconst haic_setup = async (ip, port, username, password, options, use_https = true) => {\n    const scheme = use_https ? 'https://' : \"http://\";\n\n    const configParams = {\n        basePath: `${scheme}${ip}:${port}`,\n    };\n\n    if (username && password) {\n        configParams.username = username;\n        configParams.password = password;\n    }\n\n    if (!isEmpty(options)) {\n        configParams.options = options;\n    }\n\n    const config = new Configuration(configParams);\n    const testClient = new ConfigurationApi(config);\n    let response = null;\n    let err_msg = null;\n\n    try {\n        response = await retryWithDelay(\n            // A test call, given the complete HAIC API client instance.\n            async () => {\n               await testClient.getAllConfigurationsConfigurationListGet();\n            },\n            RETRIES_NUM,\n            RETRIES_INTERVAL,\n        );\n    } catch (err) {\n        err_msg = `Failed to connect to HAIC Benchmarking Suite! Configuration must be invalid! ${err}`;\n        node.error(err_msg);\n    }\n\n    return {\n        \"clientConfig\": config,\n        \"testResponse\": response,\n        \"error\": err_msg\n    };\n\n\n};\n\ncontext.set(\n    \"haic_setup\",\n    haic_setup\n);\n\nconst {\n    clientConfig,\n    testResponse,\n    error,\n} = await haic_setup(\n    env.get(\"IP Address\"),\n    env.get(\"Port\"),\n    env.get(\"Username\"),\n    env.get(\"Password\"),\n    env.get(\"Options\"),\n    env.get(\"Use HTTPS\")\n);\n\nif (error == null) {\n    // Successful setup\n    init_msg.HaicApiClientConfiguration = clientConfig;\n    init_msg.payload = \"HAIC Client Configuration setup successful!\";\n    init_msg.HaicTestCallOutput = testResponse;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.useGlobally = env.get(\"Use Globally\");\n\n    node.send([init_msg, null]);\n} else {\n    // Error during setup\n    init_msg.payload = error;\n    init_msg.error = error;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.FailedHaicApiClientConfiguration = clientConfig;\n\n    node.send([null, init_msg]);\n}",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst RETRIES_NUM = 3;\nconst RETRIES_INTERVAL = 1000;\n\nconst init_msg = {};\n\nconst {\n    Configuration,\n    ConfigurationApi,\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};\n\nconst haic_setup = async (ip, port, username, password, options, use_https = true) => {\n    const scheme = use_https ? 'https://' : \"http://\";\n\n    const configParams = {\n        basePath: `${scheme}${ip}:${port}`,\n    };\n\n    if (username && password) {\n        configParams.username = username;\n        configParams.password = password;\n    }\n\n    if (!isEmpty(options)) {\n        configParams.options = options;\n    }\n\n    const config = new Configuration(configParams);\n    const testClient = new ConfigurationApi(config);\n    let response = null;\n    let err_msg = null;\n\n    try {\n        response = await retryWithDelay(\n            // A test call, given the complete HAIC API client instance.\n            async () => {\n               await testClient.getAllConfigurationsConfigurationListGet();\n            },\n            RETRIES_NUM,\n            RETRIES_INTERVAL,\n        );\n    } catch (err) {\n        err_msg = `Failed to connect to HAIC Benchmarking Suite! Configuration must be invalid! ${err}`;\n        node.error(err_msg);\n    }\n\n    return {\n        \"clientConfig\": config,\n        \"testResponse\": response,\n        \"error\": err_msg\n    };\n\n\n};\n\ncontext.set(\n    \"haic_setup\",\n    haic_setup\n);\n\nconst {\n    clientConfig,\n    testResponse,\n    error,\n} = await haic_setup(\n    env.get(\"IP Address\"),\n    env.get(\"Port\"),\n    env.get(\"Username\"),\n    env.get(\"Password\"),\n    env.get(\"Options\"),\n    env.get(\"Use HTTPS\")\n);\n\nif (error == null) {\n    // Successful setup\n    init_msg.HaicApiClientConfiguration = clientConfig;\n    init_msg.payload = \"HAIC Client Configuration setup successful!\";\n    init_msg.HaicTestCallOutput = testResponse;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.useGlobally = env.get(\"Use Globally\");\n\n    node.send([init_msg, null]);\n} else {\n    // Error during setup\n    init_msg.payload = error;\n    init_msg.error = error;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.FailedHaicApiClientConfiguration = clientConfig;\n\n    node.send([null, init_msg]);\n}",
         "finalize": "",
         "libs": [
             {
@@ -738,18 +746,63 @@
         "id": "e9e39ea536989380",
         "type": "function",
         "z": "6d5f83638870930c",
-        "name": "Set HAIC API Client Config",
-        "func": "if(msg.useGlobally) {\n    global.set(\"HaicApiClientConfiguration\", msg.HaicApiClientConfiguration);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClientConfiguration\", msg.HaicApiClientConfiguration);\n    context.set(\"useGlobally\", false);\n}",
-        "outputs": 0,
+        "name": "Set HAIC API Client Config ",
+        "func": "if(msg.useGlobally) {\n    global.set(\"HaicApiClientConfiguration\", msg.HaicApiClientConfiguration);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClientConfiguration\", msg.HaicApiClientConfiguration);\n    context.set(\"useGlobally\", false);\n}\n\nreturn msg;",
+        "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "// Code added here will be run when the\n// node is being stopped or re-deployed.\nconst useGlobally = context.get(\"useGlobally\");\n\nif (useGlobally) {\n    global.set(\"HaicApiClientConfiguration\", undefined);\n} else {\n    flow.set(\"$parent.HaicApiClientConfiguration\", undefined);\n}",
         "libs": [],
-        "x": 460,
-        "y": 120,
-        "wires": [],
+        "x": 240,
+        "y": 180,
+        "wires": [
+            [
+                "022fdfee8da92096"
+            ]
+        ],
         "icon": "font-awesome/fa-floppy-o"
+    },
+    {
+        "id": "022fdfee8da92096",
+        "type": "function",
+        "z": "6d5f83638870930c",
+        "name": "Setup HAIC API UTILS",
+        "func": "// CONSTANTS FOR THE UTILITY FUNCTIONS\nconst RETRIES_NUM = 3;\nconst RETRIES_INTERVAL = 1000;\n\n\n// UTILITY FUNCTIONS ------------------\n\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = RETRIES_NUM, interval = RETRIES_INTERVAL) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};\n\n\n\n// FUNCTIONS MAP\nconst utilFunctions = {\n    // ALL EXPORTED FUNCTIONS HERE:\n    \"isEmpty\": isEmpty,\n    \"delay\": delay,\n    \"retryWithDelay\": retryWithDelay,\n};\n\n\n// SET FUNCTIONS TO APPROPRIATE CONTEXT\n\nif(msg.useGlobally) {\n    global.set(\"HaicApiClientUtils\", utilFunctions);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClientUtils\", utilFunctions);\n    context.set(\"useGlobally\", false);\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "// Code added here will be run when the\n// node is being stopped or re-deployed.\nconst useGlobally = context.get(\"useGlobally\");\n\nif (useGlobally) {\n    global.set(\"HaicApiClientUtils\", undefined);\n} else {\n    flow.set(\"$parent.HaicApiClientUtils\", undefined);\n}",
+        "libs": [],
+        "x": 220,
+        "y": 280,
+        "wires": [
+            [
+                "5718cb282cf1b5a0"
+            ]
+        ]
+    },
+    {
+        "id": "5718cb282cf1b5a0",
+        "type": "function",
+        "z": "6d5f83638870930c",
+        "name": "SETUP Configuration API Clients",
+        "func": "// Import all client classes\nconst {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n} = humanAiBenchmarkSuite;\nconst haicClasses = {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n}\n\nconst config = msg.HaicApiClientConfiguration;\n\n// ALL CLIENTS AND THE FUNCTIONS TO CALL THEM ARE HERE\nconst httpMethods = ['Get', 'Put', 'Post', 'Delete'];\nconst wrappedObjects = {};\n\nfor (const [originalClassName, ClassConstructor] of Object.entries(haicClasses)) {\n  const className = originalClassName.endsWith('Api')\n    ? originalClassName.slice(0, -3)\n    : originalClassName;\n\n  // ALL CLIENTS GET THE CONFIG HERE\n  const instance = new ClassConstructor(config);\n\n  const methodNames = Object.getOwnPropertyNames(ClassConstructor.prototype)\n    .filter(name => name !== 'constructor');\n\n  const filteredMethods = methodNames.filter(name =>\n    httpMethods.some(verb => name.endsWith(verb))\n  );\n\n  const wrappers = {};\n\n  filteredMethods.forEach(methodName => {\n    wrappers[methodName] = async function (...args) {\n      // --- Custom logic BEFORE calling the original async method ---\n      console.log(`Calling async ${className}.${methodName} with arguments:`, args); //TEST\n      const start = Date.now(); //TEST\n\n      try {\n        // Await the async method call\n        const result = await instance[methodName](...args);\n\n        // --- Custom logic AFTER the async method resolves ---\n        const duration = Date.now() - start; // TEST\n        console.log(`Result from async ${className}.${methodName} (took ${duration}ms):`, result); //TEST\n\n        // Return the awaited result (or a modified version)\n        return result;\n      } catch (error) {\n        console.error(`Error in async ${className}.${methodName}:`, error);\n        throw error; // re-throw or handle error as needed\n      }\n    };\n  });\n\n  wrappedObjects[className] = wrappers;\n}\n\n// console.log(wrappedObjects); // TEST\n\n// Complete Client Functions Map\nconst haicApiClients = wrappedObjects;\n\n\n// SET THE CLIENTS TO THE APPROPRIATE CONTEXT\nif(msg.useGlobally) {\n    global.set(\"HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", false);\n}\n\n\n",
+        "outputs": 0,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "// Code added here will be run when the\n// node is being stopped or re-deployed.\n// Code added here will be run when the\n// node is being stopped or re-deployed.\nconst useGlobally = context.get(\"useGlobally\");\n\nif (useGlobally) {\n    global.set(\"HaicApiClients\", undefined);\n} else {\n    flow.set(\"$parent.HaicApiClients\", undefined);\n}",
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
+        "x": 260,
+        "y": 360,
+        "wires": []
     },
     {
         "id": "83a3c05684e3279a",
@@ -949,42 +1002,22 @@
         "type": "function",
         "z": "3e0b79a15665c98a",
         "name": "Set Evaluation Config",
-        "func": "\nreturn msg;",
-        "outputs": 1,
+        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\n\n\n// TEST ONLY!\nconst getConfigs = clientFunctions[\"Configuration\"][\"getAllConfigurationsConfigurationListGet\"];\nmsg.payload = await getConfigs();\n\nreturn msg;",
+        "outputs": 2,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};",
         "finalize": "",
-        "libs": [],
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
         "x": 200,
         "y": 40,
         "wires": [
-            []
-        ]
-    },
-    {
-        "id": "0f4f17ea709a96d7",
-        "type": "catch",
-        "z": "3e0b79a15665c98a",
-        "name": "",
-        "scope": null,
-        "uncaught": false,
-        "x": 180,
-        "y": 120,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "ed9cacde7a5dc142",
-        "type": "catch",
-        "z": "9e615b8a6da73d11",
-        "name": "",
-        "scope": null,
-        "uncaught": false,
-        "x": 220,
-        "y": 120,
-        "wires": [
+            [],
             []
         ]
     },
@@ -993,16 +1026,22 @@
         "type": "function",
         "z": "9e615b8a6da73d11",
         "name": "Add Evaluation Log",
-        "func": "\nreturn msg;",
-        "outputs": 1,
+        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\nreturn msg;",
+        "outputs": 2,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};",
         "finalize": "",
-        "libs": [],
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
         "x": 210,
         "y": 40,
         "wires": [
+            [],
             []
         ]
     },
@@ -1011,29 +1050,22 @@
         "type": "function",
         "z": "3cc374149e5165e4",
         "name": "Access Evaluation Logs",
-        "func": "\nreturn msg;",
-        "outputs": 1,
+        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\nreturn msg;",
+        "outputs": 2,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};",
         "finalize": "",
-        "libs": [],
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
         "x": 210,
         "y": 40,
         "wires": [
-            []
-        ]
-    },
-    {
-        "id": "b6c8cc7e3b585676",
-        "type": "catch",
-        "z": "3cc374149e5165e4",
-        "name": "",
-        "scope": null,
-        "uncaught": false,
-        "x": 240,
-        "y": 120,
-        "wires": [
+            [],
             []
         ]
     },
@@ -1042,29 +1074,22 @@
         "type": "function",
         "z": "ee62c2e2054b032c",
         "name": "Trigger Evaluation Process",
-        "func": "\nreturn msg;",
-        "outputs": 1,
+        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\nreturn msg;",
+        "outputs": 2,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};",
         "finalize": "",
-        "libs": [],
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
         "x": 220,
         "y": 40,
         "wires": [
-            []
-        ]
-    },
-    {
-        "id": "e96dee35d8b21030",
-        "type": "catch",
-        "z": "ee62c2e2054b032c",
-        "name": "",
-        "scope": null,
-        "uncaught": false,
-        "x": 260,
-        "y": 120,
-        "wires": [
+            [],
             []
         ]
     },
@@ -1073,29 +1098,22 @@
         "type": "function",
         "z": "e260c7f298a6dd52",
         "name": "Access Evaluation Results",
-        "func": "\nreturn msg;",
-        "outputs": 1,
+        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\n\n\n",
+        "outputs": 2,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n// const RETRIES_NUM = 3;\n// const RETRIES_INTERVAL = 1000;\n\n// const {\n//     Configuration,\n//     ResultsApi\n// } = humanAiBenchmarkSuite;\n\n// const isEmpty = (obj) => {\n//     for (const prop in obj) {\n//         if (Object.hasOwn(obj, prop)) {\n//             return false;\n//         }\n//     }\n//     return true;\n// };\n\n// const delay = (time) => {\n//     return new Promise(res => {\n//         setTimeout(res, time);\n//     })\n// };\n\n// const retryWithDelay = async (fn, retries = 3, interval = 100) => {\n//     try {\n//         return await fn();\n//     } catch (err) {\n//         if (retries <= 0) throw err;\n//         await delay(interval);\n//         return retryWithDelay(fn, retries - 1, interval);\n//     }\n// };\n\n\n// const CONFIG_ERROR_MSG = \"No valid HAIC Api Client Configuration found!\";\n\n// const getConfig = () => {\n//     // Try to get the configuration from flow context\n//     let config = flow.get(\"$parent.HaicApiClientConfiguration\");\n\n//     if (!config) {\n//         // If not found in flow, try global context\n//         config = global.get(\"HaicApiClientConfiguration\");\n//     }\n\n//     if (!config) {\n\n//         // If not found in either, throw an error and halt the flow\n//         node.error(CONFIG_ERROR_MSG, msg);\n//         node.send([null, {\n//             error: CONFIG_ERROR_MSG\n//         }]);\n//         return null; // Explicitly halt further processing\n//     }\n\n//     return config;\n// }\n\n// const getClient = () => {\n//     const config = getConfig();\n\n//     if (!config) return null;\n\n//     return new ResultsApi(config);\n// }\n// context.set(\"getClient\", getClient);\n",
         "finalize": "",
-        "libs": [],
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
         "x": 220,
         "y": 40,
         "wires": [
-            []
-        ]
-    },
-    {
-        "id": "7cc74023a28179ee",
-        "type": "catch",
-        "z": "e260c7f298a6dd52",
-        "name": "",
-        "scope": null,
-        "uncaught": false,
-        "x": 280,
-        "y": 120,
-        "wires": [
+            [],
             []
         ]
     },
@@ -2381,8 +2399,8 @@
         "topic": "",
         "payload": "{\"modelID\":4,\"feedback\":\"ok\",\"imageID\":1,\"doctorID\":5,\"patientID\":3}",
         "payloadType": "json",
-        "x": 130,
-        "y": 240,
+        "x": 150,
+        "y": 180,
         "wires": [
             [
                 "e6119a46b815c12e",
@@ -2397,13 +2415,12 @@
         "name": "create parts",
         "func": "msg.parts={};\nmsg.parts.id = msg.payload.imageID+msg.payload.patientID;\nmsg.parts.count=2;\nreturn msg;",
         "outputs": 1,
-        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 490,
-        "y": 400,
+        "x": 510,
+        "y": 340,
         "wires": [
             [
                 "4469175c609b2986"
@@ -2430,8 +2447,8 @@
         "reduceInit": "",
         "reduceInitType": "num",
         "reduceFixup": "",
-        "x": 710,
-        "y": 400,
+        "x": 730,
+        "y": 340,
         "wires": [
             [
                 "c060845de5c1d46a",
@@ -2451,8 +2468,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 840,
-        "y": 480,
+        "x": 860,
+        "y": 420,
         "wires": []
     },
     {
@@ -2477,8 +2494,8 @@
         "topic": "",
         "payload": "{\"modelID\":4,\"feedback\":\"wrong\",\"imageID\":1,\"doctorID\":6,\"patientID\":2}",
         "payloadType": "json",
-        "x": 140,
-        "y": 280,
+        "x": 160,
+        "y": 220,
         "wires": [
             [
                 "e6119a46b815c12e"
@@ -2492,13 +2509,12 @@
         "name": "compare feedbacks",
         "func": "if ((msg.payload[0].feedback)==(msg.payload[1].feedback)) {\n    return [msg,null];\n} else {\n    return [null,msg];\n}\n",
         "outputs": 2,
-        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 910,
-        "y": 400,
+        "x": 930,
+        "y": 340,
         "wires": [
             [
                 "120b2d00836d1305"
@@ -2521,8 +2537,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1080,
-        "y": 360,
+        "x": 1100,
+        "y": 300,
         "wires": []
     },
     {
@@ -2538,8 +2554,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1080,
-        "y": 440,
+        "x": 1100,
+        "y": 380,
         "wires": []
     },
     {
@@ -2548,8 +2564,8 @@
         "z": "9db4af518e108976",
         "name": "Feedback Consolidation Pattern",
         "info": "",
-        "x": 150,
-        "y": 120,
+        "x": 170,
+        "y": 60,
         "wires": []
     },
     {
@@ -2564,8 +2580,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 400,
-        "y": 180,
+        "x": 420,
+        "y": 120,
         "wires": []
     },
     {
@@ -2585,8 +2601,8 @@
         "queueDurable": true,
         "queueAutoDelete": false,
         "headers": "{}",
-        "x": 170,
-        "y": 400,
+        "x": 190,
+        "y": 340,
         "wires": [
             [
                 "aee36c513c25a05d"
@@ -2607,8 +2623,8 @@
         "amqpProperties": "{ \"headers\": {} }",
         "rpcTimeoutMilliseconds": 3000,
         "outputs": 0,
-        "x": 460,
-        "y": 240,
+        "x": 480,
+        "y": 180,
         "wires": []
     },
     {
@@ -2617,8 +2633,8 @@
         "z": "9db4af518e108976",
         "name": "Testing part",
         "info": "",
-        "x": 90,
-        "y": 200,
+        "x": 110,
+        "y": 140,
         "wires": []
     },
     {
@@ -2627,8 +2643,391 @@
         "z": "9db4af518e108976",
         "name": "Main Implementation",
         "info": "",
-        "x": 110,
+        "x": 130,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "ed2877831a341737",
+        "type": "subflow:6d5f83638870930c",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "env": [
+            {
+                "name": "IP Address",
+                "value": "backend",
+                "type": "str"
+            }
+        ],
+        "x": 270,
+        "y": 40,
+        "wires": [
+            [
+                "90539c81a29f6ed7"
+            ],
+            [
+                "5190b5e1973de94e"
+            ]
+        ]
+    },
+    {
+        "id": "90539c81a29f6ed7",
+        "type": "debug",
+        "z": "e3fd273272a37452",
+        "name": "HAIC API Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "5190b5e1973de94e",
+        "type": "debug",
+        "z": "e3fd273272a37452",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "4a9bd975d294233f",
+        "type": "subflow:3e0b79a15665c98a",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "x": 350,
+        "y": 300,
+        "wires": [
+            [
+                "4f9508974cc57ab0"
+            ],
+            [
+                "b1b3bcc50045e682"
+            ]
+        ]
+    },
+    {
+        "id": "31594b326627084b",
+        "type": "subflow:9e615b8a6da73d11",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "x": 350,
+        "y": 360,
+        "wires": [
+            [
+                "4f9508974cc57ab0"
+            ],
+            [
+                "b86c9bfdc23e428e"
+            ]
+        ]
+    },
+    {
+        "id": "9847aacf9490cd37",
+        "type": "subflow:3cc374149e5165e4",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "x": 330,
+        "y": 420,
+        "wires": [
+            [
+                "4f9508974cc57ab0"
+            ],
+            [
+                "294ed2eefb9409b9"
+            ]
+        ]
+    },
+    {
+        "id": "63d61224e9862716",
+        "type": "subflow:ee62c2e2054b032c",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "x": 350,
+        "y": 480,
+        "wires": [
+            [
+                "4f9508974cc57ab0"
+            ],
+            [
+                "e9b33afe7666ef1a"
+            ]
+        ]
+    },
+    {
+        "id": "0b343bc58e251d6d",
+        "type": "subflow:e260c7f298a6dd52",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "x": 360,
+        "y": 560,
+        "wires": [
+            [
+                "4f9508974cc57ab0"
+            ],
+            [
+                "3c89df2ec0ffabcf"
+            ]
+        ]
+    },
+    {
+        "id": "3c89df2ec0ffabcf",
+        "type": "debug",
+        "z": "e3fd273272a37452",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "e9b33afe7666ef1a",
+        "type": "debug",
+        "z": "e3fd273272a37452",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
         "y": 500,
         "wires": []
+    },
+    {
+        "id": "294ed2eefb9409b9",
+        "type": "debug",
+        "z": "e3fd273272a37452",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "b86c9bfdc23e428e",
+        "type": "debug",
+        "z": "e3fd273272a37452",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "b1b3bcc50045e682",
+        "type": "debug",
+        "z": "e3fd273272a37452",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "4f9508974cc57ab0",
+        "type": "debug",
+        "z": "e3fd273272a37452",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "6149af8bea397440",
+        "type": "inject",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 300,
+        "wires": [
+            [
+                "4a9bd975d294233f"
+            ]
+        ]
+    },
+    {
+        "id": "3839eed4b9294fa7",
+        "type": "inject",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 360,
+        "wires": [
+            [
+                "31594b326627084b"
+            ]
+        ]
+    },
+    {
+        "id": "2855f5ecd0a5b2de",
+        "type": "inject",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 420,
+        "wires": [
+            [
+                "9847aacf9490cd37"
+            ]
+        ]
+    },
+    {
+        "id": "bab25f4027f02093",
+        "type": "inject",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 480,
+        "wires": [
+            [
+                "63d61224e9862716"
+            ]
+        ]
+    },
+    {
+        "id": "014a101ed456fb1f",
+        "type": "inject",
+        "z": "e3fd273272a37452",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 560,
+        "wires": [
+            [
+                "0b343bc58e251d6d"
+            ]
+        ]
     }
 ]

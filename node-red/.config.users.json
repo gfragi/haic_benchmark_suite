@@ -21,6 +21,8 @@
                     "json-view": true
                 }
             }
-        }
+        },
+        "menu-deploymenu-item-flow": true,
+        "menu-deploymenu-item-full": false
     }
 }
