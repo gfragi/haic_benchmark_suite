@@ -1,9 +1,9 @@
 import Keycloak from "keycloak-js";
 
 const keycloak = new Keycloak({
-  url: "https://keycloak.humaine-horizon.eu/",
-  realm: "humaine",
-  clientId: "benchmarking-suite",
+  url: process.env.VUE_APP_KEYCLOAK_URL,
+  realm: process.env.VUE_APP_KEYCLOAK_REALM,
+  clientId: process.env.VUE_APP_KEYCLOAK_CLIENT_ID,
 });
 
 export default keycloak;

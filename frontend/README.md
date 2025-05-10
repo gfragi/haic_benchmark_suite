@@ -57,3 +57,50 @@ src/
 └── main.js                     # Entry point for the Vue app
 ```
 
+## Running the Frontend Locally
+1. Make sure you have Node.js and npm installed.
+2. Clone the repository:
+   ```bash
+   git clone
+    cd frontend
+    ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run serve
+   ```
+5. Open your browser and navigate to `http://localhost:8080` (or the port specified in the terminal).
+6. You should see the application running locally.
+7. Make changes to the code and see them reflected in real-time in your browser.
+
+### Running under Docker Compose
+1. Make sure you have Docker and Docker Compose installed.
+2. Clone the repository:
+   ```bash
+   git clone
+    cd frontend
+    ```
+3. Create a `.env` file in the root directory of the project with the following content:
+    ```bash
+    # .env
+    VUE_APP_BACKEND_URL=http://localhost:8000
+    ```
+    This file is used to set environment variables for the Docker container.
+4. In the keycloak.js file, set the following environment variables:
+    ```javascript
+    const keycloak = new Keycloak({
+      url: process.env.VUE_APP_KEYCLOAK_URL,
+      realm: process.env.VUE_APP_KEYCLOAK_REALM,
+      clientId: process.env.VUE_APP_KEYCLOAK_CLIENT_ID,
+    });
+    ```
+3. Build and run the Docker container:
+   ```bash
+   docker-compose build frontend
+    docker-compose up frontend
+   ```
+4. Open your browser and navigate to `http://localhost:8080` (or the port specified in the terminal).
+5. You should see the application running locally.
