@@ -768,7 +768,7 @@
         "type": "function",
         "z": "6d5f83638870930c",
         "name": "Setup HAIC API UTILS",
-        "func": "// CONSTANTS FOR THE UTILITY FUNCTIONS\nconst RETRIES_NUM = 3;\nconst RETRIES_INTERVAL = 1000;\n\n\n// UTILITY FUNCTIONS ------------------\n\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = RETRIES_NUM, interval = RETRIES_INTERVAL) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};\n\n\n\n// FUNCTIONS MAP\nconst utilFunctions = {\n    // ALL EXPORTED FUNCTIONS HERE:\n    \"isEmpty\": isEmpty,\n    \"delay\": delay,\n    \"retryWithDelay\": retryWithDelay,\n};\n\n\n// SET FUNCTIONS TO APPROPRIATE CONTEXT\n\nif(msg.useGlobally) {\n    global.set(\"HaicApiClientUtils\", utilFunctions);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClientUtils\", utilFunctions);\n    context.set(\"useGlobally\", false);\n}\n\n\nreturn msg;",
+        "func": "// CONSTANTS FOR THE UTILITY FUNCTIONS\nconst RETRIES_NUM = 3;\nconst RETRIES_INTERVAL = 1000;\n\n\n// UTILITY FUNCTIONS ------------------\n\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = RETRIES_NUM, interval = RETRIES_INTERVAL) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};\n\n\n\n// FUNCTIONS MAP\nconst utilFunctions = {\n    // ALL EXPORTED FUNCTIONS HERE:\n    \"isEmpty\": isEmpty,\n    \"delay\": delay,\n    \"retryWithDelay\": retryWithDelay,\n};\n\n\n// SET FUNCTIONS TO APPROPRIATE CONTEXT\n\nif(msg.useGlobally) {\n    global.set(\"HaicApiClientUtils\", utilFunctions);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClientUtils\", utilFunctions);\n    context.set(\"useGlobally\", false);\n}\n\nmsg.HaicApiClientUtils = utilFunctions;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -788,7 +788,7 @@
         "type": "function",
         "z": "6d5f83638870930c",
         "name": "SETUP Configuration API Clients",
-        "func": "// Import all client classes\nconst {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n} = humanAiBenchmarkSuite;\nconst haicClasses = {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n}\n\nconst config = msg.HaicApiClientConfiguration;\n\n// ALL CLIENTS AND THE FUNCTIONS TO CALL THEM ARE HERE\nconst httpMethods = ['Get', 'Put', 'Post', 'Delete'];\nconst wrappedObjects = {};\n\nfor (const [originalClassName, ClassConstructor] of Object.entries(haicClasses)) {\n  const className = originalClassName.endsWith('Api')\n    ? originalClassName.slice(0, -3)\n    : originalClassName;\n\n  // ALL CLIENTS GET THE CONFIG HERE\n  const instance = new ClassConstructor(config);\n\n  const methodNames = Object.getOwnPropertyNames(ClassConstructor.prototype)\n    .filter(name => name !== 'constructor');\n\n  const filteredMethods = methodNames.filter(name =>\n    httpMethods.some(verb => name.endsWith(verb))\n  );\n\n  const wrappers = {};\n\n  filteredMethods.forEach(methodName => {\n    wrappers[methodName] = async function (...args) {\n      // --- Custom logic BEFORE calling the original async method ---\n      console.log(`Calling async ${className}.${methodName} with arguments:`, args); //TEST\n      const start = Date.now(); //TEST\n\n      try {\n        // Await the async method call\n        const result = await instance[methodName](...args);\n\n        // --- Custom logic AFTER the async method resolves ---\n        const duration = Date.now() - start; // TEST\n        console.log(`Result from async ${className}.${methodName} (took ${duration}ms):`, result); //TEST\n\n        // Return the awaited result (or a modified version)\n        return result;\n      } catch (error) {\n        console.error(`Error in async ${className}.${methodName}:`, error);\n        throw error; // re-throw or handle error as needed\n      }\n    };\n  });\n\n  wrappedObjects[className] = wrappers;\n}\n\n// console.log(wrappedObjects); // TEST\n\n// Complete Client Functions Map\nconst haicApiClients = wrappedObjects;\n\n\n// SET THE CLIENTS TO THE APPROPRIATE CONTEXT\nif(msg.useGlobally) {\n    global.set(\"HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", false);\n}\n\n\n",
+        "func": "// Import all client classes\nconst {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n} = humanAiBenchmarkSuite;\nconst haicClasses = {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n}\n\nconst config = msg.HaicApiClientConfiguration;\nconst utils = msg.HaicApiClientUtils;\nconst retryWithDelay = utils.retryWithDelay;\n\n// ALL CLIENTS AND THE FUNCTIONS TO CALL THEM ARE HERE\nconst httpMethods = ['Get', 'Put', 'Post', 'Delete'];\nconst wrappedObjects = {};\n\nfor (const [originalClassName, ClassConstructor] of Object.entries(haicClasses)) {\n  const className = originalClassName.endsWith('Api')\n    ? originalClassName.slice(0, -3)\n    : originalClassName;\n\n  // ALL CLIENTS GET THE CONFIG HERE\n  const instance = new ClassConstructor(config);\n\n  const methodNames = Object.getOwnPropertyNames(ClassConstructor.prototype)\n    .filter(name => name !== 'constructor');\n\n  const filteredMethods = methodNames.filter(name =>\n    httpMethods.some(verb => name.endsWith(verb))\n  );\n\n  const wrappers = {};\n\n  filteredMethods.forEach(methodName => {\n    wrappers[methodName] = async function (...args) {\n      // --- Custom logic BEFORE calling the original async method ---\n      // console.log(`Calling async ${className}.${methodName} with arguments:`, args); //TEST\n      // const start = Date.now(); //TEST\n\n      try {\n        // Await the async method call\n        const result = await retryWithDelay(\n          async () => {\n            return await instance[methodName](...args);\n          }\n        );\n\n        // --- Custom logic AFTER the async method resolves ---\n        // const duration = Date.now() - start; // TEST\n        // console.log(`Result from async ${className}.${methodName} (took ${duration}ms):`, result); //TEST\n\n        // Return the awaited result (or a modified version)\n        return result;\n      } catch (error) {\n        console.error(`Error in async ${className}.${methodName}:`, error);\n        throw error; // re-throw or handle error as needed\n      }\n    };\n  });\n\n  wrappedObjects[className] = wrappers;\n}\n\n// console.log(wrappedObjects); // TEST\n\n// Complete Client Functions Map\nconst haicApiClients = wrappedObjects;\n\n\n// SET THE CLIENTS TO THE APPROPRIATE CONTEXT\nif(msg.useGlobally) {\n    global.set(\"HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", false);\n}\n\n\n",
         "outputs": 0,
         "timeout": 0,
         "noerr": 0,
@@ -1050,7 +1050,7 @@
         "type": "function",
         "z": "3cc374149e5165e4",
         "name": "Access Evaluation Logs",
-        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\nreturn msg;",
+        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\n\nconst listLogsLogsConfigIdGet = clientFunctions[\"Logs\"][\"listLogsLogsConfigIdGet\"];\nmsg.payload = await listLogsLogsConfigIdGet(msg.payload.configId);\n\nreturn msg;",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -2415,6 +2415,7 @@
         "name": "create parts",
         "func": "msg.parts={};\nmsg.parts.id = msg.payload.imageID+msg.payload.patientID;\nmsg.parts.count=2;\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -2439,6 +2440,7 @@
         "key": "comparisonField",
         "joiner": "\\n",
         "joinerType": "str",
+        "useparts": true,
         "accumulate": false,
         "timeout": "",
         "count": "2",
@@ -2741,7 +2743,7 @@
         "type": "subflow:3cc374149e5165e4",
         "z": "e3fd273272a37452",
         "name": "",
-        "x": 330,
+        "x": 350,
         "y": 420,
         "wires": [
             [
@@ -2918,7 +2920,7 @@
         "id": "3839eed4b9294fa7",
         "type": "inject",
         "z": "e3fd273272a37452",
-        "name": "",
+        "name": "Example Evaluation Log",
         "props": [
             {
                 "p": "payload"
@@ -2933,9 +2935,9 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 120,
+        "payload": "[{\"session_id\":\"dss_img_recog-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\",\"user_id\":\"dss_img_recog-d7d0614f-c964-434b-b81d-fbed40daf844\",\"ai_model_version\":\"2.0.0\",\"app_version\":\"1.0.0\",\"start_time\":\"2024-06-22T21:46:29Z\",\"end_time\":\"2024-07-22T07:46:52Z\",\"interaction_data\":[{\"image_id\":\"img-8274735c-652b-428e-8446-e3e016c26679\",\"presentation_time\":\"2025-04-08T06:12:33.691445\",\"result\":\"true_negative\",\"ai_detection_results\":\"true_negative\",\"outcome\":\"incorrect\",\"performance_at_t\":0.794562706529144,\"performance_at_t_1\":0.6931220045719952,\"time_interval\":4645,\"response_time\":104.23293151567172,\"performance_improvement\":0.027104773111610823,\"time_spent\":2133,\"reached_target\":false,\"resources_used\":51,\"total_resources\":100,\"time_without_ai\":547,\"time_with_ai\":177,\"correction_effectiveness\":0.7932252208494405,\"correction_time\":79,\"errors_before\":5,\"errors_after\":2,\"pre_retention_performance\":0.7487288321451568,\"post_retention_performance\":0.853677365987549,\"pre_feedback_performance\":0.679955021005444,\"post_feedback_performance\":0.8004463003007924,\"pre_adaptation_performance\":0.620386928155566,\"post_adaptation_performance\":0.7672707766009791,\"pre_correction_performance\":0.7397263374849203,\"post_correction_performance\":0.8607282111115669,\"learning_gain\":0.02123736271376508,\"learning_time\":819,\"objective_status\":\"not achieved\",\"human_decision\":\"reject\",\"ai_suggestion\":\"reject\",\"ai_assisted\":true,\"decision_outcome\":\"successful\",\"resolution_time\":94,\"effort_without_ai\":13,\"effort_with_ai\":7,\"confidence_level\":0.30029541909188706,\"trust_rating\":6,\"trust_scale_maximum\":10,\"safety_incidents\":2,\"uptime\":4703,\"total_time\":6000,\"performance_adversarial\":0.783859114685352,\"performance_normal\":0.899850278537306,\"performance_across_domains\":0.7081882617007862,\"baseline_performance\":0.701667008885401}],\"infrastructure_data\":{\"memory\":234},\"model_metrics\":[{\"retraining_time\":\"2024-07-27T12:40:10.691502\",\"initial_metrics\":{\"detection_accuracy\":0.7893060173132472,\"false_positive_rate\":0.08314651052928203,\"false_negative_rate\":0.13646632696899683},\"post_retraining_metrics\":{\"detection_accuracy\":0.8390374771800702,\"false_positive_rate\":0.08163044342886192,\"false_negative_rate\":0.09478784808872005},\"retraining_details\":{\"time_taken_seconds\":2667,\"data_used\":\"feedback and corrections from the review\",\"ai_model_version_after_retraining\":\"1.5.4\"}}]}]",
+        "payloadType": "json",
+        "x": 130,
         "y": 360,
         "wires": [
             [
@@ -2962,9 +2964,9 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 120,
+        "payload": "{\"configId\":\"1234\"}",
+        "payloadType": "json",
+        "x": 130,
         "y": 420,
         "wires": [
             [
@@ -3029,5 +3031,15 @@
                 "0b343bc58e251d6d"
             ]
         ]
+    },
+    {
+        "id": "1caf2baa32028f4f",
+        "type": "comment",
+        "z": "e3fd273272a37452",
+        "name": "Not ready yet",
+        "info": "",
+        "x": 350,
+        "y": 260,
+        "wires": []
     }
 ]
