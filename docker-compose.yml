@@ -53,7 +53,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.backend
+      dockerfile: ./Dockerfile.backend
     container_name: haic-backend
     env_file: .env
     ports:
@@ -65,7 +65,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.frontend
+      dockerfile: ./frontend/Dockerfile
     container_name: haic-frontend
     ports:
       - "8080:8080"
