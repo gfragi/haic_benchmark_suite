@@ -768,7 +768,7 @@
         "type": "function",
         "z": "6d5f83638870930c",
         "name": "Setup HAIC API UTILS",
-        "func": "// CONSTANTS FOR THE UTILITY FUNCTIONS\nconst RETRIES_NUM = 3;\nconst RETRIES_INTERVAL = 1000;\n\n\n// UTILITY FUNCTIONS ------------------\n\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = RETRIES_NUM, interval = RETRIES_INTERVAL) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};\n\n\n\n// FUNCTIONS MAP\nconst utilFunctions = {\n    // ALL EXPORTED FUNCTIONS HERE:\n    \"isEmpty\": isEmpty,\n    \"delay\": delay,\n    \"retryWithDelay\": retryWithDelay,\n};\n\n\n// SET FUNCTIONS TO APPROPRIATE CONTEXT\n\nif(msg.useGlobally) {\n    global.set(\"HaicApiClientUtils\", utilFunctions);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClientUtils\", utilFunctions);\n    context.set(\"useGlobally\", false);\n}\n\nmsg.HaicApiClientUtils = utilFunctions;\nreturn msg;",
+        "func": "// CONSTANTS FOR THE UTILITY FUNCTIONS\nconst RETRIES_NUM = 3;\nconst RETRIES_INTERVAL = 1000;\n\n\n// GENERIC UTILITY FUNCTIONS ------------------\n\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst mergeObjects = (a, b) => ({\n    ...((a ?? {}) || {}),\n    ...((b ?? {}) || {})\n});\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = RETRIES_NUM, interval = RETRIES_INTERVAL) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};\n\n\n\n// Client-Specific utility functions ---------\n\nconst processResponse = (clientResponseObj) => {\n\n    if (clientResponseObj.status >= 200 || clientResponseObj.status < 300) {\n        return {\n            clientResponse: clientResponseObj,\n            responseData: clientResponseObj.data,\n        }\n    } else {\n        return {\n            errorData: clientResponseObj.data,\n            clientResponse: clientResponseObj,\n        }\n    }\n\n};\n\n\n// HAIC-Specific utility functions -----------\n\nconst getHaicFunctions = (flowObj, globalObj, nodeObj) => {\n    const CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\n    let clientFunctions = flowObj.get(\"$parent.HaicApiClients\");\n    if (!clientFunctions) {\n        clientFunctions = globalObj.get(\"HaicApiClients\");\n    }\n    if (!clientFunctions) {\n        // If not found in either, throw an error and halt the flow\n        nodeObj.error(CONFIG_ERROR_MSG, msg);\n        nodeObj.send([null, {\n            error: CONFIG_ERROR_MSG\n        }]);\n        return;\n    }\n    return clientFunctions;\n};\n\n\n// FUNCTIONS MAP TO ALWAYS SET GLOBALLY\nconst globalUtilFunctions = {\n    // ALL GLOBALLY AVALIABLE FUNCTIONS HERE:\n    \"getHaicFunctions\": getHaicFunctions,\n};\n// Add/Update global utilities\nglobal.set(\"globalUtilFunctions\",\n    mergeObjects(\n        global.get(\"globalUtilFunctions\"), globalUtilFunctions\n    )\n);\n\n\n\n// FUNCTIONS MAP TO SET UP WHEREVER USER CHOSE\nconst utilFunctions = {\n    // ALL EXPORTED FUNCTIONS HERE:\n    \"isEmpty\": isEmpty,\n    \"delay\": delay,\n    \"retryWithDelay\": retryWithDelay,\n    \"processResponse\": processResponse,\n};\n\n\n// SET FUNCTIONS TO APPROPRIATE CONTEXT\n\nif (msg.useGlobally) {\n    global.set(\"HaicApiClientUtils\", utilFunctions);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClientUtils\", utilFunctions);\n    context.set(\"useGlobally\", false);\n}\n\nmsg.HaicApiClientUtils = utilFunctions;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -787,8 +787,8 @@
         "id": "5718cb282cf1b5a0",
         "type": "function",
         "z": "6d5f83638870930c",
-        "name": "SETUP Configuration API Clients",
-        "func": "// Import all client classes\nconst {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n} = humanAiBenchmarkSuite;\nconst haicClasses = {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n}\n\nconst config = msg.HaicApiClientConfiguration;\nconst utils = msg.HaicApiClientUtils;\nconst retryWithDelay = utils.retryWithDelay;\n\n// ALL CLIENTS AND THE FUNCTIONS TO CALL THEM ARE HERE\nconst httpMethods = ['Get', 'Put', 'Post', 'Delete'];\nconst wrappedObjects = {};\n\nfor (const [originalClassName, ClassConstructor] of Object.entries(haicClasses)) {\n  const className = originalClassName.endsWith('Api')\n    ? originalClassName.slice(0, -3)\n    : originalClassName;\n\n  // ALL CLIENTS GET THE CONFIG HERE\n  const instance = new ClassConstructor(config);\n\n  const methodNames = Object.getOwnPropertyNames(ClassConstructor.prototype)\n    .filter(name => name !== 'constructor');\n\n  const filteredMethods = methodNames.filter(name =>\n    httpMethods.some(verb => name.endsWith(verb))\n  );\n\n  const wrappers = {};\n\n  filteredMethods.forEach(methodName => {\n    wrappers[methodName] = async function (...args) {\n      // --- Custom logic BEFORE calling the original async method ---\n      // console.log(`Calling async ${className}.${methodName} with arguments:`, args); //TEST\n      // const start = Date.now(); //TEST\n\n      try {\n        // Await the async method call\n        const result = await retryWithDelay(\n          async () => {\n            return await instance[methodName](...args);\n          }\n        );\n\n        // --- Custom logic AFTER the async method resolves ---\n        // const duration = Date.now() - start; // TEST\n        // console.log(`Result from async ${className}.${methodName} (took ${duration}ms):`, result); //TEST\n\n        // Return the awaited result (or a modified version)\n        return result;\n      } catch (error) {\n        console.error(`Error in async ${className}.${methodName}:`, error);\n        throw error; // re-throw or handle error as needed\n      }\n    };\n  });\n\n  wrappedObjects[className] = wrappers;\n}\n\n// console.log(wrappedObjects); // TEST\n\n// Complete Client Functions Map\nconst haicApiClients = wrappedObjects;\n\n\n// SET THE CLIENTS TO THE APPROPRIATE CONTEXT\nif(msg.useGlobally) {\n    global.set(\"HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", false);\n}\n\n\n",
+        "name": "SETUP HAIC API Clients",
+        "func": "// Import all client classes\nconst {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n} = humanAiBenchmarkSuite;\nconst haicClasses = {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n}\n// Import config and utils\nconst config = msg.HaicApiClientConfiguration;\nconst utils = msg.HaicApiClientUtils;\nconst retryWithDelay = utils.retryWithDelay;\nconst processResponse = utils.processResponse;\n\n// ALL CLIENTS AND THE FUNCTIONS SET UP HERE\nconst httpMethods = ['Get', 'Put', 'Post', 'Delete'];\n// Mapping: API Section -> Operation -> Function that does it\nconst haicApiClients = {};\n\nfor (const [originalClassName, ClassConstructor] of Object.entries(haicClasses)) {\n  const className = originalClassName.endsWith('Api')\n    ? originalClassName.slice(0, -3)\n    : originalClassName;\n\n  // ALL CLIENTS GET THE CONFIG HERE\n  const instance = new ClassConstructor(config);\n\n  const methodNames = Object.getOwnPropertyNames(ClassConstructor.prototype)\n    .filter(name => name !== 'constructor');\n\n  const filteredMethods = methodNames.filter(name =>\n    httpMethods.some(verb => name.endsWith(verb))\n  );\n\n  const haicApiWrappers = {};\n\n  filteredMethods.forEach(methodName => {\n    haicApiWrappers[methodName] = async function (...args) {\n      // --- Custom logic BEFORE calling the original async method ---\n      // console.log(`Calling async ${className}.${methodName} with arguments:`, args); //TEST\n      // const start = Date.now(); //TEST\n\n      try {\n        // Await the async method call\n        const result = await retryWithDelay(\n          async () => {\n            return processResponse(await instance[methodName](...args));\n          }\n        );\n\n        // --- Custom logic AFTER the async method resolves ---\n        // const duration = Date.now() - start; // TEST\n        // console.log(`Result from async ${className}.${methodName} (took ${duration}ms):`, result); //TEST\n\n        // Return the awaited result (or a modified version)\n        return result;\n      } catch (error) {\n        console.error(`Error in async ${className}.${methodName}:`, error);\n        throw error; // re-throw or handle error as needed\n      }\n    };\n  });\n\n  haicApiClients[className] = haicApiWrappers;\n}\n\n// console.log(haicApiClients); // TEST\n\n\n// SET THE CLIENTS TO THE APPROPRIATE CONTEXT\nif(msg.useGlobally) {\n    global.set(\"HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", false);\n}\n\n\n",
         "outputs": 0,
         "timeout": 0,
         "noerr": 0,
@@ -800,7 +800,7 @@
                 "module": "human_ai_benchmark_suite"
             }
         ],
-        "x": 260,
+        "x": 230,
         "y": 360,
         "wires": []
     },
@@ -1002,7 +1002,7 @@
         "type": "function",
         "z": "3e0b79a15665c98a",
         "name": "Set Evaluation Config",
-        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\n\n\n// TEST ONLY!\nconst getConfigs = clientFunctions[\"Configuration\"][\"getAllConfigurationsConfigurationListGet\"];\nmsg.payload = await getConfigs();\n\nreturn msg;",
+        "func": "const getHaicFunctions = global.get(\"globalUtilFunctions\").getHaicFunctions; // Common step\n\n// TEST ONLY!\nconst getConfigs  = getHaicFunctions(flow, global, node).Configuration.getAllConfigurationsConfigurationListGet;\nmsg.payload = await getConfigs();\n\nreturn msg;",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1026,7 +1026,7 @@
         "type": "function",
         "z": "9e615b8a6da73d11",
         "name": "Add Evaluation Log",
-        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\nreturn msg;",
+        "func": "const getHaicFunctions = global.get(\"globalUtilFunctions\").getHaicFunctions; // Common step\n\n// Template\n//const getConfigs  = getHaicFunctions(flow, global, node).Configuration.getAllConfigurationsConfigurationListGet;\nreturn msg;",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1050,7 +1050,7 @@
         "type": "function",
         "z": "3cc374149e5165e4",
         "name": "Access Evaluation Logs",
-        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\n\nconst listLogsLogsConfigIdGet = clientFunctions[\"Logs\"][\"listLogsLogsConfigIdGet\"];\nmsg.payload = await listLogsLogsConfigIdGet(msg.payload.configId);\n\nreturn msg;",
+        "func": "const getHaicFunctions = global.get(\"globalUtilFunctions\").getHaicFunctions; // Common step\nconst listLogsLogsConfigIdGet = getHaicFunctions(flow, global, node).Logs.listLogsLogsConfigIdGet;\n\nmsg.payload = await listLogsLogsConfigIdGet(msg.payload.configId);\n\nreturn msg;",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1074,7 +1074,7 @@
         "type": "function",
         "z": "ee62c2e2054b032c",
         "name": "Trigger Evaluation Process",
-        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\nreturn msg;",
+        "func": "const getHaicFunctions = global.get(\"globalUtilFunctions\").getHaicFunctions; // Common step\n\n// Template\n//const getConfigs  = getHaicFunctions(flow, global, node).Configuration.getAllConfigurationsConfigurationListGet;\nreturn msg;\n",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1098,7 +1098,7 @@
         "type": "function",
         "z": "e260c7f298a6dd52",
         "name": "Access Evaluation Results",
-        "func": "// COMMON PREP BLOCK\nconst CONFIG_ERROR_MSG = \"HAIC API CLIENT CONNECTION NOT CONFIGURED PROPERLY!\";\nlet clientFunctions = flow.get(\"$parent.HaicApiClients\");\nif (!clientFunctions) {\n    clientFunctions = global.get(\"HaicApiClients\");\n}\nif (!clientFunctions) {\n    // If not found in either, throw an error and halt the flow\n    node.error(CONFIG_ERROR_MSG, msg);\n    node.send([null, {\n        error: CONFIG_ERROR_MSG\n    }]);\n    return;\n}\n////////////////////\n\n\n",
+        "func": "const getHaicFunctions = global.get(\"globalUtilFunctions\").getHaicFunctions; // Common step\n\n// Template\n//const getConfigs  = getHaicFunctions(flow, global, node).Configuration.getAllConfigurationsConfigurationListGet;\nreturn msg;",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -2661,7 +2661,7 @@
                 "type": "str"
             }
         ],
-        "x": 270,
+        "x": 290,
         "y": 40,
         "wires": [
             [
