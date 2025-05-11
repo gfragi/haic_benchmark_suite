@@ -43,7 +43,7 @@
         "id": "6d5f83638870930c",
         "type": "subflow",
         "name": "HAIC API Config",
-        "info": "",
+        "info": "This node handles the authentication, and the overall API connection for the rest of the HAIC API Client nodes, on the flow or global level, depending on user choice.",
         "category": "HumAIne HAIC Benchmark Suite",
         "in": [
             {
@@ -171,7 +171,13 @@
                 }
             }
         ],
-        "meta": {},
+        "meta": {
+            "module": "humaine_haic_client",
+            "version": "0.1.0",
+            "author": "stsarsitalidis@hua.gr",
+            "desc": "Configuration node for HumAIne Human-AI Collaboration Benchmarking suite",
+            "license": "GPL-3.0"
+        },
         "color": "#58A69F",
         "inputLabels": [
             "HAIC API Setup trigger"
@@ -1002,7 +1008,7 @@
         "type": "function",
         "z": "3e0b79a15665c98a",
         "name": "Set Evaluation Config",
-        "func": "const getHaicFunctions = global.get(\"globalUtilFunctions\").getHaicFunctions; // Common step\n\n// TEST ONLY!\nconst getConfigs  = getHaicFunctions(flow, global, node).Configuration.getAllConfigurationsConfigurationListGet;\nmsg.payload = await getConfigs();\n\nreturn msg;",
+        "func": "const getHaicFunctions = global.get(\"globalUtilFunctions\").getHaicFunctions; // Common step\nconst configClient = getHaicFunctions(flow, global, node).Configuration;\n//Client functions\nconst getConfig = configClient.getConfigurationConfigurationConfigurationIdGet;\n// Fragiadakis f-ed up the REST semantics here hahaha... POST should be for update, PUT for new, not what it is now.\nconst createConfig = configClient.createConfigurationConfigurationNewPost;\nconst updateConfig = configClient.updateConfigurationConfigurationUpdateConfigurationIdPut;\n// In case deletion is selected, instead of creation\nconst deleteConfig = configClient.deleteConfigurationConfigurationDeleteConfigurationIdDelete;\n\n// TODO: Continue\n\n\n\nreturn msg;",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1014,7 +1020,7 @@
                 "module": "human_ai_benchmark_suite"
             }
         ],
-        "x": 200,
+        "x": 240,
         "y": 40,
         "wires": [
             [],
