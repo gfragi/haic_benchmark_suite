@@ -1,12 +1,9 @@
 import Keycloak from "keycloak-js";
 
 const keycloak = new Keycloak({
-
-  // TODO: Change that.
-  // url: "https://keycloak.humaine-horizon.eu/",
-  url: "https://idp.studyingreece.edu.gr/",
-  realm: "humaine",
-  clientId: "benchmarking-suite",
+  url: process.env.VUE_APP_KEYCLOAK_URL,
+  realm: process.env.VUE_APP_KEYCLOAK_REALM,
+  clientId: process.env.VUE_APP_KEYCLOAK_CLIENT_ID,
 });
 
 export default keycloak;

@@ -1,0 +1,13 @@
+#For production
+
+# VUE_APP_API_BASE_URL=http://10.152.183.154:30080
+# VUE_APP_KEYCLOAK_CLIENT_ID=benchmarking-suite
+# VUE_APP_KEYCLOAK_REALM=humaine
+# VUE_APP_KEYCLOAK_URL=https://keycloak.humaine-horizon.eu/
+
+# For development
+
+VUE_APP_API_BASE_URL_DEV=http://localhost:8000
+VUE_APP_KEYCLOAK_CLIENT_ID=benchmark
+VUE_APP_KEYCLOAK_REALM=hua
+VUE_APP_KEYCLOAK_URL=https://idp.studyingreece.edu.gr/
