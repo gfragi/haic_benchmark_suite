@@ -22,6 +22,14 @@ kubectl create secret generic benchmarking-secret \
   --from-env-file=k8s/.env \
   --namespace=benchmarking
 ```
+### Generate a Kubernetes secret for the frontend
+To generate a Kubernetes secret for the frontend, use the following command:
+
+```bash
+kubectl create secret generic frontend-secret \
+  --from-env-file=frontend/.env \
+  --namespace=benchmarking
+```
 
 ## Build the Frontend Image
 
