@@ -455,14 +455,14 @@
                 "y": 30,
                 "wires": [
                     {
-                        "id": "64122fae851b3b9d"
+                        "id": "b1cef624b55abbab"
                     }
                 ]
             }
         ],
         "out": [
             {
-                "x": 490,
+                "x": 650,
                 "y": 40,
                 "wires": [
                     {
@@ -472,7 +472,7 @@
                 ]
             },
             {
-                "x": 490,
+                "x": 650,
                 "y": 140,
                 "wires": [
                     {
@@ -1008,7 +1008,7 @@
         "type": "function",
         "z": "3e0b79a15665c98a",
         "name": "Set Evaluation Config",
-        "func": "const getHaicFunctions = global.get(\"globalUtilFunctions\").getHaicFunctions; // Common step\nconst configClient = getHaicFunctions(flow, global, node).Configuration;\n//Client functions\nconst getConfig = configClient.getConfigurationConfigurationConfigurationIdGet;\n// Fragiadakis f-ed up the REST semantics here hahaha... POST should be for update, PUT for new, not what it is now.\nconst createConfig = configClient.createConfigurationConfigurationNewPost;\nconst updateConfig = configClient.updateConfigurationConfigurationUpdateConfigurationIdPut;\n// In case deletion is selected, instead of creation\nconst deleteConfig = configClient.deleteConfigurationConfigurationDeleteConfigurationIdDelete;\n\n// TODO: Continue\n\n\n\nreturn msg;",
+        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\nconst getConfig = configClient.getConfigurationConfigurationConfigurationIdGet;\n// Fragiadakis f-ed up the REST semantics here hahaha... POST should be for update, PUT for new, not what it is now.\nconst createConfig = configClient.createConfigurationConfigurationNewPost;\nconst updateConfig = configClient.updateConfigurationConfigurationUpdateConfigurationIdPut;\n// In case deletion is selected, instead of creation\nconst deleteConfig = configClient.deleteConfigurationConfigurationDeleteConfigurationIdDelete;\n\n// TODO: Continue\n\n\n\nreturn msg;",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1020,11 +1020,28 @@
                 "module": "human_ai_benchmark_suite"
             }
         ],
-        "x": 240,
+        "x": 400,
         "y": 40,
         "wires": [
             [],
             []
+        ]
+    },
+    {
+        "id": "b1cef624b55abbab",
+        "type": "object-validation",
+        "z": "3e0b79a15665c98a",
+        "name": "Inputs validation",
+        "data": "payload",
+        "dataType": "msg",
+        "constraints": [],
+        "additionalProperties": "true",
+        "x": 180,
+        "y": 40,
+        "wires": [
+            [
+                "64122fae851b3b9d"
+            ]
         ]
     },
     {
@@ -1212,7 +1229,7 @@
         "type": "function",
         "z": "3f025920437f7905",
         "name": "Prepare HAIC Evaluation Config",
-        "func": "\nreturn msg;",
+        "func": "msg.payload = {\n    \"id\": 0,\n    \"application_name\": \"string\",\n    \"ai_model_name\": \"string\",\n    \"ai_model_type\": \"string\",\n    \"metrics\": [\n        \"string\"\n    ],\n    \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n    \"description\": \"string\",\n    \"config_type\": \"string\",\n    \"evaluation_status\": \"pending\"\n};\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,

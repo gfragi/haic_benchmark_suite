@@ -933,5 +933,24 @@
                 "file": "/data/node_modules/@greyorange/node-red-contrib-amqp/build/src/nodes/amqp-in-manual-ack.js"
             }
         }
+    },
+    "node-red-contrib-object-validation": {
+        "name": "node-red-contrib-object-validation",
+        "version": "1.0.8",
+        "local": true,
+        "user": true,
+        "nodes": {
+            "object-validation": {
+                "name": "object-validation",
+                "types": [
+                    "object-validation"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-object-validation",
+                "file": "/data/node_modules/node-red-contrib-object-validation/object-validation.js"
+            }
+        }
     }
 }
