@@ -462,21 +462,49 @@
         ],
         "out": [
             {
-                "x": 650,
+                "x": 790,
                 "y": 40,
                 "wires": [
                     {
+                        "id": "5bcab7b645aac34b",
+                        "port": 0
+                    },
+                    {
                         "id": "64122fae851b3b9d",
+                        "port": 0
+                    },
+                    {
+                        "id": "9b0fd5516c30d3a9",
+                        "port": 0
+                    },
+                    {
+                        "id": "319b24f25a13aae4",
                         "port": 0
                     }
                 ]
             },
             {
-                "x": 650,
-                "y": 140,
+                "x": 730,
+                "y": 500,
                 "wires": [
                     {
+                        "id": "beba1ef4e85ce308",
+                        "port": 0
+                    },
+                    {
+                        "id": "5bcab7b645aac34b",
+                        "port": 1
+                    },
+                    {
                         "id": "64122fae851b3b9d",
+                        "port": 1
+                    },
+                    {
+                        "id": "9b0fd5516c30d3a9",
+                        "port": 1
+                    },
+                    {
+                        "id": "319b24f25a13aae4",
                         "port": 1
                     }
                 ]
@@ -489,7 +517,7 @@
             "Evaluation Config"
         ],
         "outputLabels": [
-            "Status",
+            "Result",
             "Error"
         ],
         "icon": "node-red-contrib-custom-icons/haic_icon_small.svg"
@@ -1007,8 +1035,8 @@
         "id": "64122fae851b3b9d",
         "type": "function",
         "z": "3e0b79a15665c98a",
-        "name": "Set Evaluation Config",
-        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\nconst getConfig = configClient.getConfigurationConfigurationConfigurationIdGet;\n// Fragiadakis f-ed up the REST semantics here hahaha... POST should be for update, PUT for new, not what it is now.\nconst createConfig = configClient.createConfigurationConfigurationNewPost;\nconst updateConfig = configClient.updateConfigurationConfigurationUpdateConfigurationIdPut;\n// In case deletion is selected, instead of creation\nconst deleteConfig = configClient.deleteConfigurationConfigurationDeleteConfigurationIdDelete;\n\n// TODO: Continue\n\n\n\nreturn msg;",
+        "name": "Get Evaluation Config",
+        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\nconst getConfig = configClient.getConfigurationConfigurationConfigurationIdGet;\n\nconst ERROR_MSG = \"Failed to get Evaluation Config\";\n\ndelete msg.payload.operation;\nlet response = null;\n\ntry {\n    response = await getConfig(msg.payload.id);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1020,8 +1048,8 @@
                 "module": "human_ai_benchmark_suite"
             }
         ],
-        "x": 400,
-        "y": 40,
+        "x": 440,
+        "y": 280,
         "wires": [
             [],
             []
@@ -1031,17 +1059,227 @@
         "id": "b1cef624b55abbab",
         "type": "object-validation",
         "z": "3e0b79a15665c98a",
-        "name": "Inputs validation",
+        "name": "Operation",
+        "data": "payload",
+        "dataType": "msg",
+        "constraints": [
+            {
+                "property": "operation",
+                "validator": "inclusion",
+                "value": "[\"get\",\"create\",\"update\",\"delete\"]",
+                "error": "",
+                "typeValue": "json"
+            }
+        ],
+        "additionalProperties": "true",
+        "x": 100,
+        "y": 140,
+        "wires": [
+            [
+                "1a3eb92eec722f02"
+            ]
+        ]
+    },
+    {
+        "id": "beba1ef4e85ce308",
+        "type": "catch",
+        "z": "3e0b79a15665c98a",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 160,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6315a5a5248b24d3",
+        "type": "object-validation",
+        "z": "3e0b79a15665c98a",
+        "name": "New",
         "data": "payload",
         "dataType": "msg",
         "constraints": [],
         "additionalProperties": "true",
-        "x": 180,
-        "y": 40,
+        "x": 270,
+        "y": 240,
+        "wires": [
+            [
+                "5bcab7b645aac34b"
+            ]
+        ]
+    },
+    {
+        "id": "5e373f76b62a75f6",
+        "type": "object-validation",
+        "z": "3e0b79a15665c98a",
+        "name": "Delete",
+        "data": "payload",
+        "dataType": "msg",
+        "constraints": [],
+        "additionalProperties": "true",
+        "x": 250,
+        "y": 360,
+        "wires": [
+            [
+                "319b24f25a13aae4"
+            ]
+        ]
+    },
+    {
+        "id": "bf975aa3bf827299",
+        "type": "object-validation",
+        "z": "3e0b79a15665c98a",
+        "name": "Update",
+        "data": "payload",
+        "dataType": "msg",
+        "constraints": [],
+        "additionalProperties": "true",
+        "x": 240,
+        "y": 320,
+        "wires": [
+            [
+                "9b0fd5516c30d3a9"
+            ]
+        ]
+    },
+    {
+        "id": "4614722afba4d170",
+        "type": "object-validation",
+        "z": "3e0b79a15665c98a",
+        "name": "Get",
+        "data": "payload",
+        "dataType": "msg",
+        "constraints": [],
+        "additionalProperties": "true",
+        "x": 270,
+        "y": 280,
         "wires": [
             [
                 "64122fae851b3b9d"
             ]
+        ]
+    },
+    {
+        "id": "1a3eb92eec722f02",
+        "type": "switch",
+        "z": "3e0b79a15665c98a",
+        "name": "",
+        "property": "payload.operation",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "create",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "get",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "update",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "delete",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 4,
+        "x": 90,
+        "y": 300,
+        "wires": [
+            [
+                "6315a5a5248b24d3"
+            ],
+            [
+                "4614722afba4d170"
+            ],
+            [
+                "bf975aa3bf827299"
+            ],
+            [
+                "5e373f76b62a75f6"
+            ]
+        ]
+    },
+    {
+        "id": "5bcab7b645aac34b",
+        "type": "function",
+        "z": "3e0b79a15665c98a",
+        "name": "New Evaluation Config",
+        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\n// Fragiadakis f-ed up the REST semantics here hahaha... POST should be for update, PUT for new, not what it is now.\nconst createConfig = configClient.createConfigurationConfigurationNewPost;\n\nconst ERROR_MSG = \"Failed to create new evaluation config\";\n\ndelete msg.payload.operation;\nlet response = null;\n\ntry {\n    response = createConfig(msg.payload);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
+        "x": 440,
+        "y": 240,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "9b0fd5516c30d3a9",
+        "type": "function",
+        "z": "3e0b79a15665c98a",
+        "name": "Update Evaluation Config",
+        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\n// Fragiadakis f-ed up the REST semantics here hahaha... POST should be for update, PUT for new, not what it is now.\nconst updateConfig = configClient.updateConfigurationConfigurationUpdateConfigurationIdPut;\n\nconst ERROR_MSG = \"Failed to update Evaluation Config\";\n\ndelete msg.payload.operation;\nlet response = null;\n\ntry {\n    response = await updateConfig(msg.payload);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
+        "x": 430,
+        "y": 320,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "319b24f25a13aae4",
+        "type": "function",
+        "z": "3e0b79a15665c98a",
+        "name": "Delete Evaluation Config",
+        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\nconst deleteConfig = configClient.deleteConfigurationConfigurationDeleteConfigurationIdDelete;\n\nconst ERROR_MSG = \"Failed to delete Evaluation Config\";\n\ndelete msg.payload.operation;\nlet response = null;\n\ntry {\n    response = await deleteConfig(msg.payload.id);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nconst {\n    Configuration,\n    ConfigurationApi\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
+        "x": 430,
+        "y": 360,
+        "wires": [
+            [],
+            []
         ]
     },
     {
@@ -1152,7 +1390,7 @@
                 "type": "str"
             }
         ],
-        "x": 350,
+        "x": 330,
         "y": 40,
         "wires": [
             [
@@ -1229,7 +1467,7 @@
         "type": "function",
         "z": "3f025920437f7905",
         "name": "Prepare HAIC Evaluation Config",
-        "func": "msg.payload = {\n    \"id\": 0,\n    \"application_name\": \"string\",\n    \"ai_model_name\": \"string\",\n    \"ai_model_type\": \"string\",\n    \"metrics\": [\n        \"string\"\n    ],\n    \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n    \"description\": \"string\",\n    \"config_type\": \"string\",\n    \"evaluation_status\": \"pending\"\n};\nreturn msg;",
+        "func": "msg.payload = {\n    \"operation\": \"create\",\n    \"application_name\": \"doctor_test\",\n    \"ai_model_name\": \"test_ai_model\",\n    \"ai_model_type\": \"mri_results_parser\",\n    \"metrics\": [\n        \"human_ai_agreement_rate\",\n        \"ai_assistance_rate\",\n        \"decision_effectiveness\",\n        \"time_to_resolution\",\n        \"human_effort_saved\",\n    ],\n    \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n    \"description\": \"Doctor-Patient: How does an MRI parser model help?\",\n    \"config_type\": \"specific\",\n    \"evaluation_status\": \"pending\"\n};\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2914,7 +3152,7 @@
         "id": "6149af8bea397440",
         "type": "inject",
         "z": "e3fd273272a37452",
-        "name": "",
+        "name": "Test creation",
         "props": [
             {
                 "p": "payload"
@@ -2928,10 +3166,10 @@
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 120,
+        "topic": "test_creation",
+        "payload": "{\"operation\":\"creat\",\"application_name\":\"doctor_test\",\"ai_model_name\":\"test_ai_model\",\"ai_model_type\":\"mri_results_parser\",\"metrics\":[\"human_ai_agreement_rate\",\"ai_assistance_rate\",\"decision_effectiveness\",\"time_to_resolution\",\"human_effort_saved\"],\"evaluation_date\":\"2025-05-12T14:35:47.992Z\",\"description\":\"Doctor-Patient: How does an MRI parser model help?\",\"config_type\":\"specific\",\"evaluation_status\":\"pending\"}",
+        "payloadType": "json",
+        "x": 130,
         "y": 300,
         "wires": [
             [
