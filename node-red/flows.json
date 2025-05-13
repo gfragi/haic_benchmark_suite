@@ -1,5 +1,21 @@
 [
     {
+        "id": "68962323fb8f5a64",
+        "type": "tab",
+        "label": "Demo App Flow",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "b4f6c615c8ef09ab",
+        "type": "tab",
+        "label": "Demo App Triggers",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "3f025920437f7905",
         "type": "tab",
         "label": "HAIC Client Example",
@@ -765,6 +781,178 @@
             "Error"
         ],
         "icon": "node-red-contrib-custom-icons/haic_icon_small.svg"
+    },
+    {
+        "id": "223eaaa2f11c7912",
+        "type": "group",
+        "z": "68962323fb8f5a64",
+        "style": {
+            "stroke": "#3d3e46",
+            "stroke-opacity": "1",
+            "fill": "#21222c",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#f8f8f2"
+        },
+        "nodes": [
+            "4ba40f0c2e4f14c0",
+            "3608d47356411615",
+            "29d7ab5d6e14a8fd",
+            "188354c4ec9ec40b",
+            "c265fcf25934dc11",
+            "daf37b3e8f4b4112",
+            "1751529b6551bd9c"
+        ],
+        "x": 14,
+        "y": 359,
+        "w": 632,
+        "h": 202
+    },
+    {
+        "id": "36f66f8eeab46bdf",
+        "type": "group",
+        "z": "68962323fb8f5a64",
+        "style": {
+            "stroke": "#3d3e46",
+            "stroke-opacity": "1",
+            "fill": "#21222c",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#f8f8f2"
+        },
+        "nodes": [
+            "2de684d0e27ef56a",
+            "9e9506c4449f684c",
+            "c388c41fbbe082ec",
+            "cfdb49476ed86cac",
+            "d219abc45d10bcc3",
+            "e5a18ee6c548e769",
+            "52f8bcbcf417ccda"
+        ],
+        "x": 14,
+        "y": 579,
+        "w": 672,
+        "h": 182
+    },
+    {
+        "id": "bef08cda5cd6e15a",
+        "type": "group",
+        "z": "68962323fb8f5a64",
+        "style": {
+            "stroke": "#3d3e46",
+            "stroke-opacity": "1",
+            "fill": "#21222c",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#f8f8f2"
+        },
+        "nodes": [
+            "20e14f4b549b1fa5",
+            "cf0ff9703df94c43",
+            "4706f440553adaed",
+            "ab463566f2505cd6",
+            "7599a8fb56641b12",
+            "c57411dbe5e643e9",
+            "bb75e47029df8995",
+            "77a5e7071aa41d3f"
+        ],
+        "x": 14,
+        "y": 19,
+        "w": 852,
+        "h": 222
+    },
+    {
+        "id": "9ce29d4ff9f9c13d",
+        "type": "group",
+        "z": "68962323fb8f5a64",
+        "style": {
+            "stroke": "#3d3e46",
+            "stroke-opacity": "1",
+            "fill": "#21222c",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#f8f8f2"
+        },
+        "nodes": [
+            "ce744c27a71719a0",
+            "0169dd1cd313a5a4",
+            "921225f785e5bb80",
+            "05bd6b813664ab9a",
+            "e7251a062f18afbc",
+            "9c64745033e8202a",
+            "9a1094c1e22dcfcd",
+            "a05a4b9fe7b88c19",
+            "54ea1b0c2a5f1185",
+            "80d7f10d8b0812e4",
+            "9fd892fb264520ea"
+        ],
+        "x": 14,
+        "y": 1059,
+        "w": 792,
+        "h": 242
+    },
+    {
+        "id": "311e4ab1bcf49520",
+        "type": "group",
+        "z": "68962323fb8f5a64",
+        "style": {
+            "stroke": "#3d3e46",
+            "stroke-opacity": "1",
+            "fill": "#21222c",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#f8f8f2"
+        },
+        "nodes": [
+            "81fd642a6de9b53a",
+            "3daf399eaa62f216",
+            "437de6a7c1290ddf",
+            "bb1515a0cd403abd",
+            "ab6e39fc77b3b80d",
+            "fa95874bdb401418",
+            "f9d5f504f4eb0f42",
+            "0ce048dcb5c236bb"
+        ],
+        "x": 34,
+        "y": 819,
+        "w": 752,
+        "h": 202
+    },
+    {
+        "id": "7be7ebe9192601ec",
+        "type": "group",
+        "z": "b4f6c615c8ef09ab",
+        "style": {
+            "stroke": "#3d3e46",
+            "stroke-opacity": "1",
+            "fill": "#21222c",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#f8f8f2"
+        },
+        "nodes": [
+            "4f8f9e74d9fb06ca",
+            "8159a93a9f11b1e1",
+            "fcc242edd2d6c030",
+            "a1bb67beb0023d12",
+            "87c1c90e5e9cbd48",
+            "791a6e3788fd41ab",
+            "5b3ccbd3956bdaa1",
+            "18d033a3531a8f79",
+            "d560266d8e400845",
+            "434eb7d1be9166f5",
+            "ec9edb2ce10329d9"
+        ],
+        "x": 14,
+        "y": 19,
+        "w": 992,
+        "h": 322
     },
     {
         "id": "352dada70d1a3bc5",
@@ -1895,6 +2083,1090 @@
                 "94cb54ca2c86be7b"
             ]
         ]
+    },
+    {
+        "id": "20e14f4b549b1fa5",
+        "type": "subflow:6d5f83638870930c",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "",
+        "env": [
+            {
+                "name": "IP Address",
+                "value": "backend",
+                "type": "str"
+            }
+        ],
+        "x": 130,
+        "y": 80,
+        "wires": [
+            [
+                "77a5e7071aa41d3f"
+            ],
+            [
+                "cf0ff9703df94c43"
+            ]
+        ]
+    },
+    {
+        "id": "cf0ff9703df94c43",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "Error Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 150,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "4706f440553adaed",
+        "type": "subflow:3e0b79a15665c98a",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "",
+        "x": 550,
+        "y": 140,
+        "wires": [
+            [
+                "c57411dbe5e643e9"
+            ],
+            [
+                "7599a8fb56641b12"
+            ]
+        ]
+    },
+    {
+        "id": "ab463566f2505cd6",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "Set Evaluation Config Properties",
+        "func": "msg.payload = {msg: \"UNIMPLEMENTED\"};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 100,
+        "wires": [
+            [
+                "4706f440553adaed"
+            ]
+        ]
+    },
+    {
+        "id": "7599a8fb56641b12",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "Error Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 550,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "c57411dbe5e643e9",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "App Config Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 730,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "4ba40f0c2e4f14c0",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "transform feedback",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 400,
+        "wires": [
+            [
+                "3608d47356411615"
+            ]
+        ]
+    },
+    {
+        "id": "3608d47356411615",
+        "type": "subflow:9e615b8a6da73d11",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "",
+        "x": 150,
+        "y": 480,
+        "wires": [
+            [
+                "daf37b3e8f4b4112"
+            ],
+            [
+                "c265fcf25934dc11"
+            ]
+        ]
+    },
+    {
+        "id": "29d7ab5d6e14a8fd",
+        "type": "http in",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "PUT feedback",
+        "url": "/doctor_app/feedback",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 400,
+        "wires": [
+            [
+                "4ba40f0c2e4f14c0"
+            ]
+        ]
+    },
+    {
+        "id": "188354c4ec9ec40b",
+        "type": "http response",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 570,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "c265fcf25934dc11",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "Handle Error",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 520,
+        "wires": [
+            [
+                "188354c4ec9ec40b"
+            ]
+        ]
+    },
+    {
+        "id": "daf37b3e8f4b4112",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "Handle success",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 460,
+        "wires": [
+            [
+                "188354c4ec9ec40b"
+            ]
+        ]
+    },
+    {
+        "id": "bb75e47029df8995",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "Application Setup",
+        "info": "",
+        "x": 340,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "1751529b6551bd9c",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "Feedback is pushed",
+        "info": "",
+        "x": 530,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "e25174ef3a807717",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "name": "Application Operations",
+        "info": "",
+        "x": 120,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "2de684d0e27ef56a",
+        "type": "subflow:ee62c2e2054b032c",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "",
+        "x": 150,
+        "y": 680,
+        "wires": [
+            [
+                "cfdb49476ed86cac"
+            ],
+            [
+                "d219abc45d10bcc3"
+            ]
+        ]
+    },
+    {
+        "id": "9e9506c4449f684c",
+        "type": "http in",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "Trigger Evaluation",
+        "url": "/doctor_app/evaluation_trigger",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 620,
+        "wires": [
+            [
+                "c388c41fbbe082ec"
+            ]
+        ]
+    },
+    {
+        "id": "c388c41fbbe082ec",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "prep",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 620,
+        "wires": [
+            [
+                "2de684d0e27ef56a"
+            ]
+        ]
+    },
+    {
+        "id": "cfdb49476ed86cac",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "acknowledged",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 660,
+        "wires": [
+            [
+                "e5a18ee6c548e769",
+                "f2ace373eede1933"
+            ]
+        ]
+    },
+    {
+        "id": "d219abc45d10bcc3",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "Handle Error",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 700,
+        "wires": [
+            [
+                "e5a18ee6c548e769"
+            ]
+        ]
+    },
+    {
+        "id": "e5a18ee6c548e769",
+        "type": "http response",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 610,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "52f8bcbcf417ccda",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "Trigger the Evaluation of Feedbacks",
+        "info": "",
+        "x": 180,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "77a5e7071aa41d3f",
+        "type": "delay",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 300,
+        "y": 60,
+        "wires": [
+            [
+                "ab463566f2505cd6"
+            ]
+        ]
+    },
+    {
+        "id": "ce744c27a71719a0",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Get evaluation results",
+        "info": "",
+        "x": 660,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "0169dd1cd313a5a4",
+        "type": "http in",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Get All evaluation results",
+        "url": "/doctor_app/evaluation/",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 1120,
+        "wires": [
+            [
+                "54ea1b0c2a5f1185"
+            ]
+        ]
+    },
+    {
+        "id": "921225f785e5bb80",
+        "type": "http response",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "05bd6b813664ab9a",
+        "type": "subflow:e260c7f298a6dd52",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "",
+        "x": 580,
+        "y": 1140,
+        "wires": [
+            [
+                "e7251a062f18afbc"
+            ],
+            [
+                "9c64745033e8202a"
+            ]
+        ]
+    },
+    {
+        "id": "e7251a062f18afbc",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Handle success",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 1200,
+        "wires": [
+            [
+                "921225f785e5bb80"
+            ]
+        ]
+    },
+    {
+        "id": "9c64745033e8202a",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Handle Error",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 1260,
+        "wires": [
+            [
+                "921225f785e5bb80"
+            ]
+        ]
+    },
+    {
+        "id": "9a1094c1e22dcfcd",
+        "type": "http in",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Get specific evaluation result",
+        "url": "/doctor_app/evaluation/:result_id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 1180,
+        "wires": [
+            [
+                "80d7f10d8b0812e4"
+            ]
+        ]
+    },
+    {
+        "id": "a05a4b9fe7b88c19",
+        "type": "http in",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Get evaluation results group",
+        "url": "/doctor_app/evaluation_group/:group_id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 1240,
+        "wires": [
+            [
+                "9fd892fb264520ea"
+            ]
+        ]
+    },
+    {
+        "id": "54ea1b0c2a5f1185",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "prep",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 1120,
+        "wires": [
+            [
+                "05bd6b813664ab9a"
+            ]
+        ]
+    },
+    {
+        "id": "80d7f10d8b0812e4",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "prep",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 1180,
+        "wires": [
+            [
+                "05bd6b813664ab9a"
+            ]
+        ]
+    },
+    {
+        "id": "9fd892fb264520ea",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "prep",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 1240,
+        "wires": [
+            [
+                "05bd6b813664ab9a"
+            ]
+        ]
+    },
+    {
+        "id": "f2ace373eede1933",
+        "type": "delay",
+        "z": "68962323fb8f5a64",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 760,
+        "y": 700,
+        "wires": [
+            [
+                "3daf399eaa62f216"
+            ]
+        ]
+    },
+    {
+        "id": "81fd642a6de9b53a",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Automated Notifications",
+        "info": "",
+        "x": 160,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "3daf399eaa62f216",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Get new evaluation results",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 860,
+        "wires": [
+            [
+                "437de6a7c1290ddf"
+            ]
+        ]
+    },
+    {
+        "id": "437de6a7c1290ddf",
+        "type": "subflow:e260c7f298a6dd52",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "",
+        "x": 180,
+        "y": 920,
+        "wires": [
+            [
+                "bb1515a0cd403abd"
+            ],
+            [
+                "ab6e39fc77b3b80d"
+            ]
+        ]
+    },
+    {
+        "id": "bb1515a0cd403abd",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Interpret evaluation results to notify",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 920,
+        "wires": [
+            [
+                "f9d5f504f4eb0f42"
+            ]
+        ]
+    },
+    {
+        "id": "ab6e39fc77b3b80d",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Handle Error",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 130,
+        "y": 980,
+        "wires": [
+            [
+                "fa95874bdb401418"
+            ]
+        ]
+    },
+    {
+        "id": "fa95874bdb401418",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Show error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 290,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "f9d5f504f4eb0f42",
+        "type": "http request",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Send notification",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/doctor_app_client/notify",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 530,
+        "y": 980,
+        "wires": [
+            [
+                "0ce048dcb5c236bb"
+            ]
+        ]
+    },
+    {
+        "id": "0ce048dcb5c236bb",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Show",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "4f8f9e74d9fb06ca",
+        "type": "inject",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Doctor: Send Positive Feedback",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 120,
+        "wires": [
+            [
+                "18d033a3531a8f79"
+            ]
+        ]
+    },
+    {
+        "id": "8159a93a9f11b1e1",
+        "type": "inject",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Doctor: Send Negative Feedback",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 180,
+        "wires": [
+            [
+                "d560266d8e400845"
+            ]
+        ]
+    },
+    {
+        "id": "fcc242edd2d6c030",
+        "type": "inject",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Patient: Send Positive Feedback",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 240,
+        "wires": [
+            [
+                "434eb7d1be9166f5"
+            ]
+        ]
+    },
+    {
+        "id": "a1bb67beb0023d12",
+        "type": "inject",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Patient: Send Negative Feedback",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 300,
+        "wires": [
+            [
+                "ec9edb2ce10329d9"
+            ]
+        ]
+    },
+    {
+        "id": "87c1c90e5e9cbd48",
+        "type": "comment",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Scenarios",
+        "info": "",
+        "x": 160,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "791a6e3788fd41ab",
+        "type": "http request",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Send feedback",
+        "method": "PUT",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/doctor_app/feedback",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 760,
+        "y": 180,
+        "wires": [
+            [
+                "5b3ccbd3956bdaa1"
+            ]
+        ]
+    },
+    {
+        "id": "5b3ccbd3956bdaa1",
+        "type": "debug",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "ack",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "18d033a3531a8f79",
+        "type": "function",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "positive doctor feedback",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 120,
+        "wires": [
+            [
+                "791a6e3788fd41ab"
+            ]
+        ]
+    },
+    {
+        "id": "d560266d8e400845",
+        "type": "function",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "negative doctor feedback",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 180,
+        "wires": [
+            [
+                "791a6e3788fd41ab"
+            ]
+        ]
+    },
+    {
+        "id": "434eb7d1be9166f5",
+        "type": "function",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "patient positive feedback",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 240,
+        "wires": [
+            [
+                "791a6e3788fd41ab"
+            ]
+        ]
+    },
+    {
+        "id": "ec9edb2ce10329d9",
+        "type": "function",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "patient negative feedback",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 300,
+        "wires": [
+            [
+                "791a6e3788fd41ab"
+            ]
+        ]
+    },
+    {
+        "id": "2d52db5081e1f33a",
+        "type": "debug",
+        "z": "b4f6c615c8ef09ab",
+        "name": "Notification",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 370,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "a3c404bbd374e92c",
+        "type": "http in",
+        "z": "b4f6c615c8ef09ab",
+        "name": "Get notification",
+        "url": "/doctor_app_client/notify",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 200,
+        "y": 440,
+        "wires": [
+            [
+                "2d52db5081e1f33a"
+            ]
+        ]
+    },
+    {
+        "id": "3c9709bc331f36b8",
+        "type": "comment",
+        "z": "b4f6c615c8ef09ab",
+        "name": "Notification",
+        "info": "",
+        "x": 180,
+        "y": 400,
+        "wires": []
     },
     {
         "id": "457db4028a714336",
