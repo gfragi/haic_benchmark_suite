@@ -20,3 +20,24 @@ spec:
         image: ghcr.io/gfragi/haic-frontend:latest
         ports:
         - containerPort: 80
+        env:
+        - name: BACKEND_URL
+          valueFrom:
+            secretKeyRef:
+              name: frontend-secret
+              key: VUE_APP_API_BASE_URL
+        - name: KEYCLOAK_URL
+          valueFrom:
+            secretKeyRef:
+              name: frontend-secret
+              key: VUE_APP_KEYCLOAK_URL
+        - name: KEYCLOAK_REALM
+          valueFrom:
+            secretKeyRef:
+              name: frontend-secret
+              key: VUE_APP_KEYCLOAK_REALM
+        - name: KEYCLOAK_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: frontend-secret
+              key: VUE_APP_KEYCLOAK_CLIENT_ID
