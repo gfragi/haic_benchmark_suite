@@ -1,0 +1,16 @@
+# letsencrypt-staging.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    # Use staging to test—no real certs, but avoids rate limits
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: you@your-domain.example.com   # ← change to your email
+    privateKeySecretRef:
+      name: le-staging-account-key
+    solvers:
+    - http01:
+        ingress:
+          class: nginx

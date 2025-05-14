@@ -56,3 +56,37 @@ echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 docker push ghcr.io/gfragi/haic-backend:latest
 docker push ghcr.io/gfragi/haic-frontend:latest
 ```
+
+## Install NGINX Ingress Controller
+```bash
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+# Install into the ingress-nginx namespace
+kubectl create ns ingress-nginx
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
+  --set controller.publishService.enabled=true
+```
+
+## Install cert-manager & configure Let’s Encrypt
+
+### Install cert-manager
+
+```bash
+# Install the CRDs
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/latest/download/cert-manager.crds.yaml
+
+# Create namespace
+kubectl create namespace cert-manager
+
+# Install cert-manager itself
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --version v1.12.0
+```
+
+### Create a Let’s Encrypt issuer
