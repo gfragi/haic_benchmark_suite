@@ -94,42 +94,59 @@ logs_templates = {
     # Additional templates for dss_smart_cities, dss_smart_energy, etc. can follow the same structure.
 }
 
+def generate_simple_unique_id(prefix: str) -> str:
+    return f"{prefix}-{uuid.uuid4()}"
+
+def parse_version(version_str: str) -> list[int]:
+    """Turn '1.0.0' into [1, 0, 0], stripping whitespace."""
+    return [int(p) for p in version_str.strip().split(".")]
+
 # Log generation function with dynamic field generation
 def generate_log(app_type: str, start_datetime: str, end_datetime: str, ai_model_version_range: str, custom_data=None):
     if app_type not in logs_templates:
         raise ValueError(f"Unsupported app type: {app_type}")
 
+    # parse datetimes
     start_datetime = datetime.strptime(start_datetime, '%Y-%m-%dT%H:%M:%SZ')
     end_datetime = datetime.strptime(end_datetime, '%Y-%m-%dT%H:%M:%SZ')
-    ai_model_version_start, ai_model_version_end = ai_model_version_range.split('-')
+
+    # parse the version range into two [major, minor, patch] lists
+    version_start_str, version_end_str = ai_model_version_range.split("-")
+    version_start = parse_version(version_start_str)
+    version_end   = parse_version(version_end_str)
+
+    # pick random version within each component’s bounds
+    major = random.randint(version_start[0], version_end[0])
+    minor = random.randint(version_start[1], version_end[1])
+    patch = random.randint(version_start[2], version_end[2])
 
     session_start = random_date(start_datetime, end_datetime)
-    session_end = random_date(session_start, end_datetime)
+    session_end   = random_date(session_start, end_datetime)
 
     log = {
         "session_id": generate_simple_unique_id(app_type),
-        "user_id": generate_simple_unique_id(app_type),
-        "ai_model_version": f"{random.randint(int(ai_model_version_start[0]), int(ai_model_version_end[0]))}.{random.randint(int(ai_model_version_start[2]), int(ai_model_version_end[2]))}.{random.randint(int(ai_model_version_start[4]), int(ai_model_version_end[4]))}",
-        "app_version": "1.0.0",
-        "start_time": session_start.isoformat() + 'Z',
-        "end_time": session_end.isoformat() + 'Z',
+        "user_id":    generate_simple_unique_id(app_type),
+        "ai_model_version": f"{major}.{minor}.{patch}",
+        "app_version":      "1.0.0",
+        "start_time":       session_start.isoformat() + 'Z',
+        "end_time":         session_end.isoformat()   + 'Z',
     }
 
-    # Populate interaction data with dynamic values
+    # Populate interaction_data
     interaction_data = logs_templates[app_type]["interaction_data"]
     log["interaction_data"] = {
         key: (custom_data[key] if custom_data and key in custom_data else (value() if callable(value) else value))
         for key, value in interaction_data.items()
     }
 
-    # Populate retrain events with dynamic values
+    # Populate retrain_events
     retrain_events_template = logs_templates[app_type]["retrain_events"]
     log["retrain_events"] = [
         {
-            "retraining_time": event["retraining_time"](),
-            "initial_metrics": {k: (v() if callable(v) else v) for k, v in event["initial_metrics"].items()},
+            "retraining_time":       event["retraining_time"](),
+            "initial_metrics":       {k: (v() if callable(v) else v) for k, v in event["initial_metrics"].items()},
             "post_retraining_metrics": {k: (v() if callable(v) else v) for k, v in event["post_retraining_metrics"].items()},
-            "retraining_details": {k: (v() if callable(v) else v) for k, v in event["retraining_details"].items()}
+            "retraining_details":    {k: (v() if callable(v) else v) for k, v in event["retraining_details"].items()}
         }
         for event in retrain_events_template
     ]
