@@ -1,12 +1,18 @@
+# frontend-ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: frontend-ingress
   namespace: benchmarking
   annotations:
-    # Optional: rewrite all to “/”
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - hua-benchmarking.ddns.net
+      secretName: frontend-tls
   rules:
     - host: hua-benchmarking.ddns.net
       http:
