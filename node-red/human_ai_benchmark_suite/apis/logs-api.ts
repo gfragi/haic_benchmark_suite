@@ -18,13 +18,62 @@ import { Configuration } from '../configuration';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { HTTPValidationError } from '../models';
-import { LogSchema } from '../models';
+import { LogCompleteSchema } from '../models';
 /**
  * LogsApi - axios parameter creator
  * @export
  */
 export const LogsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 
+         * @summary Add Log
+         * @param {any} body 
+         * @param {any} configId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addLogLogsConfigIdAddLogPost: async (body: any, configId: any, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'body' is not null or undefined
+            if (body === null || body === undefined) {
+                throw new RequiredError('body','Required parameter body was null or undefined when calling addLogLogsConfigIdAddLogPost.');
+            }
+            // verify required parameter 'configId' is not null or undefined
+            if (configId === null || configId === undefined) {
+                throw new RequiredError('configId','Required parameter configId was null or undefined when calling addLogLogsConfigIdAddLogPost.');
+            }
+            const localVarPath = `/logs/{config_id}/add_log`
+                .replace(`{${"config_id"}}`, encodeURIComponent(String(configId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+            const localVarRequestOptions :AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            const query = new URLSearchParams(localVarUrlObj.search);
+            for (const key in localVarQueryParameter) {
+                query.set(key, localVarQueryParameter[key]);
+            }
+            for (const key in options.params) {
+                query.set(key, options.params[key]);
+            }
+            localVarUrlObj.search = (new URLSearchParams(query)).toString();
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            const needsSerialization = (typeof body !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(body !== undefined ? body : {}) : (body || "");
+
+            return {
+                url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @summary Delete Log
@@ -160,11 +209,11 @@ export const LogsApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 
          * @summary Register Log
-         * @param {LogSchema} body 
+         * @param {LogCompleteSchema} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        registerLogLogsRegisterPost: async (body: LogSchema, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        registerLogLogsRegisterPost: async (body: LogCompleteSchema, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'body' is not null or undefined
             if (body === null || body === undefined) {
                 throw new RequiredError('body','Required parameter body was null or undefined when calling registerLogLogsRegisterPost.');
@@ -267,6 +316,21 @@ export const LogsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Add Log
+         * @param {any} body 
+         * @param {any} configId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addLogLogsConfigIdAddLogPost(body: any, configId: any, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<any>>> {
+            const localVarAxiosArgs = await LogsApiAxiosParamCreator(configuration).addLogLogsConfigIdAddLogPost(body, configId, options);
+            return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+                const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
+                return axios.request(axiosRequestArgs);
+            };
+        },
+        /**
+         * 
          * @summary Delete Log
          * @param {any} configId 
          * @param {any} logName 
@@ -312,11 +376,11 @@ export const LogsApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Register Log
-         * @param {LogSchema} body 
+         * @param {LogCompleteSchema} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async registerLogLogsRegisterPost(body: LogSchema, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<any>>> {
+        async registerLogLogsRegisterPost(body: LogCompleteSchema, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<any>>> {
             const localVarAxiosArgs = await LogsApiAxiosParamCreator(configuration).registerLogLogsRegisterPost(body, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
@@ -347,6 +411,17 @@ export const LogsApiFp = function(configuration?: Configuration) {
  */
 export const LogsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     return {
+        /**
+         * 
+         * @summary Add Log
+         * @param {any} body 
+         * @param {any} configId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addLogLogsConfigIdAddLogPost(body: any, configId: any, options?: AxiosRequestConfig): Promise<AxiosResponse<any>> {
+            return LogsApiFp(configuration).addLogLogsConfigIdAddLogPost(body, configId, options).then((request) => request(axios, basePath));
+        },
         /**
          * 
          * @summary Delete Log
@@ -382,11 +457,11 @@ export const LogsApiFactory = function (configuration?: Configuration, basePath?
         /**
          * 
          * @summary Register Log
-         * @param {LogSchema} body 
+         * @param {LogCompleteSchema} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async registerLogLogsRegisterPost(body: LogSchema, options?: AxiosRequestConfig): Promise<AxiosResponse<any>> {
+        async registerLogLogsRegisterPost(body: LogCompleteSchema, options?: AxiosRequestConfig): Promise<AxiosResponse<any>> {
             return LogsApiFp(configuration).registerLogLogsRegisterPost(body, options).then((request) => request(axios, basePath));
         },
         /**
@@ -410,6 +485,18 @@ export const LogsApiFactory = function (configuration?: Configuration, basePath?
  * @extends {BaseAPI}
  */
 export class LogsApi extends BaseAPI {
+    /**
+     * 
+     * @summary Add Log
+     * @param {any} body 
+     * @param {any} configId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof LogsApi
+     */
+    public async addLogLogsConfigIdAddLogPost(body: any, configId: any, options?: AxiosRequestConfig) : Promise<AxiosResponse<any>> {
+        return LogsApiFp(this.configuration).addLogLogsConfigIdAddLogPost(body, configId, options).then((request) => request(this.axios, this.basePath));
+    }
     /**
      * 
      * @summary Delete Log
@@ -448,12 +535,12 @@ export class LogsApi extends BaseAPI {
     /**
      * 
      * @summary Register Log
-     * @param {LogSchema} body 
+     * @param {LogCompleteSchema} body 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof LogsApi
      */
-    public async registerLogLogsRegisterPost(body: LogSchema, options?: AxiosRequestConfig) : Promise<AxiosResponse<any>> {
+    public async registerLogLogsRegisterPost(body: LogCompleteSchema, options?: AxiosRequestConfig) : Promise<AxiosResponse<any>> {
         return LogsApiFp(this.configuration).registerLogLogsRegisterPost(body, options).then((request) => request(this.axios, this.basePath));
     }
     /**

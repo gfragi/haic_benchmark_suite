@@ -1,6 +1,6 @@
 {
     "name": "Human AI Collaboration - Benchmark Suite (Backend)",
-    "dockerComposeFile": "../dev.docker-compose.yml",
+    "dockerComposeFile": "../../dev.docker-compose.yml",
     "service": "backend",
     "workspaceFolder": "/app",
     "remoteUser": "root",
@@ -30,6 +30,6 @@
     },
     "postCreateCommand": "pip install -r dev_requirements.txt",
     "forwardPorts": [
-        8001
+        8000
     ]
 }

@@ -549,7 +549,7 @@
     {
         "id": "9e615b8a6da73d11",
         "type": "subflow",
-        "name": "Add Evaluation Log",
+        "name": "Add Evaluation Logs",
         "info": "",
         "category": "HumAIne HAIC Benchmark Suite",
         "in": [
@@ -818,12 +818,14 @@
             "188354c4ec9ec40b",
             "c265fcf25934dc11",
             "daf37b3e8f4b4112",
-            "1751529b6551bd9c"
+            "1751529b6551bd9c",
+            "86ca7f27691876f1",
+            "e819d0f0b75f3343"
         ],
         "x": 14,
-        "y": 359,
-        "w": 632,
-        "h": 202
+        "y": 339,
+        "w": 712,
+        "h": 242
     },
     {
         "id": "36f66f8eeab46bdf",
@@ -848,7 +850,7 @@
             "52f8bcbcf417ccda"
         ],
         "x": 14,
-        "y": 579,
+        "y": 599,
         "w": 672,
         "h": 182
     },
@@ -873,7 +875,8 @@
             "7599a8fb56641b12",
             "c57411dbe5e643e9",
             "bb75e47029df8995",
-            "77a5e7071aa41d3f"
+            "77a5e7071aa41d3f",
+            "d9ccfc89f1b5d324"
         ],
         "x": 14,
         "y": 19,
@@ -961,7 +964,9 @@
             "5b3ccbd3956bdaa1",
             "18d033a3531a8f79",
             "63b25e1342268a1f",
-            "43fb7ca00169b352"
+            "43fb7ca00169b352",
+            "3022b64a2ecc66a1",
+            "f9815eda6dc34dad"
         ],
         "x": 14,
         "y": 19,
@@ -984,11 +989,12 @@
         "nodes": [
             "2d52db5081e1f33a",
             "a3c404bbd374e92c",
-            "3c9709bc331f36b8"
+            "3c9709bc331f36b8",
+            "c5b7e8c4325a2a49"
         ],
         "x": 14,
         "y": 499,
-        "w": 392,
+        "w": 412,
         "h": 122
     },
     {
@@ -1012,7 +1018,7 @@
         ],
         "x": 14,
         "y": 319,
-        "w": 512,
+        "w": 532,
         "h": 142
     },
     {
@@ -1646,7 +1652,7 @@
         "type": "function",
         "z": "9e615b8a6da73d11",
         "name": "Add Evaluation Log",
-        "func": "const logClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Logs; // Common step\n//Client Function\nconst addLog = logClient.registerLogLogsRegisterPost;\n\nconst ERROR_MSG = \"Failed to register new Evaluation Log\";\n\nlet response = null;\n\ntry {\n    response = await addLog(msg.payload);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
+        "func": "const logClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Logs; // Common step\n//Client Function\nconst addLog = logClient.addLogLogsConfigIdAddLogPost;\n\nconst ERROR_MSG = \"Failed to register new Evaluation Log\";\n\nconst config_id = msg.payload.config_id;\nconst log_entries = msg.payload.log_entries;\n\nlet response = null;\n\ntry {\n    response = await addLog(log_entries, config_id);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    msg.error_response = err.response;\n    if (err.response && err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1672,7 +1678,41 @@
         "name": "Log",
         "data": "payload",
         "dataType": "msg",
-        "constraints": [],
+        "constraints": [
+            {
+                "property": "log_entries",
+                "validator": "required",
+                "value": "",
+                "error": "",
+                "typeValue": "str"
+            },
+            {
+                "property": "config_id",
+                "validator": "required",
+                "value": "",
+                "error": "",
+                "typeValue": "str"
+            },
+            {
+                "property": "log_entries",
+                "validator": "type",
+                "value": "array",
+                "error": ""
+            },
+            {
+                "property": "config_id",
+                "validator": "type",
+                "value": "integer",
+                "error": ""
+            },
+            {
+                "property": "config_id",
+                "validator": "minimum_number",
+                "value": "0",
+                "error": "",
+                "typeValue": "num"
+            }
+        ],
         "additionalProperties": "true",
         "x": 150,
         "y": 60,
@@ -2262,10 +2302,15 @@
                 "name": "IP Address",
                 "value": "backend",
                 "type": "str"
+            },
+            {
+                "name": "Port",
+                "value": "8001",
+                "type": "num"
             }
         ],
         "x": 130,
-        "y": 80,
+        "y": 60,
         "wires": [
             [
                 "77a5e7071aa41d3f"
@@ -2299,11 +2344,12 @@
         "z": "68962323fb8f5a64",
         "g": "bef08cda5cd6e15a",
         "name": "",
-        "x": 550,
+        "x": 570,
         "y": 140,
         "wires": [
             [
-                "c57411dbe5e643e9"
+                "c57411dbe5e643e9",
+                "d9ccfc89f1b5d324"
             ],
             [
                 "7599a8fb56641b12"
@@ -2316,14 +2362,14 @@
         "z": "68962323fb8f5a64",
         "g": "bef08cda5cd6e15a",
         "name": "Set Evaluation Config Properties",
-        "func": "//CREATE\n// msg.payload = {\n//     \"operation\": \"create\",\n//     // INPUT FIELDS\n//     \"application_name\": \"dss_doctor\",\n//     \"ai_model_name\": \"test_ai_model\",\n//     \"ai_model_type\": \"Classification\", // One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other\n//     \"metrics\": [ //Any of the following metrics can be used\n//         \"Collaboration and Interaction\",\n//         \"Trust and Safety\"\n//     ],\n//     \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n//     \"description\": \"Test Doctor DSS app\",\n//     \"config_type\": \"generic\", // either 'specific' or 'generic'\n//     \"evaluation_status\": \"pending\" // Current status of the evaluation\n// };\n\n//UPDATE\nmsg.payload = {\n    \"operation\": \"update\",\n    // Parameters\n    \"configurationId\": 3,\n    // INPUT FIELDS\n    \"application_name\": \"dss_doctor\",\n    \"ai_model_name\": \"test_diagnosis_model\",\n    \"ai_model_type\": \"Classification\", // One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other\n    \"metrics\": [ //Any of the following metrics can be used\n        \"Collaboration and Interaction\",\n        \"Trust and Safety\"\n    ],\n    \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n    \"description\": \"Test Doctor DSS app\",\n    \"config_type\": \"generic\", // either 'specific' or 'generic'\n    \"evaluation_status\": \"pending\" // Current status of the evaluation\n};\nreturn msg;",
+        "func": "//CREATE\n// msg.payload = {\n//     \"operation\": \"create\",\n//     // INPUT FIELDS\n//     \"application_name\": \"dss_doctor\",\n//     \"ai_model_name\": \"test_ai_model\",\n//     \"ai_model_type\": \"Classification\", // One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other\n//     \"metrics\": [ //Any of the following metrics can be used\n//         \"Collaboration and Interaction\",\n//         \"Trust and Safety\"\n//     ],\n//     \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n//     \"description\": \"Test Doctor DSS app\",\n//     \"config_type\": \"generic\", // either 'specific' or 'generic'\n//     \"evaluation_status\": \"pending\" // Current status of the evaluation\n// };\n\n//UPDATE\nmsg.payload = {\n    \"operation\": \"update\",\n    // Parameters\n    \"configurationId\": flow.get(\"configId\"),\n    // INPUT FIELDS\n    \"application_name\": \"dss_doctor\",\n    \"ai_model_name\": \"test_diagnosis_model\",\n    \"ai_model_type\": \"Classification\", // One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other\n    \"metrics\": [ //Any of the following metrics can be used\n        \"Collaboration and Interaction\",\n        \"Trust and Safety\"\n    ],\n    \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n    \"description\": \"Test Doctor DSS app\",\n    \"config_type\": \"generic\", // either 'specific' or 'generic'\n    \"evaluation_status\": \"pending\" // Current status of the evaluation\n};\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 450,
+        "x": 490,
         "y": 100,
         "wires": [
             [
@@ -2364,7 +2410,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 730,
-        "y": 80,
+        "y": 60,
         "wires": []
     },
     {
@@ -2373,7 +2419,7 @@
         "z": "68962323fb8f5a64",
         "g": "223eaaa2f11c7912",
         "name": "transform feedback",
-        "func": "// Prepare whatever is required.\nmsg.payload = {\n    \"session_id\": \"dss_doctor-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\",\n    \"user_id\": \"dss_doctor-d7d0614f-c964-434b-b81d-fbed40daf844\",\n    ...msg.payload,\n};\nreturn msg;",
+        "func": "// Prepare whatever is required.\nmsg.payload = {\n    \"config_id\": flow.get(\"configId\"),\n    \"log_entries\": msg.payload,\n};\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2394,14 +2440,16 @@
         "z": "68962323fb8f5a64",
         "g": "223eaaa2f11c7912",
         "name": "",
-        "x": 150,
+        "x": 160,
         "y": 480,
         "wires": [
             [
-                "daf37b3e8f4b4112"
+                "daf37b3e8f4b4112",
+                "86ca7f27691876f1"
             ],
             [
-                "c265fcf25934dc11"
+                "c265fcf25934dc11",
+                "e819d0f0b75f3343"
             ]
         ]
     },
@@ -2431,8 +2479,8 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 570,
-        "y": 480,
+        "x": 650,
+        "y": 520,
         "wires": []
     },
     {
@@ -2441,14 +2489,14 @@
         "z": "68962323fb8f5a64",
         "g": "223eaaa2f11c7912",
         "name": "Handle Error",
-        "func": "\nreturn msg;",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 410,
+        "x": 490,
         "y": 520,
         "wires": [
             [
@@ -2462,15 +2510,15 @@
         "z": "68962323fb8f5a64",
         "g": "223eaaa2f11c7912",
         "name": "Handle success",
-        "func": "\nreturn msg;",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
-        "y": 460,
+        "x": 500,
+        "y": 480,
         "wires": [
             [
                 "188354c4ec9ec40b"
@@ -2495,8 +2543,8 @@
         "g": "223eaaa2f11c7912",
         "name": "Feedback is pushed",
         "info": "",
-        "x": 530,
-        "y": 400,
+        "x": 570,
+        "y": 380,
         "wires": []
     },
     {
@@ -2516,7 +2564,7 @@
         "g": "36f66f8eeab46bdf",
         "name": "",
         "x": 150,
-        "y": 680,
+        "y": 700,
         "wires": [
             [
                 "cfdb49476ed86cac"
@@ -2537,7 +2585,7 @@
         "upload": false,
         "swaggerDoc": "",
         "x": 130,
-        "y": 620,
+        "y": 640,
         "wires": [
             [
                 "c388c41fbbe082ec"
@@ -2558,7 +2606,7 @@
         "finalize": "",
         "libs": [],
         "x": 290,
-        "y": 620,
+        "y": 640,
         "wires": [
             [
                 "2de684d0e27ef56a"
@@ -2571,7 +2619,7 @@
         "z": "68962323fb8f5a64",
         "g": "36f66f8eeab46bdf",
         "name": "acknowledged",
-        "func": "\nreturn msg;",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2579,7 +2627,7 @@
         "finalize": "",
         "libs": [],
         "x": 460,
-        "y": 660,
+        "y": 680,
         "wires": [
             [
                 "e5a18ee6c548e769",
@@ -2593,7 +2641,7 @@
         "z": "68962323fb8f5a64",
         "g": "36f66f8eeab46bdf",
         "name": "Handle Error",
-        "func": "\nreturn msg;",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2601,7 +2649,7 @@
         "finalize": "",
         "libs": [],
         "x": 450,
-        "y": 700,
+        "y": 720,
         "wires": [
             [
                 "e5a18ee6c548e769"
@@ -2617,7 +2665,7 @@
         "statusCode": "",
         "headers": {},
         "x": 610,
-        "y": 720,
+        "y": 740,
         "wires": []
     },
     {
@@ -2628,7 +2676,7 @@
         "name": "Trigger the Evaluation of Feedbacks",
         "info": "",
         "x": 180,
-        "y": 720,
+        "y": 740,
         "wires": []
     },
     {
@@ -2649,7 +2697,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 300,
+        "x": 340,
         "y": 60,
         "wires": [
             [
@@ -2721,7 +2769,7 @@
         "z": "68962323fb8f5a64",
         "g": "9ce29d4ff9f9c13d",
         "name": "Handle success",
-        "func": "\nreturn msg;",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2742,7 +2790,7 @@
         "z": "68962323fb8f5a64",
         "g": "9ce29d4ff9f9c13d",
         "name": "Handle Error",
-        "func": "\nreturn msg;",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2936,7 +2984,7 @@
         "z": "68962323fb8f5a64",
         "g": "311e4ab1bcf49520",
         "name": "Interpret evaluation results to notify",
-        "func": "\nreturn msg;",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -3032,6 +3080,124 @@
         "x": 690,
         "y": 980,
         "wires": []
+    },
+    {
+        "id": "d9ccfc89f1b5d324",
+        "type": "change",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "save",
+        "rules": [
+            {
+                "t": "set",
+                "p": "configId",
+                "pt": "flow",
+                "to": "payload.responseData.id",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 770,
+        "y": 120,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-save"
+    },
+    {
+        "id": "86ca7f27691876f1",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "e819d0f0b75f3343",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 230,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "dac86b83d3a57c99",
+        "type": "inject",
+        "z": "68962323fb8f5a64",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 1560,
+        "wires": [
+            [
+                "1148025dcf3ea81f"
+            ]
+        ]
+    },
+    {
+        "id": "1148025dcf3ea81f",
+        "type": "change",
+        "z": "68962323fb8f5a64",
+        "name": "Set the id manually",
+        "rules": [
+            {
+                "t": "set",
+                "p": "configId",
+                "pt": "flow",
+                "to": "5",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 290,
+        "y": 1560,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-save"
     },
     {
         "id": "4f8f9e74d9fb06ca",
@@ -3141,7 +3307,7 @@
         "g": "7be7ebe9192601ec",
         "name": "Send feedback",
         "method": "PUT",
-        "ret": "txt",
+        "ret": "obj",
         "paytoqs": "ignore",
         "url": "http://localhost:1880/doctor_app/feedback",
         "tls": "",
@@ -3151,8 +3317,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 540,
-        "y": 180,
+        "x": 680,
+        "y": 160,
         "wires": [
             [
                 "5b3ccbd3956bdaa1"
@@ -3173,8 +3339,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 690,
-        "y": 180,
+        "x": 670,
+        "y": 60,
         "wires": []
     },
     {
@@ -3183,7 +3349,7 @@
         "z": "b4f6c615c8ef09ab",
         "g": "7be7ebe9192601ec",
         "name": "app log",
-        "func": "const data = {\n  \"app_version\": \"1.0.0\",\n  \"ai_model_version\": \"2.0.0\",\n  \"interaction_data\": [\n    {\n      \"effort_without_ai\": 5,\n      \"effort_with_ai\": 3,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 80,\n      \"trust_rating\": 4,\n      \"safety_incidents\": 1\n    },\n    {\n      \"effort_without_ai\": 6,\n      \"effort_with_ai\": 3,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 85,\n      \"trust_rating\": 4,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 7,\n      \"effort_with_ai\": 3,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 90,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 8,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 95,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 10,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 12,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 15,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 17,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 20,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 1\n    }\n  ],\n};\n\n\nmsg.payload = data;\n\nreturn msg;",
+        "func": "msg.payload = {};\n\nmsg.payload.common_data = {\n  \"app_version\": \"1.0.0\",\n  \"ai_model_version\": \"2.0.0\",\n}\n\nmsg.payload.interaction_list = [\n  {\n    \"effort_without_ai\": 5,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 80,\n    \"trust_rating\": 4,\n    \"safety_incidents\": 1\n  },\n  {\n    \"effort_without_ai\": 6,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 85,\n    \"trust_rating\": 4,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 7,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 90,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 8,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 95,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 10,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 12,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 15,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 17,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 20,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 1\n  }\n];\n\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -3194,7 +3360,7 @@
         "y": 120,
         "wires": [
             [
-                "791a6e3788fd41ab"
+                "3022b64a2ecc66a1"
             ]
         ]
     },
@@ -3212,8 +3378,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 290,
-        "y": 580,
+        "x": 310,
+        "y": 540,
         "wires": []
     },
     {
@@ -3230,7 +3396,8 @@
         "y": 580,
         "wires": [
             [
-                "2d52db5081e1f33a"
+                "2d52db5081e1f33a",
+                "c5b7e8c4325a2a49"
             ]
         ]
     },
@@ -3251,7 +3418,7 @@
         "z": "b4f6c615c8ef09ab",
         "g": "7be7ebe9192601ec",
         "name": "app log",
-        "func": "const data = {\n  \"session_id\": \"dss_doctor-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\",\n  \"user_id\": \"dss_doctor-d7d0614f-c964-434b-b81d-fbed40daf844\",\n  \"app_version\": \"1.0.0\",\n  \"ai_model_version\": \"2.0.1\",\n  \"interaction_data\": [\n    {\n      \"effort_without_ai\": 5,\n      \"effort_with_ai\": 3,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 80,\n      \"trust_rating\": 4,\n      \"safety_incidents\": 1\n    },\n    {\n      \"effort_without_ai\": 6,\n      \"effort_with_ai\": 3,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 85,\n      \"trust_rating\": 4,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 7,\n      \"effort_with_ai\": 3,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 90,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 8,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 95,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 10,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 12,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 15,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 17,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 20,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 1\n    }\n  ],\n  \"retrain_events\": [\n    {\n      \"event_id\": \"retrain_2025-05-01\",\n      \"timestamp\": \"2025-05-01T14:30:00Z\"\n    },\n    {\n      \"event_id\": \"retrain_2025-05-05\",\n      \"timestamp\": \"2025-05-05T16:00:00Z\"\n    }\n  ]\n};\n\n\nmsg.payload = data;\n\nreturn msg;",
+        "func": "msg.payload = {};\n\nmsg.payload.common_data = {\n  \"app_version\": \"1.0.1\",\n  \"ai_model_version\": \"2.1.0\",\n}\n\nmsg.payload.interaction_list = [\n  {\n    \"effort_without_ai\": 5,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 80,\n    \"trust_rating\": 4.5, // Slight improvement in trust rating\n    \"safety_incidents\": 1\n  },\n  {\n    \"effort_without_ai\": 6,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 85, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 4.7,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 7,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 91, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 8,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 96, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 12,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 16, // Increased effort without AI to show more potential savings with AI\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98.5, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 17,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 1\n  },\n  {\n    \"effort_without_ai\": 20,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 1\n  }\n];\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -3262,7 +3429,7 @@
         "y": 180,
         "wires": [
             [
-                "791a6e3788fd41ab"
+                "3022b64a2ecc66a1"
             ]
         ]
     },
@@ -3272,7 +3439,7 @@
         "z": "b4f6c615c8ef09ab",
         "g": "7be7ebe9192601ec",
         "name": "app log",
-        "func": "const data = {\n  \"session_id\": \"dss_doctor-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\",\n  \"user_id\": \"dss_doctor-d7d0614f-c964-434b-b81d-fbed40daf844\",\n  \"app_version\": \"1.0.0\",\n  \"ai_model_version\": \"2.0.2\",\n  \"interaction_data\": [\n    {\n      \"effort_without_ai\": 5,\n      \"effort_with_ai\": 3,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 80,\n      \"trust_rating\": 4,\n      \"safety_incidents\": 1\n    },\n    {\n      \"effort_without_ai\": 6,\n      \"effort_with_ai\": 3,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 85,\n      \"trust_rating\": 4,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 7,\n      \"effort_with_ai\": 3,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 90,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 8,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 95,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 10,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 12,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 15,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 17,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 0\n    },\n    {\n      \"effort_without_ai\": 20,\n      \"effort_with_ai\": 4,\n      \"ai_assisted\": true,\n      \"human_decision\": false,\n      \"ai_suggestion\": 98,\n      \"trust_rating\": 5,\n      \"safety_incidents\": 1\n    }\n  ],\n  \"retrain_events\": [\n    {\n      \"event_id\": \"retrain_2025-05-01\",\n      \"timestamp\": \"2025-05-01T14:30:00Z\"\n    },\n    {\n      \"event_id\": \"retrain_2025-05-05\",\n      \"timestamp\": \"2025-05-05T16:00:00Z\"\n    }\n  ]\n};\n\n\nmsg.payload = data;\n\nreturn msg;",
+        "func": "msg.payload = {};\n\nmsg.payload.common_data = {\n  \"app_version\": \"1.0.2\",\n  \"ai_model_version\": \"2.1.1\",\n}\n\nmsg.payload.interaction_list = [\n  {\n    \"effort_without_ai\": 8,\n    \"effort_with_ai\": 4, // High AI assistance makes effort low\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 95, // Very high suggestion accuracy (good performance)\n    \"trust_rating\": 5,   // Full trust in the system\n    \"safety_incidents\": 0 // No incidents\n  },\n  {\n    \"effort_without_ai\": 12, // Increased effort without AI (slight positive trend)\n    \"effort_with_ai\": 4,     // Still low effort with AI assistance\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 90,     // Slight decrease in suggestion accuracy (degradation starts)\n    \"trust_rating\": 5,       // Trust remains high\n    \"safety_incidents\": 1    // One safety incident occurs\n  },\n  {\n    \"effort_without_ai\": 14, // Effort without AI continues to increase slightly\n    \"effort_with_ai\": 4,     // Still low effort with AI assistance (but less effective)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 85,     // Further decline in suggestion accuracy\n    \"trust_rating\": 4,       // Trust begins to wane slightly\n    \"safety_incidents\": 2   // More safety incidents occur\n  },\n  {\n    \"effort_without_ai\": 16, // Effort without AI continues to rise (system becoming less reliable)\n    \"effort_with_ai\": 5,     // Slight increase in effort with AI assistance (AI is less effective)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 80,     // Significant decline in suggestion accuracy\n    \"trust_rating\": 3,       // Trust has decreased significantly\n    \"safety_incidents\": 4   // More safety incidents occur as performance degrades further\n  },\n  {\n    \"effort_without_ai\": 18, // Effort without AI peaks (system is struggling)\n    \"effort_with_ai\": 6,     // Higher effort with AI assistance (AI is ineffective)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 75,     // Further decline in suggestion accuracy\n    \"trust_rating\": 2,       // Trust continues to erode\n    \"safety_incidents\": 6   // Many safety incidents as performance degrades further\n  },\n  {\n    \"effort_without_ai\": 19, // Effort without AI remains high (system is unreliable)\n    \"effort_with_ai\": 7,     // Even higher effort with AI assistance (AI has failed to help)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 70,     // Sustained decline in suggestion accuracy\n    \"trust_rating\": 1,       // Almost no trust left in the system\n    \"safety_incidents\": 8   // Many safety incidents as performance degrades further\n  }\n];\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -3283,7 +3450,7 @@
         "y": 240,
         "wires": [
             [
-                "791a6e3788fd41ab"
+                "3022b64a2ecc66a1"
             ]
         ]
     },
@@ -3312,7 +3479,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 430,
+        "x": 450,
         "y": 420,
         "wires": []
     },
@@ -3323,7 +3490,7 @@
         "g": "38582c972cf1c194",
         "name": "Evaluation Trigger",
         "method": "GET",
-        "ret": "txt",
+        "ret": "obj",
         "paytoqs": "ignore",
         "url": "http://localhost:1880/doctor_app/evaluation_trigger",
         "tls": "",
@@ -3370,6 +3537,58 @@
                 "dfc9e9ab37ea0712"
             ]
         ]
+    },
+    {
+        "id": "c5b7e8c4325a2a49",
+        "type": "http response",
+        "z": "b4f6c615c8ef09ab",
+        "g": "e040fcd3a0927d7c",
+        "name": "OK",
+        "statusCode": "200",
+        "headers": {},
+        "x": 290,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "3022b64a2ecc66a1",
+        "type": "function",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "create log",
+        "func": "function createDateStepper(initialISODate) {\n  let currentDate = new Date(initialISODate);\n\n  if (isNaN(currentDate)) {\n    throw new Error(\"Invalid initial ISO date format\");\n  }\n\n  return function step(days = 0, hours = 0) {\n    // Convert time steps to milliseconds for precise calculations\n    const msToAdd = (days * 86400000) + (hours * 3600000);\n    currentDate = new Date(currentDate.getTime() + msToAdd);\n    return currentDate.toISOString();\n  };\n}\n\nconst dateStepper = createDateStepper(\"2025-04-02T09:46:29Z\");\n\nconst common_data = {\n  \"session_id\": \"dss_doctor-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\",\n  \"user_id\": \"dss_doctor-d7d0614f-c964-434b-b81d-fbed40daf844\",\n  ...msg.payload.common_data,\n};\n\nconst interaction_list = msg.payload.interaction_list;\n\nconst logs_list = [];\n\nfor (const interaction of interaction_list) {\n  const startTime = dateStepper(1, 0);\n  const endTime = dateStepper(0, 12);\n\n  logs_list.push({\n    ...common_data,\n    \"start_time\": startTime,\n    \"end_time\": endTime,\n    \"interaction_data\": interaction,\n  })\n}\n\nmsg.payload = logs_list;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 160,
+        "wires": [
+            [
+                "791a6e3788fd41ab",
+                "f9815eda6dc34dad"
+            ]
+        ]
+    },
+    {
+        "id": "f9815eda6dc34dad",
+        "type": "debug",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "LOG",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 60,
+        "wires": []
     },
     {
         "id": "457db4028a714336",
@@ -4913,6 +5132,11 @@
                 "name": "IP Address",
                 "value": "backend",
                 "type": "str"
+            },
+            {
+                "name": "Port",
+                "value": "8001",
+                "type": "num"
             }
         ],
         "x": 290,
@@ -5203,7 +5427,7 @@
         "id": "2855f5ecd0a5b2de",
         "type": "inject",
         "z": "e3fd273272a37452",
-        "name": "",
+        "name": "Test Get",
         "props": [
             {
                 "p": "payload"
@@ -5218,9 +5442,9 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "{\"configId\":1234,\"operation\":\"downloadLink\", \"logName\": \"lala\"}",
+        "payload": "{\"configId\":5,\"operation\":\"getAll\"}",
         "payloadType": "json",
-        "x": 130,
+        "x": 140,
         "y": 420,
         "wires": [
             [
@@ -5315,7 +5539,7 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "test_creation",
-        "payload": "{\"operation\":\"delete\",\"id\":2}",
+        "payload": "{\"operation\":\"delete\",\"id\":4}",
         "payloadType": "json",
         "x": 150,
         "y": 240,
@@ -5344,7 +5568,7 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "test_creation",
-        "payload": "{\"operation\":\"get\",\"id\":1}",
+        "payload": "{\"operation\":\"get\",\"id\":5}",
         "payloadType": "json",
         "x": 110,
         "y": 300,

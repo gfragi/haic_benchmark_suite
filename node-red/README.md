@@ -86,6 +86,12 @@ In order for this code to be included, the settings.js file needs to have the fo
 
 1. Use an external tool, swagger-codegen CLI (or the web version included in swagger editor), to generate the client code for the APIs of HAIC and KubeFlow. This step is not part of the Node-RED container creation. Instead the generated client code is included in the repository. This step is only to be used in development. The type of output selected for swagger codegen is `typescript-axios`. The generated client code is included in the `human_ai_benchmark_suite` and `kubeflow_pipelines_api` directories.
 
+    - In order to generate the client code, use the following command in the  directory where the codegen itself is installed:
+
+    ```bash
+    ./run-in-docker.sh generate -i HAIC_OpenAPI.yaml -l typescript-axios -o /gen/out/human_ai_benchmark_suite -DpackageName=human_ai_benchmark_suite
+    ```
+
 2. Make sure that for each of the generated, the `package.json` file has the correct version number, the same name as the corresponding directory, and that the `main` field points to the correct file.
 
 3. Change the typescript compilation targets for the generated code, to be compatible with Node.js, and Node-RED by extension. To do that, copy the `tsconfig.template.json` from the `node-red` directory to the root of the generated client code directories, and rename it to `tsconfig.json`.

@@ -132,8 +132,42 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LogSchema"
+              $ref: "#/components/schemas/LogCompleteSchema"
         required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /logs/{config_id}/add_log:
+    post:
+      tags:
+        - Logs
+      summary: Add Log
+      operationId: add_log_logs__config_id__add_log_post
+      parameters:
+        - name: config_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Config Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/LogSchema"
+              title: Logs
       responses:
         "200":
           description: Successful Response
@@ -265,9 +299,7 @@ paths:
             application/json:
               schema:
                 type: object
-                title: >-
-                  Response Delete Configuration Configuration Delete 
-                  Configuration Id  Delete
+                title: Response Delete Configuration Configuration Delete  Configuration Id  Delete
         "422":
           description: Validation Error
           content:
@@ -376,8 +408,7 @@ paths:
       tags:
         - Results
       summary: Get Evaluation Results By Group
-      operationId: >-
-        get_evaluation_results_by_group_results__configuration_id__group__group_name__get
+      operationId: get_evaluation_results_by_group_results__configuration_id__group__group_name__get
       parameters:
         - name: configuration_id
           in: path
@@ -666,41 +697,31 @@ components:
           maximum: 5
           minimum: 1
           title: Q Fairness
-          description: >-
-            Fairness: The system handles different tasks (or users, data)
-            without bias.
+          description: "Fairness: The system handles different tasks (or users, data) without bias."
         q_transparency:
           type: integer
           maximum: 5
           minimum: 1
           title: Q Transparency
-          description: >-
-            Transparency: I understand how the system/AI arrives at its
-            suggestions or decisions.
+          description: "Transparency: I understand how the system/AI arrives at its suggestions or decisions."
         q_privacy:
           type: integer
           maximum: 5
           minimum: 1
           title: Q Privacy
-          description: >-
-            Privacy: I feel confident that sensitive or personal data is
-            protected by this system.
+          description: "Privacy: I feel confident that sensitive or personal data is protected by this system."
         q_accountability:
           type: integer
           maximum: 5
           minimum: 1
           title: Q Accountability
-          description: >-
-            Accountability: It is clear who or what is responsible if the system
-            makes a mistake.
+          description: "Accountability: It is clear who or what is responsible if the system makes a mistake."
         q_trust:
           type: integer
           maximum: 5
           minimum: 1
           title: Q Trust
-          description: >-
-            Trust: Overall, I trust this system to operate ethically and in my
-            best interest.
+          description: "Trust: Overall, I trust this system to operate ethically and in my best interest."
       type: object
       required:
         - q_fairness
@@ -725,9 +746,7 @@ components:
         ai_model_type:
           type: string
           title: Ai Model Type
-          description: >-
-            One of: Classification, Regression, Clustering, XAI, Swarm Learning,
-            Active Learning, Other
+          description: "One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other"
         metrics:
           items: {}
           type: array
@@ -824,6 +843,63 @@ components:
           title: Alert Data
       type: object
       title: InteractionData
+    LogCompleteSchema:
+      properties:
+        session_id:
+          type: string
+          title: Session Id
+        user_id:
+          type: string
+          title: User Id
+        ai_model_version:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Ai Model Version
+        app_version:
+          type: string
+          title: App Version
+        start_time:
+          type: string
+          title: Start Time
+        end_time:
+          type: string
+          title: End Time
+        interaction_data:
+          anyOf:
+            - $ref: "#/components/schemas/InteractionData"
+            - type: "null"
+        retrain_events:
+          anyOf:
+            - items:
+                $ref: "#/components/schemas/RetrainEvent"
+              type: array
+            - type: "null"
+          title: Retrain Events
+        performance_infrastructure:
+          anyOf:
+            - $ref: "#/components/schemas/PerformanceInfrastructure"
+            - type: "null"
+        performance_logs:
+          anyOf:
+            - $ref: "#/components/schemas/PerformanceLogs"
+            - type: "null"
+        ai_model_data:
+          anyOf:
+            - $ref: "#/components/schemas/AIModelData"
+            - type: "null"
+        configuration_id:
+          type: integer
+          title: Configuration Id
+      type: object
+      required:
+        - session_id
+        - user_id
+        - app_version
+        - start_time
+        - end_time
+        - configuration_id
+      title: LogCompleteSchema
     LogSchema:
       properties:
         session_id:
@@ -1094,9 +1170,7 @@ components:
         pilot_tag:
           type: string
           title: Pilot Tag
-          description: >-
-            A tag indicating from which pilot this survey is received (e.g.,
-            'SmartTicketing', 'SmartEnergy', etc.)
+          description: A tag indicating from which pilot this survey is received (e.g., 'SmartTicketing', 'SmartEnergy', etc.)
         app_version:
           anyOf:
             - type: string
@@ -1120,9 +1194,7 @@ components:
               type: object
             - type: "null"
           title: Domain Specific
-          description: >-
-            Optional domain-specific responses, e.g., for pilot-specific
-            questions
+          description: Optional domain-specific responses, e.g., for pilot-specific questions
       type: object
       required:
         - user_id
@@ -1174,9 +1246,7 @@ components:
           maximum: 5
           minimum: 1
           title: Sus Q4
-          description: >-
-            I think that I would need the support of a technical person to be
-            able to use this system.
+          description: I think that I would need the support of a technical person to be able to use this system.
         sus_q5:
           type: integer
           maximum: 5
@@ -1194,9 +1264,7 @@ components:
           maximum: 5
           minimum: 1
           title: Sus Q7
-          description: >-
-            I would imagine that most people would learn to use this system very
-            quickly.
+          description: I would imagine that most people would learn to use this system very quickly.
         sus_q8:
           type: integer
           maximum: 5
@@ -1214,9 +1282,7 @@ components:
           maximum: 5
           minimum: 1
           title: Sus Q10
-          description: >-
-            I needed to learn many things before I could get going with this
-            system.
+          description: I needed to learn many things before I could get going with this system.
       type: object
       required:
         - sus_q1

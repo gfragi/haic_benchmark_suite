@@ -5,6 +5,7 @@ export * from './ethics-responses';
 export * from './evaluation-config-schema';
 export * from './httpvalidation-error';
 export * from './interaction-data';
+export * from './log-complete-schema';
 export * from './log-schema';
 export * from './metric-group-response';
 export * from './metric-response';

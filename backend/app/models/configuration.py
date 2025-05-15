@@ -20,9 +20,8 @@ class EvaluationConfig(Base):
     metrics = Column(JSON)  # Directly storing metrics as JSON
     evaluation_date = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     config_type = Column(String, nullable=True)
-    evaluation_status = Column(String,default=STATUS_PENDING)
+    evaluation_status = Column(String, default=STATUS_PENDING)
     minio_path = Column(String, nullable=True)
-
 
     # Relationship to associate with logs
     logs = relationship("LogEntry", back_populates="configuration")
