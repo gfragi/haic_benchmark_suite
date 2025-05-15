@@ -1,16 +1,8 @@
 [
     {
-        "id": "68962323fb8f5a64",
+        "id": "9db4af518e108976",
         "type": "tab",
-        "label": "Demo App Flow",
-        "disabled": false,
-        "info": "",
-        "env": []
-    },
-    {
-        "id": "b4f6c615c8ef09ab",
-        "type": "tab",
-        "label": "Demo App Triggers",
+        "label": "Feedback Consolidation Pattern",
         "disabled": false,
         "info": "",
         "env": []
@@ -40,9 +32,17 @@
         "env": []
     },
     {
-        "id": "9db4af518e108976",
+        "id": "eb9f48db9f88a8d2",
         "type": "tab",
-        "label": "Feedback Consolidation Pattern",
+        "label": "Message Creation Flow (Kousiou)",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "b4f6c615c8ef09ab",
+        "type": "tab",
+        "label": "Demo App Triggers",
         "disabled": false,
         "info": "",
         "env": []
@@ -56,9 +56,9 @@
         "env": []
     },
     {
-        "id": "eb9f48db9f88a8d2",
+        "id": "68962323fb8f5a64",
         "type": "tab",
-        "label": "Message Creation Flow (Kousiou)",
+        "label": "Demo App Flow",
         "disabled": false,
         "info": "",
         "env": []
@@ -1022,6 +1022,122 @@
         "h": 142
     },
     {
+        "id": "53afbf356bbf6601",
+        "type": "group",
+        "z": "9db4af518e108976",
+        "style": {
+            "stroke": "#3d3e46",
+            "stroke-opacity": "1",
+            "fill": "#21222c",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#f8f8f2"
+        },
+        "nodes": [
+            "f445093bc9466b6d",
+            "3f9e2fd9de8af5ad",
+            "384bca9bd4e2c0ef",
+            "1b2c3fb326eacf7a",
+            "238207fab5042de9",
+            "4f3846a242d4c3d6",
+            "e2a0ec598f9c05a5",
+            "2d000ff74d5823c1",
+            "0214858918135093"
+        ],
+        "x": 214,
+        "y": 339,
+        "w": 852,
+        "h": 242
+    },
+    {
+        "id": "b2d39fb29c4af0ef",
+        "type": "group",
+        "z": "9db4af518e108976",
+        "style": {
+            "stroke": "#3d3e46",
+            "stroke-opacity": "1",
+            "fill": "#21222c",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#f8f8f2"
+        },
+        "nodes": [
+            "fa5d8bc1d91e9134",
+            "ec2d362d0bc3e89a",
+            "0de11f879fda3761",
+            "66943fcd7a86b071",
+            "ba1d3386b315d74d"
+        ],
+        "x": 54,
+        "y": 19,
+        "w": 532,
+        "h": 202
+    },
+    {
+        "id": "efe3a5d0f511520f",
+        "type": "group",
+        "z": "9db4af518e108976",
+        "style": {
+            "stroke": "#3d3e46",
+            "stroke-opacity": "1",
+            "fill": "#21222c",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#f8f8f2"
+        },
+        "nodes": [
+            "771a75721f657f61",
+            "02add78393ec173b",
+            "4254d5ab4316e406",
+            "6000379fd8666a5f",
+            "aa89188694021c95",
+            "3aaf807f0394be74",
+            "210636bcacc2e9f8",
+            "2d023130dcbb8f02"
+        ],
+        "x": 654,
+        "y": 39,
+        "w": 612,
+        "h": 182
+    },
+    {
+        "id": "825a94b5cf333ad6",
+        "type": "group",
+        "z": "9db4af518e108976",
+        "style": {
+            "stroke": "#3d3e46",
+            "stroke-opacity": "1",
+            "fill": "#21222c",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#f8f8f2"
+        },
+        "nodes": [
+            "aee36c513c25a05d",
+            "4469175c609b2986",
+            "e4542c729bb3c791",
+            "120b2d00836d1305",
+            "341745117b49659b",
+            "eb36a511c7513007",
+            "18f629cb308d85c8",
+            "83744dbc9b049153",
+            "cf5eda9e288ea4ea",
+            "eb728213c6c2b5f3",
+            "978f789a0139cf0d",
+            "a3a434068a939f61",
+            "6c420e3f86def41d",
+            "71c4787acee478f0"
+        ],
+        "x": 134,
+        "y": 639,
+        "w": 992,
+        "h": 342
+    },
+    {
         "id": "352dada70d1a3bc5",
         "type": "minio-config",
         "name": "MinIO Instance",
@@ -1036,14 +1152,20 @@
         "wholemsg": "false"
     },
     {
-        "id": "8a0706320fa877e8",
-        "type": "amqp-broker",
-        "name": "humaine in",
-        "host": "10.100.59.183",
-        "port": "5672",
-        "vhost": "humaine",
-        "tls": false,
-        "credsFromSettings": false
+        "id": "f30e94e74ac44bce",
+        "type": "websocket-client",
+        "path": "ws://localhost:1880/ws/push_feedback",
+        "tls": "",
+        "wholemsg": "false",
+        "hb": "0",
+        "subprotocol": "",
+        "headers": []
+    },
+    {
+        "id": "fa9ce917272e9029",
+        "type": "websocket-listener",
+        "path": "/ws/push_feedback",
+        "wholemsg": "false"
     },
     {
         "id": "f382319ee574b271",
@@ -2292,10 +2414,224 @@
         ]
     },
     {
-        "id": "20e14f4b549b1fa5",
+        "id": "fa5d8bc1d91e9134",
+        "type": "inject",
+        "z": "9db4af518e108976",
+        "g": "b2d39fb29c4af0ef",
+        "name": "GOOD FEEDBACK",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"modelID\":4,\"feedback\":\"ok\",\"imageID\":1,\"doctorID\":5,\"patientID\":3}",
+        "payloadType": "json",
+        "x": 190,
+        "y": 140,
+        "wires": [
+            [
+                "0de11f879fda3761",
+                "ba1d3386b315d74d"
+            ]
+        ]
+    },
+    {
+        "id": "aee36c513c25a05d",
+        "type": "function",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "create parts",
+        "func": "msg.payload = JSON.parse(msg.payload);\nmsg.parts={};\nmsg.parts.id = msg.payload.imageID+msg.payload.patientID;\nmsg.parts.count=2;\nmsg.payload.timestamp = new Date().toISOString();\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 680,
+        "wires": [
+            [
+                "4469175c609b2986"
+            ]
+        ]
+    },
+    {
+        "id": "4469175c609b2986",
+        "type": "join",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "Join in One",
+        "mode": "auto",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "comparisonField",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": true,
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 590,
+        "y": 680,
+        "wires": [
+            [
+                "e4542c729bb3c791"
+            ]
+        ]
+    },
+    {
+        "id": "ec2d362d0bc3e89a",
+        "type": "inject",
+        "z": "9db4af518e108976",
+        "g": "b2d39fb29c4af0ef",
+        "name": "BAD FEEDBACK",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"modelID\":4,\"feedback\":\"wrong\",\"imageID\":1,\"doctorID\":6,\"patientID\":3}",
+        "payloadType": "json",
+        "x": 200,
+        "y": 180,
+        "wires": [
+            [
+                "ba1d3386b315d74d",
+                "0de11f879fda3761"
+            ]
+        ]
+    },
+    {
+        "id": "e4542c729bb3c791",
+        "type": "function",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "compare feedbacks",
+        "func": "if ((msg.payload[0].feedback)==(msg.payload[1].feedback)) {\n    return [msg,null];\n} else {\n    return [null,msg];\n}\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 860,
+        "wires": [
+            [
+                "83744dbc9b049153"
+            ],
+            [
+                "cf5eda9e288ea4ea"
+            ]
+        ]
+    },
+    {
+        "id": "120b2d00836d1305",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "AGREEMENT",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "341745117b49659b",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "DISAGREEMENT",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "eb36a511c7513007",
+        "type": "comment",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "Feedback Consolidation Pattern",
+        "info": "",
+        "x": 910,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "0de11f879fda3761",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "g": "b2d39fb29c4af0ef",
+        "name": "App Feedback Example",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 430,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "66943fcd7a86b071",
+        "type": "comment",
+        "z": "9db4af518e108976",
+        "g": "b2d39fb29c4af0ef",
+        "name": "Testing part (First is AI, Second is Human)",
+        "info": "",
+        "x": 320,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "fbfee0756d74b05a",
+        "type": "comment",
+        "z": "9db4af518e108976",
+        "name": "Main Implementation",
+        "info": "",
+        "x": 670,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "f445093bc9466b6d",
         "type": "subflow:6d5f83638870930c",
-        "z": "68962323fb8f5a64",
-        "g": "bef08cda5cd6e15a",
+        "z": "9db4af518e108976",
+        "g": "53afbf356bbf6601",
         "name": "",
         "env": [
             {
@@ -2309,22 +2645,22 @@
                 "type": "num"
             }
         ],
-        "x": 130,
-        "y": 60,
+        "x": 330,
+        "y": 420,
         "wires": [
             [
-                "77a5e7071aa41d3f"
+                "2d000ff74d5823c1"
             ],
             [
-                "cf0ff9703df94c43"
+                "3f9e2fd9de8af5ad"
             ]
         ]
     },
     {
-        "id": "cf0ff9703df94c43",
+        "id": "3f9e2fd9de8af5ad",
         "type": "debug",
-        "z": "68962323fb8f5a64",
-        "g": "bef08cda5cd6e15a",
+        "z": "9db4af518e108976",
+        "g": "53afbf356bbf6601",
         "name": "Error Output",
         "active": true,
         "tosidebar": true,
@@ -2334,54 +2670,54 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 150,
-        "y": 160,
+        "x": 330,
+        "y": 540,
         "wires": []
     },
     {
-        "id": "4706f440553adaed",
+        "id": "384bca9bd4e2c0ef",
         "type": "subflow:3e0b79a15665c98a",
-        "z": "68962323fb8f5a64",
-        "g": "bef08cda5cd6e15a",
+        "z": "9db4af518e108976",
+        "g": "53afbf356bbf6601",
         "name": "",
-        "x": 570,
-        "y": 140,
+        "x": 770,
+        "y": 480,
         "wires": [
             [
-                "c57411dbe5e643e9",
-                "d9ccfc89f1b5d324"
+                "4f3846a242d4c3d6",
+                "0214858918135093"
             ],
             [
-                "7599a8fb56641b12"
+                "238207fab5042de9"
             ]
         ]
     },
     {
-        "id": "ab463566f2505cd6",
+        "id": "1b2c3fb326eacf7a",
         "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "bef08cda5cd6e15a",
+        "z": "9db4af518e108976",
+        "g": "53afbf356bbf6601",
         "name": "Set Evaluation Config Properties",
-        "func": "//CREATE\n// msg.payload = {\n//     \"operation\": \"create\",\n//     // INPUT FIELDS\n//     \"application_name\": \"dss_doctor\",\n//     \"ai_model_name\": \"test_ai_model\",\n//     \"ai_model_type\": \"Classification\", // One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other\n//     \"metrics\": [ //Any of the following metrics can be used\n//         \"Collaboration and Interaction\",\n//         \"Trust and Safety\"\n//     ],\n//     \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n//     \"description\": \"Test Doctor DSS app\",\n//     \"config_type\": \"generic\", // either 'specific' or 'generic'\n//     \"evaluation_status\": \"pending\" // Current status of the evaluation\n// };\n\n//UPDATE\nmsg.payload = {\n    \"operation\": \"update\",\n    // Parameters\n    \"configurationId\": flow.get(\"configId\"),\n    // INPUT FIELDS\n    \"application_name\": \"dss_doctor\",\n    \"ai_model_name\": \"test_diagnosis_model\",\n    \"ai_model_type\": \"Classification\", // One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other\n    \"metrics\": [ //Any of the following metrics can be used\n        \"Collaboration and Interaction\",\n        \"Trust and Safety\"\n    ],\n    \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n    \"description\": \"Test Doctor DSS app\",\n    \"config_type\": \"generic\", // either 'specific' or 'generic'\n    \"evaluation_status\": \"pending\" // Current status of the evaluation\n};\nreturn msg;",
+        "func": "//CREATE\n// msg.payload = {\n//     \"operation\": \"create\",\n//     // INPUT FIELDS\n//     \"application_name\": \"dss_doctor_agreement\",\n//     \"ai_model_name\": \"test_ai_model\",\n//     \"ai_model_type\": \"Classification\", // One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other\n//     \"metrics\": [ //Any of the following metrics can be used\n//         \"Collaboration and Interaction\",\n//     ],\n//     \"evaluation_date\": \"2025-05-15T15:35:47.992Z\",\n//     \"description\": \"Test Doctor DSS app\",\n//     \"config_type\": \"generic\", // either 'specific' or 'generic'\n//     \"evaluation_status\": \"pending\" // Current status of the evaluation\n// };\n\n//UPDATE\nmsg.payload = {\n    \"operation\": \"update\",\n    // Parameters\n    \"configurationId\": flow.get(\"configId\"),\n    // INPUT FIELDS\n    \"application_name\": \"dss_doctor\",\n    \"ai_model_name\": \"test_diagnosis_model\",\n    \"ai_model_type\": \"Classification\", // One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other\n    \"metrics\": [ //Any of the following metrics can be used\n        \"Collaboration and Interaction\",\n        \"Trust and Safety\"\n    ],\n    \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n    \"description\": \"Test Doctor DSS app\",\n    \"config_type\": \"generic\", // either 'specific' or 'generic'\n    \"evaluation_status\": \"pending\" // Current status of the evaluation\n};\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 490,
-        "y": 100,
+        "x": 690,
+        "y": 440,
         "wires": [
             [
-                "4706f440553adaed"
+                "384bca9bd4e2c0ef"
             ]
         ]
     },
     {
-        "id": "7599a8fb56641b12",
+        "id": "238207fab5042de9",
         "type": "debug",
-        "z": "68962323fb8f5a64",
-        "g": "bef08cda5cd6e15a",
+        "z": "9db4af518e108976",
+        "g": "53afbf356bbf6601",
         "name": "Error Output",
         "active": true,
         "tosidebar": true,
@@ -2391,15 +2727,15 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 550,
-        "y": 200,
+        "x": 750,
+        "y": 540,
         "wires": []
     },
     {
-        "id": "c57411dbe5e643e9",
+        "id": "4f3846a242d4c3d6",
         "type": "debug",
-        "z": "68962323fb8f5a64",
-        "g": "bef08cda5cd6e15a",
+        "z": "9db4af518e108976",
+        "g": "53afbf356bbf6601",
         "name": "App Config Output",
         "active": true,
         "tosidebar": true,
@@ -2409,281 +2745,26 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 730,
-        "y": 60,
+        "x": 930,
+        "y": 400,
         "wires": []
     },
     {
-        "id": "4ba40f0c2e4f14c0",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "223eaaa2f11c7912",
-        "name": "transform feedback",
-        "func": "// Prepare whatever is required.\nmsg.payload = {\n    \"config_id\": flow.get(\"configId\"),\n    \"log_entries\": msg.payload,\n};\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 290,
-        "y": 400,
-        "wires": [
-            [
-                "3608d47356411615"
-            ]
-        ]
-    },
-    {
-        "id": "3608d47356411615",
-        "type": "subflow:9e615b8a6da73d11",
-        "z": "68962323fb8f5a64",
-        "g": "223eaaa2f11c7912",
-        "name": "",
-        "x": 160,
-        "y": 480,
-        "wires": [
-            [
-                "daf37b3e8f4b4112",
-                "86ca7f27691876f1"
-            ],
-            [
-                "c265fcf25934dc11",
-                "e819d0f0b75f3343"
-            ]
-        ]
-    },
-    {
-        "id": "29d7ab5d6e14a8fd",
-        "type": "http in",
-        "z": "68962323fb8f5a64",
-        "g": "223eaaa2f11c7912",
-        "name": "PUT feedback",
-        "url": "/doctor_app/feedback",
-        "method": "put",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 110,
-        "y": 400,
-        "wires": [
-            [
-                "4ba40f0c2e4f14c0"
-            ]
-        ]
-    },
-    {
-        "id": "188354c4ec9ec40b",
-        "type": "http response",
-        "z": "68962323fb8f5a64",
-        "g": "223eaaa2f11c7912",
-        "name": "",
-        "statusCode": "",
-        "headers": {},
-        "x": 650,
-        "y": 520,
-        "wires": []
-    },
-    {
-        "id": "c265fcf25934dc11",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "223eaaa2f11c7912",
-        "name": "Handle Error",
-        "func": "delete msg.payload.clientResponse;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 490,
-        "y": 520,
-        "wires": [
-            [
-                "188354c4ec9ec40b"
-            ]
-        ]
-    },
-    {
-        "id": "daf37b3e8f4b4112",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "223eaaa2f11c7912",
-        "name": "Handle success",
-        "func": "delete msg.payload.clientResponse;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 500,
-        "y": 480,
-        "wires": [
-            [
-                "188354c4ec9ec40b"
-            ]
-        ]
-    },
-    {
-        "id": "bb75e47029df8995",
+        "id": "e2a0ec598f9c05a5",
         "type": "comment",
-        "z": "68962323fb8f5a64",
-        "g": "bef08cda5cd6e15a",
+        "z": "9db4af518e108976",
+        "g": "53afbf356bbf6601",
         "name": "Application Setup",
         "info": "",
-        "x": 340,
-        "y": 200,
-        "wires": []
-    },
-    {
-        "id": "1751529b6551bd9c",
-        "type": "comment",
-        "z": "68962323fb8f5a64",
-        "g": "223eaaa2f11c7912",
-        "name": "Feedback is pushed",
-        "info": "",
-        "x": 570,
+        "x": 680,
         "y": 380,
         "wires": []
     },
     {
-        "id": "e25174ef3a807717",
-        "type": "comment",
-        "z": "68962323fb8f5a64",
-        "name": "Application Operations",
-        "info": "",
-        "x": 120,
-        "y": 320,
-        "wires": []
-    },
-    {
-        "id": "2de684d0e27ef56a",
-        "type": "subflow:ee62c2e2054b032c",
-        "z": "68962323fb8f5a64",
-        "g": "36f66f8eeab46bdf",
-        "name": "",
-        "x": 150,
-        "y": 700,
-        "wires": [
-            [
-                "cfdb49476ed86cac"
-            ],
-            [
-                "d219abc45d10bcc3"
-            ]
-        ]
-    },
-    {
-        "id": "9e9506c4449f684c",
-        "type": "http in",
-        "z": "68962323fb8f5a64",
-        "g": "36f66f8eeab46bdf",
-        "name": "Trigger Evaluation",
-        "url": "/doctor_app/evaluation_trigger",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 130,
-        "y": 640,
-        "wires": [
-            [
-                "c388c41fbbe082ec"
-            ]
-        ]
-    },
-    {
-        "id": "c388c41fbbe082ec",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "36f66f8eeab46bdf",
-        "name": "prep",
-        "func": "\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 290,
-        "y": 640,
-        "wires": [
-            [
-                "2de684d0e27ef56a"
-            ]
-        ]
-    },
-    {
-        "id": "cfdb49476ed86cac",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "36f66f8eeab46bdf",
-        "name": "acknowledged",
-        "func": "delete msg.payload.clientResponse;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 460,
-        "y": 680,
-        "wires": [
-            [
-                "e5a18ee6c548e769",
-                "f2ace373eede1933"
-            ]
-        ]
-    },
-    {
-        "id": "d219abc45d10bcc3",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "36f66f8eeab46bdf",
-        "name": "Handle Error",
-        "func": "delete msg.payload.clientResponse;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 450,
-        "y": 720,
-        "wires": [
-            [
-                "e5a18ee6c548e769"
-            ]
-        ]
-    },
-    {
-        "id": "e5a18ee6c548e769",
-        "type": "http response",
-        "z": "68962323fb8f5a64",
-        "g": "36f66f8eeab46bdf",
-        "name": "",
-        "statusCode": "",
-        "headers": {},
-        "x": 610,
-        "y": 740,
-        "wires": []
-    },
-    {
-        "id": "52f8bcbcf417ccda",
-        "type": "comment",
-        "z": "68962323fb8f5a64",
-        "g": "36f66f8eeab46bdf",
-        "name": "Trigger the Evaluation of Feedbacks",
-        "info": "",
-        "x": 180,
-        "y": 740,
-        "wires": []
-    },
-    {
-        "id": "77a5e7071aa41d3f",
+        "id": "2d000ff74d5823c1",
         "type": "delay",
-        "z": "68962323fb8f5a64",
-        "g": "bef08cda5cd6e15a",
+        "z": "9db4af518e108976",
+        "g": "53afbf356bbf6601",
         "name": "",
         "pauseType": "delay",
         "timeout": "2",
@@ -2697,395 +2778,19 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 340,
-        "y": 60,
+        "x": 500,
+        "y": 400,
         "wires": [
             [
-                "ab463566f2505cd6"
+                "1b2c3fb326eacf7a"
             ]
         ]
     },
     {
-        "id": "ce744c27a71719a0",
-        "type": "comment",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "Get evaluation results",
-        "info": "",
-        "x": 660,
-        "y": 1100,
-        "wires": []
-    },
-    {
-        "id": "0169dd1cd313a5a4",
-        "type": "http in",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "Get All evaluation results",
-        "url": "/doctor_app/evaluation/",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 150,
-        "y": 1120,
-        "wires": [
-            [
-                "54ea1b0c2a5f1185"
-            ]
-        ]
-    },
-    {
-        "id": "921225f785e5bb80",
-        "type": "http response",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "",
-        "statusCode": "",
-        "headers": {},
-        "x": 730,
-        "y": 1260,
-        "wires": []
-    },
-    {
-        "id": "05bd6b813664ab9a",
-        "type": "subflow:e260c7f298a6dd52",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "",
-        "x": 580,
-        "y": 1140,
-        "wires": [
-            [
-                "e7251a062f18afbc"
-            ],
-            [
-                "9c64745033e8202a"
-            ]
-        ]
-    },
-    {
-        "id": "e7251a062f18afbc",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "Handle success",
-        "func": "delete msg.payload.clientResponse;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 580,
-        "y": 1200,
-        "wires": [
-            [
-                "921225f785e5bb80"
-            ]
-        ]
-    },
-    {
-        "id": "9c64745033e8202a",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "Handle Error",
-        "func": "delete msg.payload.clientResponse;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 570,
-        "y": 1260,
-        "wires": [
-            [
-                "921225f785e5bb80"
-            ]
-        ]
-    },
-    {
-        "id": "9a1094c1e22dcfcd",
-        "type": "http in",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "Get specific evaluation result",
-        "url": "/doctor_app/evaluation/:result_id",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 160,
-        "y": 1180,
-        "wires": [
-            [
-                "80d7f10d8b0812e4"
-            ]
-        ]
-    },
-    {
-        "id": "a05a4b9fe7b88c19",
-        "type": "http in",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "Get evaluation results group",
-        "url": "/doctor_app/evaluation_group/:group_id",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 160,
-        "y": 1240,
-        "wires": [
-            [
-                "9fd892fb264520ea"
-            ]
-        ]
-    },
-    {
-        "id": "54ea1b0c2a5f1185",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "prep",
-        "func": "\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 1120,
-        "wires": [
-            [
-                "05bd6b813664ab9a"
-            ]
-        ]
-    },
-    {
-        "id": "80d7f10d8b0812e4",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "prep",
-        "func": "\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 350,
-        "y": 1180,
-        "wires": [
-            [
-                "05bd6b813664ab9a"
-            ]
-        ]
-    },
-    {
-        "id": "9fd892fb264520ea",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "9ce29d4ff9f9c13d",
-        "name": "prep",
-        "func": "\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 350,
-        "y": 1240,
-        "wires": [
-            [
-                "05bd6b813664ab9a"
-            ]
-        ]
-    },
-    {
-        "id": "f2ace373eede1933",
-        "type": "delay",
-        "z": "68962323fb8f5a64",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "5",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 760,
-        "y": 700,
-        "wires": [
-            [
-                "3daf399eaa62f216"
-            ]
-        ]
-    },
-    {
-        "id": "81fd642a6de9b53a",
-        "type": "comment",
-        "z": "68962323fb8f5a64",
-        "g": "311e4ab1bcf49520",
-        "name": "Automated Notifications",
-        "info": "",
-        "x": 160,
-        "y": 860,
-        "wires": []
-    },
-    {
-        "id": "3daf399eaa62f216",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "311e4ab1bcf49520",
-        "name": "Get new evaluation results",
-        "func": "\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 620,
-        "y": 860,
-        "wires": [
-            [
-                "437de6a7c1290ddf"
-            ]
-        ]
-    },
-    {
-        "id": "437de6a7c1290ddf",
-        "type": "subflow:e260c7f298a6dd52",
-        "z": "68962323fb8f5a64",
-        "g": "311e4ab1bcf49520",
-        "name": "",
-        "x": 180,
-        "y": 920,
-        "wires": [
-            [
-                "bb1515a0cd403abd"
-            ],
-            [
-                "ab6e39fc77b3b80d"
-            ]
-        ]
-    },
-    {
-        "id": "bb1515a0cd403abd",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "311e4ab1bcf49520",
-        "name": "Interpret evaluation results to notify",
-        "func": "delete msg.payload.clientResponse;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 480,
-        "y": 920,
-        "wires": [
-            [
-                "f9d5f504f4eb0f42"
-            ]
-        ]
-    },
-    {
-        "id": "ab6e39fc77b3b80d",
-        "type": "function",
-        "z": "68962323fb8f5a64",
-        "g": "311e4ab1bcf49520",
-        "name": "Handle Error",
-        "func": "\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 130,
-        "y": 980,
-        "wires": [
-            [
-                "fa95874bdb401418"
-            ]
-        ]
-    },
-    {
-        "id": "fa95874bdb401418",
-        "type": "debug",
-        "z": "68962323fb8f5a64",
-        "g": "311e4ab1bcf49520",
-        "name": "Show error",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 290,
-        "y": 980,
-        "wires": []
-    },
-    {
-        "id": "f9d5f504f4eb0f42",
-        "type": "http request",
-        "z": "68962323fb8f5a64",
-        "g": "311e4ab1bcf49520",
-        "name": "Send notification",
-        "method": "POST",
-        "ret": "txt",
-        "paytoqs": "ignore",
-        "url": "http://localhost:1880/doctor_app_client/notify",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 530,
-        "y": 980,
-        "wires": [
-            [
-                "0ce048dcb5c236bb"
-            ]
-        ]
-    },
-    {
-        "id": "0ce048dcb5c236bb",
-        "type": "debug",
-        "z": "68962323fb8f5a64",
-        "g": "311e4ab1bcf49520",
-        "name": "Show",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 690,
-        "y": 980,
-        "wires": []
-    },
-    {
-        "id": "d9ccfc89f1b5d324",
+        "id": "0214858918135093",
         "type": "change",
-        "z": "68962323fb8f5a64",
-        "g": "bef08cda5cd6e15a",
+        "z": "9db4af518e108976",
+        "g": "53afbf356bbf6601",
         "name": "save",
         "rules": [
             {
@@ -3101,53 +2806,17 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 770,
-        "y": 120,
+        "x": 970,
+        "y": 460,
         "wires": [
             []
         ],
         "icon": "font-awesome/fa-save"
     },
     {
-        "id": "86ca7f27691876f1",
-        "type": "debug",
-        "z": "68962323fb8f5a64",
-        "g": "223eaaa2f11c7912",
-        "name": "Success",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 480,
-        "y": 440,
-        "wires": []
-    },
-    {
-        "id": "e819d0f0b75f3343",
-        "type": "debug",
-        "z": "68962323fb8f5a64",
-        "g": "223eaaa2f11c7912",
-        "name": "Error",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 230,
-        "y": 540,
-        "wires": []
-    },
-    {
-        "id": "dac86b83d3a57c99",
+        "id": "68bed448b73a7dab",
         "type": "inject",
-        "z": "68962323fb8f5a64",
+        "z": "9db4af518e108976",
         "name": "",
         "props": [
             {
@@ -3165,18 +2834,18 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 120,
-        "y": 1560,
+        "x": 100,
+        "y": 1260,
         "wires": [
             [
-                "1148025dcf3ea81f"
+                "764b5587e90f1470"
             ]
         ]
     },
     {
-        "id": "1148025dcf3ea81f",
+        "id": "764b5587e90f1470",
         "type": "change",
-        "z": "68962323fb8f5a64",
+        "z": "9db4af518e108976",
         "name": "Set the id manually",
         "rules": [
             {
@@ -3192,327 +2861,57 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 290,
-        "y": 1560,
+        "x": 270,
+        "y": 1260,
         "wires": [
             []
         ],
         "icon": "font-awesome/fa-save"
     },
     {
-        "id": "4f8f9e74d9fb06ca",
-        "type": "inject",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
-        "name": "Generic Interactions",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 150,
-        "y": 120,
+        "id": "18f629cb308d85c8",
+        "type": "websocket in",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "Receive feedbacks",
+        "server": "fa9ce917272e9029",
+        "client": "",
+        "x": 250,
+        "y": 680,
         "wires": [
             [
-                "18d033a3531a8f79"
+                "aee36c513c25a05d"
             ]
         ]
     },
     {
-        "id": "8159a93a9f11b1e1",
-        "type": "inject",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
-        "name": "Positive evolution",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 140,
-        "y": 180,
-        "wires": [
-            [
-                "63b25e1342268a1f"
-            ]
-        ]
-    },
-    {
-        "id": "fcc242edd2d6c030",
-        "type": "inject",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
-        "name": "Negative evolution",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 150,
-        "y": 240,
-        "wires": [
-            [
-                "43fb7ca00169b352"
-            ]
-        ]
-    },
-    {
-        "id": "87c1c90e5e9cbd48",
-        "type": "comment",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
-        "name": "Scenarios' Data",
-        "info": "",
-        "x": 180,
-        "y": 60,
-        "wires": []
-    },
-    {
-        "id": "791a6e3788fd41ab",
-        "type": "http request",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
+        "id": "ba1d3386b315d74d",
+        "type": "websocket out",
+        "z": "9db4af518e108976",
+        "g": "b2d39fb29c4af0ef",
         "name": "Send feedback",
-        "method": "PUT",
-        "ret": "obj",
-        "paytoqs": "ignore",
-        "url": "http://localhost:1880/doctor_app/feedback",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 680,
+        "server": "",
+        "client": "f30e94e74ac44bce",
+        "x": 420,
         "y": 160,
-        "wires": [
-            [
-                "5b3ccbd3956bdaa1"
-            ]
-        ]
-    },
-    {
-        "id": "5b3ccbd3956bdaa1",
-        "type": "debug",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
-        "name": "ack",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 670,
-        "y": 60,
         "wires": []
     },
     {
-        "id": "18d033a3531a8f79",
-        "type": "function",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
-        "name": "app log",
-        "func": "msg.payload = {};\n\nmsg.payload.common_data = {\n  \"app_version\": \"1.0.0\",\n  \"ai_model_version\": \"2.0.0\",\n}\n\nmsg.payload.interaction_list = [\n  {\n    \"effort_without_ai\": 5,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 80,\n    \"trust_rating\": 4,\n    \"safety_incidents\": 1\n  },\n  {\n    \"effort_without_ai\": 6,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 85,\n    \"trust_rating\": 4,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 7,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 90,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 8,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 95,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 10,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 12,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 15,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 17,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 20,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 1\n  }\n];\n\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 340,
-        "y": 120,
-        "wires": [
-            [
-                "3022b64a2ecc66a1"
-            ]
-        ]
-    },
-    {
-        "id": "2d52db5081e1f33a",
-        "type": "debug",
-        "z": "b4f6c615c8ef09ab",
-        "g": "e040fcd3a0927d7c",
-        "name": "Notification",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 310,
-        "y": 540,
-        "wires": []
-    },
-    {
-        "id": "a3c404bbd374e92c",
-        "type": "http in",
-        "z": "b4f6c615c8ef09ab",
-        "g": "e040fcd3a0927d7c",
-        "name": "Get notification",
-        "url": "/doctor_app_client/notify",
-        "method": "post",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 120,
-        "y": 580,
-        "wires": [
-            [
-                "2d52db5081e1f33a",
-                "c5b7e8c4325a2a49"
-            ]
-        ]
-    },
-    {
-        "id": "3c9709bc331f36b8",
+        "id": "02add78393ec173b",
         "type": "comment",
-        "z": "b4f6c615c8ef09ab",
-        "g": "e040fcd3a0927d7c",
-        "name": "Notification",
-        "info": "",
-        "x": 100,
-        "y": 540,
-        "wires": []
-    },
-    {
-        "id": "63b25e1342268a1f",
-        "type": "function",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
-        "name": "app log",
-        "func": "msg.payload = {};\n\nmsg.payload.common_data = {\n  \"app_version\": \"1.0.1\",\n  \"ai_model_version\": \"2.1.0\",\n}\n\nmsg.payload.interaction_list = [\n  {\n    \"effort_without_ai\": 5,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 80,\n    \"trust_rating\": 4.5, // Slight improvement in trust rating\n    \"safety_incidents\": 1\n  },\n  {\n    \"effort_without_ai\": 6,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 85, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 4.7,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 7,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 91, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 8,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 96, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 12,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 16, // Increased effort without AI to show more potential savings with AI\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98.5, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 17,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 1\n  },\n  {\n    \"effort_without_ai\": 20,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 1\n  }\n];\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 340,
-        "y": 180,
-        "wires": [
-            [
-                "3022b64a2ecc66a1"
-            ]
-        ]
-    },
-    {
-        "id": "43fb7ca00169b352",
-        "type": "function",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
-        "name": "app log",
-        "func": "msg.payload = {};\n\nmsg.payload.common_data = {\n  \"app_version\": \"1.0.2\",\n  \"ai_model_version\": \"2.1.1\",\n}\n\nmsg.payload.interaction_list = [\n  {\n    \"effort_without_ai\": 8,\n    \"effort_with_ai\": 4, // High AI assistance makes effort low\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 95, // Very high suggestion accuracy (good performance)\n    \"trust_rating\": 5,   // Full trust in the system\n    \"safety_incidents\": 0 // No incidents\n  },\n  {\n    \"effort_without_ai\": 12, // Increased effort without AI (slight positive trend)\n    \"effort_with_ai\": 4,     // Still low effort with AI assistance\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 90,     // Slight decrease in suggestion accuracy (degradation starts)\n    \"trust_rating\": 5,       // Trust remains high\n    \"safety_incidents\": 1    // One safety incident occurs\n  },\n  {\n    \"effort_without_ai\": 14, // Effort without AI continues to increase slightly\n    \"effort_with_ai\": 4,     // Still low effort with AI assistance (but less effective)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 85,     // Further decline in suggestion accuracy\n    \"trust_rating\": 4,       // Trust begins to wane slightly\n    \"safety_incidents\": 2   // More safety incidents occur\n  },\n  {\n    \"effort_without_ai\": 16, // Effort without AI continues to rise (system becoming less reliable)\n    \"effort_with_ai\": 5,     // Slight increase in effort with AI assistance (AI is less effective)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 80,     // Significant decline in suggestion accuracy\n    \"trust_rating\": 3,       // Trust has decreased significantly\n    \"safety_incidents\": 4   // More safety incidents occur as performance degrades further\n  },\n  {\n    \"effort_without_ai\": 18, // Effort without AI peaks (system is struggling)\n    \"effort_with_ai\": 6,     // Higher effort with AI assistance (AI is ineffective)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 75,     // Further decline in suggestion accuracy\n    \"trust_rating\": 2,       // Trust continues to erode\n    \"safety_incidents\": 6   // Many safety incidents as performance degrades further\n  },\n  {\n    \"effort_without_ai\": 19, // Effort without AI remains high (system is unreliable)\n    \"effort_with_ai\": 7,     // Even higher effort with AI assistance (AI has failed to help)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 70,     // Sustained decline in suggestion accuracy\n    \"trust_rating\": 1,       // Almost no trust left in the system\n    \"safety_incidents\": 8   // Many safety incidents as performance degrades further\n  }\n];\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 340,
-        "y": 240,
-        "wires": [
-            [
-                "3022b64a2ecc66a1"
-            ]
-        ]
-    },
-    {
-        "id": "5841b64bd361f206",
-        "type": "comment",
-        "z": "b4f6c615c8ef09ab",
-        "g": "38582c972cf1c194",
+        "z": "9db4af518e108976",
+        "g": "efe3a5d0f511520f",
         "name": "Evaluation Trigger",
         "info": "",
-        "x": 130,
-        "y": 360,
+        "x": 1130,
+        "y": 80,
         "wires": []
     },
     {
-        "id": "8152fb7c7ad9bdee",
-        "type": "debug",
-        "z": "b4f6c615c8ef09ab",
-        "g": "38582c972cf1c194",
-        "name": "ack",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 450,
-        "y": 420,
-        "wires": []
-    },
-    {
-        "id": "dfc9e9ab37ea0712",
-        "type": "http request",
-        "z": "b4f6c615c8ef09ab",
-        "g": "38582c972cf1c194",
-        "name": "Evaluation Trigger",
-        "method": "GET",
-        "ret": "obj",
-        "paytoqs": "ignore",
-        "url": "http://localhost:1880/doctor_app/evaluation_trigger",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 270,
-        "y": 420,
-        "wires": [
-            [
-                "8152fb7c7ad9bdee"
-            ]
-        ]
-    },
-    {
-        "id": "c39821be86164d3e",
+        "id": "771a75721f657f61",
         "type": "inject",
-        "z": "b4f6c615c8ef09ab",
-        "g": "38582c972cf1c194",
+        "z": "9db4af518e108976",
+        "g": "efe3a5d0f511520f",
         "name": "Trigger",
         "props": [
             {
@@ -3530,54 +2929,123 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 110,
-        "y": 420,
+        "x": 770,
+        "y": 80,
         "wires": [
             [
-                "dfc9e9ab37ea0712"
+                "4254d5ab4316e406"
             ]
         ]
     },
     {
-        "id": "c5b7e8c4325a2a49",
-        "type": "http response",
-        "z": "b4f6c615c8ef09ab",
-        "g": "e040fcd3a0927d7c",
-        "name": "OK",
-        "statusCode": "200",
-        "headers": {},
-        "x": 290,
-        "y": 580,
-        "wires": []
-    },
-    {
-        "id": "3022b64a2ecc66a1",
+        "id": "83744dbc9b049153",
         "type": "function",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
-        "name": "create log",
-        "func": "function createDateStepper(initialISODate) {\n  let currentDate = new Date(initialISODate);\n\n  if (isNaN(currentDate)) {\n    throw new Error(\"Invalid initial ISO date format\");\n  }\n\n  return function step(days = 0, hours = 0) {\n    // Convert time steps to milliseconds for precise calculations\n    const msToAdd = (days * 86400000) + (hours * 3600000);\n    currentDate = new Date(currentDate.getTime() + msToAdd);\n    return currentDate.toISOString();\n  };\n}\n\nconst dateStepper = createDateStepper(\"2025-04-02T09:46:29Z\");\n\nconst common_data = {\n  \"session_id\": \"dss_doctor-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\",\n  \"user_id\": \"dss_doctor-d7d0614f-c964-434b-b81d-fbed40daf844\",\n  ...msg.payload.common_data,\n};\n\nconst interaction_list = msg.payload.interaction_list;\n\nconst logs_list = [];\n\nfor (const interaction of interaction_list) {\n  const startTime = dateStepper(1, 0);\n  const endTime = dateStepper(0, 12);\n\n  logs_list.push({\n    ...common_data,\n    \"start_time\": startTime,\n    \"end_time\": endTime,\n    \"interaction_data\": interaction,\n  })\n}\n\nmsg.payload = logs_list;\nreturn msg;",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "Aggreement Interaction",
+        "func": "const startTime = msg.payload[0].timestamp;\nconst endTime = msg.payload[1].timestamp;\n\nconst random_boolean = Math.random() < 0.5;\n\nconst common_data = {\n    \"session_id\": \"dss_doctor-e5392b4b-0932-4e9c-a1ea-2a2e342btest\",\n    \"user_id\": \"dss_doctor-d7d0614f-c964-434b-b81d-fbed40datest\",\n    \"app_version\": \"1.0.2\",\n    \"ai_model_version\": \"2.1.1\",\n};\n\nmsg.payload = {\n    \"config_id\": flow.get(\"configId\"),\n    \"log_entries\": [],\n};\n\nmsg.payload.log_entries.push({\n    ...common_data,\n    \"start_time\": startTime,\n    \"end_time\": endTime,\n    \"interaction_data\": {\n        \"human_decision\": random_boolean,\n        \"ai_suggestion\": random_boolean,\n    },\n});\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 500,
-        "y": 160,
+        "x": 510,
+        "y": 840,
         "wires": [
             [
-                "791a6e3788fd41ab",
-                "f9815eda6dc34dad"
+                "eb728213c6c2b5f3",
+                "120b2d00836d1305"
             ]
         ]
     },
     {
-        "id": "f9815eda6dc34dad",
+        "id": "cf5eda9e288ea4ea",
+        "type": "function",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "Disagreement Interaction",
+        "func": "const startTime = msg.payload[0].timestamp;\nconst endTime = msg.payload[1].timestamp;\n\nconst random_boolean = Math.random() < 0.5;\n\nconst common_data = {\n    \"session_id\": \"dss_doctor-e5392b4b-0932-4e9c-a1ea-2a2e342btest\",\n    \"user_id\": \"dss_doctor-d7d0614f-c964-434b-b81d-fbed40datest\",\n    \"app_version\": \"1.0.2\",\n    \"ai_model_version\": \"2.1.1\",\n};\n\nmsg.payload = {\n    \"config_id\": flow.get(\"configId\"),\n    \"log_entries\": [],\n};\n\nmsg.payload.log_entries.push({\n    ...common_data,\n    \"start_time\": startTime,\n    \"end_time\": endTime,\n    \"interaction_data\": {\n        \"human_decision\": random_boolean,\n        \"ai_suggestion\": !random_boolean,\n    },\n});\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 880,
+        "wires": [
+            [
+                "eb728213c6c2b5f3",
+                "341745117b49659b"
+            ]
+        ]
+    },
+    {
+        "id": "eb728213c6c2b5f3",
+        "type": "subflow:9e615b8a6da73d11",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "Add Evaluation Log",
+        "x": 750,
+        "y": 860,
+        "wires": [
+            [
+                "978f789a0139cf0d"
+            ],
+            [
+                "a3a434068a939f61"
+            ]
+        ]
+    },
+    {
+        "id": "978f789a0139cf0d",
+        "type": "function",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "Success",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 840,
+        "wires": [
+            [
+                "71c4787acee478f0"
+            ]
+        ]
+    },
+    {
+        "id": "a3a434068a939f61",
+        "type": "function",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "Error",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 880,
+        "wires": [
+            [
+                "6c420e3f86def41d"
+            ]
+        ]
+    },
+    {
+        "id": "6c420e3f86def41d",
         "type": "debug",
-        "z": "b4f6c615c8ef09ab",
-        "g": "7be7ebe9192601ec",
-        "name": "LOG",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "Error output",
         "active": true,
         "tosidebar": true,
         "console": false,
@@ -3586,8 +3054,142 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 470,
-        "y": 60,
+        "x": 930,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "71c4787acee478f0",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "g": "825a94b5cf333ad6",
+        "name": "INTERACTION ADDED",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 970,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "4254d5ab4316e406",
+        "type": "function",
+        "z": "9db4af518e108976",
+        "g": "efe3a5d0f511520f",
+        "name": "prep",
+        "func": "msg.payload={\n    \"configId\": flow.get(\"configId\"),\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 80,
+        "wires": [
+            [
+                "6000379fd8666a5f"
+            ]
+        ]
+    },
+    {
+        "id": "6000379fd8666a5f",
+        "type": "subflow:ee62c2e2054b032c",
+        "z": "9db4af518e108976",
+        "g": "efe3a5d0f511520f",
+        "name": "",
+        "x": 770,
+        "y": 140,
+        "wires": [
+            [
+                "aa89188694021c95"
+            ],
+            [
+                "3aaf807f0394be74"
+            ]
+        ]
+    },
+    {
+        "id": "aa89188694021c95",
+        "type": "function",
+        "z": "9db4af518e108976",
+        "g": "efe3a5d0f511520f",
+        "name": "acknowledged",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 140,
+        "wires": [
+            [
+                "210636bcacc2e9f8"
+            ]
+        ]
+    },
+    {
+        "id": "3aaf807f0394be74",
+        "type": "function",
+        "z": "9db4af518e108976",
+        "g": "efe3a5d0f511520f",
+        "name": "Handle Error",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 180,
+        "wires": [
+            [
+                "2d023130dcbb8f02"
+            ]
+        ]
+    },
+    {
+        "id": "210636bcacc2e9f8",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "g": "efe3a5d0f511520f",
+        "name": "EVALUATION",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "2d023130dcbb8f02",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "g": "efe3a5d0f511520f",
+        "name": "error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1090,
+        "y": 180,
         "wires": []
     },
     {
@@ -4851,17 +4453,16 @@
         ]
     },
     {
-        "id": "fa5d8bc1d91e9134",
+        "id": "cbc26cda78f6a783",
         "type": "inject",
-        "z": "9db4af518e108976",
-        "name": "GOOD FEEDBACK",
+        "z": "eb9f48db9f88a8d2",
+        "name": "BENCHMARKING TEMPLATE",
         "props": [
             {
                 "p": "payload"
             },
             {
-                "p": "routingKey",
-                "v": "activelearning.app1.model1",
+                "p": "topic",
                 "vt": "str"
             }
         ],
@@ -4870,256 +4471,431 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "{\"modelID\":4,\"feedback\":\"ok\",\"imageID\":1,\"doctorID\":5,\"patientID\":3}",
+        "payload": "[{\"session_id\":\"dss_img_recog-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\",\"user_id\":\"dss_img_recog-d7d0614f-c964-434b-b81d-fbed40daf844\",\"ai_model_version\":\"2.0.0\",\"app_version\":\"1.0.0\",\"start_time\":\"2024-06-22T21:46:29Z\",\"end_time\":\"2024-07-22T07:46:52Z\",\"interaction_data\":[{\"image_id\":\"img-8274735c-652b-428e-8446-e3e016c26679\",\"presentation_time\":\"2025-04-08T06:12:33.691445\",\"result\":\"true_negative\",\"ai_detection_results\":\"true_negative\",\"outcome\":\"incorrect\",\"performance_at_t\":0.794562706529144,\"performance_at_t_1\":0.6931220045719952,\"time_interval\":4645,\"response_time\":104.23293151567172,\"performance_improvement\":0.027104773111610823,\"time_spent\":2133,\"reached_target\":false,\"resources_used\":51,\"total_resources\":100,\"time_without_ai\":547,\"time_with_ai\":177,\"correction_effectiveness\":0.7932252208494405,\"correction_time\":79,\"errors_before\":5,\"errors_after\":2,\"pre_retention_performance\":0.7487288321451568,\"post_retention_performance\":0.853677365987549,\"pre_feedback_performance\":0.679955021005444,\"post_feedback_performance\":0.8004463003007924,\"pre_adaptation_performance\":0.620386928155566,\"post_adaptation_performance\":0.7672707766009791,\"pre_correction_performance\":0.7397263374849203,\"post_correction_performance\":0.8607282111115669,\"learning_gain\":0.02123736271376508,\"learning_time\":819,\"objective_status\":\"not achieved\",\"human_decision\":\"reject\",\"ai_suggestion\":\"reject\",\"ai_assisted\":true,\"decision_outcome\":\"successful\",\"resolution_time\":94,\"effort_without_ai\":13,\"effort_with_ai\":7,\"confidence_level\":0.30029541909188706,\"trust_rating\":6,\"trust_scale_maximum\":10,\"safety_incidents\":2,\"uptime\":4703,\"total_time\":6000,\"performance_adversarial\":0.783859114685352,\"performance_normal\":0.899850278537306,\"performance_across_domains\":0.7081882617007862,\"baseline_performance\":0.701667008885401}],\"infrastructure_data\":{\"cpu\":\"0.3\",\"memory\":\"234\"},\"model_data\":[{\"retraining_time\":\"2024-07-27T12:40:10.691502\",\"initial_metrics\":{\"detection_accuracy\":0.7893060173132472,\"false_positive_rate\":0.08314651052928203,\"false_negative_rate\":0.13646632696899683},\"post_retraining_metrics\":{\"detection_accuracy\":0.8390374771800702,\"false_positive_rate\":0.08163044342886192,\"false_negative_rate\":0.09478784808872005},\"retraining_details\":{\"time_taken_seconds\":2667,\"data_used\":\"feedback and corrections from the review\",\"ai_model_version_after_retraining\":\"1.5.4\"}}]}]",
         "payloadType": "json",
-        "x": 150,
-        "y": 180,
-        "wires": [
-            [
-                "e6119a46b815c12e",
-                "0de11f879fda3761"
-            ]
-        ]
-    },
-    {
-        "id": "aee36c513c25a05d",
-        "type": "function",
-        "z": "9db4af518e108976",
-        "name": "create parts",
-        "func": "msg.parts={};\nmsg.parts.id = msg.payload.imageID+msg.payload.patientID;\nmsg.parts.count=2;\nreturn msg;",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 510,
-        "y": 340,
-        "wires": [
-            [
-                "4469175c609b2986"
-            ]
-        ]
-    },
-    {
-        "id": "4469175c609b2986",
-        "type": "join",
-        "z": "9db4af518e108976",
-        "name": "Join in One",
-        "mode": "auto",
-        "build": "array",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "comparisonField",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "useparts": true,
-        "accumulate": false,
-        "timeout": "",
-        "count": "2",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "num",
-        "reduceFixup": "",
-        "x": 730,
-        "y": 340,
-        "wires": [
-            [
-                "c060845de5c1d46a",
-                "e4542c729bb3c791"
-            ]
-        ]
-    },
-    {
-        "id": "c060845de5c1d46a",
-        "type": "debug",
-        "z": "9db4af518e108976",
-        "name": "debug 34",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 860,
-        "y": 420,
-        "wires": []
-    },
-    {
-        "id": "ec2d362d0bc3e89a",
-        "type": "inject",
-        "z": "9db4af518e108976",
-        "name": "BAD FEEDBACK",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "routingKey",
-                "v": "activelearning.app1.model1",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "{\"modelID\":4,\"feedback\":\"wrong\",\"imageID\":1,\"doctorID\":6,\"patientID\":2}",
-        "payloadType": "json",
-        "x": 160,
-        "y": 220,
-        "wires": [
-            [
-                "e6119a46b815c12e"
-            ]
-        ]
-    },
-    {
-        "id": "e4542c729bb3c791",
-        "type": "function",
-        "z": "9db4af518e108976",
-        "name": "compare feedbacks",
-        "func": "if ((msg.payload[0].feedback)==(msg.payload[1].feedback)) {\n    return [msg,null];\n} else {\n    return [null,msg];\n}\n",
-        "outputs": 2,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 930,
-        "y": 340,
-        "wires": [
-            [
-                "120b2d00836d1305"
-            ],
-            [
-                "341745117b49659b"
-            ]
-        ]
-    },
-    {
-        "id": "120b2d00836d1305",
-        "type": "debug",
-        "z": "9db4af518e108976",
-        "name": "NORMAL",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1100,
-        "y": 300,
-        "wires": []
-    },
-    {
-        "id": "341745117b49659b",
-        "type": "debug",
-        "z": "9db4af518e108976",
-        "name": "ALERT",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1100,
-        "y": 380,
-        "wires": []
-    },
-    {
-        "id": "eb36a511c7513007",
-        "type": "comment",
-        "z": "9db4af518e108976",
-        "name": "Feedback Consolidation Pattern",
-        "info": "",
-        "x": 170,
-        "y": 60,
-        "wires": []
-    },
-    {
-        "id": "0de11f879fda3761",
-        "type": "debug",
-        "z": "9db4af518e108976",
-        "name": "debug 37",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 420,
-        "y": 120,
-        "wires": []
-    },
-    {
-        "id": "bb12b82d05721bca",
-        "type": "amqp-in",
-        "z": "9db4af518e108976",
-        "name": "",
-        "broker": "8a0706320fa877e8",
-        "prefetch": 0,
-        "noAck": true,
-        "exchangeName": "feedback",
-        "exchangeType": "topic",
-        "exchangeRoutingKey": "activelearning.app1.model1",
-        "exchangeDurable": true,
-        "queueName": "feedback",
-        "queueExclusive": false,
-        "queueDurable": true,
-        "queueAutoDelete": false,
-        "headers": "{}",
         "x": 190,
-        "y": 340,
+        "y": 80,
         "wires": [
             [
-                "aee36c513c25a05d"
+                "73662f183c97ad3f"
             ]
         ]
     },
     {
-        "id": "e6119a46b815c12e",
-        "type": "amqp-out",
-        "z": "9db4af518e108976",
-        "name": "",
-        "broker": "8a0706320fa877e8",
-        "exchangeName": "feedback",
-        "exchangeType": "topic",
-        "exchangeRoutingKey": "",
-        "exchangeRoutingKeyType": "str",
-        "exchangeDurable": true,
-        "amqpProperties": "{ \"headers\": {} }",
-        "rpcTimeoutMilliseconds": 3000,
-        "outputs": 0,
-        "x": 480,
-        "y": 180,
-        "wires": []
-    },
-    {
-        "id": "66943fcd7a86b071",
+        "id": "cd7d730dd8610d8e",
         "type": "comment",
-        "z": "9db4af518e108976",
-        "name": "Testing part",
-        "info": "",
-        "x": 110,
+        "z": "eb9f48db9f88a8d2",
+        "name": "Example JSON Template",
+        "info": "//JSON template for benchmarking\n//In principle the template can be whatever the application wants. It will be submitted to\n//the benchmarking API as part of the benchmark configuration. However some key fields or top level categories\n//are suggested and in some cases are mandatory for the various metrics to keep track of the progress.\n//The main structure includes\n//  user\n  //  -> performs a task (in a session)\n  //      -> uses an application\n  //          -> the application may have a model or not (e.g. HMI interface)\n  //      -> uses a model directly without an application (Model as a Service)\n\n[\n{   \"session_id\": \"dss_img_recog-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\", //mandatory to keep track of specific interaction for a given task\n    \"user_id\": \"dss_img_recog-d7d0614f-c964-434b-b81d-fbed40daf844\", //mandatory to keep track of specific user\n    \"ai_model_version\": \"2.0.0\", //optional if one needs to keep track of model evolution\n    \"app_version\": \"1.0.0\", //optional if one wants to apply the user friendliness of the app. If no UI, it can be ommitted\n    \"start_time\": \"2024-06-22T21:46:29Z\", //mandatory to calculate the task completion\n    \"end_time\": \"2024-07-22T07:46:52Z\",   //mandatory to calculate the task completion\n    \"interaction_data\": [{ //mandatory at this top level, inner fields can be any key-value pair\n      \"image_id\": \"img-8274735c-652b-428e-8446-e3e016c26679\",\n      \"presentation_time\": \"2025-04-08T06:12:33.691445\",\n      \"result\": \"true_negative\",\n      \"ai_detection_results\": \"true_negative\",\n      \"outcome\": \"incorrect\",\n      \"performance_at_t\": 0.794562706529144,\n      \"performance_at_t_1\": 0.6931220045719952,\n      \"time_interval\": 4645,\n      \"response_time\": 104.23293151567172,\n      \"performance_improvement\": 0.027104773111610823,\n      \"time_spent\": 2133,\n      \"reached_target\": false,\n      \"resources_used\": 51,\n      \"total_resources\": 100,\n      \"time_without_ai\": 547,\n      \"time_with_ai\": 177,\n      \"correction_effectiveness\": 0.7932252208494405,\n      \"correction_time\": 79,\n      \"errors_before\": 5,\n      \"errors_after\": 2,\n      \"pre_retention_performance\": 0.7487288321451568,\n      \"post_retention_performance\": 0.853677365987549,\n      \"pre_feedback_performance\": 0.679955021005444,\n      \"post_feedback_performance\": 0.8004463003007924,\n      \"pre_adaptation_performance\": 0.620386928155566,\n      \"post_adaptation_performance\": 0.7672707766009791,\n      \"pre_correction_performance\": 0.7397263374849203,\n      \"post_correction_performance\": 0.8607282111115669,\n      \"learning_gain\": 0.02123736271376508,\n      \"learning_time\": 819,\n      \"objective_status\": \"not achieved\",\n      \"human_decision\": \"reject\",\n      \"ai_suggestion\": \"reject\",\n      \"ai_assisted\": true,\n      \"decision_outcome\": \"successful\",\n      \"resolution_time\": 94,\n      \"effort_without_ai\": 13,\n      \"effort_with_ai\": 7,\n      \"confidence_level\": 0.30029541909188706,\n      \"trust_rating\": 6,\n      \"trust_scale_maximum\": 10,\n      \"safety_incidents\": 2,\n      \"uptime\": 4703,\n      \"total_time\": 6000,\n      \"performance_adversarial\": 0.783859114685352,\n      \"performance_normal\": 0.899850278537306,\n      \"performance_across_domains\": 0.7081882617007862,\n      \"baseline_performance\": 0.701667008885401\n    }],\n    \"infrastructure_data\": {//mandatory at this top level, inner fields can be any key-value pair or empty if not measured\n      \"cpu\":0.3,\n      \"memory\":234\n    }\n    \"model_metrics\": [ //optional at this top level because we may have applications (e.g. UIs) without models, inner fields can be any key-value pair\n      {\n        \"retraining_time\": \"2024-07-27T12:40:10.691502\",\n        \"initial_metrics\": {\n          \"detection_accuracy\": 0.7893060173132472,\n          \"false_positive_rate\": 0.08314651052928203,\n          \"false_negative_rate\": 0.13646632696899683\n        },\n        \"post_retraining_metrics\": {\n          \"detection_accuracy\": 0.8390374771800702,\n          \"false_positive_rate\": 0.08163044342886192,\n          \"false_negative_rate\": 0.09478784808872005\n        },\n        \"retraining_details\": {\n          \"time_taken_seconds\": 2667,\n          \"data_used\": \"feedback and corrections from the review\",\n          \"ai_model_version_after_retraining\": \"1.5.4\"\n        }\n      }\n    ]\n  }\n]\n",
+        "x": 370,
         "y": 140,
         "wires": []
     },
     {
-        "id": "fbfee0756d74b05a",
+        "id": "73662f183c97ad3f",
+        "type": "debug",
+        "z": "eb9f48db9f88a8d2",
+        "name": "debug 39",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "4f8f9e74d9fb06ca",
+        "type": "inject",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Generic Interactions",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 120,
+        "wires": [
+            [
+                "18d033a3531a8f79"
+            ]
+        ]
+    },
+    {
+        "id": "8159a93a9f11b1e1",
+        "type": "inject",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Positive evolution",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 180,
+        "wires": [
+            [
+                "63b25e1342268a1f"
+            ]
+        ]
+    },
+    {
+        "id": "fcc242edd2d6c030",
+        "type": "inject",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Negative evolution",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 240,
+        "wires": [
+            [
+                "43fb7ca00169b352"
+            ]
+        ]
+    },
+    {
+        "id": "87c1c90e5e9cbd48",
         "type": "comment",
-        "z": "9db4af518e108976",
-        "name": "Main Implementation",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Scenarios' Data",
+        "info": "",
+        "x": 180,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "791a6e3788fd41ab",
+        "type": "http request",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "Send feedback",
+        "method": "PUT",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/doctor_app/feedback",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 680,
+        "y": 160,
+        "wires": [
+            [
+                "5b3ccbd3956bdaa1"
+            ]
+        ]
+    },
+    {
+        "id": "5b3ccbd3956bdaa1",
+        "type": "debug",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "ack",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "18d033a3531a8f79",
+        "type": "function",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "app log",
+        "func": "msg.payload = {};\n\nmsg.payload.common_data = {\n  \"app_version\": \"1.0.0\",\n  \"ai_model_version\": \"2.0.0\",\n}\n\nmsg.payload.interaction_list = [\n  {\n    \"effort_without_ai\": 5,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 80,\n    \"trust_rating\": 4,\n    \"safety_incidents\": 1\n  },\n  {\n    \"effort_without_ai\": 6,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 85,\n    \"trust_rating\": 4,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 7,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 90,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 8,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 95,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 10,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 12,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 15,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 17,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 20,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98,\n    \"trust_rating\": 5,\n    \"safety_incidents\": 1\n  }\n];\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 120,
+        "wires": [
+            [
+                "3022b64a2ecc66a1"
+            ]
+        ]
+    },
+    {
+        "id": "2d52db5081e1f33a",
+        "type": "debug",
+        "z": "b4f6c615c8ef09ab",
+        "g": "e040fcd3a0927d7c",
+        "name": "Notification",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 310,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "a3c404bbd374e92c",
+        "type": "http in",
+        "z": "b4f6c615c8ef09ab",
+        "g": "e040fcd3a0927d7c",
+        "name": "Get notification",
+        "url": "/doctor_app_client/notify",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 580,
+        "wires": [
+            [
+                "2d52db5081e1f33a",
+                "c5b7e8c4325a2a49"
+            ]
+        ]
+    },
+    {
+        "id": "3c9709bc331f36b8",
+        "type": "comment",
+        "z": "b4f6c615c8ef09ab",
+        "g": "e040fcd3a0927d7c",
+        "name": "Notification",
+        "info": "",
+        "x": 100,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "63b25e1342268a1f",
+        "type": "function",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "app log",
+        "func": "msg.payload = {};\n\nmsg.payload.common_data = {\n  \"app_version\": \"1.0.1\",\n  \"ai_model_version\": \"2.1.0\",\n}\n\nmsg.payload.interaction_list = [\n  {\n    \"effort_without_ai\": 5,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 80,\n    \"trust_rating\": 4.5, // Slight improvement in trust rating\n    \"safety_incidents\": 1\n  },\n  {\n    \"effort_without_ai\": 6,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 85, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 4.7,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 7,\n    \"effort_with_ai\": 3,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 91, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 8,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 96, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 12,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 16, // Increased effort without AI to show more potential savings with AI\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98.5, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 0\n  },\n  {\n    \"effort_without_ai\": 17,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 1\n  },\n  {\n    \"effort_without_ai\": 20,\n    \"effort_with_ai\": 4,\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 98, // Slight improvement in AI suggestion confidence\n    \"trust_rating\": 5.0,\n    \"safety_incidents\": 1\n  }\n];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 180,
+        "wires": [
+            [
+                "3022b64a2ecc66a1"
+            ]
+        ]
+    },
+    {
+        "id": "43fb7ca00169b352",
+        "type": "function",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "app log",
+        "func": "msg.payload = {};\n\nmsg.payload.common_data = {\n  \"app_version\": \"1.0.2\",\n  \"ai_model_version\": \"2.1.1\",\n}\n\nmsg.payload.interaction_list = [\n  {\n    \"effort_without_ai\": 8,\n    \"effort_with_ai\": 4, // High AI assistance makes effort low\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 95, // Very high suggestion accuracy (good performance)\n    \"trust_rating\": 5,   // Full trust in the system\n    \"safety_incidents\": 0 // No incidents\n  },\n  {\n    \"effort_without_ai\": 12, // Increased effort without AI (slight positive trend)\n    \"effort_with_ai\": 4,     // Still low effort with AI assistance\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 90,     // Slight decrease in suggestion accuracy (degradation starts)\n    \"trust_rating\": 5,       // Trust remains high\n    \"safety_incidents\": 1    // One safety incident occurs\n  },\n  {\n    \"effort_without_ai\": 14, // Effort without AI continues to increase slightly\n    \"effort_with_ai\": 4,     // Still low effort with AI assistance (but less effective)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 85,     // Further decline in suggestion accuracy\n    \"trust_rating\": 4,       // Trust begins to wane slightly\n    \"safety_incidents\": 2   // More safety incidents occur\n  },\n  {\n    \"effort_without_ai\": 16, // Effort without AI continues to rise (system becoming less reliable)\n    \"effort_with_ai\": 5,     // Slight increase in effort with AI assistance (AI is less effective)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 80,     // Significant decline in suggestion accuracy\n    \"trust_rating\": 3,       // Trust has decreased significantly\n    \"safety_incidents\": 4   // More safety incidents occur as performance degrades further\n  },\n  {\n    \"effort_without_ai\": 18, // Effort without AI peaks (system is struggling)\n    \"effort_with_ai\": 6,     // Higher effort with AI assistance (AI is ineffective)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 75,     // Further decline in suggestion accuracy\n    \"trust_rating\": 2,       // Trust continues to erode\n    \"safety_incidents\": 6   // Many safety incidents as performance degrades further\n  },\n  {\n    \"effort_without_ai\": 19, // Effort without AI remains high (system is unreliable)\n    \"effort_with_ai\": 7,     // Even higher effort with AI assistance (AI has failed to help)\n    \"ai_assisted\": true,\n    \"human_decision\": false,\n    \"ai_suggestion\": 70,     // Sustained decline in suggestion accuracy\n    \"trust_rating\": 1,       // Almost no trust left in the system\n    \"safety_incidents\": 8   // Many safety incidents as performance degrades further\n  }\n];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 240,
+        "wires": [
+            [
+                "3022b64a2ecc66a1"
+            ]
+        ]
+    },
+    {
+        "id": "5841b64bd361f206",
+        "type": "comment",
+        "z": "b4f6c615c8ef09ab",
+        "g": "38582c972cf1c194",
+        "name": "Evaluation Trigger",
         "info": "",
         "x": 130,
-        "y": 440,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "8152fb7c7ad9bdee",
+        "type": "debug",
+        "z": "b4f6c615c8ef09ab",
+        "g": "38582c972cf1c194",
+        "name": "ack",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "dfc9e9ab37ea0712",
+        "type": "http request",
+        "z": "b4f6c615c8ef09ab",
+        "g": "38582c972cf1c194",
+        "name": "Evaluation Trigger",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/doctor_app/evaluation_trigger",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 270,
+        "y": 420,
+        "wires": [
+            [
+                "8152fb7c7ad9bdee"
+            ]
+        ]
+    },
+    {
+        "id": "c39821be86164d3e",
+        "type": "inject",
+        "z": "b4f6c615c8ef09ab",
+        "g": "38582c972cf1c194",
+        "name": "Trigger",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 420,
+        "wires": [
+            [
+                "dfc9e9ab37ea0712"
+            ]
+        ]
+    },
+    {
+        "id": "c5b7e8c4325a2a49",
+        "type": "http response",
+        "z": "b4f6c615c8ef09ab",
+        "g": "e040fcd3a0927d7c",
+        "name": "OK",
+        "statusCode": "200",
+        "headers": {},
+        "x": 290,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "3022b64a2ecc66a1",
+        "type": "function",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "create log",
+        "func": "function createDateStepper(initialISODate) {\n  let currentDate = new Date(initialISODate);\n\n  if (isNaN(currentDate)) {\n    throw new Error(\"Invalid initial ISO date format\");\n  }\n\n  return function step(days = 0, hours = 0) {\n    // Convert time steps to milliseconds for precise calculations\n    const msToAdd = (days * 86400000) + (hours * 3600000);\n    currentDate = new Date(currentDate.getTime() + msToAdd);\n    return currentDate.toISOString();\n  };\n}\n\nconst dateStepper = createDateStepper(\"2025-04-02T09:46:29Z\");\n\nconst common_data = {\n  \"session_id\": \"dss_doctor-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\",\n  \"user_id\": \"dss_doctor-d7d0614f-c964-434b-b81d-fbed40daf844\",\n  ...msg.payload.common_data,\n};\n\nconst interaction_list = msg.payload.interaction_list;\n\nconst logs_list = [];\n\nfor (const interaction of interaction_list) {\n  const startTime = dateStepper(1, 0);\n  const endTime = dateStepper(0, 12);\n\n  logs_list.push({\n    ...common_data,\n    \"start_time\": startTime,\n    \"end_time\": endTime,\n    \"interaction_data\": interaction,\n  })\n}\n\nmsg.payload = logs_list;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 160,
+        "wires": [
+            [
+                "791a6e3788fd41ab",
+                "f9815eda6dc34dad"
+            ]
+        ]
+    },
+    {
+        "id": "f9815eda6dc34dad",
+        "type": "debug",
+        "z": "b4f6c615c8ef09ab",
+        "g": "7be7ebe9192601ec",
+        "name": "LOG",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 60,
         "wires": []
     },
     {
@@ -5539,7 +5315,7 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "test_creation",
-        "payload": "{\"operation\":\"delete\",\"id\":4}",
+        "payload": "{\"operation\":\"delete\",\"id\":9}",
         "payloadType": "json",
         "x": 150,
         "y": 240,
@@ -5579,10 +5355,863 @@
         ]
     },
     {
-        "id": "cbc26cda78f6a783",
+        "id": "20e14f4b549b1fa5",
+        "type": "subflow:6d5f83638870930c",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "",
+        "env": [
+            {
+                "name": "IP Address",
+                "value": "backend",
+                "type": "str"
+            },
+            {
+                "name": "Port",
+                "value": "8001",
+                "type": "num"
+            }
+        ],
+        "x": 130,
+        "y": 60,
+        "wires": [
+            [
+                "77a5e7071aa41d3f"
+            ],
+            [
+                "cf0ff9703df94c43"
+            ]
+        ]
+    },
+    {
+        "id": "cf0ff9703df94c43",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "Error Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 150,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "4706f440553adaed",
+        "type": "subflow:3e0b79a15665c98a",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "",
+        "x": 570,
+        "y": 140,
+        "wires": [
+            [
+                "c57411dbe5e643e9",
+                "d9ccfc89f1b5d324"
+            ],
+            [
+                "7599a8fb56641b12"
+            ]
+        ]
+    },
+    {
+        "id": "ab463566f2505cd6",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "Set Evaluation Config Properties",
+        "func": "//CREATE\n// msg.payload = {\n//     \"operation\": \"create\",\n//     // INPUT FIELDS\n//     \"application_name\": \"dss_doctor\",\n//     \"ai_model_name\": \"test_ai_model\",\n//     \"ai_model_type\": \"Classification\", // One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other\n//     \"metrics\": [ //Any of the following metrics can be used\n//         \"Collaboration and Interaction\",\n//         \"Trust and Safety\"\n//     ],\n//     \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n//     \"description\": \"Test Doctor DSS app\",\n//     \"config_type\": \"generic\", // either 'specific' or 'generic'\n//     \"evaluation_status\": \"pending\" // Current status of the evaluation\n// };\n\n//UPDATE\nmsg.payload = {\n    \"operation\": \"update\",\n    // Parameters\n    \"configurationId\": flow.get(\"configId\"),\n    // INPUT FIELDS\n    \"application_name\": \"dss_doctor\",\n    \"ai_model_name\": \"test_diagnosis_model\",\n    \"ai_model_type\": \"Classification\", // One of: Classification, Regression, Clustering, XAI, Swarm Learning, Active Learning, Other\n    \"metrics\": [ //Any of the following metrics can be used\n        \"Collaboration and Interaction\",\n        \"Trust and Safety\"\n    ],\n    \"evaluation_date\": \"2025-05-12T14:35:47.992Z\",\n    \"description\": \"Test Doctor DSS app\",\n    \"config_type\": \"generic\", // either 'specific' or 'generic'\n    \"evaluation_status\": \"pending\" // Current status of the evaluation\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 100,
+        "wires": [
+            [
+                "4706f440553adaed"
+            ]
+        ]
+    },
+    {
+        "id": "7599a8fb56641b12",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "Error Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 550,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "c57411dbe5e643e9",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "App Config Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 730,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "4ba40f0c2e4f14c0",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "transform feedback",
+        "func": "// Prepare whatever is required.\nmsg.payload = {\n    \"config_id\": flow.get(\"configId\"),\n    \"log_entries\": msg.payload,\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 400,
+        "wires": [
+            [
+                "3608d47356411615"
+            ]
+        ]
+    },
+    {
+        "id": "3608d47356411615",
+        "type": "subflow:9e615b8a6da73d11",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "",
+        "x": 160,
+        "y": 480,
+        "wires": [
+            [
+                "daf37b3e8f4b4112",
+                "86ca7f27691876f1"
+            ],
+            [
+                "c265fcf25934dc11",
+                "e819d0f0b75f3343"
+            ]
+        ]
+    },
+    {
+        "id": "29d7ab5d6e14a8fd",
+        "type": "http in",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "PUT feedback",
+        "url": "/doctor_app/feedback",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 400,
+        "wires": [
+            [
+                "4ba40f0c2e4f14c0"
+            ]
+        ]
+    },
+    {
+        "id": "188354c4ec9ec40b",
+        "type": "http response",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 650,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "c265fcf25934dc11",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "Handle Error",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 520,
+        "wires": [
+            [
+                "188354c4ec9ec40b"
+            ]
+        ]
+    },
+    {
+        "id": "daf37b3e8f4b4112",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "Handle success",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 480,
+        "wires": [
+            [
+                "188354c4ec9ec40b"
+            ]
+        ]
+    },
+    {
+        "id": "bb75e47029df8995",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "Application Setup",
+        "info": "",
+        "x": 340,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "1751529b6551bd9c",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "Feedback is pushed",
+        "info": "",
+        "x": 570,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "e25174ef3a807717",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "name": "Application Operations",
+        "info": "",
+        "x": 120,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "2de684d0e27ef56a",
+        "type": "subflow:ee62c2e2054b032c",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "",
+        "x": 150,
+        "y": 700,
+        "wires": [
+            [
+                "cfdb49476ed86cac"
+            ],
+            [
+                "d219abc45d10bcc3"
+            ]
+        ]
+    },
+    {
+        "id": "9e9506c4449f684c",
+        "type": "http in",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "Trigger Evaluation",
+        "url": "/doctor_app/evaluation_trigger",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 640,
+        "wires": [
+            [
+                "c388c41fbbe082ec"
+            ]
+        ]
+    },
+    {
+        "id": "c388c41fbbe082ec",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "prep",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 640,
+        "wires": [
+            [
+                "2de684d0e27ef56a"
+            ]
+        ]
+    },
+    {
+        "id": "cfdb49476ed86cac",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "acknowledged",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 680,
+        "wires": [
+            [
+                "e5a18ee6c548e769",
+                "f2ace373eede1933"
+            ]
+        ]
+    },
+    {
+        "id": "d219abc45d10bcc3",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "Handle Error",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 720,
+        "wires": [
+            [
+                "e5a18ee6c548e769"
+            ]
+        ]
+    },
+    {
+        "id": "e5a18ee6c548e769",
+        "type": "http response",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 610,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "52f8bcbcf417ccda",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "g": "36f66f8eeab46bdf",
+        "name": "Trigger the Evaluation of Feedbacks",
+        "info": "",
+        "x": 180,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "77a5e7071aa41d3f",
+        "type": "delay",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 340,
+        "y": 60,
+        "wires": [
+            [
+                "ab463566f2505cd6"
+            ]
+        ]
+    },
+    {
+        "id": "ce744c27a71719a0",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Get evaluation results",
+        "info": "",
+        "x": 660,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "0169dd1cd313a5a4",
+        "type": "http in",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Get All evaluation results",
+        "url": "/doctor_app/evaluation/",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 1120,
+        "wires": [
+            [
+                "54ea1b0c2a5f1185"
+            ]
+        ]
+    },
+    {
+        "id": "921225f785e5bb80",
+        "type": "http response",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "05bd6b813664ab9a",
+        "type": "subflow:e260c7f298a6dd52",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "",
+        "x": 580,
+        "y": 1140,
+        "wires": [
+            [
+                "e7251a062f18afbc"
+            ],
+            [
+                "9c64745033e8202a"
+            ]
+        ]
+    },
+    {
+        "id": "e7251a062f18afbc",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Handle success",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 1200,
+        "wires": [
+            [
+                "921225f785e5bb80"
+            ]
+        ]
+    },
+    {
+        "id": "9c64745033e8202a",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Handle Error",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 1260,
+        "wires": [
+            [
+                "921225f785e5bb80"
+            ]
+        ]
+    },
+    {
+        "id": "9a1094c1e22dcfcd",
+        "type": "http in",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Get specific evaluation result",
+        "url": "/doctor_app/evaluation/:result_id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 1180,
+        "wires": [
+            [
+                "80d7f10d8b0812e4"
+            ]
+        ]
+    },
+    {
+        "id": "a05a4b9fe7b88c19",
+        "type": "http in",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "Get evaluation results group",
+        "url": "/doctor_app/evaluation_group/:group_id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 1240,
+        "wires": [
+            [
+                "9fd892fb264520ea"
+            ]
+        ]
+    },
+    {
+        "id": "54ea1b0c2a5f1185",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "prep",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 1120,
+        "wires": [
+            [
+                "05bd6b813664ab9a"
+            ]
+        ]
+    },
+    {
+        "id": "80d7f10d8b0812e4",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "prep",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 1180,
+        "wires": [
+            [
+                "05bd6b813664ab9a"
+            ]
+        ]
+    },
+    {
+        "id": "9fd892fb264520ea",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "9ce29d4ff9f9c13d",
+        "name": "prep",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 1240,
+        "wires": [
+            [
+                "05bd6b813664ab9a"
+            ]
+        ]
+    },
+    {
+        "id": "f2ace373eede1933",
+        "type": "delay",
+        "z": "68962323fb8f5a64",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 760,
+        "y": 700,
+        "wires": [
+            [
+                "3daf399eaa62f216"
+            ]
+        ]
+    },
+    {
+        "id": "81fd642a6de9b53a",
+        "type": "comment",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Automated Notifications",
+        "info": "",
+        "x": 160,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "3daf399eaa62f216",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Get new evaluation results",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 860,
+        "wires": [
+            [
+                "437de6a7c1290ddf"
+            ]
+        ]
+    },
+    {
+        "id": "437de6a7c1290ddf",
+        "type": "subflow:e260c7f298a6dd52",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "",
+        "x": 180,
+        "y": 920,
+        "wires": [
+            [
+                "bb1515a0cd403abd"
+            ],
+            [
+                "ab6e39fc77b3b80d"
+            ]
+        ]
+    },
+    {
+        "id": "bb1515a0cd403abd",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Interpret evaluation results to notify",
+        "func": "delete msg.payload.clientResponse;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 920,
+        "wires": [
+            [
+                "f9d5f504f4eb0f42"
+            ]
+        ]
+    },
+    {
+        "id": "ab6e39fc77b3b80d",
+        "type": "function",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Handle Error",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 130,
+        "y": 980,
+        "wires": [
+            [
+                "fa95874bdb401418"
+            ]
+        ]
+    },
+    {
+        "id": "fa95874bdb401418",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Show error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 290,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "f9d5f504f4eb0f42",
+        "type": "http request",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Send notification",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/doctor_app_client/notify",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 530,
+        "y": 980,
+        "wires": [
+            [
+                "0ce048dcb5c236bb"
+            ]
+        ]
+    },
+    {
+        "id": "0ce048dcb5c236bb",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "311e4ab1bcf49520",
+        "name": "Show",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "d9ccfc89f1b5d324",
+        "type": "change",
+        "z": "68962323fb8f5a64",
+        "g": "bef08cda5cd6e15a",
+        "name": "save",
+        "rules": [
+            {
+                "t": "set",
+                "p": "configId",
+                "pt": "flow",
+                "to": "payload.responseData.id",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 770,
+        "y": 120,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-save"
+    },
+    {
+        "id": "86ca7f27691876f1",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "e819d0f0b75f3343",
+        "type": "debug",
+        "z": "68962323fb8f5a64",
+        "g": "223eaaa2f11c7912",
+        "name": "Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 230,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "dac86b83d3a57c99",
         "type": "inject",
-        "z": "eb9f48db9f88a8d2",
-        "name": "BENCHMARKING TEMPLATE",
+        "z": "68962323fb8f5a64",
+        "name": "",
         "props": [
             {
                 "p": "payload"
@@ -5597,40 +6226,40 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "[{\"session_id\":\"dss_img_recog-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\",\"user_id\":\"dss_img_recog-d7d0614f-c964-434b-b81d-fbed40daf844\",\"ai_model_version\":\"2.0.0\",\"app_version\":\"1.0.0\",\"start_time\":\"2024-06-22T21:46:29Z\",\"end_time\":\"2024-07-22T07:46:52Z\",\"interaction_data\":[{\"image_id\":\"img-8274735c-652b-428e-8446-e3e016c26679\",\"presentation_time\":\"2025-04-08T06:12:33.691445\",\"result\":\"true_negative\",\"ai_detection_results\":\"true_negative\",\"outcome\":\"incorrect\",\"performance_at_t\":0.794562706529144,\"performance_at_t_1\":0.6931220045719952,\"time_interval\":4645,\"response_time\":104.23293151567172,\"performance_improvement\":0.027104773111610823,\"time_spent\":2133,\"reached_target\":false,\"resources_used\":51,\"total_resources\":100,\"time_without_ai\":547,\"time_with_ai\":177,\"correction_effectiveness\":0.7932252208494405,\"correction_time\":79,\"errors_before\":5,\"errors_after\":2,\"pre_retention_performance\":0.7487288321451568,\"post_retention_performance\":0.853677365987549,\"pre_feedback_performance\":0.679955021005444,\"post_feedback_performance\":0.8004463003007924,\"pre_adaptation_performance\":0.620386928155566,\"post_adaptation_performance\":0.7672707766009791,\"pre_correction_performance\":0.7397263374849203,\"post_correction_performance\":0.8607282111115669,\"learning_gain\":0.02123736271376508,\"learning_time\":819,\"objective_status\":\"not achieved\",\"human_decision\":\"reject\",\"ai_suggestion\":\"reject\",\"ai_assisted\":true,\"decision_outcome\":\"successful\",\"resolution_time\":94,\"effort_without_ai\":13,\"effort_with_ai\":7,\"confidence_level\":0.30029541909188706,\"trust_rating\":6,\"trust_scale_maximum\":10,\"safety_incidents\":2,\"uptime\":4703,\"total_time\":6000,\"performance_adversarial\":0.783859114685352,\"performance_normal\":0.899850278537306,\"performance_across_domains\":0.7081882617007862,\"baseline_performance\":0.701667008885401}],\"infrastructure_data\":{\"cpu\":\"0.3\",\"memory\":\"234\"},\"model_data\":[{\"retraining_time\":\"2024-07-27T12:40:10.691502\",\"initial_metrics\":{\"detection_accuracy\":0.7893060173132472,\"false_positive_rate\":0.08314651052928203,\"false_negative_rate\":0.13646632696899683},\"post_retraining_metrics\":{\"detection_accuracy\":0.8390374771800702,\"false_positive_rate\":0.08163044342886192,\"false_negative_rate\":0.09478784808872005},\"retraining_details\":{\"time_taken_seconds\":2667,\"data_used\":\"feedback and corrections from the review\",\"ai_model_version_after_retraining\":\"1.5.4\"}}]}]",
-        "payloadType": "json",
-        "x": 190,
-        "y": 80,
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 1560,
         "wires": [
             [
-                "73662f183c97ad3f"
+                "1148025dcf3ea81f"
             ]
         ]
     },
     {
-        "id": "cd7d730dd8610d8e",
-        "type": "comment",
-        "z": "eb9f48db9f88a8d2",
-        "name": "Example JSON Template",
-        "info": "//JSON template for benchmarking\n//In principle the template can be whatever the application wants. It will be submitted to\n//the benchmarking API as part of the benchmark configuration. However some key fields or top level categories\n//are suggested and in some cases are mandatory for the various metrics to keep track of the progress.\n//The main structure includes\n//  user\n  //  -> performs a task (in a session)\n  //      -> uses an application\n  //          -> the application may have a model or not (e.g. HMI interface)\n  //      -> uses a model directly without an application (Model as a Service)\n\n[\n{   \"session_id\": \"dss_img_recog-e5392b4b-0932-4e9c-a1ea-2a2e342b84a9\", //mandatory to keep track of specific interaction for a given task\n    \"user_id\": \"dss_img_recog-d7d0614f-c964-434b-b81d-fbed40daf844\", //mandatory to keep track of specific user\n    \"ai_model_version\": \"2.0.0\", //optional if one needs to keep track of model evolution\n    \"app_version\": \"1.0.0\", //optional if one wants to apply the user friendliness of the app. If no UI, it can be ommitted\n    \"start_time\": \"2024-06-22T21:46:29Z\", //mandatory to calculate the task completion\n    \"end_time\": \"2024-07-22T07:46:52Z\",   //mandatory to calculate the task completion\n    \"interaction_data\": [{ //mandatory at this top level, inner fields can be any key-value pair\n      \"image_id\": \"img-8274735c-652b-428e-8446-e3e016c26679\",\n      \"presentation_time\": \"2025-04-08T06:12:33.691445\",\n      \"result\": \"true_negative\",\n      \"ai_detection_results\": \"true_negative\",\n      \"outcome\": \"incorrect\",\n      \"performance_at_t\": 0.794562706529144,\n      \"performance_at_t_1\": 0.6931220045719952,\n      \"time_interval\": 4645,\n      \"response_time\": 104.23293151567172,\n      \"performance_improvement\": 0.027104773111610823,\n      \"time_spent\": 2133,\n      \"reached_target\": false,\n      \"resources_used\": 51,\n      \"total_resources\": 100,\n      \"time_without_ai\": 547,\n      \"time_with_ai\": 177,\n      \"correction_effectiveness\": 0.7932252208494405,\n      \"correction_time\": 79,\n      \"errors_before\": 5,\n      \"errors_after\": 2,\n      \"pre_retention_performance\": 0.7487288321451568,\n      \"post_retention_performance\": 0.853677365987549,\n      \"pre_feedback_performance\": 0.679955021005444,\n      \"post_feedback_performance\": 0.8004463003007924,\n      \"pre_adaptation_performance\": 0.620386928155566,\n      \"post_adaptation_performance\": 0.7672707766009791,\n      \"pre_correction_performance\": 0.7397263374849203,\n      \"post_correction_performance\": 0.8607282111115669,\n      \"learning_gain\": 0.02123736271376508,\n      \"learning_time\": 819,\n      \"objective_status\": \"not achieved\",\n      \"human_decision\": \"reject\",\n      \"ai_suggestion\": \"reject\",\n      \"ai_assisted\": true,\n      \"decision_outcome\": \"successful\",\n      \"resolution_time\": 94,\n      \"effort_without_ai\": 13,\n      \"effort_with_ai\": 7,\n      \"confidence_level\": 0.30029541909188706,\n      \"trust_rating\": 6,\n      \"trust_scale_maximum\": 10,\n      \"safety_incidents\": 2,\n      \"uptime\": 4703,\n      \"total_time\": 6000,\n      \"performance_adversarial\": 0.783859114685352,\n      \"performance_normal\": 0.899850278537306,\n      \"performance_across_domains\": 0.7081882617007862,\n      \"baseline_performance\": 0.701667008885401\n    }],\n    \"infrastructure_data\": {//mandatory at this top level, inner fields can be any key-value pair or empty if not measured\n      \"cpu\":0.3,\n      \"memory\":234\n    }\n    \"model_metrics\": [ //optional at this top level because we may have applications (e.g. UIs) without models, inner fields can be any key-value pair\n      {\n        \"retraining_time\": \"2024-07-27T12:40:10.691502\",\n        \"initial_metrics\": {\n          \"detection_accuracy\": 0.7893060173132472,\n          \"false_positive_rate\": 0.08314651052928203,\n          \"false_negative_rate\": 0.13646632696899683\n        },\n        \"post_retraining_metrics\": {\n          \"detection_accuracy\": 0.8390374771800702,\n          \"false_positive_rate\": 0.08163044342886192,\n          \"false_negative_rate\": 0.09478784808872005\n        },\n        \"retraining_details\": {\n          \"time_taken_seconds\": 2667,\n          \"data_used\": \"feedback and corrections from the review\",\n          \"ai_model_version_after_retraining\": \"1.5.4\"\n        }\n      }\n    ]\n  }\n]\n",
-        "x": 370,
-        "y": 140,
-        "wires": []
-    },
-    {
-        "id": "73662f183c97ad3f",
-        "type": "debug",
-        "z": "eb9f48db9f88a8d2",
-        "name": "debug 39",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 500,
-        "y": 80,
-        "wires": []
+        "id": "1148025dcf3ea81f",
+        "type": "change",
+        "z": "68962323fb8f5a64",
+        "name": "Set the id manually",
+        "rules": [
+            {
+                "t": "set",
+                "p": "configId",
+                "pt": "flow",
+                "to": "5",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 290,
+        "y": 1560,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-save"
     }
 ]
