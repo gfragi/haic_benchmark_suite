@@ -13,6 +13,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  type: {
+    type: String,
+    default: "bar", // Accepts 'bar' or 'line'
+  },
 });
 
 const chartCanvas = ref(null);
@@ -21,10 +25,8 @@ let chartInstance = null;
 watch(
   () => props.data,
   async (newData) => {
-    // Prevent rendering with no data
     if (!newData || Object.keys(newData).length === 0) return;
 
-    // Wait for canvas to render
     await nextTick();
 
     if (!chartCanvas.value) {
@@ -38,30 +40,40 @@ watch(
       return;
     }
 
-    // Destroy old chart
     if (chartInstance) {
       chartInstance.destroy();
     }
 
-    // Prepare chart data
     const labels = Object.keys(newData);
     const susData = labels.map((v) => newData[v]?.avg_sus || 0);
     const ethicsData = labels.map((v) => newData[v]?.avg_ethics || 0);
 
+    const isLine = props.type === "line";
+
     chartInstance = new Chart(ctx, {
-      type: "bar",
+      type: props.type,
       data: {
         labels,
         datasets: [
           {
             label: "Avg SUS",
             data: susData,
-            backgroundColor: "rgba(54, 162, 235, 0.7)",
+            backgroundColor: isLine
+              ? "rgba(54, 162, 235, 0.3)"
+              : "rgba(54, 162, 235, 0.7)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            tension: isLine ? 0.3 : 0,
+            fill: isLine ? false : true,
           },
           {
             label: "Avg Ethics",
             data: ethicsData,
-            backgroundColor: "rgba(255, 99, 132, 0.7)",
+            backgroundColor: isLine
+              ? "rgba(255, 99, 132, 0.3)"
+              : "rgba(255, 99, 132, 0.7)",
+            borderColor: "rgba(255, 99, 132, 1)",
+            tension: isLine ? 0.3 : 0,
+            fill: isLine ? false : true,
           },
         ],
       },
