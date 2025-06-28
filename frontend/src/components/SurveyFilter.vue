@@ -3,13 +3,20 @@
     v-model="selected"
     :items="options"
     label="Select Pilot Tag"
-    @change="$emit('update:pilotTag', selected)"
+    @update:modelValue="emitChange"
   />
 </template>
 
 <script setup>
-import { ref, defineEmits } from "vue";
-const options = ["SmartTicketing", "SmartEnergy", "Healthcare"];
+import { ref } from "vue";
+import { defineEmits } from "vue";
+
 const selected = ref(null);
-defineEmits(["update:pilotTag"]);
+const options = ["SmartTicketing", "SmartEnergy", "Healthcare"];
+
+const emit = defineEmits(["update:pilotTag"]);
+
+function emitChange(value) {
+  emit("update:pilotTag", value);
+}
 </script>

@@ -35,28 +35,30 @@ def calculate_sus_score(sus: dict) -> float:
     return total * 2.5
 
 def aggregate_survey_metrics(db: Session, pilot_tag: Optional[str] = None):
-    from sqlalchemy import func
-    from app.models.survey import Survey
-
     query = db.query(Survey)
-
-    if pilot_tag:
-        query = query.filter(Survey.pilot_tag == pilot_tag)
-
-    # Now group by app_version
     raw = query.all()
 
     grouped = {}
+
     for s in raw:
-        key = s.app_version or "Unknown"
-        sus_scores = list(s.tam_sus_responses.values())
-        sus_score = sus_score = calculate_sus_score(s.tam_sus_responses)
+        # determine key based on mode
+        if pilot_tag:
+            if s.pilot_tag != pilot_tag:
+                continue
+            key = s.app_version or "Unknown"
+        else:
+            key = s.pilot_tag or "Unknown"
 
-
-        ethics_score = sum(s.ethics_responses.values()) / len(s.ethics_responses)
+        sus_score = calculate_sus_score(s.tam_sus_responses)
+        vals = list(s.ethics_responses.values())
+        ethics_score = ((sum(vals) / len(vals)) - 1) * 25 if vals else 0
 
         if key not in grouped:
-            grouped[key] = {"count": 0, "sus_total": 0, "ethics_total": 0}
+            grouped[key] = {
+                "count": 0,
+                "sus_total": 0,
+                "ethics_total": 0
+            }
 
         grouped[key]["count"] += 1
         grouped[key]["sus_total"] += sus_score
