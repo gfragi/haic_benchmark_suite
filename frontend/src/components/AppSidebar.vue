@@ -30,6 +30,11 @@ export default {
         { title: "Configurations", icon: "mdi-cog", route: "/configs" },
         { title: "Log Management", icon: "mdi-file-import", route: "/logs" },
         {
+          title: "Survey Dashboard",
+          icon: "mdi-chart-bar",
+          route: "/survey-dashboard",
+        },
+        {
           title: "Fairness Evaluation",
           icon: "mdi-scale-balance",
           route: "/fairness",
