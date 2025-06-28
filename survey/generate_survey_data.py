@@ -5,8 +5,8 @@ from datetime import datetime
 
 API_URL = "http://localhost:8000/survey"
 
-PILOT_TAGS = ["SmartTicketing", "SmartEnergy", "Healthcare"]
-APP_VERSIONS = ["1.0.0", "1.2.0", "2.0.1"]
+PILOT_TAGS = ["SmartTicketing", "SmartEnergy", "Healthcare", "Manufacturing"]
+APP_VERSIONS = ["1.0.0", "1.2.0", "2.0.1", "2.1.0", "2.2.0"]
 AI_MODEL_VERSIONS = ["v1.0.0", "v1.1.5", "v2.0.0"]
 
 def random_sus():
