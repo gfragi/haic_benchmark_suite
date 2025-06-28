@@ -30,6 +30,11 @@ export default {
         { title: "Configurations", icon: "mdi-cog", route: "/configs" },
         { title: "Log Management", icon: "mdi-file-import", route: "/logs" },
         {
+          title: "Fairness Evaluation",
+          icon: "mdi-scale-balance",
+          route: "/fairness",
+        },
+        {
           title: "Log Generation",
           icon: "mdi-database-edit",
           route: "/log-generator",

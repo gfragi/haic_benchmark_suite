@@ -11,6 +11,7 @@ import MetricsPage from "@/components/MetricsPage.vue";
 import LogUploadForm from "@/components/LogIngestionForm.vue";
 import RunDetail from "@/views/RunDetail.vue";
 import Visualization from "@/views/VisualizationPage.vue";
+import FairnessEvaluation from "@/views/FairnessEvaluation.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -64,6 +65,11 @@ const routes = [
   },
   { path: "/log-generator", name: "LogGenerator", component: LogGenerator },
   { path: "/metrics", component: MetricsPage },
+  {
+    path: "/fairness",
+    name: "Fairness Evaluation",
+    component: FairnessEvaluation,
+  },
 ];
 
 const router = createRouter({
