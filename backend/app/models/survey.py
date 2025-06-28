@@ -1,6 +1,8 @@
 from sqlalchemy import Column, String, DateTime, JSON
 from sqlalchemy.dialects.postgresql import UUID
-from app.utils.database import Base  # Adjust import as needed
+from app.utils.database import Base
+
+
 
 class Survey(Base):
     __tablename__ = "surveys"
