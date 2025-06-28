@@ -80,6 +80,16 @@ export default {
   data() {
     return {
       chartType: "bar",
+      baseColors: [
+        "#4CAF50", // green
+        "#2196F3", // blue
+        "#FFC107", // amber
+        "#E91E63", // pink
+        "#9C27B0", // purple
+        "#00BCD4", // cyan
+        "#FF5722", // deep orange
+        "#795548", // brown
+      ],
     };
   },
   methods: {
@@ -92,16 +102,30 @@ export default {
         Object.keys(r.by_group?.[metric] || {}).forEach((g) => allGroups.add(g))
       );
       const labels = Array.from(allGroups);
-      const datasets = this.results.map((r) => ({
-        label: r.model,
-        data: labels.map((g) => r.by_group?.[metric]?.[g] ?? null),
-        backgroundColor: metric === "accuracy" ? "#42A5F5" : "#FF6384",
-      }));
+
+      const datasets = this.results.map((r, modelIdx) => {
+        const barColors = labels.map(
+          (_, i) =>
+            this.baseColors[
+              (modelIdx * labels.length + i) % this.baseColors.length
+            ]
+        );
+
+        return {
+          label: r.model,
+          data: labels.map((g) => r.by_group?.[metric]?.[g] ?? null),
+          backgroundColor:
+            this.chartType === "bar"
+              ? barColors
+              : this.baseColors[modelIdx % this.baseColors.length],
+          borderColor: this.baseColors[modelIdx % this.baseColors.length],
+          fill: false,
+        };
+      });
 
       return { labels, datasets };
     },
   },
 };
 </script>
-
 <style scoped></style>

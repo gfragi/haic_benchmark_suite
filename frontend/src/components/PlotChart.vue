@@ -49,10 +49,6 @@ export default {
       default: "line",
       validator: (value) => ["line", "bar"].includes(value),
     },
-    chartColor: {
-      type: String,
-      default: "rgb(75, 192, 192)",
-    },
   },
   data() {
     return {
@@ -77,24 +73,12 @@ export default {
         return;
       }
 
-      // Destroy previous instance if exists
       if (this.chartInstance) {
         this.chartInstance.destroy();
       }
 
-      // Optionally apply chartColor to all datasets
       const dataCopy = JSON.parse(JSON.stringify(this.chartData));
-      dataCopy.datasets.forEach((ds) => {
-        if (this.chartType === "line") {
-          ds.borderColor = this.chartColor;
-          ds.backgroundColor = this.chartColor;
-          ds.fill = false;
-        } else {
-          ds.backgroundColor = this.chartColor;
-        }
-      });
 
-      // Create the chart with dynamic type
       this.chartInstance = new Chart(ctx, {
         type: this.chartType,
         data: dataCopy,
