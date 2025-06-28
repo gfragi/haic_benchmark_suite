@@ -1,5 +1,6 @@
 <template>
   <v-card class="ma-4 pa-4">
+    <!-- Use a dynamic canvas ID -->
     <canvas :id="chartId"></canvas>
   </v-card>
 </template>
@@ -8,8 +9,10 @@
 import {
   Chart,
   LineController,
+  BarController,
   LineElement,
   PointElement,
+  BarElement,
   LinearScale,
   Title,
   CategoryScale,
@@ -19,8 +22,10 @@ import {
 
 Chart.register(
   LineController,
+  BarController,
   LineElement,
   PointElement,
+  BarElement,
   LinearScale,
   Title,
   CategoryScale,
@@ -29,6 +34,7 @@ Chart.register(
 );
 
 export default {
+  name: "PlotChart",
   props: {
     chartId: {
       type: String,
@@ -38,21 +44,30 @@ export default {
       type: Object,
       required: true,
     },
+    chartType: {
+      type: String,
+      default: "line",
+      validator: (value) => ["line", "bar"].includes(value),
+    },
     chartColor: {
       type: String,
       default: "rgb(75, 192, 192)",
     },
+  },
+  data() {
+    return {
+      chartInstance: null,
+    };
   },
   mounted() {
     this.renderChart();
   },
   watch: {
     chartData: {
-      handler() {
-        this.renderChart();
-      },
+      handler: "renderChart",
       deep: true,
     },
+    chartType: "renderChart",
   },
   methods: {
     renderChart() {
@@ -62,73 +77,37 @@ export default {
         return;
       }
 
+      // Destroy previous instance if exists
       if (this.chartInstance) {
         this.chartInstance.destroy();
       }
 
+      // Optionally apply chartColor to all datasets
+      const dataCopy = JSON.parse(JSON.stringify(this.chartData));
+      dataCopy.datasets.forEach((ds) => {
+        if (this.chartType === "line") {
+          ds.borderColor = this.chartColor;
+          ds.backgroundColor = this.chartColor;
+          ds.fill = false;
+        } else {
+          ds.backgroundColor = this.chartColor;
+        }
+      });
+
+      // Create the chart with dynamic type
       this.chartInstance = new Chart(ctx, {
-        type: "line",
-        data: this.chartData, // Use the chartData directly without modification
+        type: this.chartType,
+        data: dataCopy,
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              position: "top",
-              labels: {
-                font: {
-                  size: 14,
-                  weight: "bold",
-                },
-              },
-            },
-            title: {
-              display: true,
-              text: this.chartData.datasets[0].label,
-              font: {
-                size: 18,
-                weight: "bold",
-              },
-            },
-            tooltip: {
-              enabled: true,
-              mode: "index",
-              intersect: false,
-            },
+            legend: { position: "top" },
+            tooltip: { mode: "index", intersect: false },
           },
           scales: {
-            x: {
-              type: "category",
-              title: {
-                display: true,
-                text: "AI Model Version",
-                font: {
-                  size: 14,
-                  weight: "bold",
-                },
-              },
-              ticks: {
-                font: {
-                  size: 12,
-                },
-              },
-            },
-            y: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: "Value",
-                font: {
-                  size: 14,
-                  weight: "bold",
-                },
-              },
-              ticks: {
-                font: {
-                  size: 12,
-                },
-              },
-            },
+            x: { title: { display: true, text: "Group" } },
+            y: { beginAtZero: true, title: { display: true, text: "Value" } },
           },
         },
       });
