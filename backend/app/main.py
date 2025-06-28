@@ -1,5 +1,5 @@
 from fastapi import Depends, FastAPI
-from app.routers import logs, configuration, evaluate, reporting, log_generator
+from app.routers import logs, configuration, evaluate, reporting, log_generator, fairness
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,6 +40,8 @@ app.include_router(results.router, prefix="/results", tags=["Results"])
 app.include_router(reporting.router, prefix="/reporting", tags=["Reporting"])
 app.include_router(log_generator.router, prefix="/log-generator", tags=["Log Generator"])
 app.include_router(survey.router , prefix="/survey", tags=["Survey"])
+app.include_router(fairness.router, prefix="/fairness", tags=["Fairness"])
+
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security)
