@@ -1,0 +1,8 @@
+{
+  "predictions": [0, 1, 0, 0, 1],
+  "labels": [0, 1, 1, 0, 1],
+  "sensitive_features": {
+    "sex": ["Male", "Female", "Female", "Male", "Female"],
+    "race": ["White", "Black", "Black", "White", "Black"]
+  }
+}
