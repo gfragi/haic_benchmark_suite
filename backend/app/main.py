@@ -6,7 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from .utils.keycloak_utils import decode_jwt_token
 
 from app.routers import results
-from app.routers import survey 
+from app.routers import survey
+
+from app.utils.database import engine
+from app.models.survey import Survey
+
+from app.utils.database import Base
+
+Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI(

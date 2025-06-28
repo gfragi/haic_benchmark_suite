@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy import Column, Text, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from datetime import datetime
-from app.db import Base
+from app.utils.database import Base
 
 class MetricDefinition(Base):
     __tablename__ = "metric_definitions"
