@@ -12,7 +12,12 @@ import { ref } from "vue";
 import { defineEmits } from "vue";
 
 const selected = ref(null);
-const options = ["SmartTicketing", "SmartEnergy", "Healthcare"];
+const options = [
+  "SmartTicketing",
+  "SmartEnergy",
+  "Healthcare",
+  "Manufacturing",
+];
 
 const emit = defineEmits(["update:pilotTag"]);
 
