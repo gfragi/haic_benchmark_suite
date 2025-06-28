@@ -12,6 +12,7 @@ import LogUploadForm from "@/components/LogIngestionForm.vue";
 import RunDetail from "@/views/RunDetail.vue";
 import Visualization from "@/views/VisualizationPage.vue";
 import FairnessEvaluation from "@/views/FairnessEvaluation.vue";
+import SurveyDashboard from "@/views/SurveyDashboard.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -69,6 +70,11 @@ const routes = [
     path: "/fairness",
     name: "Fairness Evaluation",
     component: FairnessEvaluation,
+  },
+  {
+    path: "/survey-dashboard",
+    name: "Survey Dashboard",
+    component: SurveyDashboard,
   },
 ];
 
