@@ -14,6 +14,13 @@
         <v-radio label="Compare Pilots (overall)" value="pilots" />
       </v-radio-group>
 
+      <!-- Chart Type Switch -->
+      <v-switch
+        v-model="isLineChart"
+        :label="`Chart type: ${isLineChart ? 'line' : 'bar'}`"
+        class="mb-4"
+      />
+
       <!-- Pilot Filter (only for version comparison) -->
       <SurveyFilter
         v-if="comparisonMode === 'versions'"
@@ -25,15 +32,17 @@
         <v-progress-circular indeterminate color="primary" size="40" />
       </div>
 
-      <!-- Chart Title -->
-      <h3 v-if="!loading" class="text-h6 text-center my-4">
-        {{ chartTitle }}
-      </h3>
+      <!-- Chart Title and Count -->
+      <div v-if="!loading" class="text-center my-4">
+        <h3 class="text-h6">{{ chartTitle }}</h3>
+        <p class="text-caption">Total surveys: {{ totalSurveys }}</p>
+      </div>
 
       <!-- Chart -->
       <SurveyChart
         v-if="Object.keys(aggregatedData).length"
-        :data="aggregatedData"
+        :data="sortedAggregatedData"
+        :type="chartType"
       />
 
       <!-- No Data Message -->
@@ -43,6 +52,67 @@
 
       <!-- Export Button -->
       <v-btn class="mt-4" @click="exportData" color="primary">Export CSV</v-btn>
+
+      <!-- Evaluation Questions -->
+      <v-expansion-panels class="mt-6">
+        <v-expansion-panel>
+          <v-expansion-panel-title>SUS Questions</v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <ol>
+              <li>I think I would like to use this system frequently.</li>
+              <li>I found the system unnecessarily complex.</li>
+              <li>I thought the system was easy to use.</li>
+              <li>
+                I think I would need the support of a technical person to use
+                this system.
+              </li>
+              <li>
+                I found the various functions in this system were well
+                integrated.
+              </li>
+              <li>
+                I thought there was too much inconsistency in this system.
+              </li>
+              <li>
+                I would imagine most people would learn to use this system
+                quickly.
+              </li>
+              <li>I found the system very difficult to use.</li>
+              <li>I felt very confident using the system.</li>
+              <li>
+                I needed to learn many things before I could get going with this
+                system.
+              </li>
+            </ol>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-title>Ethics Questions</v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <ol>
+              <li>
+                Fairness: The system handles different tasks or users without
+                bias.
+              </li>
+              <li>
+                Transparency: I understand how the system/AI arrives at its
+                decisions.
+              </li>
+              <li>
+                Privacy: I feel confident that personal data is protected.
+              </li>
+              <li>
+                Accountability: It is clear who or what is responsible for
+                errors.
+              </li>
+              <li>
+                Trust: Overall, I trust the system to operate ethically and in
+                my best interest.
+              </li>
+            </ol>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </v-container>
   </BaseLayout>
 </template>
@@ -54,11 +124,21 @@ import SurveyChart from "@/components/SurveyChart.vue";
 import { fetchSurveyAggregates } from "@/services/survey";
 import { ref, computed } from "vue";
 import debounce from "lodash.debounce";
+import semver from "semver";
 
 const comparisonMode = ref("versions");
 const selectedPilot = ref(null);
 const aggregatedData = ref({});
 const loading = ref(false);
+const isLineChart = ref(false);
+const chartType = computed(() => (isLineChart.value ? "line" : "bar"));
+
+const totalSurveys = computed(() =>
+  Object.values(aggregatedData.value).reduce(
+    (acc, val) => acc + (val.count || 0),
+    0
+  )
+);
 
 const chartTitle = computed(() => {
   if (comparisonMode.value === "versions") {
@@ -68,6 +148,21 @@ const chartTitle = computed(() => {
   } else {
     return "Avg SUS & Ethics per Pilot";
   }
+});
+
+const sortedAggregatedData = computed(() => {
+  const entries = Object.entries(aggregatedData.value);
+  if (comparisonMode.value === "versions") {
+    return Object.fromEntries(
+      entries.sort(([a], [b]) => {
+        if (semver.valid(a) && semver.valid(b)) {
+          return semver.compare(a, b);
+        }
+        return a.localeCompare(b); // fallback
+      })
+    );
+  }
+  return aggregatedData.value;
 });
 
 const loadData = debounce(async (pilotTag = null) => {
