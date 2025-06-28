@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy.orm import Session
 from app.schemas.survey import SurveyCreate
 from app.models.survey import Survey
@@ -33,35 +34,39 @@ def calculate_sus_score(sus: dict) -> float:
             total += 5 - value
     return total * 2.5
 
-def calculate_ethics_score(ethics: dict) -> float:
-    total = sum(ethics.values())
-    count = len(ethics)
-    if count == 0:
-        return 0.0
-    avg = total / count
-    return avg * 20  # Rescale average to 0-100
+def aggregate_survey_metrics(db: Session, pilot_tag: Optional[str] = None):
+    from sqlalchemy import func
+    from app.models.survey import Survey
 
-def aggregate_survey_metrics(db_session: Session) -> dict:
-    surveys = db_session.query(Survey).all()
-    pilot_results = defaultdict(list)
+    query = db.query(Survey)
 
-    for survey in surveys:
-        tam_data = survey.tam_sus_responses   # dict containing SUS responses
-        ethics_data = survey.ethics_responses   # dict containing ethics responses
+    if pilot_tag:
+        query = query.filter(Survey.pilot_tag == pilot_tag)
 
-        sus_score = calculate_sus_score(tam_data)
-        ethics_score = calculate_ethics_score(ethics_data)
+    # Now group by app_version
+    raw = query.all()
 
-        pilot_results[survey.pilot_tag].append((sus_score, ethics_score))
+    grouped = {}
+    for s in raw:
+        key = s.app_version or "Unknown"
+        sus_scores = list(s.tam_sus_responses.values())
+        sus_score = sus_score = calculate_sus_score(s.tam_sus_responses)
 
-    aggregated_results = {}
-    for pilot, scores in pilot_results.items():
-        count = len(scores)
-        avg_sus = sum(s[0] for s in scores) / count
-        avg_ethics = sum(s[1] for s in scores) / count
-        aggregated_results[pilot] = {
-            'avg_sus': avg_sus,
-            'avg_ethics': avg_ethics,
-            'count': count
+
+        ethics_score = sum(s.ethics_responses.values()) / len(s.ethics_responses)
+
+        if key not in grouped:
+            grouped[key] = {"count": 0, "sus_total": 0, "ethics_total": 0}
+
+        grouped[key]["count"] += 1
+        grouped[key]["sus_total"] += sus_score
+        grouped[key]["ethics_total"] += ethics_score
+
+    return {
+        k: {
+            "avg_sus": v["sus_total"] / v["count"],
+            "avg_ethics": v["ethics_total"] / v["count"],
+            "count": v["count"]
         }
-    return aggregated_results
+        for k, v in grouped.items()
+    }

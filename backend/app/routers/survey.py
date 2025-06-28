@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.schemas.survey import SurveyCreate
 from app.services.survey_service import create_survey
@@ -22,13 +23,9 @@ async def submit_survey(survey: SurveyCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/aggregate", summary="Get aggregated survey metrics")
-def get_aggregated_metrics(db: Session = Depends(get_db)):
-    """
-    Returns aggregated survey metrics grouped by pilot tag.
-    For each pilot, it returns:
-      - average SUS score
-      - average Ethics score
-      - number of responses collected
-    """
-    results = aggregate_survey_metrics(db)
+def get_aggregated_metrics(
+    pilot_tag: Optional[str] = Query(None),
+    db: Session = Depends(get_db)
+):  
+    results = aggregate_survey_metrics(db, pilot_tag=pilot_tag)
     return results
