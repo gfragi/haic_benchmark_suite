@@ -16,7 +16,7 @@
       </p>
 
       <!-- Guided Overview Section -->
-      <v-sheet class="elevation-1 pa-6 mb-10" color="grey lighten-4">
+      <v-sheet class="elevation-1 pa-6 mb-10" color="teal-lighten-3">
         <v-row align="center" justify="space-between">
           <v-col cols="12" md="8">
             <h2 class="text-h6 font-weight-bold mb-2">
@@ -37,7 +37,7 @@
             <v-btn
               large
               color="primary"
-              class="elevation-2 px-6 py-4"
+              class="elevation-6 px-8 py-2"
               @click="startConfigurationWizard"
             >
               <v-icon left class="mr-2">mdi-play-circle</v-icon>
@@ -109,7 +109,7 @@
       </v-row>
 
       <!-- Step 3: Manage or Simulate Data -->
-      <v-sheet class="pa-6 mt-10" color="grey lighten-5">
+      <v-sheet class="pa-6 mt-10" color="blue-grey-lighten-4">
         <v-subheader class="text-uppercase font-weight-bold mb-2">
           Manage or Simulate Evaluation Data
         </v-subheader>
