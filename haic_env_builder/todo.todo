@@ -1,5 +1,5 @@
 [x] Create the new haic_env_builder/ structure
-[] Implement base classes (Agent, Task, Environment, Profile)
+[x] Implement base classes (Agent, Task, Environment, Profile)
 [] Add YAML-based definition for a use case (radiologist_usecase.yaml)
 [] Write a simulation runner script to generate interactions
 [] Add FastAPI endpoint (/simulate_env) to expose it
