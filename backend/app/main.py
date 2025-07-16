@@ -1,5 +1,11 @@
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
+
+
 from fastapi import Depends, FastAPI
-from app.routers import logs, configuration, evaluate, reporting, log_generator, fairness
+from app.routers import logs, configuration, evaluate, reporting, log_generator, fairness, env_builder
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,6 +54,7 @@ app.include_router(reporting.router, prefix="/reporting", tags=["Reporting"])
 app.include_router(log_generator.router, prefix="/log-generator", tags=["Log Generator"])
 app.include_router(survey.router , prefix="/survey", tags=["Survey"])
 app.include_router(fairness.router, prefix="/fairness", tags=["Fairness"])
+app.include_router(env_builder.router, prefix="/env", tags=["Environment Builder"])
 
 
 def get_current_user(
