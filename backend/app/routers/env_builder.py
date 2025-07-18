@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from haic_env_builder.config_builder.builder import ConfigBuilder
 
+
 router = APIRouter()
 
 #  Define the input schema
