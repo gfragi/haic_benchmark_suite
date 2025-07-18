@@ -1,9 +1,3 @@
-import sys
-import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
-
-
 from fastapi import Depends, FastAPI
 from app.routers import logs, configuration, evaluate, reporting, log_generator, fairness, env_builder
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
