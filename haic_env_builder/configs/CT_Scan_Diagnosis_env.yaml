@@ -1,0 +1,24 @@
+agents:
+- capabilities:
+  - classify
+  - highlight
+  modality: text
+  name: RadiologistAssistant
+- capabilities:
+  - speak
+  modality: audio
+  name: VoiceSupportBot
+profiles:
+- id: user123
+  role: radiologist
+  skill_level: expert
+- id: user456
+  role: technician
+  skill_level: novice
+task:
+  description: Auto-generated task
+  name: CT Scan Diagnosis
+  parameters:
+    image_type: CT
+    report_required: true
+    urgency: high
