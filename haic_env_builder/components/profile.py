@@ -1,8 +1,10 @@
+# haic_env_builder/components/profile.py
+
 from .base import Component
 
 class Profile(Component):
-    def __init__(self, profile_id, skill_level, role):
-        self.profile_id = profile_id
+    def __init__(self, id, skill_level, role):
+        self.profile_id = id
         self.skill_level = skill_level
         self.role = role
 
