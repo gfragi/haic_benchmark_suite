@@ -46,7 +46,7 @@ docker build -f Dockerfile.backend -t ghcr.io/gfragi/haic-backend:latest .
 ## Authenticate to GHCR
 
 ``` bash
-source k8s/.env 
+source k8s/.env
 echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 ```
 
