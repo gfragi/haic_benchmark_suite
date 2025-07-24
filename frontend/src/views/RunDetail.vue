@@ -33,9 +33,9 @@
               :class="{ 'selected-group': selectedGroup === groupName }"
               style="cursor: pointer"
             >
-              <v-list-item-icon>
+              <v-list-item>
                 <v-icon>{{ getGroupIcon(groupName) }}</v-icon>
-              </v-list-item-icon>
+              </v-list-item>
               <v-list-item-title>{{ groupName }}</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -52,7 +52,7 @@
                     .metrics"
                   :key="index"
                 >
-                  <v-list-item-content>
+                  <div>
                     <v-list-item-title>{{ metric.name }}</v-list-item-title>
                     <v-list-item-subtitle>
                       <strong>Description:</strong>
@@ -66,7 +66,7 @@
                           : "No value available"
                       }}
                     </v-list-item-subtitle>
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
               </v-list>
             </v-card-text>

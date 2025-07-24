@@ -1,13 +1,11 @@
-import axios from 'axios';
-
-const API_BASE = "http://localhost:8000";
+import axios from "axios";
 
 export const fetchConfigs = async () => {
-  const res = await axios.get(`${API_BASE}/env/list_configs`);
+  const res = await axios.get("/env/list_configs");
   return res.data.available_configs;
 };
 
-export const simulateConfig = async (configName) => {
-  const res = await axios.post(`${API_BASE}/simulator/simulate?name=${configName}`);
+export const simulateConfig = async (name) => {
+  const res = await axios.post(`/simulator/simulate?name=${name}`);
   return res.data.simulation_result;
 };
