@@ -1,10 +1,11 @@
+# haic_env_builder/components/task.py
 from .base import Component
 
 class Task(Component):
     def __init__(self, name, description, parameters):
         self.name = name
         self.description = description
-        self.parameters = parameters  # Dict of task parameters
+        self.parameters = parameters
 
     def to_dict(self):
         return {
