@@ -9,12 +9,12 @@
       class="v-list-item"
     >
       <v-list-item>
-        <v-list-item-icon>
+        <v-list-item>
           <v-icon>{{ item.icon }}</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
+        </v-list-item>
+        <div>
           <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item-content>
+        </div>
       </v-list-item>
     </router-link>
   </v-list>

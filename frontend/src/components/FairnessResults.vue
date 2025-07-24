@@ -35,26 +35,24 @@
           <v-card-text>
             <v-list dense>
               <v-list-item>
-                <v-list-item-content>
-                  Accuracy: {{ format(model.overall.accuracy) }}
-                </v-list-item-content>
+                <div>Accuracy: {{ format(model.overall.accuracy) }}</div>
               </v-list-item>
               <v-list-item>
-                <v-list-item-content>
+                <div>
                   Selection Rate: {{ format(model.overall.selection_rate) }}
-                </v-list-item-content>
+                </div>
               </v-list-item>
               <v-list-item>
-                <v-list-item-content>
+                <div>
                   Demographic Parity Difference:
                   {{ format(model.demographic_parity_difference) }}
-                </v-list-item-content>
+                </div>
               </v-list-item>
               <v-list-item>
-                <v-list-item-content>
+                <div>
                   Equalized Odds Difference:
                   {{ format(model.equalized_odds_difference) }}
-                </v-list-item-content>
+                </div>
               </v-list-item>
             </v-list>
           </v-card-text>

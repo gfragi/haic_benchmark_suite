@@ -26,9 +26,9 @@
               :class="{ 'selected-group': selectedGroup === group.value }"
               style="cursor: pointer"
             >
-              <v-list-item-icon>
+              <v-list-item>
                 <v-icon>{{ getGroupIcon(group.value) }}</v-icon>
-              </v-list-item-icon>
+              </v-list-item>
               <v-list-item-title class="text-caption">{{
                 group.title
               }}</v-list-item-title>

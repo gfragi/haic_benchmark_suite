@@ -13,6 +13,7 @@ import RunDetail from "@/views/RunDetail.vue";
 import Visualization from "@/views/VisualizationPage.vue";
 import FairnessEvaluation from "@/views/FairnessEvaluation.vue";
 import SurveyDashboard from "@/views/SurveyDashboard.vue";
+import SimulatorPage from "@/views/SimulatorPage.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -75,6 +76,12 @@ const routes = [
     path: "/survey-dashboard",
     name: "Survey Dashboard",
     component: SurveyDashboard,
+  },
+  {
+    path: "/simulate",
+    name: "Simulator",
+    component: SimulatorPage,
+    props: true,
   },
 ];
 

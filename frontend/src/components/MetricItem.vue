@@ -1,6 +1,6 @@
 <template>
   <v-list-item class="metric-item">
-    <v-list-item-content>
+    <div>
       <div class="metric-content">
         <v-btn
           icon
@@ -17,7 +17,7 @@
           <v-list-item-subtitle>{{ description }}</v-list-item-subtitle>
         </div>
       </div>
-    </v-list-item-content>
+    </div>
 
     <!-- Formula Dialog -->
     <v-dialog v-model="dialog" max-width="500">

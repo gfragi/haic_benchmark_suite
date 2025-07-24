@@ -48,9 +48,9 @@
       </v-sheet>
 
       <!-- Step 2: Analyze Results -->
-      <v-subheader class="text-uppercase font-weight-bold mt-4 mb-2">
+      <v-list-subheader class="text-uppercase font-weight-bold mt-4 mb-2">
         Analyze Your Results
-      </v-subheader>
+      </v-list-subheader>
       <v-row dense>
         <v-col cols="12" md="6">
           <v-card elevation="2" class="hover-card pa-2">
@@ -110,9 +110,9 @@
 
       <!-- Step 3: Manage or Simulate Data -->
       <v-sheet class="pa-6 mt-10" color="blue-grey-lighten-4">
-        <v-subheader class="text-uppercase font-weight-bold mb-2">
+        <v-list-subheader class="text-uppercase font-weight-bold mb-2">
           Manage or Simulate Evaluation Data
-        </v-subheader>
+        </v-list-subheader>
         <v-row dense>
           <v-col cols="12" md="4">
             <v-card elevation="1" class="hover-card pa-2">
