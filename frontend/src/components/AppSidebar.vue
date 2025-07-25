@@ -9,12 +9,8 @@
       class="v-list-item"
     >
       <v-list-item>
-        <v-list-item>
-          <v-icon>{{ item.icon }}</v-icon>
-        </v-list-item>
-        <div>
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </div>
+        <v-icon class="mr-2">{{ item.icon }}</v-icon>
+        <v-list-item-title>{{ item.title }}</v-list-item-title>
       </v-list-item>
     </router-link>
   </v-list>
@@ -48,6 +44,11 @@ export default {
           title: "Explore Metrics",
           icon: "mdi-chart-areaspline",
           route: "/metrics",
+        },
+        {
+          title: "Simulator",
+          icon: "mdi-play-circle",
+          route: "/simulate",
         },
         { title: "About", icon: "mdi-information", route: "/about" },
       ],
