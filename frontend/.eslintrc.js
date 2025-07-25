@@ -10,6 +10,11 @@ module.exports = {
   ],
   parserOptions: {
     parser: "@babel/eslint-parser",
+    ecmaVersion: "latest",
+    sourceType: "module",
+  },
+  globals: {
+    defineProps: "readonly",
   },
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
