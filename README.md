@@ -230,6 +230,39 @@ Features of the Log Generation Tool
   - Frontend: `http://localhost:8080`
 
 
+## Modular HAIC Environment Builder (haic_env_builder)
+
+A new internal module `haic_env_builder` has been integrated to allow users to define modular Human-AI Collaboration environments and simulate them.
+
+Key Concepts
+- Task, Agent, Profile classes allow composable scenario definitions.
+
+- YAML Config Generation via `/env/generate_config`
+
+- Simulation API `/simulator/simulate?name=...` executes predefined environments and returns metrics + logs.
+
+- Metrics Logging saved under metrics/ folder (e.g. collaboration, efficiency)
+
+## Simulator UI (Experimental)
+You can now simulate a YAML environment from the web UI:
+
+- Route: `/simulate`
+- Select a YAML config from dropdown
+
+- View:
+  - Simulation logs
+  - Metrics
+  - Decision log: Agent-step-wise simulated actions
+
+- Download output as .json
+
+## Planned Next Steps
+
+- Sidebar wizard for environment design (like a Streamlit block-based flow)
+
+- Configurable pipeline validation with real or synthetic profiles
+
+- Progressive integration into main evaluation pipeline (logs/results)
 
 
 ## Contributing
@@ -246,3 +279,4 @@ Contributions are welcome! Please follow these steps to contribute:
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+PYTHONPATH=backend uvicorn app.main:app --reload
