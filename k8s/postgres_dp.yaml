@@ -8,29 +8,62 @@ spec:
   selector:
     matchLabels:
       app: postgres
+  strategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
         app: postgres
     spec:
+      securityContext:
+        fsGroup: 999           # uid/gid used by postgres image
       containers:
-      - name: postgres
-        image: postgres:15
-        env:
-        - name: POSTGRES_DB
-          valueFrom:
-            secretKeyRef:
-              name: benchmarking-secret
-              key: DB_NAME
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: benchmarking-secret
-              key: DB_USER
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: benchmarking-secret
-              key: DB_PASSWORD
-        ports:
-        - containerPort: 5432
+        - name: postgres
+          image: postgres:15
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: benchmarking-secret
+                  key: DB_NAME
+
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: benchmarking-secret
+                  key: DB_USER
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: benchmarking-secret
+                  key: DB_PASSWORD
+            # Optional: set PGDATA explicitly
+            # - name: PGDATA
+            #   value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+            # - name: pg-init-sql
+            #   mountPath: /docker-entrypoint-initdb.d
+            #   readOnly: true
+          readinessProbe:
+            tcpSocket: { port: 5432 }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket: { port: 5432 }
+            initialDelaySeconds: 15
+            periodSeconds: 10
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-data
+        - name: pg-init-sql
+          configMap:
+            name: pg-init-sql
+            defaultMode: 0444    # readable by entrypoint

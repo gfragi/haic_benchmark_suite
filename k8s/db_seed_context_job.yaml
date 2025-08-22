@@ -1,0 +1,43 @@
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-seed-context
+  namespace: benchmarking
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: psql
+          image: postgres:15
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef: { name: benchmarking-secret, key: DB_PASSWORD }
+            - name: DBUSER
+              valueFrom:
+                secretKeyRef: { name: benchmarking-secret, key: DB_USER }
+            - name: DBNAME
+              valueFrom:
+                secretKeyRef: { name: benchmarking-secret, key: DB_NAME }
+          command:
+            - bash
+            - -lc
+            - |
+              set -euo pipefail
+              until psql -h postgres -U "$DBUSER" -d "$DBNAME" -c 'SELECT 1;' >/dev/null 2>&1; do
+                echo "Waiting for DB..."
+                sleep 2
+              done
+              echo "==> Applying context seed"
+              psql -h postgres -U "$DBUSER" -d "$DBNAME" -f /init/20_seed_metrics_only.sql
+              echo "Done."
+          volumeMounts:
+            - name: seed
+              mountPath: /init
+      volumes:
+        - name: seed
+          configMap:
+            name: db-context-seed

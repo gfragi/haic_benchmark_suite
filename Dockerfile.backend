@@ -1,6 +1,9 @@
 
 # Use the official Python image as the base image
-FROM python:3.10-slim
+FROM python:3.10-slim-bullseye
+
+# Upgrade pip and system packages to reduce vulnerabilities
+RUN apt-get update && apt-get upgrade -y && pip install --upgrade pip
 
 # Set the working directory in the container
 WORKDIR /app
@@ -16,8 +19,13 @@ COPY requirements.txt .
 # Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+# Copy source code (backend + local libs)
 COPY backend/app ./app
+COPY haic_env_builder ./haic_env_builder
+
+
+# Make local packages importable
+ENV PYTHONPATH=/app
 
 # Expose FastAPI port
 EXPOSE 8000
