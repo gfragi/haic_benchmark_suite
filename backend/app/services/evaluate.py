@@ -11,7 +11,7 @@ from app.models import EvaluationConfig, LogEntry
 from app.services.agg_metrics import calculate_metrics_for_group, save_evaluation_result
 from app.models.results import EvaluationResult, MetricGroup
 from app.utils.database import SessionLocal
-from app.utils.minio_client_keycloak import get_minio_client
+from app.utils.minio_utils import get_minio_client
 
 
 load_dotenv()
