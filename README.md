@@ -17,6 +17,7 @@ An application to evaluate Human-AI collaboration by logging interactions, confi
 - [License](#license)
 
 ## Project Structure
+
 ```bash
 human-ai-benchmark-suite/
 ├── backend/
@@ -44,7 +45,6 @@ human-ai-benchmark-suite/
 ├── README.md
 ├── vue.config.js
 ```
-
 
 ## Installation
 
@@ -183,10 +183,12 @@ pytest
 ### Frontend
 
 Run frontend tests using jest:
+
 ```bash
 cd frontend
 npm run test:unit
 ```
+
 ## New Features
 
 ### Evaluation Configuration Wizard
@@ -206,6 +208,7 @@ npm run test:unit
 The HAIC Evaluation Platform includes a Log Generation Tool designed to create synthetic log data tailored to the specific needs of different application types. This tool is essential for generating realistic interaction data to test and evaluate the performance of various AI models within the platform.
 
 Features of the Log Generation Tool
+
 - **Application Type Selection**: Users can select from predefined application types such as "smart_cities," each with its unique set of parameters and interaction models.
 
 - **Date Range**: Users can specify the start and end dates for the log entries, allowing the generation of logs over a defined period.
@@ -217,6 +220,7 @@ Features of the Log Generation Tool
 ### Quick Start Guide
 
 - **Running the Application**:
+
   ```bash
   # Starting the backend
   uvicorn app.main:app --reload
@@ -229,12 +233,12 @@ Features of the Log Generation Tool
   - Backend: `http://localhost:8000`
   - Frontend: `http://localhost:8080`
 
-
 ## Modular HAIC Environment Builder (haic_env_builder)
 
 A new internal module `haic_env_builder` has been integrated to allow users to define modular Human-AI Collaboration environments and simulate them.
 
 Key Concepts
+
 - Task, Agent, Profile classes allow composable scenario definitions.
 
 - YAML Config Generation via `/env/generate_config`
@@ -244,6 +248,7 @@ Key Concepts
 - Metrics Logging saved under metrics/ folder (e.g. collaboration, efficiency)
 
 ## Simulator UI (Experimental)
+
 You can now simulate a YAML environment from the web UI:
 
 - Route: `/simulate`
@@ -263,7 +268,6 @@ You can now simulate a YAML environment from the web UI:
 - Configurable pipeline validation with real or synthetic profiles
 
 - Progressive integration into main evaluation pipeline (logs/results)
-
 
 ## Contributing
 
