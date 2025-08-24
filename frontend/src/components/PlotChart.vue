@@ -18,6 +18,7 @@ import {
   Legend,
   Tooltip,
 } from "chart.js";
+import { nextTick, markRaw, toRaw } from "vue";
 
 Chart.register(
   LineController,
@@ -32,6 +33,9 @@ Chart.register(
   Tooltip
 );
 
+// Optional: kill animations to avoid RAF races during tab switches
+Chart.defaults.animation = false;
+
 export default {
   name: "PlotChart",
   props: {
@@ -41,24 +45,16 @@ export default {
       default: "line",
       validator: (v) => ["line", "bar"].includes(v),
     },
+    chartOptions: {
+      type: Object,
+      default: () => ({ responsive: true, maintainAspectRatio: false }),
+    },
   },
-  data: () => ({ chart: null, observer: null, isVisible: false }),
+  data: () => ({ chart: null, isRendering: false }),
   async mounted() {
-    // Render only when the canvas is actually visible
-    this.observer = new IntersectionObserver(
-      ([entry]) => {
-        this.isVisible = entry.isIntersecting;
-        if (this.isVisible) {
-          this.renderChartSafely();
-          this.observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    this.observer.observe(this.$refs.canvasEl);
+    await this.renderChartSafely();
   },
   beforeUnmount() {
-    this.observer?.disconnect();
     this.destroyChart();
   },
   watch: {
@@ -68,53 +64,24 @@ export default {
         this.updateOrRender();
       },
     },
+    chartOptions: {
+      deep: true,
+      handler() {
+        this.updateOrRender(true);
+      },
+    },
     chartType() {
       this.updateOrRender(true);
     },
   },
   methods: {
-    async renderChartSafely() {
-      await this.$nextTick();
-      const canvas = this.$refs.canvasEl;
-      if (!canvas || !canvas.isConnected) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx || !this._hasData()) return;
-
-      this.destroyChart();
-      const dataCopy = JSON.parse(JSON.stringify(this.chartData));
-      this.chart = new Chart(ctx, {
-        type: this.chartType,
-        data: dataCopy,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false, // avoid RAF race during tab switches
-          plugins: {
-            legend: { position: "top" },
-            tooltip: { mode: "index", intersect: false },
-          },
-          scales: {
-            x: { title: { display: true, text: "Group" } },
-            y: { beginAtZero: true, title: { display: true, text: "Value" } },
-          },
-        },
-      });
-    },
-    updateOrRender(resetType = false) {
-      if (!this.isVisible) return; // wait until visible
-      if (this.chart && this._hasData()) {
-        if (resetType) this.chart.config.type = this.chartType;
-        this.chart.data = JSON.parse(JSON.stringify(this.chartData));
-        this.chart.update();
-      } else {
-        this.renderChartSafely();
-      }
-    },
-    destroyChart() {
-      if (this.chart) {
-        this.chart.stop(); // stop animations first
-        this.chart.destroy();
-        this.chart = null;
+    _plain(obj) {
+      // strip Vue reactivity (no proxies) and deep clone
+      const raw = toRaw(obj);
+      try {
+        return structuredClone(raw);
+      } catch {
+        return JSON.parse(JSON.stringify(raw));
       }
     },
     _hasData() {
@@ -125,6 +92,57 @@ export default {
         Array.isArray(d.datasets) &&
         d.datasets.length
       );
+    },
+    async renderChartSafely() {
+      if (this.isRendering) return;
+      this.isRendering = true;
+      await nextTick();
+
+      const el = this.$refs.canvasEl;
+      const ctx = el && el.isConnected ? el.getContext("2d") : null;
+      if (!ctx || !this._hasData()) {
+        this.isRendering = false;
+        return;
+      }
+
+      this.destroyChart();
+
+      const data = this._plain(this.chartData);
+      const options = this._plain(this.chartOptions);
+
+      // VERY IMPORTANT: prevent Vue from making the Chart instance reactive
+      this.chart = markRaw(
+        new Chart(ctx, {
+          type: this.chartType,
+          data,
+          options,
+        })
+      );
+
+      this.isRendering = false;
+    },
+    updateOrRender(resetAll = false) {
+      // debounce microtask to avoid recursive watcher storms
+      if (this._queued) return;
+      this._queued = true;
+      queueMicrotask(() => {
+        this._queued = false;
+        if (this.chart && this._hasData()) {
+          if (resetAll) this.chart.config.type = this.chartType;
+          this.chart.data = this._plain(this.chartData);
+          if (resetAll) this.chart.options = this._plain(this.chartOptions);
+          this.chart.update();
+        } else {
+          this.renderChartSafely();
+        }
+      });
+    },
+    destroyChart() {
+      if (this.chart) {
+        this.chart.stop?.();
+        this.chart.destroy();
+        this.chart = null;
+      }
     },
   },
 };
