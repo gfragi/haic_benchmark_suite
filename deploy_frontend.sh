@@ -18,12 +18,12 @@ docker build -f $DOCKERFILE -t $IMAGE $CONTEXT
 echo "📤 Pushing image to GHCR..."
 docker push $IMAGE
 
-# # 3. Trigger Kubernetes rollout restart
-# echo "♻️ Restarting Kubernetes deployment..."
-# kubectl rollout restart deployment $DEPLOYMENT -n $NAMESPACE
+# 3. Trigger Kubernetes rollout restart
+echo "♻️ Restarting Kubernetes deployment..."
+kubectl rollout restart deployment $DEPLOYMENT -n $NAMESPACE
 
-# # 4. Wait for rollout to finish
-# echo "⏳ Waiting for rollout to complete..."
-# kubectl rollout status deployment $DEPLOYMENT -n $NAMESPACE
+# 4. Wait for rollout to finish
+echo "⏳ Waiting for rollout to complete..."
+kubectl rollout status deployment $DEPLOYMENT -n $NAMESPACE
 
 echo "✅ Frontend redeployed successfully!"
