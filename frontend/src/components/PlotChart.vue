@@ -1,7 +1,6 @@
 <template>
-  <v-card class="ma-4 pa-4">
-    <!-- Use a dynamic canvas ID -->
-    <canvas :id="chartId"></canvas>
+  <v-card class="ma-4 pa-4" style="height: 320px">
+    <canvas ref="canvasEl"></canvas>
   </v-card>
 </template>
 
@@ -14,8 +13,8 @@ import {
   PointElement,
   BarElement,
   LinearScale,
-  Title,
   CategoryScale,
+  Title,
   Legend,
   Tooltip,
 } from "chart.js";
@@ -27,8 +26,8 @@ Chart.register(
   PointElement,
   BarElement,
   LinearScale,
-  Title,
   CategoryScale,
+  Title,
   Legend,
   Tooltip
 );
@@ -36,55 +35,60 @@ Chart.register(
 export default {
   name: "PlotChart",
   props: {
-    chartId: {
-      type: String,
-      required: true,
-    },
-    chartData: {
-      type: Object,
-      required: true,
-    },
+    chartData: { type: Object, required: true }, // { labels:[], datasets:[] }
     chartType: {
       type: String,
       default: "line",
-      validator: (value) => ["line", "bar"].includes(value),
+      validator: (v) => ["line", "bar"].includes(v),
     },
   },
-  data() {
-    return {
-      chartInstance: null,
-    };
+  data: () => ({ chart: null, observer: null, isVisible: false }),
+  async mounted() {
+    // Render only when the canvas is actually visible
+    this.observer = new IntersectionObserver(
+      ([entry]) => {
+        this.isVisible = entry.isIntersecting;
+        if (this.isVisible) {
+          this.renderChartSafely();
+          this.observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    this.observer.observe(this.$refs.canvasEl);
   },
-  mounted() {
-    this.renderChart();
+  beforeUnmount() {
+    this.observer?.disconnect();
+    this.destroyChart();
   },
   watch: {
     chartData: {
-      handler: "renderChart",
       deep: true,
+      handler() {
+        this.updateOrRender();
+      },
     },
-    chartType: "renderChart",
+    chartType() {
+      this.updateOrRender(true);
+    },
   },
   methods: {
-    renderChart() {
-      const ctx = document.getElementById(this.chartId);
-      if (!ctx) {
-        console.error("Canvas element not found for chart ID:", this.chartId);
-        return;
-      }
+    async renderChartSafely() {
+      await this.$nextTick();
+      const canvas = this.$refs.canvasEl;
+      if (!canvas || !canvas.isConnected) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx || !this._hasData()) return;
 
-      if (this.chartInstance) {
-        this.chartInstance.destroy();
-      }
-
+      this.destroyChart();
       const dataCopy = JSON.parse(JSON.stringify(this.chartData));
-
-      this.chartInstance = new Chart(ctx, {
+      this.chart = new Chart(ctx, {
         type: this.chartType,
         data: dataCopy,
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          animation: false, // avoid RAF race during tab switches
           plugins: {
             legend: { position: "top" },
             tooltip: { mode: "index", intersect: false },
@@ -96,12 +100,44 @@ export default {
         },
       });
     },
+    updateOrRender(resetType = false) {
+      if (!this.isVisible) return; // wait until visible
+      if (this.chart && this._hasData()) {
+        if (resetType) this.chart.config.type = this.chartType;
+        this.chart.data = JSON.parse(JSON.stringify(this.chartData));
+        this.chart.update();
+      } else {
+        this.renderChartSafely();
+      }
+    },
+    destroyChart() {
+      if (this.chart) {
+        this.chart.stop(); // stop animations first
+        this.chart.destroy();
+        this.chart = null;
+      }
+    },
+    _hasData() {
+      const d = this.chartData || {};
+      return (
+        Array.isArray(d.labels) &&
+        d.labels.length &&
+        Array.isArray(d.datasets) &&
+        d.datasets.length
+      );
+    },
   },
 };
 </script>
 
 <style scoped>
+.v-card {
+  position: relative;
+}
 canvas {
+  width: 100%;
+  height: 100%;
   min-height: 300px;
+  display: block;
 }
 </style>
