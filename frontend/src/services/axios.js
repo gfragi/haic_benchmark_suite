@@ -13,7 +13,7 @@ axios.interceptors.request.use(
 );
 
 const apiClient = axios.create({
-  baseURL: process.env.VUE_APP_ENDPOINT,
+  baseURL: process.env.VUE_APP_API_BASE_URL,
   withCredentials: false,
   headers: {
     Accept: "application/json",
@@ -21,5 +21,5 @@ const apiClient = axios.create({
   },
 });
 console.log("ENV:", process.env.NODE_ENV);
-console.log("API base:", process.env.VUE_APP_ENDPOINT);
+console.log("API base:", process.env.VUE_APP_API_BASE_URL);
 export default apiClient;
