@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: benchmarking-issuer
+  namespace: benchmarking
+spec:
+  acme:
+    email: gfragi@hua.gr        # <-- change me
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: le-prod-account-key
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+          ingressTemplate:
+            metadata:
+              annotations:
+                nginx.ingress.kubernetes.io/ssl-redirect: "false"
