@@ -1,15 +1,28 @@
-from unittest import result
-import yaml
 import json
+import yaml
 from pathlib import Path
 from datetime import datetime
+from typing import List, Dict, Any, Optional
+import random
+
 from haic_env_builder.components.agent import Agent
 from haic_env_builder.components.profile import Profile
 from haic_env_builder.components.task import Task
-from haic_env_builder.utils.metrics_logger import log_simulation_metrics
+from haic_env_builder.utils.metrics_logger import compute_metrics_from_log
 
 
-def simulate_environment(config_path: str):
+def _now_ts() -> str:
+    return datetime.now().strftime("%Y%m%d_%H%M%S")
+
+
+def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[str, Any]:
+    """
+    Runs a lightweight, deterministic (if seed set) simulation based on a YAML config.
+    Produces ONE timestamped file in metrics/ with both raw decisions and computed metrics.
+    """
+    if seed is not None:
+        random.seed(seed)
+
     path = Path(config_path)
     if not path.exists():
         raise FileNotFoundError(f"Config not found: {config_path}")
@@ -17,49 +30,65 @@ def simulate_environment(config_path: str):
     with open(path, "r") as f:
         config = yaml.safe_load(f)
 
-    # Parse components using classes
+    # ---- Parse components
     task = Task(**config["task"])
-    agents = [Agent(**agent) for agent in config["agents"]]
-    profiles = [Profile(**profile) for profile in config["profiles"]]
+    agents: List[Agent] = [Agent(**a) for a in config["agents"]]
+    profiles: List[Profile] = [Profile(**p) for p in config["profiles"]]
 
-    # Simulation loop (mocked)
+    # ---- Simple simulation loop
     steps = 5
-    decisions = []
+    # action pool derived from agent capabilities (fallback to generic verbs)
+    default_actions = ["classify", "highlight", "summarize", "speak", "respond", "move", "deliver"]
+    decisions: List[Dict[str, Any]] = []
+
     for step in range(steps):
         for agent in agents:
-            action = agent.act(task)
+            # pick an action from agent capabilities if possible
+            pool = agent.capabilities if agent.capabilities else default_actions
+            chosen = "classify" if "classify" in pool else random.choice(pool)
+
+            # create interaction attributes used by metrics
+            # (toy logic but reproducible with seed)
+            ai_suggested = (random.random() < 0.8)  # most actions come from AI suggestion
+            human_accepted = ai_suggested and (random.random() < 0.75)
+            success = human_accepted or (random.random() < 0.6)
+            latency_ms = int(300 + 400 * random.random())  # 300–700ms
+
             decisions.append({
                 "step": step,
                 "agent": agent.name,
-                "action": action
+                "action": chosen,
+                "ai_suggested": ai_suggested,
+                "human_accepted": human_accepted,
+                "success": success,
+                "latency_ms": latency_ms
             })
 
-    # Generate metrics (mock)
-    metrics = {
-        "steps": steps,
-        "total_actions": len(decisions),
-        "collaboration_score": round(0.6 + 0.4 * len(agents) / (len(profiles) + 1), 2),
-        "efficiency_score": 0.82,
-    }
+    # ---- Compute metrics FROM raw decisions
+    metrics = compute_metrics_from_log(
+        task_name=task.name,
+        agents=[a.name for a in agents],
+        decisions=decisions
+    )
 
+    # ---- Assemble single result object
     result = {
         "task": task.to_dict(),
-        "agents": [agent.name for agent in agents],
-        "profiles": [profile.profile_id for profile in profiles],
-        "metrics": metrics,
+        "agents": [a.to_dict() for a in agents],
+        "profiles": [p.to_dict() for p in profiles],
         "decisions": decisions,
-        "status": "success"
+        "metrics": metrics,
+        "status": "success",
     }
 
-    # Save result
-    save_path = Path("metrics") / f"{task.name.replace(' ', '_')}_metrics.json"
-    save_path.parent.mkdir(exist_ok=True)
-    
+    # ---- Persist ONE timestamped file under metrics/
+    out_dir = Path("metrics")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    fname = f"{task.name.replace(' ', '_')}_metrics_{_now_ts()}.json"
+    save_path = out_dir / fname
     with open(save_path, "w") as f:
         json.dump(result, f, indent=2)
 
-    log_path = log_simulation_metrics(result)
-    result["log_path"] = log_path
-    print(f"[✔] Simulation completed. Metrics saved to {log_path}")
-    
+    # also return path for the API / UI
+    result["log_path"] = str(save_path)
     return result

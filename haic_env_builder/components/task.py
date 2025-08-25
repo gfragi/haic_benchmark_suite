@@ -1,4 +1,3 @@
-# haic_env_builder/components/task.py
 from .base import Component
 
 class Task(Component):

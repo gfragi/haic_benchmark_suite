@@ -1,4 +1,3 @@
-# haic_env_builder/components/profile.py
 
 from .base import Component
 
