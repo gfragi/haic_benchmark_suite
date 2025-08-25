@@ -1,5 +1,4 @@
 
-# haic_env_builder/components/environment.py
 from .base import Component
 
 class Environment(Component):

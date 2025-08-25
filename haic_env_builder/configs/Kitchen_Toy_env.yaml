@@ -1,0 +1,17 @@
+task:
+  name: Kitchen Toy Task
+  description: Minimal cooks-style toy scenario
+  parameters:
+    scenario: kitchen
+    steps: 10
+agents:
+  - name: CookA
+    capabilities: ["move", "pickup", "place"]
+    modality: simulation
+  - name: CookB
+    capabilities: ["move", "deliver"]
+    modality: simulation
+profiles:
+  - id: cook_user_1
+    role: cook
+    skill_level: intermediate
