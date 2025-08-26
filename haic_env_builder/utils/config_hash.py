@@ -2,7 +2,7 @@ import hashlib
 import json
 from typing import Any, Dict
 
-def stable_config_hash(cfg: Dict[str, Any]) -> str:
+def compute_config_hash(cfg: Dict[str, Any]) -> str:
     """
     Produce a stable hash for the loaded YAML config dict. Ensures keys are sorted
     and non-ASCII preserved.
