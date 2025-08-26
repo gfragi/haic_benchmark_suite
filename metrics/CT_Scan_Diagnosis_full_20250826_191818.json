@@ -1,0 +1,229 @@
+{
+  "version": "sim-0.1.0",
+  "task": "CT Scan Diagnosis",
+  "seed": 999,
+  "config_hash": "0dfea8ce2f90",
+  "T": null,
+  "baseline_s": null,
+  "agents": [
+    "RadiologistAssistant",
+    "VoiceSupportBot"
+  ],
+  "profiles": [
+    "user123",
+    "user456"
+  ],
+  "decisions": [
+    {
+      "t": 0.0,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "classifying for task CT Scan Diagnosis",
+      "latency_ms": 400.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 1.0,
+      "agent": "VoiceSupportBot",
+      "actor_type": "ai",
+      "action": "performing speak",
+      "latency_ms": 400.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 2.0,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "classifying for task CT Scan Diagnosis",
+      "latency_ms": 410.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 3.0,
+      "agent": "VoiceSupportBot",
+      "actor_type": "ai",
+      "action": "performing respond",
+      "latency_ms": 410.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 4.0,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "classifying for task CT Scan Diagnosis",
+      "latency_ms": 420.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 5.0,
+      "agent": "VoiceSupportBot",
+      "actor_type": "ai",
+      "action": "performing respond",
+      "latency_ms": 420.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 6.0,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "classifying for task CT Scan Diagnosis",
+      "latency_ms": 430.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 7.0,
+      "agent": "VoiceSupportBot",
+      "actor_type": "ai",
+      "action": "performing speak",
+      "latency_ms": 430.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 8.0,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "classifying for task CT Scan Diagnosis",
+      "latency_ms": 440.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 9.0,
+      "agent": "VoiceSupportBot",
+      "actor_type": "ai",
+      "action": "performing respond",
+      "latency_ms": 440.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 10.0,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "classifying for task CT Scan Diagnosis",
+      "latency_ms": 450.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 11.0,
+      "agent": "VoiceSupportBot",
+      "actor_type": "ai",
+      "action": "performing speak",
+      "latency_ms": 450.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 12.0,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "classifying for task CT Scan Diagnosis",
+      "latency_ms": 460.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 13.0,
+      "agent": "VoiceSupportBot",
+      "actor_type": "ai",
+      "action": "performing speak",
+      "latency_ms": 460.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 14.0,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "classifying for task CT Scan Diagnosis",
+      "latency_ms": 470.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 15.0,
+      "agent": "VoiceSupportBot",
+      "actor_type": "ai",
+      "action": "performing speak",
+      "latency_ms": 470.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 16.0,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "classifying for task CT Scan Diagnosis",
+      "latency_ms": 480.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 17.0,
+      "agent": "VoiceSupportBot",
+      "actor_type": "ai",
+      "action": "performing respond",
+      "latency_ms": 480.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 18.0,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "classifying for task CT Scan Diagnosis",
+      "latency_ms": 490.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    },
+    {
+      "t": 19.0,
+      "agent": "VoiceSupportBot",
+      "actor_type": "ai",
+      "action": "performing speak",
+      "latency_ms": 490.0,
+      "duration_s": 0.9,
+      "correct": true,
+      "probs": null
+    }
+  ],
+  "metrics": {
+    "F": 63.15789473684211,
+    "D": 0.9,
+    "HCL": 0.8200000000000001,
+    "Tr": 1.0,
+    "A": 0.0,
+    "S": 0.0,
+    "EL": 0.0
+  },
+  "status": "success",
+  "written_at": "2025-08-26T19:18:18.392340"
+}

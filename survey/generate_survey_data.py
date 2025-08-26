@@ -1,7 +1,7 @@
 import requests
 import random
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 API_URL = "http://localhost:8000/survey"
 
@@ -42,7 +42,7 @@ def generate_payload():
     payload = {
         "survey_id": str(uuid.uuid4()),
         "user_id": f"user_{uuid.uuid4().hex[:8]}",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "pilot_tag": pilot,
         "app_version": random.choice(APP_VERSIONS),
         "ai_model_version": random.choice(AI_MODEL_VERSIONS),

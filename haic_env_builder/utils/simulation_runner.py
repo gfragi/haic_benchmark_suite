@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Dict, Any, List, Optional
 from pathlib import Path
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 from haic_env_builder.components.task import Task
 from haic_env_builder.components.agent import Agent
@@ -23,7 +23,7 @@ def _load_yaml_config(path: str) -> Dict[str, Any]:
 
 def _artifact_path(task_name: str) -> Path:
     METRICS_DIR.mkdir(parents=True, exist_ok=True)
-    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     safe = task_name.replace(" ", "_")
     return METRICS_DIR / f"{safe}_full_{ts}.json"
 

@@ -1,14 +1,12 @@
-import datetime
+from datetime import datetime, timezone
 import io
 import json
 import os
 import uuid
 from dotenv import load_dotenv
-from minio import Minio, S3Error
 from sqlmodel import Session
 from app.services.metrics import Metrics
 from app.models import EvaluationConfig, LogEntry
-from app.services.agg_metrics import calculate_metrics_for_group, save_evaluation_result
 from app.models.results import EvaluationResult, MetricGroup
 from app.utils.database import SessionLocal
 from app.utils.minio_utils import get_minio_client
@@ -181,7 +179,7 @@ def run_evaluation(config_id: int):
 
             result_data = {
                 'configuration_id': config.id,
-                'evaluation_date': str(datetime.datetime.utcnow()),
+                'evaluation_date': str(datetime.now(timezone.utc)),
                 'app_version': app_version_str,  # List of unique app versions
                 'ai_model_version': ai_model_version,  # Single AI model version for this evaluation
                 'metrics': results_by_group,
@@ -200,7 +198,7 @@ def run_evaluation(config_id: int):
             # Save EvaluationResult with the current AI model version
             db_result = EvaluationResult(
                 configuration_id=config.id,
-                evaluation_date=datetime.datetime.utcnow(),
+                evaluation_date=datetime.now(timezone.utc) ,
                 result_minio_path=result_file_path,
                 app_version=app_version_str,  # Store app versions as a comma-separated string
                 ai_model_version=ai_model_version  # Single AI model version for this evaluation
