@@ -1,0 +1,9 @@
+{
+  "decisions": [
+    {"t": 0.0, "actor_type": "human", "duration_s": 1.0, "correct": true,  "action":"x"},
+    {"t": 5.0, "actor_type": "ai",    "duration_s": 0.5, "correct": true,  "action":"y"},
+    {"t": 9.0, "actor_type": "human", "duration_s": 1.2, "correct": false, "action":"x"}
+  ],
+  "T": 10.0,
+  "baseline_s": 8.0
+}

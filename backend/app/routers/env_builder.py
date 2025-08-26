@@ -1,5 +1,8 @@
 from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel
+
+from app.models.api import ConfigList, MessageWithPath, ErrorEnvelope
+from app.utils.errors import http_error
 from haic_env_builder.config_builder.builder import ConfigBuilder
 
 from pathlib import Path
@@ -14,7 +17,9 @@ class ConfigRequest(BaseModel):
     agent_definitions: list
     profile_definitions: list
 
-@router.post("/generate_config")
+@router.post("/generate_config",
+             response_model=MessageWithPath,
+             responses={422: {"model": ErrorEnvelope}})
 def generate_config(request: ConfigRequest):
     builder = ConfigBuilder()
 
@@ -36,20 +41,19 @@ def generate_config(request: ConfigRequest):
     return {"message": "Environment config generated", "path": path}
 
 
-@router.get("/list_configs")
+@router.get("/list_configs", response_model=ConfigList)
 def list_configs():
     config_dir = Path("haic_env_builder/configs")
     configs = [f.name for f in config_dir.glob("*.yaml")]
     return {"available_configs": configs}
 
 
-@router.get("/load_config")
+@router.get("/load_config",
+            responses={404: {"model": ErrorEnvelope}})
 def load_config(name: str = Query(..., description="YAML config filename")):
     path = Path("haic_env_builder/configs") / name
     if not path.exists():
-        raise HTTPException(status_code=404, detail="Config not found")
-
+        http_error(404, "NOT_FOUND", "Config not found", {"name": name})
     with open(path, "r") as f:
         data = yaml.safe_load(f)
-
     return {"config": data}
