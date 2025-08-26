@@ -1,108 +1,103 @@
 from __future__ import annotations
-import yaml, json, random, time
 from pathlib import Path
-from datetime import datetime
+from typing import Any, Dict, List, Optional
+import yaml
+import random
 
-from haic_env_builder.components.agent import Agent
-from haic_env_builder.components.profile import Profile
 from haic_env_builder.components.task import Task
-from haic_env_builder.utils.metrics_logger import log_simulation_metrics
+from haic_env_builder.components.profile import Profile
+from haic_env_builder.components.agent import Agent
+from haic_env_builder.utils.random_seed import set_global_seed
+from haic_env_builder.utils.config_hash import stable_config_hash
+from haic_env_builder.utils.metrics_logger import log_run_artifacts
 from haic_env_builder.utils.metrics import compute_metrics
 
-METRICS_DIR = Path("metrics")
+def _infer_total_time(steps: int, dt: float) -> float:
+    # If steps timestamps are 0, dt, 2dt, ..., (steps-1)dt -> total_time = (steps-1)*dt
+    if steps <= 1:
+        return 0.0
+    return (steps - 1) * dt
 
-def _timestamp() -> str:
-    return datetime.now().strftime("%Y%m%d_%H%M%S")
-
-def simulate_environment(config_path: str, seed: int | None = None):
+def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[str, Any]:
     path = Path(config_path)
     if not path.exists():
         raise FileNotFoundError(f"Config not found: {config_path}")
 
-    if seed is not None:
-        random.seed(seed)
-
-    with open(path, "r") as f:
+    with open(path, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
+    # 1) Seed all RNGs for reproducibility
+    set_global_seed(seed)
+
+    # 2) Parse components
     task = Task(**config["task"])
     agents = [Agent(**a) for a in config["agents"]]
     profiles = [Profile(**p) for p in config["profiles"]]
 
-    # --- Simple interaction loop (mock) -------------------------------------
-    steps = 5
-    decisions = []
-    last_source = "human"
+    # 3) Deterministic sim loop params
+    steps: int = int(config.get("sim", {}).get("steps", 5))
+    dt: float = float(config.get("sim", {}).get("dt", 0.5))   # seconds per step
+
+    # 4) Decisions (deterministic timestamps; stable latencies from seeded RNG)
+    decisions: List[Dict[str, Any]] = []
+    t = 0.0
+    cumulative_reward = 0.0
+
     for step in range(steps):
         for agent in agents:
-            # Alternate source to let fluency/adaptability have signal
-            source = "ai" if last_source == "human" else "human"
-            last_source = source
+            # deterministic latency draw (seeded)
+            base_lat = 0.2 if agent.modality == "text" else 0.35
+            jitter = random.uniform(-0.05, 0.05)  # stable under fixed seed
+            latency = max(0.01, base_lat + jitter)
 
-            latency_ms = random.randint(500, 2300) if source == "ai" else random.randint(800, 2800)
-            time.sleep(0.0)  # no real wait, keep 0 for speed
-
-            action = "classify" if "classify" in agent.capabilities else (agent.capabilities[0] if agent.capabilities else "idle")
+            # dummy accepted flag for ai actors (if your agent semantics demand)
             accepted = None
-            override = None
-            error = random.random() < 0.05
-            correction = random.random() < 0.02
-            risk = random.uniform(0.0, 0.9)
+            if "suggest" in agent.capabilities or "classify" in agent.capabilities:
+                # simulate a “human accepted AI suggestion” ~ 70% (seeded)
+                accepted = random.random() < 0.7
 
-            if source == "ai":
-                accepted = random.random() > 0.2  # human usually accepts
-            else:
-                override = random.random() < 0.1   # human sometimes overrides AI
+            # update reward deterministically (toy)
+            reward_delta = 0.05 if accepted or accepted is None else -0.02
+            cumulative_reward += reward_delta
 
             decisions.append({
-                "step": step,
-                "agent": agent.name,
-                "source": source,
-                "action": action,
-                "latency_ms": latency_ms,
+                "t": round(t, 6),
+                "actor": "ai" if agent.name.lower().endswith("assistant") else "human",
+                "action": agent.act(task),
+                "latency": round(latency, 6),
                 "accepted": accepted,
-                "override": override,
-                "error": error,
-                "correction": correction,
-                "risk": risk,
+                "reward": round(cumulative_reward, 6),
             })
+        t += dt
 
-    # --- Real metrics --------------------------------------------------------
-    hc_metrics = compute_metrics(decisions)
+    # 5) Compute metrics (deterministic given seed+config)
+    total_time = _infer_total_time(steps, dt)
+    metrics = compute_metrics(
+    decisions,
+    total_time=total_time,
+    steps=steps,
+    num_agents=len(agents),
+    dt=dt,
+)
 
-    result = {
+    # 6) Build full result payload with provenance
+    cfg_hash = stable_config_hash(config)
+    full_result = {
         "task": task.to_dict(),
         "agents": [a.to_dict() for a in agents],
         "profiles": [p.to_dict() for p in profiles],
-        "metrics": hc_metrics,
+        "sim": {"steps": steps, "dt": dt, "total_time": total_time},
+        "provenance": {
+            "seed": seed,
+            "config_hash": cfg_hash,
+            "config_path": str(path),
+        },
         "decisions": decisions,
+        "metrics": metrics,
         "status": "success",
-        "seed": seed,
     }
 
-    # Save full run + summary under /metrics with consistent naming
-    METRICS_DIR.mkdir(parents=True, exist_ok=True)
-    base = task.name.replace(" ", "_")
-    ts = _timestamp()
-
-    full_path = METRICS_DIR / f"{base}_full_{ts}.json"
-    with open(full_path, "w") as f:
-        json.dump(result, f, indent=2)
-
-    summary = {
-        "task": task.name,
-        "timestamp": ts,
-        "metrics": hc_metrics,
-        "agents": [a.name for a in agents],
-        "profiles": [p.profile_id for p in profiles],
-        "seed": seed,
-        "file": full_path.name,
-    }
-    summary_path = METRICS_DIR / f"{base}_summary_{ts}.json"
-    with open(summary_path, "w") as f:
-        json.dump(summary, f, indent=2)
-
-    # Keep the existing “metrics logger” file for backward compatibility
-    result["log_path"] = log_simulation_metrics(result)
-
-    return result
+    # 7) Write artifacts (runs/ + metrics/)
+    paths = log_run_artifacts(task.name, seed, cfg_hash, full_result, metrics)
+    full_result["artifact_paths"] = paths
+    return full_result
