@@ -1,0 +1,21 @@
+{
+  "task": {
+    "name": "CT Scan Diagnosis",
+    "description": "Auto-generated task",
+    "parameters": {
+      "scenario": "radiologist",
+      "steps": 6
+    }
+  },
+  "metrics": {
+    "F": 0.5833333333333334,
+    "D": 0.7916666666666666,
+    "HCL": 0.08333333333333333,
+    "Tr": 0.8,
+    "A": 0.0,
+    "S": 1.0,
+    "EL": 0.397456279809221
+  },
+  "num_decisions": 12,
+  "status": "success"
+}
