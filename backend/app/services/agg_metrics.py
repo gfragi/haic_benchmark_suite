@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from app.models import LogEntry, EvaluationConfig, EvaluationResult
 from app.services.metrics import Metrics
@@ -90,7 +90,7 @@ def save_evaluation_result(db: Session, configuration_id: int, aggregated_metric
         ai_assistance_rate=aggregated_metrics.get("Ai Assistance Rate", 0),
         learning_efficiency=aggregated_metrics.get("Learning Efficiency", 0),
         correction_efficiency=aggregated_metrics.get("Correction Efficiency", 0),
-        evaluation_date=datetime.datetime.utcnow()
+        evaluation_date=datetime.now(timezone.utc) 
     )
 
     db.add(result)

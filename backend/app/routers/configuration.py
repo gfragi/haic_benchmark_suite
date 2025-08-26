@@ -1,4 +1,4 @@
-from datetime import datetime as dt
+from datetime import datetime, timezone
 import logging
 from typing import List
 from fastapi import APIRouter, HTTPException, Depends
@@ -37,7 +37,7 @@ def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(g
         ai_model_type=config.ai_model_type,
         description=config.description,
         metrics=selected_metrics,  # Save the expanded list of metrics
-        evaluation_date=dt.utcnow(),
+        evaluation_date=datetime.now(timezone.utc),
         config_type=config.config_type,
         evaluation_status=config.evaluation_status
     )
