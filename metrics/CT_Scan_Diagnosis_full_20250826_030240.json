@@ -1,0 +1,174 @@
+{
+  "task": {
+    "name": "CT Scan Diagnosis",
+    "description": "Auto-generated task",
+    "parameters": {
+      "scenario": "radiologist",
+      "steps": 6
+    }
+  },
+  "agents": [
+    {
+      "name": "RadiologistAssistant",
+      "capabilities": [
+        "classify",
+        "highlight",
+        "summarize"
+      ],
+      "modality": "text"
+    },
+    {
+      "name": "VoiceSupportBot",
+      "capabilities": [
+        "speak",
+        "respond"
+      ],
+      "modality": "audio"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "user123",
+      "skill_level": "expert",
+      "role": "radiologist"
+    },
+    {
+      "id": "user456",
+      "skill_level": "novice",
+      "role": "technician"
+    }
+  ],
+  "metrics": {
+    "F": 0.763,
+    "D": 0.425,
+    "HCL": 0.433,
+    "Tr": 1.0,
+    "A": 0.685,
+    "S": 0.94,
+    "EL": 0.439
+  },
+  "decisions": [
+    {
+      "step": 0,
+      "agent": "RadiologistAssistant",
+      "source": "ai",
+      "action": "classify",
+      "latency_ms": 1426,
+      "accepted": true,
+      "override": null,
+      "error": false,
+      "correction": false,
+      "risk": 0.7030962498417874
+    },
+    {
+      "step": 0,
+      "agent": "VoiceSupportBot",
+      "source": "human",
+      "action": "speak",
+      "latency_ms": 2551,
+      "accepted": null,
+      "override": false,
+      "error": false,
+      "correction": false,
+      "risk": 0.46071777513762496
+    },
+    {
+      "step": 1,
+      "agent": "RadiologistAssistant",
+      "source": "ai",
+      "action": "classify",
+      "latency_ms": 2124,
+      "accepted": true,
+      "override": null,
+      "error": false,
+      "correction": false,
+      "risk": 0.12761561633351054
+    },
+    {
+      "step": 1,
+      "agent": "VoiceSupportBot",
+      "source": "human",
+      "action": "speak",
+      "latency_ms": 2623,
+      "accepted": null,
+      "override": false,
+      "error": false,
+      "correction": false,
+      "risk": 0.8839740787189004
+    },
+    {
+      "step": 2,
+      "agent": "RadiologistAssistant",
+      "source": "ai",
+      "action": "classify",
+      "latency_ms": 1839,
+      "accepted": true,
+      "override": null,
+      "error": false,
+      "correction": false,
+      "risk": 0.5608156063668479
+    },
+    {
+      "step": 2,
+      "agent": "VoiceSupportBot",
+      "source": "human",
+      "action": "speak",
+      "latency_ms": 929,
+      "accepted": null,
+      "override": true,
+      "error": false,
+      "correction": false,
+      "risk": 0.21774871229869328
+    },
+    {
+      "step": 3,
+      "agent": "RadiologistAssistant",
+      "source": "ai",
+      "action": "classify",
+      "latency_ms": 1450,
+      "accepted": true,
+      "override": null,
+      "error": false,
+      "correction": false,
+      "risk": 0.17578923975834024
+    },
+    {
+      "step": 3,
+      "agent": "VoiceSupportBot",
+      "source": "human",
+      "action": "speak",
+      "latency_ms": 1402,
+      "accepted": null,
+      "override": false,
+      "error": false,
+      "correction": false,
+      "risk": 0.41159689343960193
+    },
+    {
+      "step": 4,
+      "agent": "RadiologistAssistant",
+      "source": "ai",
+      "action": "classify",
+      "latency_ms": 1628,
+      "accepted": true,
+      "override": null,
+      "error": false,
+      "correction": false,
+      "risk": 0.6370286593481546
+    },
+    {
+      "step": 4,
+      "agent": "VoiceSupportBot",
+      "source": "human",
+      "action": "speak",
+      "latency_ms": 1270,
+      "accepted": null,
+      "override": false,
+      "error": false,
+      "correction": false,
+      "risk": 0.5068280345921151
+    }
+  ],
+  "status": "success",
+  "seed": 11
+}

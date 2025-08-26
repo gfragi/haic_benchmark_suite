@@ -33,4 +33,5 @@ api.include_router(fairness.router,       prefix="/fairness",      tags=["Fairne
 api.include_router(env_builder.router,    prefix="/env",           tags=["Environment Builder"])
 api.include_router(simulator.router,      prefix="/simulator",     tags=["Simulator"])
 
-app.include_router(api)  # <<—— mount it
+
+app.include_router(api)
