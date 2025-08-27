@@ -89,6 +89,54 @@ When a simulation or pilot run completes, logs are wrapped in a run artifact:
 | `status`      | `string` | `"success"` or `"error"`.                           |
 
 
+## Example Decision Logs
+
+### Example A – Radiologist scenario
+
+```json
+{
+  "t": 0.0,
+  "agent": "RadiologistAssistant",
+  "actor_type": "ai",
+  "action": "classifying CT scan",
+  "latency_ms": 400.0,
+  "duration_s": 0.9,
+  "correct": true
+}
+{
+  "t": 1.5,
+  "agent": "Dr. Smith",
+  "actor_type": "human",
+  "action": "reviewing AI suggestion",
+  "latency_ms": 1200.0,
+  "duration_s": 2.5,
+  "correct": true
+}
+
+```
+
+### Example B – Surrogate similarity with probs
+
+```json
+{
+  "t": 5.0,
+  "agent": "SurrogateAgent",
+  "actor_type": "ai",
+  "action": "suggest treatment",
+  "probs": {"A": 0.7, "B": 0.2, "C": 0.1},
+  "surrogate_probs": {"A": 0.65, "B": 0.25, "C": 0.1}
+}
+{
+  "t": 6.0,
+  "agent": "Dr. Lee",
+  "actor_type": "human",
+  "action": "choosing treatment",
+  "probs": {"A": 0.6, "B": 0.3, "C": 0.1},
+  "surrogate_probs": {"A": 0.65, "B": 0.25, "C": 0.1}
+}
+```
+
+
 ## Usage Notes
 
 - All timestamps (t) must be relative to task start (float, seconds).
