@@ -133,17 +133,21 @@ Each metric includes:
 
 #### Similarity
 
-- **Surrogate Similarity (S)**
-    - Option 1 – Probability overlap:
+**Surrogate Similarity (S)**
+
+   - Option 1 – Probability overlap:
         ```math
         S = (1/M) ∑_i ∑_a min(p_i(a), q_i(a))
-        ```
+
+       ```
         Measures how well surrogate predicts human probabilities.
-    - Option 2 – Action match:
+
+   - Option 2 – Action match:
+
         ```math
-        S = #matching actions / #compared actions
-    ```
-    Measures how well surrogate replicates human actions.
+      S = \# matching actions / \#compared actions
+        ```
+        Measures how well surrogate replicates human actions.
 
 ### 2.3 Example Metric Output
 
