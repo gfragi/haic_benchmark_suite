@@ -36,7 +36,7 @@ def test_e2e_simulate_and_recompute(cfg_name: str):
     assert cfg_path.exists(), f"Missing config: {cfg_path}"
 
     # Run simulation (deterministic with seed)
-    result = simulate_environment(str(cfg_path), seed=123)
+    result = simulate_environment(str(cfg_path), seed=666)
 
     # Basic shape
     assert "task" in result and "metrics" in result and "decisions" in result
