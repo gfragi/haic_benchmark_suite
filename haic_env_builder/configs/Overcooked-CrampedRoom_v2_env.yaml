@@ -1,0 +1,28 @@
+task:
+  name: Overcooked Cramped Room (v2)
+  description: Two-player layout with tight corridors.
+  parameters:
+    environment: overcooked
+    env_params:
+      layout_name: cramped_room
+      horizon_s: 30        # episode length in seconds (adapter decides how to interpret)
+      dt: 0.12             # synthetic tick used if the adapter doesn’t return 't'
+    # optional scoring knobs:
+    baseline_s: 30
+    rt_max: 1.0
+
+agents:
+  - name: agent_0
+    modality: policy
+    capabilities: [move, interact]
+  - name: agent_1
+    modality: policy
+    capabilities: [move, interact]
+
+profiles:
+  - id: p0
+    role: chef
+    skill_level: expert
+  - id: p1
+    role: chef
+    skill_level: novice

@@ -1,0 +1,22 @@
+task:
+  name: Overcooked-CrampedRoom
+  description: Collaborative cooking in cramped_room
+  parameters:
+    adapter: overcooked_hcai
+    layout_name: cramped_room
+    horizon_s: 15
+    horizon: 400
+    reward_shaping: true
+
+agents:
+  - name: agent_0
+    modality: policy
+    runtime: random_discrete
+    capabilities: [move, interact]
+
+  - name: agent_1
+    modality: policy
+    runtime: random_discrete
+    capabilities: [move, interact]
+
+profiles: []

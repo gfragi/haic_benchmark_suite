@@ -1,0 +1,17 @@
+{
+  "task_name": "CT Scan Diagnosis (v2)",
+  "task_description": "Minimal CT workflow using the ct_scan adapter",
+  "task_parameters": {
+    "environment": "ct_scan",
+    "env_params": { "steps": 15, "dt": 0.12 },
+    "rt_max": 5.0
+  },
+  "agent_definitions": [
+    {"name":"RadiologistAssistant","modality":"policy","capabilities":["classify","highlight","summarize"]},
+    {"name":"VoiceSupportBot","modality":"policy","capabilities":["speak","respond"]}
+  ],
+  "profile_definitions": [
+    {"profile_id":"user123","role":"radiologist","skill_level":"expert"},
+    {"profile_id":"user456","role":"technician","skill_level":"novice"}
+  ]
+}
