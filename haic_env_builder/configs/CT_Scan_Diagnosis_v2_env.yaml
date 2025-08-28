@@ -1,0 +1,48 @@
+task:
+  name: CT Scan Diagnosis (v2)
+  description: Minimal CT workflow using the ct_scan adapter
+  parameters:
+    environment: ct_scan
+    env_params:
+      steps: 15
+      dt: 0.12
+    dt: 0.12
+    rt_max: 5.0
+agents:
+  - name: RadiologistAssistant
+    modality: policy
+    capabilities: [classify, highlight, summarize]
+    action_space:
+      - open_study
+      - select_series
+      - scroll_slice
+      - window_level
+      - mark_finding
+      - add_measurement
+      - compare_priors
+      - dictate_note
+      - finalize_report
+      - request_recon
+    runtime_params: {}
+
+  - name: VoiceSupportBot
+    modality: policy
+    capabilities: [speak, respond]
+    action_space:
+      - speak_prompt
+      - confirm_patient
+      - notify_radiologist
+      - read_checklist
+      - record_finding
+      - handoff_call
+    runtime_params: {}
+
+profiles:
+- profile_id: user123
+  role: radiologist
+  skill_level: expert
+  metadata: {}
+- profile_id: user456
+  role: technician
+  skill_level: novice
+  metadata: {}

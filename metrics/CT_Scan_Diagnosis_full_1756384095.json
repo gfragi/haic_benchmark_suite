@@ -1,0 +1,426 @@
+{
+  "task": "CT Scan Diagnosis",
+  "seed": null,
+  "agents": [
+    "RadiologistAssistant",
+    "VoiceSupportBot"
+  ],
+  "profiles": [
+    "user123",
+    "user456"
+  ],
+  "metrics": {
+    "F": 13200.878106353683,
+    "D": 0.0,
+    "HCL": 1.0,
+    "Tr": 1.0,
+    "A": 0.0,
+    "S": 0.0,
+    "EL": 0.0,
+    "EfficiencyScore": 1.0
+  },
+  "decisions": [
+    {
+      "t": 1.430511474609375e-06,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "STAY",
+      "latency_ms": 182.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user123",
+        "skill_level": "expert",
+        "role": "radiologist"
+      }
+    },
+    {
+      "t": 1.430511474609375e-06,
+      "agent": "VoiceSupportBot",
+      "actor_type": "human",
+      "action": "INTERACT",
+      "latency_ms": 1442.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user456",
+        "skill_level": "novice",
+        "role": "technician"
+      }
+    },
+    {
+      "t": 0.010366439819335938,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "STAY",
+      "latency_ms": 161.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user123",
+        "skill_level": "expert",
+        "role": "radiologist"
+      }
+    },
+    {
+      "t": 0.010366439819335938,
+      "agent": "VoiceSupportBot",
+      "actor_type": "human",
+      "action": "EAST",
+      "latency_ms": 1226.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user456",
+        "skill_level": "novice",
+        "role": "technician"
+      }
+    },
+    {
+      "t": 0.020443439483642578,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "INTERACT",
+      "latency_ms": 358.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user123",
+        "skill_level": "expert",
+        "role": "radiologist"
+      }
+    },
+    {
+      "t": 0.020443439483642578,
+      "agent": "VoiceSupportBot",
+      "actor_type": "human",
+      "action": "SOUTH",
+      "latency_ms": 1552.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user456",
+        "skill_level": "novice",
+        "role": "technician"
+      }
+    },
+    {
+      "t": 0.030508041381835938,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "INTERACT",
+      "latency_ms": 362.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user123",
+        "skill_level": "expert",
+        "role": "radiologist"
+      }
+    },
+    {
+      "t": 0.030508041381835938,
+      "agent": "VoiceSupportBot",
+      "actor_type": "human",
+      "action": "INTERACT",
+      "latency_ms": 2013.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user456",
+        "skill_level": "novice",
+        "role": "technician"
+      }
+    },
+    {
+      "t": 0.040574073791503906,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "WEST",
+      "latency_ms": 330.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user123",
+        "skill_level": "expert",
+        "role": "radiologist"
+      }
+    },
+    {
+      "t": 0.040574073791503906,
+      "agent": "VoiceSupportBot",
+      "actor_type": "human",
+      "action": "STAY",
+      "latency_ms": 204.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user456",
+        "skill_level": "novice",
+        "role": "technician"
+      }
+    },
+    {
+      "t": 0.05063915252685547,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "SOUTH",
+      "latency_ms": 423.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user123",
+        "skill_level": "expert",
+        "role": "radiologist"
+      }
+    },
+    {
+      "t": 0.05063915252685547,
+      "agent": "VoiceSupportBot",
+      "actor_type": "human",
+      "action": "STAY",
+      "latency_ms": 1108.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": true,
+      "profile": {
+        "profile_id": "user456",
+        "skill_level": "novice",
+        "role": "technician"
+      }
+    },
+    {
+      "t": 0.060704708099365234,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "SOUTH",
+      "latency_ms": 279.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user123",
+        "skill_level": "expert",
+        "role": "radiologist"
+      }
+    },
+    {
+      "t": 0.060704708099365234,
+      "agent": "VoiceSupportBot",
+      "actor_type": "human",
+      "action": "EAST",
+      "latency_ms": 2204.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user456",
+        "skill_level": "novice",
+        "role": "technician"
+      }
+    },
+    {
+      "t": 0.07077693939208984,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "SOUTH",
+      "latency_ms": 330.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user123",
+        "skill_level": "expert",
+        "role": "radiologist"
+      }
+    },
+    {
+      "t": 0.07077693939208984,
+      "agent": "VoiceSupportBot",
+      "actor_type": "human",
+      "action": "WEST",
+      "latency_ms": 2441.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": true,
+      "profile": {
+        "profile_id": "user456",
+        "skill_level": "novice",
+        "role": "technician"
+      }
+    },
+    {
+      "t": 0.080841064453125,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "EAST",
+      "latency_ms": 247.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user123",
+        "skill_level": "expert",
+        "role": "radiologist"
+      }
+    },
+    {
+      "t": 0.080841064453125,
+      "agent": "VoiceSupportBot",
+      "actor_type": "human",
+      "action": "STAY",
+      "latency_ms": 964.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": true,
+      "profile": {
+        "profile_id": "user456",
+        "skill_level": "novice",
+        "role": "technician"
+      }
+    },
+    {
+      "t": 0.09090447425842285,
+      "agent": "RadiologistAssistant",
+      "actor_type": "ai",
+      "action": "SOUTH",
+      "latency_ms": 85.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user123",
+        "skill_level": "expert",
+        "role": "radiologist"
+      }
+    },
+    {
+      "t": 0.09090447425842285,
+      "agent": "VoiceSupportBot",
+      "actor_type": "human",
+      "action": "SOUTH",
+      "latency_ms": 358.0,
+      "duration_s": 0.0,
+      "correct": true,
+      "probs": null,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "profile": {
+        "profile_id": "user456",
+        "skill_level": "novice",
+        "role": "technician"
+      }
+    }
+  ],
+  "info": {},
+  "status": "success"
+}

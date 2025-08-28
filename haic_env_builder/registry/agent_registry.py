@@ -1,8 +1,16 @@
-from typing import Dict, Type
-from haic_env_builder.adapters.model_runtime import AgentRuntime
-from haic_env_builder.adapters.random_policy import RandomDiscretePolicy
+from typing import Callable, Dict, Any
 
-AGENT_RUNTIMES: Dict[str, Type[AgentRuntime]] = {
-    "random_discrete": RandomDiscretePolicy,
-    # "ppo": PPOAdapter, "crew": CrewRuntime, ...
+def _load_random_policy():
+    from haic_env_builder.adapters.random_policy import RandomDiscretePolicy
+    return RandomDiscretePolicy
+
+RUNTIME_POLICIES: Dict[str, Callable[[], Any]] = {
+    "random_discrete": _load_random_policy,
 }
+
+def make_policy(name: str, **kw):
+    factory = RUNTIME_POLICIES.get(name)
+    if not factory:
+        raise KeyError(f"Unknown policy: {name}")
+    cls = factory()
+    return cls(**kw)

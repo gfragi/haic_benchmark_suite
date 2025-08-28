@@ -34,3 +34,6 @@ class RunArtifact(BaseModel):
     metrics: Metrics
     status: Literal["success", "failed"] = "success"
     written_at: datetime = Field(default_factory=datetime.utcnow)
+    result["metrics_by_agent"] = compute_metrics_by_agent(decisions, T=explicit_T, baseline_s=baseline_s, rt_max=rt_max)
+
+    

@@ -5,7 +5,6 @@ import json
 import re
 from app.models.api import SimulationEnvelope, ErrorEnvelope
 from app.utils.errors import http_error
-from haic_env_builder.utils.simulation_runner import simulate_environment
 
 
 router = APIRouter()
@@ -13,8 +12,7 @@ router = APIRouter()
 METRICS_DIR = Path("metrics").resolve()
 CONFIG_DIR = Path("haic_env_builder/configs").resolve()
 
-def _safe_join(base: Path, name: str, expected_suffix: str) -> Path:
-    # basic traversal + suffix check
+def _safe_join(base: Path, name: str, expected_suffix: str | tuple[str, ...]) -> Path:
     p = (base / name).resolve()
     if not str(p).startswith(str(base)) or not p.name.endswith(expected_suffix):
         raise HTTPException(status_code=400, detail=f"Invalid file: {name}")
