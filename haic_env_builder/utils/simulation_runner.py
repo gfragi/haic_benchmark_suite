@@ -14,6 +14,8 @@ from haic_env_builder.utils.metrics import compute_metrics
 from haic_env_builder.utils.random_seed import set_all_seeds
 from haic_env_builder.utils.event_enrichment import enrich_decisions
 from haic_env_builder.adapters.registry import create_adapter
+from haic_env_builder.utils.metrics import compute_metrics_by_agent
+
 
 # -------------------------
 # Helpers
@@ -116,7 +118,7 @@ def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[s
     # Generic rollout loop
     decisions: List[Dict[str, Any]] = []
     info: Dict[str, Any] = {}
-    env_events_all: List[Dict[str, Any]] = []  # accumulate across steps
+    env_events_all: List[Dict[str, Any]] = []
 
     while True:
         # 1) Build action map; keep raw (proposed) before clamping to space
@@ -213,6 +215,10 @@ def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[s
     except Exception:
         pass
 
+    metrics_by_agent = compute_metrics_by_agent(decisions=decisions, T=explicit_T,
+                                            baseline_s=params.get("baseline_s"),
+                                            rt_max=params.get("rt_max", 5.0))
+
     # Response payload
     result = {
         "task": task.name,
@@ -235,6 +241,7 @@ def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[s
             "dt": dt,
         },
         "events": env_events_all,
+        "metrics_by_agent": metrics_by_agent,
     }
 
     # Persist artifact with readable timestamp + hash in filename
