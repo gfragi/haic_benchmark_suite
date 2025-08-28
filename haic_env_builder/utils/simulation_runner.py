@@ -162,7 +162,8 @@ def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[s
         for r in dec_rows:
             an = r.get("agent")
             pa = proposed_map.get(an)
-            r["proposed_action"] = pa if pa is not None else r.get("action")
+            if r.get("surrogate_action") is None and r.get("proposed_action") is not None:
+                r["surrogate_action"] = r["proposed_action"] 
 
         # 6) Append rows; keep env events separate
         decisions.extend(dec_rows)
