@@ -1,22 +1,20 @@
-import apiClient from "./axios";
+// frontend/src/services/configurationService.js
+import api from "./axios";
 
-export default {
-  getAllConfigs() {
-    return apiClient.get("/configuration/list/");
-  },
-  getConfigById(configuration_id) {
-    return apiClient.get(`/configuration/${configuration_id}`);
-  },
-  createConfig(configData) {
-    return apiClient.post("/configuration/new", configData);
-  },
-  updateConfig(configuration_id, configData) {
-    return apiClient.put(
-      `/configuration/update/${configuration_id}`,
-      configData
-    );
-  },
-  deleteConfig(configuration_id) {
-    return apiClient.delete(`/configuration/delete/${configuration_id}`);
-  },
-};
+export async function generateConfig(payload) {
+  // payload: { task_name, task_parameters, agent_definitions, profile_definitions }
+  const { data } = await api.post("/v1/env/generate_config", payload);
+  return data; // { message, path }
+}
+
+export async function listConfigs() {
+  const { data } = await api.get("/v1/env/list_configs");
+  return data?.available_configs || [];
+}
+
+export async function loadConfig(name) {
+  const { data } = await api.get("/v1/env/load_config", {
+    params: { name },
+  });
+  return data?.config || data;
+}
