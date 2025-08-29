@@ -1,13 +1,25 @@
-import axios from "axios";
+// frontend/src/services/simulationService.js
+import api from "./axios";
 
-const apiBase = "http://localhost:8000";
+export async function simulate(configName, seed = null) {
+  const params = new URLSearchParams({ name: configName });
+  if (seed !== null && seed !== undefined && seed !== "") {
+    params.append("seed", String(seed));
+  }
+  const { data } = await api.post(
+    `/api/v1/simulator/simulate?${params.toString()}`
+  );
+  return data?.simulation_result || data; // backend returns { simulation_result: ... }
+}
 
-export const fetchConfigs = async () => {
-  const res = await axios.get(`${apiBase}/env/list_configs`);
-  return res.data.available_configs;
-};
+export async function listMetrics() {
+  const { data } = await api.get("/v1/simulator/list_metrics");
+  return data?.files || [];
+}
 
-export const simulateConfig = async (name) => {
-  const res = await axios.post(`${apiBase}/simulator/simulate?name=${name}`);
-  return res.data.simulation_result;
-};
+export async function loadMetrics(file) {
+  const { data } = await api.get("/v1/simulator/load_metrics", {
+    params: { file },
+  });
+  return data?.metrics || data;
+}
