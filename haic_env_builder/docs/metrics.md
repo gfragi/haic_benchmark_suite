@@ -82,9 +82,9 @@ Each metric includes:
   Tr = 1 - \frac{\text{errors}}{N}
   ```
 
-- **Meaning:** High trust = few overrides/errors relative to total AI suggestions.  
-- **Example:** 3 errors in 40 interactions → \( Tr = 0.925 \).  
-- **Data Required:** Decision field `correct` or `event_type`.  
+- **Meaning:** High trust = few overrides/errors relative to total AI suggestions.
+- **Example:** 3 errors in 40 interactions → \( Tr = 0.925 \).
+- **Data Required:** Decision field `correct` or `event_type`.
 
 ---
 
@@ -128,10 +128,10 @@ S = \frac{\#\{\text{matching actions}\}}{\#\{\text{compared actions}\}}
 
 ### **Similarity (S)**
 
-**Primary definition:**  
+**Primary definition:**
 When probability distributions (`probs` and `surrogate_probs`) are logged, Similarity is computed using a distributional overlap measure, such as Jensen–Shannon similarity.
 
-**Fallback definition:**  
+**Fallback definition:**
 If probability distributions are not available, but both `action` and `surrogate_action` are logged, Similarity is computed as a simple match rate:
 
 ```math
@@ -151,7 +151,6 @@ This approach ensures the metric is always computable—even when only categoric
 | **Trust / Transparency**        | **Tr**     | $1 - \text{errors}/N$                                                 | $[0, 1]$                          | Proxy for trust in AI. High = humans accept AI, low = overrides/errors frequent. |
 | **Adaptability**                | **A**      | $(Acc_{late} - Acc_{early})/Acc_{early}$                              | Usually $[-1, +1]$                | Improvement across session. Positive = adaptation, negative = degradation.       |
 | **Similarity (Surrogates)**     | **S**      | Distribution overlap (probs vs surrogate\_probs) OR action match rate | $[0, 1]$                          | Fidelity of surrogate to human. High = faithful, low = unreliable.                      |
-
 
 ## 7. End-to-End Flow
 
