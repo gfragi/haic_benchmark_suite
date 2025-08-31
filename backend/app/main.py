@@ -1,8 +1,10 @@
 # main.py
+import os
 from fastapi import FastAPI, APIRouter
-from app.routers import logs, configuration, evaluate, reporting, log_generator, meta, metrics
+from app.routers import logs, configuration, evaluate, reporting, log_generator, meta, metrics, core_metrics
 from app.routers import fairness, env_builder, simulator, results, survey
 from fastapi.middleware.cors import CORSMiddleware
+from app.services.seed_core_metrics import seed_core_definitions
 
 
 app = FastAPI(
@@ -12,6 +14,14 @@ app = FastAPI(
     docs_url="/api/docs",            # optional
     openapi_url="/api/openapi.json", # optional
 )
+
+async def on_startup():
+    if os.getenv("SEED_CORE_METRICS", "false").lower() in {"1","true","yes","on"}:
+        # don’t crash the server if DB isn’t ready—log and continue
+        try:
+            seed_core_definitions()
+        except Exception as e:
+            print(f"[core-metrics] Seed skipped due to error: {e}")
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,6 +38,7 @@ api.include_router(configuration.router,  prefix="/configuration", tags=["Config
 api.include_router(evaluate.router,       prefix="/evaluate",      tags=["Evaluation"])
 api.include_router(results.router,        prefix="/results",       tags=["Results"])
 api.include_router(reporting.router,      prefix="/reporting",     tags=["Reporting"])
+api.include_router(core_metrics.router,   prefix="/core-metrics",  tags=["Core Metrics"])
 api.include_router(log_generator.router,  prefix="/log-generator", tags=["Log Generator"])
 api.include_router(survey.router,         prefix="/survey",        tags=["Survey"])
 api.include_router(fairness.router,       prefix="/fairness",      tags=["Fairness"])
