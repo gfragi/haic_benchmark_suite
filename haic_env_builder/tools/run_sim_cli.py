@@ -36,46 +36,26 @@ def _safe_config_path(name: str) -> Path:
     return p
 
 def main():
-    ap = argparse.ArgumentParser(description="Run a HAIC simulation from a YAML config.")
-    ap.add_argument("--name", required=True, help="YAML filename under haic_env_builder/configs/")
-    ap.add_argument("--seed", type=int, default=None, help="Random seed")
-    ap.add_argument("--save-json", action="store_true", help="Write copy of the result JSON into metrics/")
-    ap.add_argument("--by-agent", action="store_true", help="Print per-agent metrics breakdown")
-    args = ap.parse_args()
+    p = argparse.ArgumentParser()
+    p.add_argument("--config", required=True)
+    p.add_argument("--seed", type=int, default=None)
+    p.add_argument("--rt-max", type=float, default=5.0)
+    p.add_argument("--baseline-s", type=float, default=None)
+    args = p.parse_args()
 
-    config_path = _safe_config_path(args.name)
-    result = simulate_environment(str(config_path), seed=args.seed)
+    run = run_simulation(config_path=args.config, seed=args.seed)
+    # assume run.artifacts/events.json already exists or build decisions directly
+    decisions = run.decisions  # or load from artifact if you persist events
 
-    print("\n=== Simulation Summary ===")
-    print(f"Task        : {result.get('task')}")
-    print(f"Environment : {result.get('environment', 'n/a')}")
-    print(f"Seed        : {result.get('seed')}")
-    print(f"Config hash : {result.get('config_hash', 'n/a')}")
-    print(f"Log path    : {result.get('log_path')}")
+    summary = compute_metrics(decisions=decisions, rt_max=args.rt_max, baseline_s=args.baseline_s)
+    by_agent = compute_metrics_by_agent(decisions, rt_max=args.rt_max, baseline_s=args.baseline_s)
 
-    print("\n--- Metrics ---")
-    pprint(result.get("metrics", {}), width=100)
+    out = {"summary": summary, "by_agent": by_agent, "params": {"rt_max": args.rt_max, "baseline_s": args.baseline_s}}
+    out_dir = Path(run.output_dir) / "metrics"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "core_v1.json").write_text(json.dumps(out, indent=2))
 
-    print("\n--- Insights ---")
-    print(summarize_run_brief(result))
-    aux = derive_aux_rates(result)
-    for line in interpret_metrics(result.get("metrics", {}), **aux):
-        print(" •", line)
-
-    if args.by_agent:
-        print("\n--- Metrics by agent ---")
-        per_agent = compute_metrics_by_agent(result.get("decisions", []))
-        pprint(per_agent, width=100)
-
-    print("\n--- Decisions (first 5) ---")
-    for row in result.get("decisions", [])[:5]:
-        print({k: row.get(k) for k in ["t", "agent", "actor_type", "action", "correct", "off_role_action"]})
-
-    if args.save_json:
-        METRICS_DIR.mkdir(parents=True, exist_ok=True)
-        out = METRICS_DIR / f"cli_copy_{Path(result['log_path']).name}"
-        out.write_text(json.dumps(result, indent=2))
-        print(f"\n[✔] Saved: {out}")
+    print(json.dumps(out, indent=2))
 
 if __name__ == "__main__":
     main()

@@ -1,3 +1,4 @@
+
 # Metrics Explained
 
 This document explains the **quantitative metrics** computed by the **HAIC Benchmark Suite**.
@@ -11,6 +12,10 @@ Each metric includes:
 - **Pilot Data Required** (what needs to be logged)
 
 ---
+
+## Core HAIC Metrics
+
+> **Core HAIC Metrics v1 are implemented in `metrics_core` (single source).**
 
 ## 1. Performance / Efficiency
 
