@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from app.services.seed_core_metrics import seed_core_definitions
 import time, os
 
 router = APIRouter()
@@ -15,3 +16,8 @@ def version():
         "version": os.getenv("APP_VERSION", "0.3.0-dev"),
         "commit": os.getenv("GIT_COMMIT", "local")
     }
+
+@router.post("/seed/core-metrics")
+def seed_core_metrics():
+    seed_core_definitions()
+    return {"status": "ok"}
