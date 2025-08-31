@@ -142,6 +142,17 @@ This approach ensures the metric is always computable—even when only categoric
 
 ---
 
+| **Pillar**                      | **Metric** | **Formula**                                                           | **Range**                         | **Meaning / Story**                                                              |
+| ------------------------------- | ---------- | --------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------- |
+| **Performance / Efficiency**    | **EL**     | $(T_{actual} - T_{baseline}) / T_{baseline}$                          | $[0, +\infty)$. 0 = optimal       | Efficiency compared to baseline. High = slower, wasted effort.                   |
+|                                 | **D**      | $\frac{1}{N}\sum d_i$                                                 | $[0, +\infty)$                    | Avg. action duration. Longer = bottlenecks. Balanced = smooth.                   |
+| **Interaction / Collaboration** | **F**      | $N / (T/60)$                                                          | $[0, +\infty)$. Typical: 0–10/min | Interactions per minute. High = active collaboration, too high = inefficiency.   |
+| **Human-Centeredness**          | **HCL**    | $1 - \overline{RT}/RT_{max}$                                          | $[0, 1]$                          | Proxy for human cognitive load. Higher = easier for humans, lower = heavy load.  |
+| **Trust / Transparency**        | **Tr**     | $1 - \text{errors}/N$                                                 | $[0, 1]$                          | Proxy for trust in AI. High = humans accept AI, low = overrides/errors frequent. |
+| **Adaptability**                | **A**      | $(Acc_{late} - Acc_{early})/Acc_{early}$                              | Usually $[-1, +1]$                | Improvement across session. Positive = adaptation, negative = degradation.       |
+| **Similarity (Surrogates)**     | **S**      | Distribution overlap (probs vs surrogate\_probs) OR action match rate | $[0, 1]$                          | Fidelity of surrogate to human. High = faithful, low = unreliable.                      |
+
+
 ## 7. End-to-End Flow
 
 ```text

@@ -52,15 +52,29 @@ Each decision (interaction event) must be logged in JSON with the following fiel
 
 The system computes seven metrics grouped into framework pillars:
 
-| Pillar             | Metric | Formula                                         | Meaning                              |
-|--------------------|--------|-------------------------------------------------|--------------------------------------|
-| Performance        | EL     | $(T_{actual} - T_{baseline}) / T_{baseline}$    | Efficiency vs baseline               |
-|                    | D      | $\frac{1}{N}\sum d_i$                           | Avg. action duration                 |
-| Interaction        | F      | $N / (T/60)$                                    | Interactions per minute              |
-| Human-Centeredness | HCL    | $1 - \overline{RT}/RT_{max}$                    | Proxy for cognitive load             |
-| Trust              | Tr     | $1 - errors/N$                                  | Proxy for acceptance of AI           |
-| Adaptability       | A      | $(Acc_{late} - Acc_{early})/Acc_{early}$        | Improvement across session           |
-| Similarity         | S      | Overlap between `probs` and `surrogate_probs` OR action match rate | Fidelity of surrogate |
+| **Pillar**                      | **Metric** | **Formula**                                                           | **Range**                         | **Meaning / Story**                                                              |
+| ------------------------------- | ---------- | --------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------- |
+| **Performance / Efficiency**    | **EL**     | $(T_{actual} - T_{baseline}) / T_{baseline}$                          | $[0, +\infty)$. 0 = optimal       | Efficiency compared to baseline. High = slower, wasted effort.                   |
+|                                 | **D**      | $\frac{1}{N}\sum d_i$                                                 | $[0, +\infty)$                    | Avg. action duration. Longer = bottlenecks. Balanced = smooth.                   |
+| **Interaction / Collaboration** | **F**      | $N / (T/60)$                                                          | $[0, +\infty)$. Typical: 0–10/min | Interactions per minute. High = active collaboration, too high = inefficiency.   |
+| **Human-Centeredness**          | **HCL**    | $1 - \overline{RT}/RT_{max}$                                          | $[0, 1]$                          | Proxy for human cognitive load. Higher = easier for humans, lower = heavy load.  |
+| **Trust / Transparency**        | **Tr**     | $1 - \text{errors}/N$                                                 | $[0, 1]$                          | Proxy for trust in AI. High = humans accept AI, low = overrides/errors frequent. |
+| **Adaptability**                | **A**      | $(Acc_{late} - Acc_{early})/Acc_{early}$                              | Usually $[-1, +1]$                | Improvement across session. Positive = adaptation, negative = degradation.       |
+| **Similarity (Surrogates)**     | **S**      | Distribution overlap (probs vs surrogate\_probs) OR action match rate | $[0, 1]$                          | Fidelity of surrogate to human. High = faithful, low = unreliable.               |
+
+#### Narrative when taken together
+
+- **F + D** → How much and how long do humans & AI interact?
+
+- **HCL** → How costly is it for the human (effort)?
+
+- **Tr** → How much do humans trust the AI?
+
+- **A** → Do they adapt together over time?
+
+- **S** → Can surrogates stand in for humans?
+
+- **EL** → Is the collaboration efficient?
 
 **Example Metric Output:**
 
@@ -77,6 +91,9 @@ The system computes seven metrics grouped into framework pillars:
     }
 }
 ```
+
+
+
 
 ## 3. End-to-End Flow
 
