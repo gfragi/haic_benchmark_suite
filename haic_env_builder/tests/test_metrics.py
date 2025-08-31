@@ -1,5 +1,5 @@
 # tests/test_metrics.py
-from haic_env_builder.utils.metrics import compute_metrics
+from metrics_core.metrics import compute_metrics
 
 def approx(x, y, eps=1e-6):
     return abs(x - y) <= eps
