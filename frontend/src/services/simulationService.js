@@ -13,12 +13,12 @@ export async function simulate(configName, seed = null) {
 }
 
 export async function listMetrics() {
-  const { data } = await api.get("/v1/simulator/list_metrics");
+  const { data } = await api.get("/v1/simulator/runs");
   return data?.files || [];
 }
 
 export async function loadMetrics(file) {
-  const { data } = await api.get("/v1/simulator/load_metrics", {
+  const { data } = await api.get("/v1/simulator/runs/{file}", {
     params: { file },
   });
   return data?.metrics || data;

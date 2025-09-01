@@ -10,7 +10,7 @@ export async function runSimulation(configPath, seed = null) {
   const params = new URLSearchParams();
   if (seed !== null) params.set("seed", seed);
   const { data } = await api.post(
-    "/v1/simulator/run",
+    "/v1/simulator/simulate",
     { config_path: configPath },
     { params }
   );

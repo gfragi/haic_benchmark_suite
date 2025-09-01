@@ -1,10 +1,24 @@
 task:
-  name: My Environment
+  name: Demo Scripted
   description: v1
   parameters:
-    environment: ct_scan
+    environment: scripted
     env_params:
-      dt: 0.1
+      script:
+        tasks:
+        - id: task-1
+          name: Review & Decide
+          actions:
+          - id: a1
+            name: look
+            actor: human1
+            duration_s: 0.8
+            correct: true
+          - id: a2
+            name: suggest
+            actor: ai1
+            latency_ms: 200
+            correct: true
     dt: 0.1
     rt_max: 5.0
 agents:
