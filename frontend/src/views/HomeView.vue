@@ -168,6 +168,26 @@
             </v-card>
           </v-col>
         </v-row>
+        <v-col cols="12" md="4">
+          <v-card elevation="1" class="hover-card pa-2">
+            <v-card-title class="text-subtitle-1 font-weight-bold">
+              <v-icon left class="mr-2">mdi-flask</v-icon>
+              Simulator (Build & Run)
+            </v-card-title>
+            <v-card-text>
+              Design an environment (tasks/actions), then run and see insights.
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="primary"
+                :to="{ path: '/simulator', query: { mode: 'build' } }"
+              >
+                <v-icon left class="mr-2">mdi-flask</v-icon>
+                Open Simulator
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
       </v-sheet>
 
       <!-- Footer Info -->

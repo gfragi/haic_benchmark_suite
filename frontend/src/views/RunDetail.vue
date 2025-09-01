@@ -140,7 +140,63 @@
           </v-card>
         </v-col>
       </v-row>
+      <!-- Core HAIC Metrics v1 (shared with simulator)
+      <v-row class="mt-6">
+        <v-col cols="12">
+          <v-card class="pa-3">
+            <v-card-title class="text-h6">Core HAIC Metrics v1</v-card-title>
+            <v-card-subtitle>
+              Computed via backend using the shared
+              <code>metrics_core</code> package
+            </v-card-subtitle>
+            <v-divider class="my-2" />
 
+            <v-row dense>
+              <v-col cols="12" sm="3">
+                <v-text-field
+                  v-model="rtMax"
+                  type="number"
+                  label="rt_max (seconds)"
+                  density="comfortable"
+                />
+              </v-col>
+              <v-col cols="12" sm="3">
+                <v-text-field
+                  v-model="baselineS"
+                  type="number"
+                  label="baseline_s (seconds, optional)"
+                  density="comfortable"
+                />
+              </v-col>
+              <v-col cols="12" sm="3" class="d-flex align-end">
+                <v-btn
+                  color="primary"
+                  @click="computeCoreMetrics"
+                  :loading="coreLoading"
+                >
+                  Compute Core v1
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <v-alert v-if="coreError" type="error" variant="tonal" class="mt-3">
+              {{ coreError }}
+            </v-alert>
+
+            <template v-if="coreArtifact">
+              <core-metrics-summary
+                class="mt-4"
+                :summary="coreArtifact.metrics"
+                :params="coreArtifact.params"
+              />
+              <core-metrics-by-agent
+                class="mt-4"
+                :by-agent="coreArtifact.by_agent"
+              />
+            </template>
+          </v-card>
+        </v-col>
+      </v-row> -->
       <!-- Back Button -->
       <v-row>
         <v-col cols="12" class="text-center">
@@ -296,9 +352,7 @@ export default {
       this.$router.go(-1);
     },
 
-    // NEW: Compute Core v1 Metrics
     async computeCoreMetrics() {
-      // NEW
       this.coreError = "";
       this.coreLoading = true;
       try {
