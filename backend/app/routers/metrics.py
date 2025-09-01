@@ -5,7 +5,7 @@ from pathlib import Path
 import json, re
 from app.models.api import MetricsList, MetricsEnvelope, ErrorEnvelope
 from app.utils.errors import http_error
-from metrics_core.metrics import compute_metrics
+from metrics_core.interaction_metrics import compute_metrics
 import re
 from typing import Optional, Dict, Any
 from app.models.api import MetricsLoadResponse

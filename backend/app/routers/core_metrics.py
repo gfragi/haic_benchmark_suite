@@ -2,7 +2,7 @@ import json
 from fastapi import APIRouter, Query, HTTPException
 from typing import Optional
 from app.services.core_metrics import compute_core_v1_for_run
-from metrics_core.metrics import compute_metrics, compute_metrics_by_agent
+from metrics_core.interaction_metrics import compute_metrics, compute_metrics_by_agent
 
 router = APIRouter()
 

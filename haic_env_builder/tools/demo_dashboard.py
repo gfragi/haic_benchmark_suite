@@ -25,7 +25,7 @@ REPO_ROOT = _add_repo_root_to_syspath()
 # ------------------------------------------------------------------------------------------
 
 from haic_env_builder.utils.simulation_runner import simulate_environment
-from metrics_core.metrics import compute_metrics_by_agent
+from metrics_core.interaction_metrics import compute_metrics_by_agent
 from haic_env_builder.utils.insights import summarize_run_brief, interpret_metrics, derive_aux_rates
 
 CONFIG_DIR = (REPO_ROOT / "haic_env_builder" / "configs").resolve()

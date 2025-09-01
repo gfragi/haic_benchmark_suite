@@ -10,11 +10,11 @@ import yaml
 from haic_env_builder.components.agent import Agent
 from haic_env_builder.components.profile import Profile
 from haic_env_builder.components.task import Task
-from metrics_core.metrics import compute_metrics
+from metrics_core.interaction_metrics import compute_metrics
 from haic_env_builder.utils.random_seed import set_all_seeds
 from haic_env_builder.utils.event_enrichment import enrich_decisions
 from haic_env_builder.adapters.registry import create_adapter
-from metrics_core.metrics import compute_metrics_by_agent
+from metrics_core.interaction_metrics import compute_metrics_by_agent
 
 
 # -------------------------
