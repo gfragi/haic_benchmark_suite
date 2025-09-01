@@ -1,4 +1,4 @@
-from metrics_core.metrics import compute_metrics
+from metrics_core.interaction_metrics import compute_metrics
 
 def test_e2e_core_metrics_smoke(simulated_run_decisions):
     out = compute_metrics(simulated_run_decisions, rt_max=5.0, baseline_s=60.0)

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from app.models import LogEntry, EvaluationConfig, EvaluationResult
-from app.services.metrics import Metrics
+from metrics_core.outcome_metrics import Metrics
 
 def calculate_metrics_for_group(db: Session, config_id: int, group_name: str):
     """

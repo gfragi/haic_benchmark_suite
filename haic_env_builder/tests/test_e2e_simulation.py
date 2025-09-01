@@ -9,7 +9,7 @@ import pytest
 # If you run pytest from repo root, ensure package is importable:
 #   PYTHONPATH=. pytest -q
 from haic_env_builder.utils.simulation_runner import simulate_environment
-from metrics_core.metrics import compute_metrics
+from metrics_core.interaction_metrics import compute_metrics
 
 CONFIG_DIR = Path("haic_env_builder/configs")
 

@@ -1,4 +1,3 @@
-# haic_env_builder/utils/metrics.py
 from __future__ import annotations
 from typing import List, Dict, Any, Optional, Callable
 import math
@@ -239,3 +238,6 @@ def compute_metrics_by_agent(decisions: List[Dict[str, Any]], **kw) -> Dict[str,
     for agent, decs in by_agent.items():
         out[agent] = compute_metrics(decisions=decs, **kw)
     return out
+
+#------------------------------------------------
+

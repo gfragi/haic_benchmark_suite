@@ -1,5 +1,5 @@
 # tests/test_metrics.py
-from metrics_core.metrics import compute_metrics
+from metrics_core.interaction_metrics import compute_metrics
 
 def approx(x, y, eps=1e-6):
     return abs(x - y) <= eps

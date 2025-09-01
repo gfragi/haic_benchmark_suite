@@ -4,7 +4,7 @@ from typing import Optional, Dict, Any, Tuple
 from pathlib import Path
 import io, json
 
-from metrics_core.metrics import compute_metrics, compute_metrics_by_agent
+from metrics_core.interaction_metrics import compute_metrics, compute_metrics_by_agent
 from metrics_core.adapters.generic_json import to_decisions as generic_to_decisions
 
 # IMPORTANT: import the module, not names (avoids ImportError)

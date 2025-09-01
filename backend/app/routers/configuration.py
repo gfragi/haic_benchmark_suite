@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models.configuration import EvaluationConfig
 from app.schemas.configuration import EvaluationConfigSchema
-from app.services.metrics import Metrics
+from metrics_core.outcome_metrics import Metrics
+
 
 router = APIRouter()
 
