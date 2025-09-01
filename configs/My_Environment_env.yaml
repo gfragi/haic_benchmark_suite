@@ -1,0 +1,31 @@
+task:
+  name: My Environment
+  description: v1
+  parameters:
+    environment: ct_scan
+    env_params:
+      dt: 0.1
+    dt: 0.1
+    rt_max: 5.0
+agents:
+- name: Radiologist
+  modality: policy
+  capabilities: []
+  runtime_params: {}
+  id: human1
+  profile: default
+- name: AI Assistant
+  modality: policy
+  capabilities: []
+  runtime_params: {}
+  id: ai1
+  profile: gpt
+profiles:
+- profile_id: default
+  metadata: {}
+  type: human
+  parameters: {}
+- profile_id: gpt
+  metadata: {}
+  type: ai
+  parameters: {}

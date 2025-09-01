@@ -13,7 +13,8 @@ from haic_env_builder.schemas.config import ConfigSchema  # validate early for c
 
 router = APIRouter()
 
-CONFIG_DIR = Path("haic_env_builder/configs").resolve()
+# Where YAML configs are stored
+CONFIG_DIR = Path("configs").resolve()
 CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
 def _slug(s: str) -> str:

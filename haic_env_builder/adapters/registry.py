@@ -12,8 +12,8 @@ _ADAPTERS: Dict[str, Union[str, Type]] = {
     "ct_scan": "haic_env_builder.adapters.ct_scan_adapter:CTScanAdapter",
     # Overcooked
     "overcooked": "haic_env_builder.adapters.overcooked_adapter:OvercookedAdapter",
-    # Back-compat alias
-    "overcooked_hcai": "haic_env_builder.adapters.overcooked_adapter:OvercookedAdapter",
+    # Scripted
+    "scripted": "haic_env_builder.adapters.scripted_adapter:ScriptedAdapter",
 }
 
 def register_adapter(name: str, target: Union[str, Type]) -> None:

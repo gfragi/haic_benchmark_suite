@@ -1,8 +1,6 @@
-# haic_env_builder/adapters/ct_scan_adapter.py
 from __future__ import annotations
 from typing import Dict, Any, List, Tuple, Optional
 
-# minimal base contract: your BaseAdapter just needs reset/step/action_space/close
 try:
     from .base import BaseAdapter
 except Exception:
@@ -12,7 +10,6 @@ except Exception:
         def action_space(self, agent_name: str) -> List[str]: ...
         def close(self): ...
 
-# Domain action sets (kept local to avoid cross-coupling)
 CT_RADS_ACTIONS = [
     "open_study","select_series","scroll_slice","window_level",
     "mark_finding","add_measurement","compare_priors",
