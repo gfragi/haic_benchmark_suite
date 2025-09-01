@@ -5,6 +5,7 @@ import json
 import re
 from app.models.api import SimulationEnvelope, ErrorEnvelope
 from app.utils.errors import http_error
+from app.models.api import MetricsList, ErrorEnvelope
 
 
 router = APIRouter()
@@ -36,14 +37,14 @@ def simulate(
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Configuration not found")
 
-@router.get("/list_metrics")
-def list_metrics():
+@router.get("/runs")
+def list_runs():
     METRICS_DIR.mkdir(parents=True, exist_ok=True)
     files = sorted(f.name for f in METRICS_DIR.glob("*.json"))
     return {"files": files}
 
-@router.get("/load_metrics")
-def load_metrics(file: str = Query(..., description="Metrics filename under metrics/")):
+@router.get("/runs/{file}", response_model=dict, responses={404: {"model": ErrorEnvelope}}, summary="Load metrics from a simulation run", description="Fetches and returns the metrics stored in a specified JSON file.")
+def load_run(file: str):
     try:
         path = _safe_join(METRICS_DIR, file, ".json")
         with open(path, "r") as f:
@@ -55,6 +56,10 @@ def load_metrics(file: str = Query(..., description="Metrics filename under metr
         raise HTTPException(status_code=400, detail=f"Malformed JSON: {e}")
 
 
-
-
-
+# Filter by task name
+@router.get("/runs_by_task", response_model=MetricsList, summary="List simulation run files filtered by task name", description="Returns a list of JSON files whose names start with the specified task name or prefix (case-insensitive).")
+def list_runs_by_task(prefix: str = Query(..., description="Task name/prefix (case-insensitive)")):
+    METRICS_DIR.mkdir(parents=True, exist_ok=True)
+    slug = re.sub(r"\s+", "_", prefix.strip()).lower()
+    files = [f.name for f in METRICS_DIR.glob("*.json") if f.name.lower().startswith(slug)]
+    return {"files": sorted(files)}
