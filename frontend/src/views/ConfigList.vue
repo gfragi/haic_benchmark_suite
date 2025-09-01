@@ -171,7 +171,7 @@
 <script>
 import BaseLayout from "@/components/BaseLayout.vue";
 import evaluationService from "@/services/evaluationService";
-import * as configurationService from "@/services/configurationService";
+import configurationService from "@/services/configurationService";
 import resultService from "@/services/resultService";
 
 export default {
