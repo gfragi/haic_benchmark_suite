@@ -10,7 +10,9 @@ export async function computeCoreV1(
     params.set("baseline_s", baseline_s);
 
   const { data } = await api.post(
-    `/core-metrics/from-run/${encodeURIComponent(runId)}?${params.toString()}`
+    `/collab-metrics/collab/from-artifact/${encodeURIComponent(
+      runId
+    )}?${params.toString()}`
   );
   // backend returns { artifact, ref }; we’ll use artifact directly
   return data.artifact;
