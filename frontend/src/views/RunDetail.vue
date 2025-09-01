@@ -84,6 +84,63 @@
         </v-col>
       </v-row>
 
+      <v-row class="mt-6">
+        <v-col cols="12">
+          <v-card class="pa-3">
+            <v-card-title class="text-h6">Core HAIC Metrics v1</v-card-title>
+            <v-card-subtitle>
+              Computed via backend using the shared
+              <code>metrics_core</code> package
+            </v-card-subtitle>
+            <v-divider class="my-2" />
+
+            <v-row dense>
+              <v-col cols="12" sm="3">
+                <v-text-field
+                  v-model="rtMax"
+                  type="number"
+                  label="rt_max (seconds)"
+                  density="comfortable"
+                />
+              </v-col>
+              <v-col cols="12" sm="3">
+                <v-text-field
+                  v-model="baselineS"
+                  type="number"
+                  label="baseline_s (seconds, optional)"
+                  density="comfortable"
+                />
+              </v-col>
+              <v-col cols="12" sm="3" class="d-flex align-end">
+                <v-btn
+                  color="primary"
+                  @click="computeCoreMetrics"
+                  :loading="coreLoading"
+                >
+                  Compute Core v1
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <v-alert v-if="coreError" type="error" variant="tonal" class="mt-3">
+              {{ coreError }}
+            </v-alert>
+
+            <template v-if="coreArtifact">
+              <core-metrics-summary
+                class="mt-4"
+                :summary="coreArtifact.metrics"
+                :params="coreArtifact.params"
+              />
+              <core-metrics-by-agent
+                class="mt-4"
+                :by-agent="coreArtifact.by_agent"
+              />
+            </template>
+          </v-card>
+        </v-col>
+      </v-row>
+
       <!-- Back Button -->
       <v-row>
         <v-col cols="12" class="text-center">
@@ -98,10 +155,15 @@
 import BaseLayout from "@/components/BaseLayout.vue";
 import evaluationService from "@/services/evaluationService";
 import configurationService from "@/services/configurationService";
+import CoreMetricsSummary from "@/components/CoreMetricsSummary.vue"; // NEW
+import CoreMetricsByAgent from "@/components/CoreMetricsByAgent.vue"; // NEW
+import { computeCoreV1 } from "@/services/coreMetricsService";
 
 export default {
   components: {
     BaseLayout,
+    CoreMetricsSummary,
+    CoreMetricsByAgent,
   },
   name: "RunDetail",
   props: ["runId", "configId"],
@@ -113,6 +175,11 @@ export default {
       applicationVersion: "", // To display application name
       aiModelName: "", // To display AI model name
       aiModelVersion: "", // To display AI model version
+      rtMax: 5.0, // NEW (Core v1 param)
+      baselineS: null, // NEW (Core v1 param; seconds or null)
+      coreLoading: false, // NEW (loading flag)
+      coreError: "", // NEW (error message)
+      coreArtifact: null, // NEW (to store the artifact)
     };
   },
   mounted() {
@@ -227,6 +294,28 @@ export default {
     // Navigate back to the previous page
     goBack() {
       this.$router.go(-1);
+    },
+
+    // NEW: Compute Core v1 Metrics
+    async computeCoreMetrics() {
+      // NEW
+      this.coreError = "";
+      this.coreLoading = true;
+      try {
+        const params = {
+          rt_max: Number(this.rtMax),
+          baseline_s:
+            this.baselineS !== null && this.baselineS !== ""
+              ? Number(this.baselineS)
+              : null,
+        };
+        this.coreArtifact = await computeCoreV1(this.runId, params);
+      } catch (e) {
+        this.coreArtifact = null;
+        this.coreError = e?.response?.data?.detail || e?.message || String(e);
+      } finally {
+        this.coreLoading = false;
+      }
     },
   },
 };
