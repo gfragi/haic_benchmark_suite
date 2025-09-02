@@ -7,7 +7,7 @@ from app.utils.database import get_db
 from app.services.survey_service import aggregate_survey_metrics
 
 
-router = APIRouter(prefix="", tags=["Survey"])
+router = APIRouter()
 
 
 @router.post("", summary="Submit a survey response")
@@ -26,6 +26,6 @@ async def submit_survey(survey: SurveyCreate, db: Session = Depends(get_db)):
 def get_aggregated_metrics(
     pilot_tag: Optional[str] = Query(None),
     db: Session = Depends(get_db)
-):  
+):
     results = aggregate_survey_metrics(db, pilot_tag=pilot_tag)
     return results

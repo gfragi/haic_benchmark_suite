@@ -5,6 +5,10 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import { loadFonts } from "./plugins/webfontloader";
 import keycloak from "./services/keycloak";
+import { setupAxios } from "@/services/axios";
+
+setupAxios(router);
+createApp(App).use(router).mount("#app");
 
 loadFonts();
 
