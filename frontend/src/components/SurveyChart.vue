@@ -1,100 +1,157 @@
 <template>
-  <div class="my-6">
-    <canvas ref="chartCanvas"></canvas>
+  <div class="w-100">
+    <canvas ref="canvas"></canvas>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, defineProps, nextTick } from "vue";
+import { onMounted, onBeforeUnmount, watch, ref } from "vue";
 import Chart from "chart.js/auto";
 
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-  type: {
-    type: String,
-    default: "bar", // Accepts 'bar' or 'line'
-  },
+  data: { type: Object, required: true }, // { labelKey: { avg_sus, sus_ci95, avg_ethics, ethics_ci95, count } }
+  type: { type: String, default: "bar" }, // 'bar' | 'line'
 });
 
-const chartCanvas = ref(null);
-let chartInstance = null;
+const canvas = ref(null);
+let chart;
 
-watch(
-  () => props.data,
-  async (newData) => {
-    if (!newData || Object.keys(newData).length === 0) return;
+function buildDatasets(obj) {
+  const labels = Object.keys(obj);
+  const sus = labels.map((k) => obj[k]?.avg_sus ?? 0);
+  const ethics = labels.map((k) => obj[k]?.avg_ethics ?? 0);
+  const susCI = labels.map((k) => obj[k]?.sus_ci95 ?? 0);
+  const ethicsCI = labels.map((k) => obj[k]?.ethics_ci95 ?? 0);
+  const counts = labels.map((k) => obj[k]?.count ?? 0);
 
-    await nextTick();
-
-    if (!chartCanvas.value) {
-      console.warn("Chart canvas is not yet available");
-      return;
-    }
-
-    const ctx = chartCanvas.value.getContext("2d");
-    if (!ctx) {
-      console.warn("Canvas context not available");
-      return;
-    }
-
-    if (chartInstance) {
-      chartInstance.destroy();
-    }
-
-    const labels = Object.keys(newData);
-    const susData = labels.map((v) => newData[v]?.avg_sus || 0);
-    const ethicsData = labels.map((v) => newData[v]?.avg_ethics || 0);
-
-    const isLine = props.type === "line";
-
-    chartInstance = new Chart(ctx, {
-      type: props.type,
-      data: {
-        labels,
-        datasets: [
-          {
-            label: "Avg SUS",
-            data: susData,
-            backgroundColor: isLine
-              ? "rgba(54, 162, 235, 0.3)"
-              : "rgba(54, 162, 235, 0.7)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            tension: isLine ? 0.3 : 0,
-            fill: isLine ? false : true,
-          },
-          {
-            label: "Avg Ethics",
-            data: ethicsData,
-            backgroundColor: isLine
-              ? "rgba(255, 99, 132, 0.3)"
-              : "rgba(255, 99, 132, 0.7)",
-            borderColor: "rgba(255, 99, 132, 1)",
-            tension: isLine ? 0.3 : 0,
-            fill: isLine ? false : true,
-          },
-        ],
+  return {
+    labels,
+    datasets: [
+      {
+        label: "Avg SUS",
+        data: sus,
+        // custom fields used by plugins
+        _ci: susCI,
+        _counts: counts,
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 100,
-          },
-        },
+      {
+        label: "Avg Ethics",
+        data: ethics,
+        _ci: ethicsCI,
+        _counts: counts,
       },
-    });
-  },
-  { immediate: true }
-);
-</script>
-
-<style scoped>
-div {
-  height: 400px;
+    ],
+  };
 }
-</style>
+
+/** Plugin to draw 95% CI whiskers for bar charts */
+const ciWhiskerPlugin = {
+  id: "ciWhiskerPlugin",
+  afterDatasetsDraw(chart) {
+    // removed args, pluginOptions
+    if (chart.config.type !== "bar") return;
+    const { ctx, scales } = chart; // removed chartArea
+    ctx.save();
+    ctx.lineWidth = 1;
+
+    chart.data.datasets.forEach((ds, di) => {
+      const meta = chart.getDatasetMeta(di);
+      if (!meta?.data) return;
+      const ciArr = ds._ci || [];
+      meta.data.forEach((barEl, i) => {
+        const ci = ciArr[i] || 0;
+        const value = ds.data[i] || 0;
+        if (!barEl || !Number.isFinite(ci)) return;
+
+        const x = barEl.x;
+        // removed yMid
+        const yTop = scales.y.getPixelForValue(value + ci);
+        const yBottom = scales.y.getPixelForValue(value - ci);
+
+        // vertical
+        ctx.beginPath();
+        ctx.moveTo(x, yTop);
+        ctx.lineTo(x, yBottom);
+        ctx.stroke();
+
+        // caps
+        const cap = Math.max(6, barEl.width * 0.35);
+        ctx.beginPath();
+        ctx.moveTo(x - cap / 2, yTop);
+        ctx.lineTo(x + cap / 2, yTop);
+        ctx.moveTo(x - cap / 2, yBottom);
+        ctx.lineTo(x + cap / 2, yBottom);
+        ctx.stroke();
+      });
+    });
+    ctx.restore();
+  },
+};
+
+/** Plugin to draw N labels (n=…) above the tallest bar per category */
+const countLabelsPlugin = {
+  id: "countLabelsPlugin",
+  afterDatasetsDraw(chart) {
+    if (chart.config.type !== "bar") return;
+    const { ctx } = chart; // removed 'scales'
+    const labels = chart.data.labels || [];
+    if (!labels.length) return;
+
+    const dsWithCounts = chart.data.datasets.find((d) =>
+      Array.isArray(d._counts)
+    );
+    if (!dsWithCounts) return;
+    const counts = dsWithCounts._counts;
+
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.font = `${12 * (window.devicePixelRatio || 1)}px sans-serif`;
+
+    labels.forEach((_, i) => {
+      let topY = Infinity;
+      let centerX = null;
+      chart.data.datasets.forEach((_, di) => {
+        const meta = chart.getDatasetMeta(di);
+        const el = meta?.data?.[i];
+        if (el) {
+          centerX = el.x;
+          topY = Math.min(topY, el.y);
+        }
+      });
+      if (centerX == null || !isFinite(topY)) return;
+      ctx.fillText(`n=${counts?.[i] ?? 0}`, centerX, topY - 4);
+    });
+
+    ctx.restore();
+  },
+};
+
+function draw() {
+  if (!canvas.value) return;
+  const { labels, datasets } = buildDatasets(props.data);
+  if (chart) chart.destroy();
+  chart = new Chart(canvas.value, {
+    type: props.type || "bar",
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      animation: false,
+      plugins: {
+        legend: { position: "top" },
+        title: { display: false },
+      },
+      scales: {
+        y: { beginAtZero: true, suggestedMax: 100 },
+      },
+    },
+    plugins: [ciWhiskerPlugin, countLabelsPlugin],
+  });
+}
+
+onMounted(draw);
+watch(() => [props.data, props.type], draw, { deep: true });
+onBeforeUnmount(() => {
+  if (chart) chart.destroy();
+});
+</script>

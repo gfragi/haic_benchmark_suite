@@ -53,6 +53,67 @@
       <!-- Export Button -->
       <v-btn class="mt-4" @click="exportData" color="primary">Export CSV</v-btn>
 
+      <!-- Navigate to Compare Page -->
+      <v-btn
+        variant="text"
+        :to="{ name: 'SurveyCompare', query: { pilot: selectedPilotTag } }"
+      >
+        <v-icon start>mdi-compare</v-icon> Compare Versions
+      </v-btn>
+      <!-- Public Survey Link Button -->
+      <v-btn variant="text" @click="openShare">
+        <v-icon start>mdi-link-variant</v-icon> Collect Responses
+      </v-btn>
+
+      <v-dialog v-model="shareOpen" max-width="640">
+        <v-card>
+          <v-card-title>Public Survey Link</v-card-title>
+          <v-card-text>
+            <div class="mb-2">
+              Share this link with pilot users to answer directly:
+            </div>
+            <v-text-field
+              v-model="publicLink"
+              readonly
+              prepend-inner-icon="mdi-link-variant"
+              append-inner-icon="mdi-content-copy"
+              @click:append-inner="copy(publicLink)"
+            />
+            <div
+              class="my-4"
+              style="display: flex; gap: 16px; align-items: center"
+            >
+              <v-img
+                :src="qrDataUrl"
+                width="140"
+                height="140"
+                alt="Survey QR"
+                class="rounded"
+              />
+              <div class="text-body-2">
+                Scan to open the survey on mobile.
+                <div class="mt-2">
+                  <v-btn size="small" variant="outlined" @click="downloadQR">
+                    <v-icon start>mdi-download</v-icon> Download QR
+                  </v-btn>
+                </div>
+              </div>
+            </div>
+            <v-alert type="info" variant="tonal">
+              You can also append <code>&app_version=...</code> and
+              <code>&model_version=...</code> to prefill metadata.
+            </v-alert>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn variant="flat" color="primary" @click="copy(publicLink)"
+              >Copy</v-btn
+            >
+            <v-btn variant="text" @click="shareOpen = false">Close</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <!-- Evaluation Questions -->
       <v-expansion-panels class="mt-6">
         <v-expansion-panel>
@@ -122,9 +183,10 @@ import BaseLayout from "@/components/BaseLayout.vue";
 import SurveyFilter from "@/components/SurveyFilter.vue";
 import SurveyChart from "@/components/SurveyChart.vue";
 import { fetchSurveyAggregates } from "@/services/survey";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import debounce from "lodash.debounce";
 import semver from "semver";
+import QRCode from "qrcode";
 
 const comparisonMode = ref("versions");
 const selectedPilot = ref(null);
@@ -132,6 +194,11 @@ const aggregatedData = ref({});
 const loading = ref(false);
 const isLineChart = ref(false);
 const chartType = computed(() => (isLineChart.value ? "line" : "bar"));
+const shareOpen = ref(false);
+const qrDataUrl = ref("");
+const selectedPilotTag = ref("");
+const selectedAppVersion = ref("");
+const selectedModelVersion = ref("");
 
 const totalSurveys = computed(() =>
   Object.values(aggregatedData.value).reduce(
@@ -204,5 +271,51 @@ function exportData() {
   link.href = URL.createObjectURL(blob);
   link.download = "survey_aggregates.csv";
   link.click();
+}
+
+const publicLink = computed(() => {
+  const base = `${window.location.origin}/survey/${encodeURIComponent(
+    selectedPilotTag.value || ""
+  )}`;
+  const params = new URLSearchParams();
+  if (selectedAppVersion.value)
+    params.set("app_version", selectedAppVersion.value);
+  if (selectedModelVersion.value)
+    params.set("model_version", selectedModelVersion.value);
+  const qs = params.toString();
+  return qs ? `${base}?${qs}` : base;
+});
+
+watch(publicLink, async (url) => {
+  try {
+    qrDataUrl.value = await QRCode.toDataURL(url, { margin: 1, scale: 5 });
+  } catch (e) {
+    console.error("QR gen error:", e);
+  }
+});
+
+function openShare() {
+  shareOpen.value = true;
+  // ensure QR exists if dialog opened before computed ran
+  QRCode.toDataURL(publicLink.value, { margin: 1, scale: 5 })
+    .then((d) => {
+      qrDataUrl.value = d;
+    })
+    .catch((e) => console.error("QR gen error:", e));
+}
+
+function downloadQR() {
+  const a = document.createElement("a");
+  a.href = qrDataUrl.value;
+  a.download = `survey_link_${selectedPilotTag.value || "pilot"}.png`;
+  a.click();
+}
+
+async function copy(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (err) {
+    console.error("Clipboard copy failed:", err); // handle or report
+  }
 }
 </script>
