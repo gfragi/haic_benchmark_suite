@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from app.schemas.survey import SurveyCreate
 from app.models.survey import Survey
 import uuid
-from collections import defaultdict
+from math import sqrt
+from statistics import mean, pstdev
 
 def create_survey(db: Session, survey_data: SurveyCreate):
     db_survey = Survey(
@@ -38,37 +39,40 @@ def aggregate_survey_metrics(db: Session, pilot_tag: Optional[str] = None):
     query = db.query(Survey)
     raw = query.all()
 
-    grouped = {}
+    groups = {}  # key -> {"sus": [], "ethics": []}
 
     for s in raw:
-        # determine key based on mode
-        if pilot_tag:
-            if s.pilot_tag != pilot_tag:
-                continue
-            key = s.app_version or "Unknown"
-        else:
-            key = s.pilot_tag or "Unknown"
+        if pilot_tag and s.pilot_tag != pilot_tag:
+            continue
+        key = (s.app_version or "Unknown") if pilot_tag else (s.pilot_tag or "Unknown")
 
-        sus_score = calculate_sus_score(s.tam_sus_responses)
-        vals = list(s.ethics_responses.values())
-        ethics_score = ((sum(vals) / len(vals)) - 1) * 25 if vals else 0
+        sus_score = calculate_sus_score(s.tam_sus_responses)   # already in your file
+        ethics_vals = list(s.ethics_responses.values())
+        ethics_score = ((sum(ethics_vals) / len(ethics_vals)) - 1) * 25 if ethics_vals else 0
 
-        if key not in grouped:
-            grouped[key] = {
-                "count": 0,
-                "sus_total": 0,
-                "ethics_total": 0
-            }
+        groups.setdefault(key, {"sus": [], "ethics": []})
+        groups[key]["sus"].append(sus_score)
+        groups[key]["ethics"].append(ethics_score)
 
-        grouped[key]["count"] += 1
-        grouped[key]["sus_total"] += sus_score
-        grouped[key]["ethics_total"] += ethics_score
-
-    return {
-        k: {
-            "avg_sus": v["sus_total"] / v["count"],
-            "avg_ethics": v["ethics_total"] / v["count"],
-            "count": v["count"]
+    out = {}
+    for k, v in groups.items():
+        n = len(v["sus"])
+        sus_mean = mean(v["sus"])
+        ethics_mean = mean(v["ethics"])
+        sus_std = pstdev(v["sus"]) if n > 1 else 0.0
+        ethics_std = pstdev(v["ethics"]) if n > 1 else 0.0
+        sus_se = sus_std / sqrt(n) if n > 1 else 0.0
+        ethics_se = ethics_std / sqrt(n) if n > 1 else 0.0
+        # 95% CI with normal approx; good enough for dashboarding
+        out[k] = {
+            "count": n,
+            "avg_sus": sus_mean,
+            "avg_ethics": ethics_mean,
+            "sus_std": sus_std,
+            "ethics_std": ethics_std,
+            "sus_ci95": 1.96 * sus_se,
+            "ethics_ci95": 1.96 * ethics_se,
+            "sus_values": v["sus"],          # optional for box/violin
+            "ethics_values": v["ethics"]
         }
-        for k, v in grouped.items()
-    }
+    return out
