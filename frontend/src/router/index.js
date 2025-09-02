@@ -14,6 +14,7 @@ import Visualization from "@/views/VisualizationPage.vue";
 import FairnessEvaluation from "@/views/FairnessEvaluation.vue";
 import SurveyDashboard from "@/views/SurveyDashboard.vue";
 import SimulatorPage from "@/views/SimulatorPage.vue";
+import SurveyCompare from "@/views/SurveyCompare.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -69,18 +70,27 @@ const routes = [
   { path: "/metrics", component: MetricsPage },
   {
     path: "/fairness",
-    name: "Fairness Evaluation",
+    name: "FairnessEvaluation",
     component: FairnessEvaluation,
   },
   {
     path: "/survey-dashboard",
-    name: "Survey Dashboard",
+    name: "SurveyDashboard",
     component: SurveyDashboard,
   },
   {
     path: "/simulate",
     name: "Simulator",
     component: SimulatorPage,
+    props: true,
+  },
+
+  { path: "/survey-compare", name: "SurveyCompare", component: SurveyCompare },
+
+  {
+    path: "/survey/:pilot?",
+    name: "PublicSurvey",
+    component: () => import("@/views/PublicSurvey.vue"),
     props: true,
   },
 ];

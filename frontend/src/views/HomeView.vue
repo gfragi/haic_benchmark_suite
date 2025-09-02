@@ -62,9 +62,15 @@
               View aggregated user feedback across pilots and app versions.
             </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" to="/survey-dashboard">
-                <v-icon left class="mr-2">mdi-chart-bar</v-icon>
-                Go to Dashboard
+              <v-btn color="primary" :to="{ name: 'SurveyDashboard' }">
+                <v-icon start>mdi-view-dashboard</v-icon> Open Dashboard
+              </v-btn>
+              <v-btn
+                variant="outlined"
+                class="ml-2"
+                :to="{ name: 'SurveyCompare' }"
+              >
+                <v-icon start>mdi-compare</v-icon> Compare Versions
               </v-btn>
             </v-card-actions>
           </v-card>
