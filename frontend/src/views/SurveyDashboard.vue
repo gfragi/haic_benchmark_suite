@@ -61,7 +61,11 @@
         <v-icon start>mdi-compare</v-icon> Compare Versions
       </v-btn>
       <!-- Public Survey Link Button -->
-      <v-btn variant="text" @click="openShare">
+      <v-btn
+        variant="text"
+        :disabled="comparisonMode !== 'versions' || !selectedPilot"
+        @click="openShare"
+      >
         <v-icon start>mdi-link-variant</v-icon> Collect Responses
       </v-btn>
 
@@ -196,9 +200,9 @@ const isLineChart = ref(false);
 const chartType = computed(() => (isLineChart.value ? "line" : "bar"));
 const shareOpen = ref(false);
 const qrDataUrl = ref("");
-const selectedPilotTag = ref("");
 const selectedAppVersion = ref("");
 const selectedModelVersion = ref("");
+const selectedPilotTag = ref("");
 
 const totalSurveys = computed(() =>
   Object.values(aggregatedData.value).reduce(
@@ -273,10 +277,18 @@ function exportData() {
   link.click();
 }
 
+function slug(s) {
+  return String(s || "")
+    .trim()
+    .replace(/\s+/g, "-") // spaces -> dashes
+    .replace(/[^\w-]/g, ""); // strip odd chars
+}
+
 const publicLink = computed(() => {
-  const base = `${window.location.origin}/survey/${encodeURIComponent(
-    selectedPilotTag.value || ""
-  )}`;
+  const pilot = slug(selectedPilot.value); // ✅ single source of truth
+  const base = pilot
+    ? `${window.location.origin}/survey/:pilot_tag?${encodeURIComponent(pilot)}`
+    : `${window.location.origin}/survey`;
   const params = new URLSearchParams();
   if (selectedAppVersion.value)
     params.set("app_version", selectedAppVersion.value);

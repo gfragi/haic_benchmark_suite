@@ -8,6 +8,21 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
+export function setupAxios(router) {
+  axios.defaults.baseURL =
+    import.meta.env.VITE_API_BASE || "http://localhost:8000/api";
+  axios.interceptors.response.use(
+    (r) => r,
+    (err) => {
+      if (err?.response?.status === 401) {
+        // safe to use router here because it was injected from main.js
+        router.push({ name: "Home" });
+      }
+      return Promise.reject(err);
+    }
+  );
+}
+
 function resolveApiBase() {
   // Vue CLI: build-time only
   let base = (process.env.VUE_APP_API_BASE_URL || "/api").trim();

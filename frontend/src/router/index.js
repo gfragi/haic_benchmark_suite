@@ -88,16 +88,26 @@ const routes = [
   { path: "/survey-compare", name: "SurveyCompare", component: SurveyCompare },
 
   {
-    path: "/survey/:pilot?",
+    path: "/survey",
     name: "PublicSurvey",
     component: () => import("@/views/PublicSurvey.vue"),
-    props: true,
+    meta: { public: true }, // <-- important
   },
+  { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(process.env.BASE_URL || "/"),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const isAuthed = /* your auth check */ false;
+
+  if (!to.meta.public && !isAuthed) {
+    return next({ name: "Home" });
+  }
+  next();
 });
 
 export default router;
