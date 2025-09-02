@@ -10,25 +10,56 @@ except Exception:
         def close(self): ...
 
 class ScriptedAdapter(BaseAdapter):
-    """
-    Very simple interpreter for UI-built scripts.
-    It flattens env_params['script']['tasks'][*]['actions'] and emits one decision per step.
-    - Human actions: use duration_s (seconds)
-    - AI actions:    use latency_ms (ms)
-    - 'correct' may be true/false/None
-    """
     name = "scripted"
 
-    def __init__(self, **env_params: Any):
-        script = (env_params or {}).get("script", {}) or {}
-        tasks = script.get("tasks") or []
+    def __init__(self, env_params: Optional[Dict[str, Any]] = None, **kwargs: Any):
+        if env_params is None and isinstance(kwargs.get("env_params"), dict):
+            env_params = kwargs["env_params"]
+
+        env_params = dict(env_params or {})
+        if isinstance(kwargs.get("script"), dict):
+            env_params["script"] = kwargs["script"]
+        if "tasks" in kwargs and isinstance(kwargs["tasks"], list):
+            env_params["script"] = {"tasks": kwargs["tasks"]}
+
+        self.env_params: Dict[str, Any] = env_params
+        self.script: Dict[str, Any] = (self.env_params.get("script") or {})
+
         self.plan: List[Dict[str, Any]] = []
-        for t in tasks:
+        for t in (self.script.get("tasks") or []):
+            for a in (t.get("actions") or []):
+                self.plan.append(dict(a))
+
+        self.i = 0
+        self.t = 0.0
+        self._done = False
+
+    def configure(self, env_params: Optional[Dict[str, Any]] = None):
+        if env_params is not None:
+            self.env_params = dict(env_params)
+        self.script = (self.env_params.get("script") or {})
+        self.plan = []
+        for t in (self.script.get("tasks") or []):
             for a in (t.get("actions") or []):
                 self.plan.append(dict(a))
         self.i = 0
         self.t = 0.0
         self._done = False
+        return self
+
+    def action_space(self, agent_id: str) -> List[str]:
+        tasks = (self.script or {}).get("tasks", []) or []
+        names: List[str] = []
+        if tasks:
+            for t in tasks:
+                for a in (t.get("actions") or []):
+                    if a.get("actor") == agent_id and a.get("name"):
+                        names.append(a["name"])
+        else:
+            for a in self.plan:
+                if a.get("actor") == agent_id and a.get("name"):
+                    names.append(a["name"])
+        return list(dict.fromkeys(names))
 
     def reset(self, seed: Optional[int] = None):
         self.i = 0
@@ -46,17 +77,13 @@ class ScriptedAdapter(BaseAdapter):
         row = self.plan[self.i]
         self.i += 1
 
-        # build a single decision
-        agent = str(row.get("actor") or "")
-        name  = str(row.get("name")  or "")
-        dur_s = row.get("duration_s", None)
-        lat_ms = row.get("latency_ms", None)
+        agent   = str(row.get("actor") or "")
+        name    = str(row.get("name") or "")
+        dur_s   = row.get("duration_s", None)
+        lat_ms  = row.get("latency_ms", None)
         correct = row.get("correct", None)
 
-        # crude actor_type inference
         actor_type = "ai" if lat_ms is not None and dur_s in (None, "", 0) else "human"
-
-        # advance time if we have a duration
         if isinstance(dur_s, (int, float)) and dur_s > 0:
             self.t += float(dur_s)
 
@@ -72,4 +99,4 @@ class ScriptedAdapter(BaseAdapter):
         if isinstance(lat_ms, (int, float)):
             decision["latency_ms"] = float(lat_ms)
 
-        return {"decisions": [decision], "events": [], "info": {}}, (self.i >= len(self.plan))
+        return {"decisions": [decision]}, (self.i >= len(self.plan))

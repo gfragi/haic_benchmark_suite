@@ -1,0 +1,123 @@
+{
+  "task": "Demo Scripted",
+  "seed": null,
+  "agents": [
+    "Radiologist",
+    "AI Assistant"
+  ],
+  "profiles": [
+    "default",
+    "gpt"
+  ],
+  "metrics": {
+    "F": 0.0,
+    "D": 0.42000000000000004,
+    "HCL": 0.84,
+    "Tr": 1.0,
+    "A": 0.0,
+    "S": 0.0,
+    "EL": 0.0,
+    "EfficiencyScore": 1.0
+  },
+  "decisions": [
+    {
+      "t": 0.8,
+      "agent": "human1",
+      "actor_type": "human",
+      "action": "look",
+      "correct": true,
+      "duration_s": 0.8,
+      "latency_ms": 1777.0,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "default",
+        "skill_level": null,
+        "role": null,
+        "metadata": {}
+      }
+    },
+    {
+      "t": 0.8,
+      "agent": "ai1",
+      "actor_type": "ai",
+      "action": "suggest",
+      "correct": true,
+      "latency_ms": 200.0,
+      "duration_s": 0.04,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "gpt",
+        "skill_level": null,
+        "role": null,
+        "metadata": {}
+      }
+    }
+  ],
+  "info": {},
+  "status": "success",
+  "config_hash": "fe42559d819c7ad4",
+  "config_path": "/home/gfragi/postDoc/haic_benchmark_suite/configs/Demo_Scripted_env.yaml",
+  "config": {
+    "environment": "scripted",
+    "env_params": {
+      "script": {
+        "tasks": [
+          {
+            "id": "task-1",
+            "name": "Review & Decide",
+            "actions": [
+              {
+                "id": "a1",
+                "name": "look",
+                "actor": "human1",
+                "duration_s": 0.8,
+                "correct": true
+              },
+              {
+                "id": "a2",
+                "name": "suggest",
+                "actor": "ai1",
+                "latency_ms": 200,
+                "correct": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "dt": 0.1
+  },
+  "events": [],
+  "metrics_by_agent": {
+    "human1": {
+      "F": 0.0,
+      "D": 0.8,
+      "HCL": 0.84,
+      "Tr": 1.0,
+      "A": 0.0,
+      "S": 0.0,
+      "EL": 0.0,
+      "EfficiencyScore": 1.0
+    },
+    "ai1": {
+      "F": 0.0,
+      "D": 0.04,
+      "HCL": 0.992,
+      "Tr": 1.0,
+      "A": 0.0,
+      "S": 0.0,
+      "EL": 0.0,
+      "EfficiencyScore": 1.0
+    }
+  }
+}
