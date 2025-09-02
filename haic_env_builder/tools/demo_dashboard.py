@@ -29,7 +29,7 @@ from metrics_core.interaction_metrics import compute_metrics_by_agent
 from haic_env_builder.utils.insights import summarize_run_brief, interpret_metrics, derive_aux_rates
 
 CONFIG_DIR = (REPO_ROOT / "haic_env_builder" / "configs").resolve()
-METRICS_DIR = (REPO_ROOT / "metrics").resolve()
+RUNS_DIR = (REPO_ROOT / "runs").resolve()
 
 st.set_page_config(page_title="HAIC Simulator Dashboard", page_icon="🧪", layout="wide")
 alt.data_transformers.disable_max_rows()
