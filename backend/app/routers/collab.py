@@ -11,7 +11,7 @@ from app.services.core_metrics import compute_core_v1_for_run  # your run → ar
 from metrics_core.interaction_metrics import compute_metrics, compute_metrics_by_agent
 
 router = APIRouter(prefix="/collab", tags=["Collaboration Metrics"])
-METRICS_DIR = Path("metrics")
+RUNS_DIR = Path("runs")
 
 def _pack_response(source: str, params: dict, metrics: dict, per_agent: dict) -> CollabMetricsResponse:
     by_agent = [PerAgentMetrics(agent=a, metrics=MetricsOut(**m)) for a, m in per_agent.items()]
@@ -40,7 +40,7 @@ def compute(req: ComputeRequest):
 
 @router.post("/from-artifact", response_model=CollabMetricsResponse)
 def compute_from_artifact(file: str = Query(..., description="metrics/*.json")):
-    path = METRICS_DIR / file
+    path = RUNS_DIR / file
     if not path.exists():
         raise HTTPException(status_code=404, detail=f"File not found: {path}")
     try:

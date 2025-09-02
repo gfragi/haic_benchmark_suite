@@ -293,7 +293,7 @@ def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[s
     }
 
     # Persist artifact with readable timestamp + hash in filename
-    out_dir = Path("metrics"); out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir = Path("runs"); out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     safe_task = task.name.replace(" ", "_")
     out_path = out_dir / f"{safe_task}_full_{config_hash}_{ts}.json"

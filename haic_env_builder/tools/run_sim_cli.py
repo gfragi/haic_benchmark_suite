@@ -21,13 +21,13 @@ def _add_repo_root_to_syspath():
 REPO_ROOT = _add_repo_root_to_syspath()
 # ------------------------------------------------------------------------------------------
 
-from haic_env_builder.utils.simulation_runner import simulate_environment
-from metrics_core.interaction_metrics import compute_metrics_by_agent
+from haic_env_builder.utils.simulation_runner import simulate_environment, run_simulation
+from metrics_core.interaction_metrics import compute_metrics_by_agent, compute_metrics
 from haic_env_builder.utils.insights import summarize_run_brief, interpret_metrics, derive_aux_rates
 
 
 CONFIG_DIR = (REPO_ROOT / "haic_env_builder" / "configs").resolve()
-METRICS_DIR = (REPO_ROOT / "metrics").resolve()
+RUNS_DIR = (REPO_ROOT / "runs").resolve()
 
 def _safe_config_path(name: str) -> Path:
     p = (CONFIG_DIR / name).resolve()

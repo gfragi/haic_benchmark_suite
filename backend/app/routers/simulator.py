@@ -23,8 +23,8 @@ CONFIG_DIRS = [
     PROJECT_ROOT / "configs",
 ]
 
-METRICS_DIR = (PROJECT_ROOT / "metrics").resolve()
-METRICS_DIR.mkdir(parents=True, exist_ok=True)
+RUNS_DIR = (PROJECT_ROOT / "runs").resolve()
+RUNS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---------- helpers ----------
 def _safe_join(base: Path, name: str, expected_suffix: str | tuple[str, ...]) -> Path:
@@ -87,7 +87,7 @@ def simulate(
 
 @router.get("/runs")
 def list_runs():
-    files = sorted(f.name for f in METRICS_DIR.glob("*.json"))
+    files = sorted(f.name for f in RUNS_DIR.glob("*.json"))
     return {"files": files}
 
 @router.get(
@@ -99,7 +99,7 @@ def list_runs():
 )
 def load_run(file: str):
     try:
-        path = _safe_join(METRICS_DIR, file, (".json",))
+        path = _safe_join(RUNS_DIR, file, (".json",))
         with open(path, "r") as f:
             data = json.load(f)
         return {"metrics": data}
@@ -115,5 +115,5 @@ def load_run(file: str):
 )
 def list_runs_by_task(prefix: str = Query(..., description="Task name/prefix (case-insensitive)")):
     slug = re.sub(r"\s+", "_", prefix.strip()).lower()
-    files = [f.name for f in METRICS_DIR.glob("*.json") if f.name.lower().startswith(slug)]
+    files = [f.name for f in RUNS_DIR.glob("*.json") if f.name.lower().startswith(slug)]
     return {"files": sorted(files)}
