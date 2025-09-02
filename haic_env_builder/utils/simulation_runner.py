@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Any, List, Optional, Sequence
+from typing import Dict, Any, List, Optional
 from pathlib import Path
 import json
 from datetime import datetime
@@ -10,11 +10,10 @@ import yaml
 from haic_env_builder.components.agent import Agent
 from haic_env_builder.components.profile import Profile
 from haic_env_builder.components.task import Task
-from metrics_core.interaction_metrics import compute_metrics
+from metrics_core.interaction_metrics import compute_metrics, compute_metrics_by_agent
 from haic_env_builder.utils.random_seed import set_all_seeds
 from haic_env_builder.utils.event_enrichment import enrich_decisions
 from haic_env_builder.adapters.registry import create_adapter
-from metrics_core.interaction_metrics import compute_metrics_by_agent
 
 
 # -------------------------
@@ -67,6 +66,7 @@ def _ensure_time(rows: List[Dict[str, Any]], t_value: float) -> None:
         if r.get("t") is None:
             r["t"] = t_value
 
+
 # -------------------------
 # Main entry
 # -------------------------
@@ -94,25 +94,59 @@ def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[s
     params = task.parameters or {}
     env_name = params.get("environment") or params.get("adapter")
     if not env_name:
-        raise ValueError("Task.parameters must include 'environment' (e.g., 'overcooked', 'ct_scan', ...).")
+        raise ValueError("Task.parameters must include 'environment' (e.g., 'overcooked', 'ct_scan', 'scripted', ...).")
 
     env_params = params.get("env_params", {}) or {}
+
+    # Create adapter WITH env_params; ScriptedAdapter will pick up script/tasks from this dict
+    # (create_adapter usually forwards kwargs to the adapter __init__)
     adapter = create_adapter(env_name, **env_params)
+    # optional post-configure if the adapter exposes it
+    if hasattr(adapter, "configure"):
+        try:
+            adapter.configure(env_params)
+        except TypeError:
+            # older adapters may expect **kwargs
+            adapter.configure(**env_params)
     adapter.reset(seed=seed)
+
+    is_scripted = (getattr(adapter, "name", "") == "scripted") or (env_name == "scripted")
 
     # dt used to synthesize timestamps only when the adapter omits 't'
     dt = float(params.get("dt", 0.1))
     t_cur = 0.0
     local_rng = _random.Random(seed if seed is not None else 0)
 
-    # Ask adapter for valid actions per agent
-    action_spaces: Dict[str, Sequence[str]] = {a.name: tuple(adapter.action_space(a.name)) for a in agents}
+    def _agent_id(a) -> str:
+        return getattr(a, "id", None) or getattr(a, "name", None) or "agent"
+
+    # Ask adapter for valid actions per agent (BY ID)
+    action_spaces: Dict[str, tuple] = {}
+    for a in agents:
+        aid = _agent_id(a)
+        space = adapter.action_space(aid) or []
+
+        # For scripted, derive from flattened plan if needed
+        if not space and is_scripted:
+            plan = getattr(adapter, "plan", []) or []
+            space = [r.get("name") for r in plan if r.get("actor") == aid and r.get("name")]
+
+        # dedupe while preserving order
+        space = list(dict.fromkeys([s for s in space if isinstance(s, str) and s]))
+        action_spaces[aid] = tuple(space)
+
+        # Only enforce non-empty for non-scripted adapters
+        if not space and not is_scripted:
+            raise RuntimeError(
+                f"Adapter '{env_name}' returned empty action space for agent '{getattr(a, 'name', aid)}'."
+            )
 
     # Prepare agent dicts for enrichment (inject action_space for off-role detection)
     agents_for_enrich: List[Dict[str, Any]] = []
     for a in agents:
+        aid = _agent_id(a)
         ad = dict(a.__dict__)
-        ad["action_space"] = list(action_spaces.get(a.name) or [])
+        ad["action_space"] = list(action_spaces.get(aid) or [])
         agents_for_enrich.append(ad)
 
     # Generic rollout loop
@@ -126,12 +160,20 @@ def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[s
         proposed_map: Dict[str, Optional[str]] = {}
 
         for a in agents:
-            allowed = list(action_spaces.get(a.name) or [])
-            if not allowed:
-                raise RuntimeError(f"Adapter '{env_name}' returned empty action space for agent '{a.name}'.")
+            aid = _agent_id(a)
+            allowed = list(action_spaces.get(aid) or [])
 
-            raw_act = _policy_raw_action(a)
-            proposed_map[a.name] = raw_act
+            # For scripted, we can tolerate empty since step() ignores a_map
+            if not allowed and is_scripted:
+                allowed = ["__noop__"]
+
+            if not allowed:
+                raise RuntimeError(
+                    f"Adapter '{env_name}' returned empty action space for agent '{getattr(a, 'name', aid)}'."
+                )
+
+            raw_act = _policy_raw_action(a)  # policies usually key off display name; that's fine
+            proposed_map[aid] = raw_act
 
             # clamp/fallback
             if isinstance(raw_act, str) and raw_act in allowed:
@@ -139,7 +181,8 @@ def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[s
             else:
                 final_act = local_rng.choice(allowed)
 
-            a_map[a.name] = final_act
+            # NOTE: Use agent **id** as key in the action map
+            a_map[aid] = final_act
 
         # 2) Step the adapter
         step_out, done = adapter.step(a_map)
@@ -160,12 +203,14 @@ def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[s
         _ensure_time(dec_rows, t_cur)
         _ensure_time(ev_rows, t_cur)
 
-        # 5) Annotate decisions with proposed_action for off-role metrics
+        # 5) Annotate decisions with proposed_action (use agent **id**)
         for r in dec_rows:
-            an = r.get("agent")
-            pa = proposed_map.get(an)
+            aid = str(r.get("agent") or "")
+            if "proposed_action" not in r and aid in proposed_map and proposed_map[aid] is not None:
+                r["proposed_action"] = proposed_map[aid]
+            # If caller provided surrogate/proposed, keep it; otherwise set surrogate to proposed
             if r.get("surrogate_action") is None and r.get("proposed_action") is not None:
-                r["surrogate_action"] = r["proposed_action"] 
+                r.setdefault("surrogate_action", r.get("proposed_action"))
 
         # 6) Append rows; keep env events separate
         decisions.extend(dec_rows)
@@ -215,9 +260,12 @@ def simulate_environment(config_path: str, seed: Optional[int] = None) -> Dict[s
     except Exception:
         pass
 
-    metrics_by_agent = compute_metrics_by_agent(decisions=decisions, T=explicit_T,
-                                            baseline_s=params.get("baseline_s"),
-                                            rt_max=params.get("rt_max", 5.0))
+    metrics_by_agent = compute_metrics_by_agent(
+        decisions=decisions,
+        T=explicit_T,
+        baseline_s=params.get("baseline_s"),
+        rt_max=params.get("rt_max", 5.0),
+    )
 
     # Response payload
     result = {
