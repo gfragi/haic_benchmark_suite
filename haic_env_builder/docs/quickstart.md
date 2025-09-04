@@ -5,7 +5,7 @@
 ```bash
 PYTHONPATH=backend uvicorn app.main:app --reload
 
-# Swagger at http://localhost:8000/docs
+# Swagger at http://localhost:8000/api/docs
 ```
 
 ## 1) List configs

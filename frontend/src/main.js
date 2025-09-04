@@ -5,14 +5,9 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import { loadFonts } from "./plugins/webfontloader";
 import keycloak from "./services/keycloak";
-import { setupAxios } from "@/services/axios";
-
-setupAxios(router);
-createApp(App).use(router).mount("#app");
 
 loadFonts();
 
-// Log config so you can verify it in the browser console:
 console.log("Keycloak config:", {
   url: process.env.VUE_APP_KEYCLOAK_URL,
   realm: process.env.VUE_APP_KEYCLOAK_REALM,
@@ -25,19 +20,24 @@ keycloak
     checkLoginIframe: false,
     redirectUri: window.location.origin,
   })
-  .then((authenticated) => {
+  .then(async (authenticated) => {
     console.log("Keycloak init resolved:", authenticated);
-    if (authenticated) {
-      const app = createApp(App);
-      app.config.globalProperties.$keycloak = keycloak;
-      app.use(router);
-      app.use(store);
-      app.use(vuetify);
-      app.mount("#app");
-    } else {
+    if (!authenticated) {
       console.warn("Not authenticated, reloading");
       window.location.reload();
+      return;
     }
+
+    const app = createApp(App);
+    app.config.globalProperties.$keycloak = keycloak;
+    app.use(router);
+    app.use(store);
+    app.use(vuetify);
+
+    // Wait for first route resolution (helps after SSO redirects)
+    await router.isReady();
+
+    app.mount("#app");
   })
   .catch((err) => {
     console.error("Keycloak init failed:", err);

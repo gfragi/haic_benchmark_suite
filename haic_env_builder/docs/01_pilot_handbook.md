@@ -97,12 +97,7 @@ The system computes seven metrics grouped into framework pillars:
 
 ## 3. End-to-End Flow
 
-```mermaid
-flowchart LR
-        A[decisions.json (pilot log)] --> B(compute_metrics)
-        B --> C[metrics.json (results)]
-        C --> D[Dashboard / Reporting]
-```
+![End-to-End Flow](fig_diagrams/end-to-end%20flow.png)
 
 ## 4. Versions
 

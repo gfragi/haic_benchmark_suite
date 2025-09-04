@@ -2,7 +2,6 @@
 -- Inserts only; assumes tables already exist (created by migrations).
 -- Idempotent via WHERE NOT EXISTS checks (no need for unique constraints).
 
--- 1) Seed metric groups
 WITH vals(name, description) AS (
   VALUES
     ('Performance', 'Technical performance metrics'),
@@ -18,18 +17,13 @@ FROM vals v
 WHERE NOT EXISTS (
   SELECT 1 FROM public.metric_groups g WHERE g.name = v.name
 );
-
--- 2) Seed metrics (map each metric to its group by name)
 WITH rows(name, description, group_name) AS (
   VALUES
-    -- Performance
     ('Prediction Accuracy',      'Accuracy of predictions',                  'Performance'),
     ('Precision',                'Positive predictive value',                'Performance'),
     ('Recall',                   'Sensitivity / true positive rate',        'Performance'),
     ('Overall System Accuracy',  'End-to-end accuracy',                      'Performance'),
     ('Model Improvement Rate',   'Improvement per iteration',                'Performance'),
-
-    -- Efficiency
     ('Response Time',            'Time to respond',                          'Efficiency'),
     ('Teaching Efficiency',      'Effort to teach the model',                'Efficiency'),
     ('Query Efficiency',         'Effort to retrieve information',           'Efficiency'),
@@ -38,28 +32,20 @@ WITH rows(name, description, group_name) AS (
     ('Correction Efficiency',    'Effort to correct mistakes',               'Efficiency'),
     ('Error Reduction Rate',     'Decline in errors over time',              'Efficiency'),
     ('Knowledge Retention',      'Retention of learned info',                'Efficiency'),
-
-    -- Adaptability and Learning
     ('Feedback Impact',          'Impact of feedback on performance',        'Adaptability and Learning'),
     ('Adaptability Score',       'Ability to adapt to changes',              'Adaptability and Learning'),
     ('Impact of Corrections',    'Effect of user corrections',               'Adaptability and Learning'),
     ('Learning Efficiency',      'Learning speed/efficiency',                'Adaptability and Learning'),
     ('Objective Fulfillment Rate','Rate of meeting objectives',              'Adaptability and Learning'),
-
-    -- Collaboration and Interaction
     ('Human-AI Agreement Rate',  'Agreement between human and AI',           'Collaboration and Interaction'),
     ('AI Assistance Rate',       'How often AI helps',                       'Collaboration and Interaction'),
     ('Decision Effectiveness',   'Quality of assisted decisions',            'Collaboration and Interaction'),
     ('Time to Resolution',       'Time to resolve tasks/issues',             'Collaboration and Interaction'),
     ('Human Effort Saved',       'Reduction in human effort',                'Collaboration and Interaction'),
-
-    -- Trust and Safety
     ('Confidence',               'Model confidence or self-estimate',        'Trust and Safety'),
     ('Trust Score',              'User trust indicators',                    'Trust and Safety'),
     ('Safety Incidents',         'Safety-related incidents',                 'Trust and Safety'),
     ('System Reliability',       'Stability/uptime-related metric',          'Trust and Safety'),
-
-    -- Robustness and Generalization
     ('Adversarial Robustness',   'Robustness to adversarial input',          'Robustness and Generalization'),
     ('Domain Generalization',    'Cross-domain generalization',              'Robustness and Generalization')
 )
