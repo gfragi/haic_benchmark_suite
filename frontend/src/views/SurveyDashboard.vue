@@ -63,7 +63,7 @@
       <!-- Public Survey Link Button -->
       <v-btn
         variant="text"
-        :disabled="comparisonMode !== 'versions' || !selectedPilot"
+        :disabled="comparisonMode !== 'versions' || !selectedPilotTag"
         @click="openShare"
       >
         <v-icon start>mdi-link-variant</v-icon> Collect Responses
@@ -77,11 +77,11 @@
               Share this link with pilot users to answer directly:
             </div>
             <v-text-field
-              v-model="publicLink"
+              :model-value="surveyHref"
               readonly
               prepend-inner-icon="mdi-link-variant"
               append-inner-icon="mdi-content-copy"
-              @click:append-inner="copy(publicLink)"
+              @click:append-inner="copy(surveyHref)"
             />
             <div
               class="my-4"
@@ -105,7 +105,7 @@
             </div>
             <v-alert type="info" variant="tonal">
               You can also append <code>&app_version=...</code> and
-              <code>&model_version=...</code> to prefill metadata.
+              <code>&ai_model_version=...</code> to prefill metadata.
             </v-alert>
           </v-card-text>
           <v-card-actions>
@@ -188,12 +188,12 @@ import SurveyFilter from "@/components/SurveyFilter.vue";
 import SurveyChart from "@/components/SurveyChart.vue";
 import { fetchSurveyAggregates } from "@/services/survey";
 import { ref, computed, watch } from "vue";
+import { useRouter } from "vue-router";
 import debounce from "lodash.debounce";
 import semver from "semver";
 import QRCode from "qrcode";
 
 const comparisonMode = ref("versions");
-const selectedPilot = ref(null);
 const aggregatedData = ref({});
 const loading = ref(false);
 const isLineChart = ref(false);
@@ -203,6 +203,26 @@ const qrDataUrl = ref("");
 const selectedAppVersion = ref("");
 const selectedModelVersion = ref("");
 const selectedPilotTag = ref("");
+const router = useRouter();
+
+const surveyHref = computed(() => {
+  const { href } = router.resolve({
+    name: "PublicSurvey",
+    query: {
+      pilot_tag: selectedPilotTag.value || undefined,
+      app_version: selectedAppVersion.value || undefined,
+      ai_model_version: selectedModelVersion.value || undefined,
+    },
+  }).href;
+  // return `${window.location.origin}${href}`;
+  const hash = new URLSearchParams({
+    pilot_tag: selectedPilotTag.value || "",
+    app_version: selectedAppVersion.value || "",
+    ai_model_version: selectedModelVersion.value || "",
+  }).toString();
+
+  return `${window.location.origin}${href}#${hash}`;
+});
 
 const totalSurveys = computed(() =>
   Object.values(aggregatedData.value).reduce(
@@ -214,7 +234,7 @@ const totalSurveys = computed(() =>
 const chartTitle = computed(() => {
   if (comparisonMode.value === "versions") {
     return `Avg SUS & Ethics per App Version for "${
-      selectedPilot.value || "..."
+      selectedPilotTag.value || "..."
     }"`;
   } else {
     return "Avg SUS & Ethics per Pilot";
@@ -239,7 +259,7 @@ const sortedAggregatedData = computed(() => {
 const loadData = debounce(async (pilotTag = null) => {
   loading.value = true;
   try {
-    selectedPilot.value = pilotTag;
+    selectedPilotTag.value = pilotTag;
     const raw = await fetchSurveyAggregates(
       comparisonMode.value === "versions" ? pilotTag : null
     );
@@ -285,7 +305,7 @@ function slug(s) {
 }
 
 const publicLink = computed(() => {
-  const pilot = slug(selectedPilot.value); // ✅ single source of truth
+  const pilot = slug(selectedPilotTag.value);
   const base = pilot
     ? `${window.location.origin}/survey/:pilot_tag?${encodeURIComponent(pilot)}`
     : `${window.location.origin}/survey`;
@@ -298,7 +318,7 @@ const publicLink = computed(() => {
   return qs ? `${base}?${qs}` : base;
 });
 
-watch(publicLink, async (url) => {
+watch(surveyHref, async (url) => {
   try {
     qrDataUrl.value = await QRCode.toDataURL(url, { margin: 1, scale: 5 });
   } catch (e) {
@@ -309,7 +329,7 @@ watch(publicLink, async (url) => {
 function openShare() {
   shareOpen.value = true;
   // ensure QR exists if dialog opened before computed ran
-  QRCode.toDataURL(publicLink.value, { margin: 1, scale: 5 })
+  QRCode.toDataURL(surveyHref.value, { margin: 1, scale: 5 })
     .then((d) => {
       qrDataUrl.value = d;
     })
