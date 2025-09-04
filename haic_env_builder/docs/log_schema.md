@@ -147,6 +147,4 @@ When a simulation or pilot run completes, logs are wrapped in a run artifact:
 
 - For Similarity, include both probs and surrogate_probs if comparing humans to surrogate agents.
 
-- All timestamps (t) must be relative to task start (float, seconds).
-
 - Store logs as JSON (*.json) and submit via /logs/upload or /simulator/simulate.

@@ -1,3 +1,4 @@
+-- Active: 1719975402212@@127.0.0.1@5432@test_bench
 
 -- 10_seed_metrics.sql
 -- Idempotent seed for metric groups and metrics.
