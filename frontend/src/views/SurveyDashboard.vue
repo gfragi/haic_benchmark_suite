@@ -76,6 +76,22 @@
             <div class="mb-2">
               Share this link with pilot users to answer directly:
             </div>
+            <v-row class="mb-2">
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="App version (prefill)"
+                  v-model="selectedAppVersion"
+                  prepend-inner-icon="mdi-application-cog"
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="AI model version (prefill)"
+                  v-model="selectedModelVersion"
+                  prepend-inner-icon="mdi-robot-outline"
+                />
+              </v-col>
+            </v-row>
             <v-text-field
               :model-value="surveyHref"
               readonly
@@ -206,23 +222,37 @@ const selectedPilotTag = ref("");
 const router = useRouter();
 
 const surveyHref = computed(() => {
-  const { href } = router.resolve({
-    name: "PublicSurvey",
-    query: {
-      pilot_tag: selectedPilotTag.value || undefined,
-      app_version: selectedAppVersion.value || undefined,
-      ai_model_version: selectedModelVersion.value || undefined,
-    },
-  }).href;
-  // return `${window.location.origin}${href}`;
-  const hash = new URLSearchParams({
-    pilot_tag: selectedPilotTag.value || "",
-    app_version: selectedAppVersion.value || "",
-    ai_model_version: selectedModelVersion.value || "",
-  }).toString();
+  const origin = window.location.origin;
 
-  return `${window.location.origin}${href}#${hash}`;
+  // include only non-empty values
+  const query = {
+    pilot_tag: selectedPilotTag.value || undefined,
+    app_version: selectedAppVersion.value || undefined,
+    ai_model_version: selectedModelVersion.value || undefined,
+  };
+
+  const href = router.resolve({ name: "PublicSurvey", query }).href; // e.g. /survey?pilot_tag=Healthcare&app_version=v1
+  return `${origin}${href}`;
 });
+
+// const surveyHref = computed(() => {
+//   const href = router.resolve({
+//     name: "PublicSurvey",
+//     query: {
+//       pilot_tag: selectedPilotTag.value || undefined,
+//       app_version: selectedAppVersion.value || undefined,
+//       ai_model_version: selectedModelVersion.value || undefined,
+//     },
+//   }).href;
+
+//   const hash = new URLSearchParams({
+//     pilot_tag: selectedPilotTag.value || "",
+//     app_version: selectedAppVersion.value || "",
+//     ai_model_version: selectedModelVersion.value || "",
+//   }).toString();
+
+//   return `${window.location.origin}${href}#${hash}`;
+// });
 
 const totalSurveys = computed(() =>
   Object.values(aggregatedData.value).reduce(
@@ -297,26 +327,26 @@ function exportData() {
   link.click();
 }
 
-function slug(s) {
-  return String(s || "")
-    .trim()
-    .replace(/\s+/g, "-") // spaces -> dashes
-    .replace(/[^\w-]/g, ""); // strip odd chars
-}
+// function slug(s) {
+//   return String(s || "")
+//     .trim()
+//     .replace(/\s+/g, "-") // spaces -> dashes
+//     .replace(/[^\w-]/g, ""); // strip odd chars
+// }
 
-const publicLink = computed(() => {
-  const pilot = slug(selectedPilotTag.value);
-  const base = pilot
-    ? `${window.location.origin}/survey/:pilot_tag?${encodeURIComponent(pilot)}`
-    : `${window.location.origin}/survey`;
-  const params = new URLSearchParams();
-  if (selectedAppVersion.value)
-    params.set("app_version", selectedAppVersion.value);
-  if (selectedModelVersion.value)
-    params.set("model_version", selectedModelVersion.value);
-  const qs = params.toString();
-  return qs ? `${base}?${qs}` : base;
-});
+// const publicLink = computed(() => {
+//   const pilot = slug(selectedPilotTag.value);
+//   const base = pilot
+//     ? `${window.location.origin}/survey/:pilot_tag?${encodeURIComponent(pilot)}`
+//     : `${window.location.origin}/survey`;
+//   const params = new URLSearchParams();
+//   if (selectedAppVersion.value)
+//     params.set("app_version", selectedAppVersion.value);
+//   if (selectedModelVersion.value)
+//     params.set("ai_model_version", selectedModelVersion.value);
+//   const qs = params.toString();
+//   return qs ? `${base}?${qs}` : base;
+// });
 
 watch(surveyHref, async (url) => {
   try {

@@ -186,17 +186,6 @@
 <script setup>
 import { ref, computed } from "vue";
 
-// // --- read query and hash (for Keycloak appending #state)
-// function getQueryParam(name) {
-//   const qs = new URLSearchParams(window.location.search);
-//   if (qs.has(name)) return qs.get(name);
-//   const hash = window.location.hash.startsWith("#")
-//     ? window.location.hash.slice(1)
-//     : window.location.hash;
-//   const hs = new URLSearchParams(hash);
-//   return hs.get(name);
-// }
-
 const pilotTagFromUrl = !!getParam("pilot_tag");
 const pilotTag = ref(getParam("pilot_tag") || "");
 const appVersion = ref(getParam("app_version") || "");
