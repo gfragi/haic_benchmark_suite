@@ -25,13 +25,17 @@ const isPublicPath = () => {
 //     checkLoginIframe: false,
 //     redirectUri: window.location.origin,
 //   })
+const publicRedirect = () =>
+  window.location.origin + window.location.pathname + window.location.search;
 
 keycloak
   .init({
     onLoad: isPublicPath() ? "check-sso" : "login-required",
     checkLoginIframe: false,
-    // redirect back to the same public page or root
-    redirectUri: window.location.origin + (isPublicPath() ? "/survey" : "/"),
+    // IMPORTANT: keep query params on the public page
+    redirectUri: isPublicPath()
+      ? publicRedirect()
+      : window.location.origin + "/",
   })
   .then(async (authenticated) => {
     console.log("Keycloak init resolved:", authenticated);
