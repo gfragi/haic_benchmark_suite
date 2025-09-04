@@ -19,4 +19,4 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export default api; // <-- IMPORTANT: default export
+export default api;

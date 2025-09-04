@@ -13,20 +13,36 @@ console.log("Keycloak config:", {
   realm: process.env.VUE_APP_KEYCLOAK_REALM,
   clientId: process.env.VUE_APP_KEYCLOAK_CLIENT_ID,
 });
+// Treat /survey as PUBLIC (no forced login)
+const isPublicPath = () => {
+  // keep it simple — if you add more public routes, extend this check
+  return window.location.pathname === "/survey";
+};
+
+// keycloak
+//   .init({
+//     onLoad: "login-required",
+//     checkLoginIframe: false,
+//     redirectUri: window.location.origin,
+//   })
 
 keycloak
   .init({
-    onLoad: "login-required",
+    onLoad: isPublicPath() ? "check-sso" : "login-required",
     checkLoginIframe: false,
-    redirectUri: window.location.origin,
+    // redirect back to the same public page or root
+    redirectUri: window.location.origin + (isPublicPath() ? "/survey" : "/"),
   })
   .then(async (authenticated) => {
     console.log("Keycloak init resolved:", authenticated);
-    if (!authenticated) {
-      console.warn("Not authenticated, reloading");
-      window.location.reload();
+    // If not authenticated AND it’s NOT a public route, trigger login.
+    if (!authenticated && !isPublicPath()) {
+      console.warn("Not authenticated, redirecting to login");
+      keycloak.login();
       return;
     }
+
+    window.__kc = keycloak;
 
     const app = createApp(App);
     app.config.globalProperties.$keycloak = keycloak;

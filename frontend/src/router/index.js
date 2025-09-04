@@ -15,10 +15,11 @@ import FairnessEvaluation from "@/views/FairnessEvaluation.vue";
 import SurveyDashboard from "@/views/SurveyDashboard.vue";
 import SimulatorPage from "@/views/SimulatorPage.vue";
 import SurveyCompare from "@/views/SurveyCompare.vue";
-import keycloak from "@/services/keycloak"; // <-- import your shared instance
+// import keycloak from "@/services/keycloak";
+import PublicSurvey from "@/views/PublicSurvey.vue";
 
 const routes = [
-  { path: "/", name: "Home", component: HomeView, meta: { public: true } }, // <-- public + capitalized
+  { path: "/", name: "Home", component: HomeView, meta: { public: true } },
   {
     path: "/about",
     name: "About",
@@ -96,7 +97,8 @@ const routes = [
   {
     path: "/survey",
     name: "PublicSurvey",
-    component: () => import("@/views/PublicSurvey.vue"),
+    component: PublicSurvey,
+    props: true,
     meta: { public: true },
   },
 
@@ -104,24 +106,20 @@ const routes = [
 ];
 
 const router = createRouter({
-  // If you use Vite, prefer: createWebHistory(import.meta.env.BASE_URL)
-  history: createWebHistory(process.env.BASE_URL || "/"),
+  history: createWebHistory(
+    import.meta?.env?.BASE_URL || process.env.BASE_URL || "/"
+  ),
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  const isAuthed = !!keycloak.authenticated; // <-- real auth state
-
-  // Allow all public pages
-  if (to.meta.public) return next();
-
-  // Protect non-public pages
+router.beforeEach((to) => {
+  if (to.meta.public) return true;
+  const isAuthed = !!window.__kc?.authenticated;
   if (!isAuthed) {
-    // choose where to send unauthenticated users
-    return next({ name: "Home" });
+    window.__kc?.login(); // send to Keycloak
+    return false; // cancel current navigation
   }
-
-  return next();
+  return true;
 });
 
 export default router;
