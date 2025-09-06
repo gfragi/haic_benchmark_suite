@@ -1,74 +1,191 @@
 <template>
   <BaseLayout>
     <v-container>
-      <!-- Header and Instructions -->
-      <v-alert type="info" class="mb-4" dense>
-        This dashboard displays average SUS and Ethics scores. You can compare
-        different app versions within a pilot, or switch to pilot-level
-        comparison.
-      </v-alert>
+      <v-row class="gap-y-4">
+        <!-- LEFT: Controls rail (sticky) -->
+        <v-col cols="12" md="3">
+          <v-card class="pa-4 control-rail">
+            <div class="text-subtitle-2 mb-2">
+              SUS &amp; Ethics
+              <span v-if="selectedPilotTag" class="text-caption ml-1"
+                >· {{ selectedPilotTag }}</span
+              >
+            </div>
 
-      <!-- Comparison Mode Toggle -->
-      <v-radio-group v-model="comparisonMode" row class="mb-4">
-        <v-radio label="Compare App Versions (per Pilot)" value="versions" />
-        <v-radio label="Compare Pilots (overall)" value="pilots" />
-      </v-radio-group>
+            <!-- Mode -->
+            <div class="mb-3">
+              <div class="text-caption text-medium-emphasis mb-1">Mode</div>
+              <v-btn-toggle
+                v-model="comparisonMode"
+                mandatory
+                rounded
+                density="comfortable"
+                class="w-100"
+              >
+                <v-btn value="versions">Versions</v-btn>
+                <v-btn value="pilots">Pilots</v-btn>
+              </v-btn-toggle>
+            </div>
 
-      <!-- Chart Type Switch -->
-      <v-switch
-        v-model="isLineChart"
-        :label="`Chart type: ${isLineChart ? 'line' : 'bar'}`"
-        class="mb-4"
-      />
+            <!-- Pilot selector (Versions only) -->
+            <div v-if="comparisonMode === 'versions'" class="mb-3">
+              <div class="text-caption text-medium-emphasis mb-1">Pilot</div>
+              <SurveyFilter @update:pilotTag="loadData" />
+            </div>
 
-      <!-- Pilot Filter (only for version comparison) -->
-      <SurveyFilter
-        v-if="comparisonMode === 'versions'"
-        @update:pilotTag="loadData"
-      />
+            <!-- Chart type -->
+            <div class="mb-3">
+              <div class="text-caption text-medium-emphasis mb-1">Chart</div>
+              <v-btn block variant="tonal" @click="toggleChartType">
+                <v-icon start>{{
+                  isLineChart ? "mdi-chart-line" : "mdi-chart-bar"
+                }}</v-icon>
+                {{ isLineChart ? "Line" : "Bar" }}
+              </v-btn>
+            </div>
 
-      <!-- Loading Indicator -->
-      <div v-if="loading" class="text-center my-8">
-        <v-progress-circular indeterminate color="primary" size="40" />
-      </div>
+            <v-divider class="my-3" />
 
-      <!-- Chart Title and Count -->
-      <div v-if="!loading" class="text-center my-4">
-        <h3 class="text-h6">{{ chartTitle }}</h3>
-        <p class="text-caption">Total surveys: {{ totalSurveys }}</p>
-      </div>
+            <!-- Actions -->
+            <v-btn
+              block
+              color="primary"
+              class="mb-2"
+              @click="openShare"
+              :disabled="comparisonMode === 'versions' && !selectedPilotTag"
+            >
+              <v-icon start>mdi-link-variant</v-icon>
+              Build Link
+            </v-btn>
 
-      <!-- Chart -->
-      <SurveyChart
-        v-if="Object.keys(aggregatedData).length"
-        :data="sortedAggregatedData"
-        :type="chartType"
-      />
+            <v-btn
+              block
+              variant="outlined"
+              class="mb-2"
+              :disabled="!selectedPilotTag"
+              @click="goCompare"
+            >
+              <v-icon start>mdi-compare</v-icon>
+              Compare Versions
+            </v-btn>
 
-      <!-- No Data Message -->
-      <div v-else-if="!loading" class="text-center my-8">
-        <p>No data available.</p>
-      </div>
+            <v-btn block variant="text" class="mb-1" @click="exportData">
+              <v-icon start>mdi-download</v-icon>
+              Export CSV
+            </v-btn>
 
-      <!-- Export Button -->
-      <v-btn class="mt-4" @click="exportData" color="primary">Export CSV</v-btn>
+            <v-btn block variant="text" @click="refresh">
+              <v-icon start>mdi-refresh</v-icon>
+              Refresh
+            </v-btn>
 
-      <!-- Navigate to Compare Page -->
-      <v-btn
-        variant="text"
-        :to="{ name: 'SurveyCompare', query: { pilot: selectedPilotTag } }"
-      >
-        <v-icon start>mdi-compare</v-icon> Compare Versions
-      </v-btn>
-      <!-- Public Survey Link Button -->
-      <v-btn
-        variant="text"
-        :disabled="comparisonMode !== 'versions' || !selectedPilotTag"
-        @click="openShare"
-      >
-        <v-icon start>mdi-link-variant</v-icon> Collect Responses
-      </v-btn>
+            <v-divider class="my-3" />
 
+            <div class="text-caption text-medium-emphasis">
+              Tip: In <em>Versions</em>, pick a pilot and compare app versions.
+              In <em>Pilots</em>, compare across pilots.
+            </div>
+          </v-card>
+        </v-col>
+
+        <!-- RIGHT: Chart & content -->
+        <v-col cols="12" md="9">
+          <!-- Loading -->
+          <div v-if="loading" class="text-center my-8">
+            <v-progress-circular indeterminate color="primary" size="40" />
+          </div>
+
+          <!-- Chart header -->
+          <div v-else class="text-center my-4">
+            <h3 class="text-h6">{{ chartTitle }}</h3>
+            <div class="text-caption">Total surveys: {{ totalSurveys }}</div>
+            <div class="text-caption text-medium-emphasis mt-1">
+              SUS and Ethics are shown on a 0–100 scale (higher is better).
+              Hover for exact values and counts.
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <SurveyChart
+            v-if="Object.keys(aggregatedData).length"
+            :data="sortedAggregatedData"
+            :type="chartType"
+            :x-label="comparisonMode === 'versions' ? 'App Version' : 'Pilot'"
+            y-label="Average score (0–100)"
+            :legend-info="true"
+          />
+
+          <!-- Empty state -->
+          <div v-else class="text-center my-8">
+            <p>No data available.</p>
+          </div>
+
+          <!-- Reference panels -->
+          <v-expansion-panels class="mt-6">
+            <v-expansion-panel>
+              <v-expansion-panel-title>SUS Questions</v-expansion-panel-title>
+              <v-expansion-panel-text>
+                <ol>
+                  <li>I think I would like to use this system frequently.</li>
+                  <li>I found the system unnecessarily complex.</li>
+                  <li>I thought the system was easy to use.</li>
+                  <li>
+                    I think I would need the support of a technical person to
+                    use this system.
+                  </li>
+                  <li>
+                    I found the various functions in this system were well
+                    integrated.
+                  </li>
+                  <li>
+                    I thought there was too much inconsistency in this system.
+                  </li>
+                  <li>
+                    I would imagine most people would learn to use this system
+                    quickly.
+                  </li>
+                  <li>I found the system very difficult to use.</li>
+                  <li>I felt very confident using the system.</li>
+                  <li>
+                    I needed to learn many things before I could get going with
+                    this system.
+                  </li>
+                </ol>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+            <v-expansion-panel>
+              <v-expansion-panel-title
+                >Ethics Questions</v-expansion-panel-title
+              >
+              <v-expansion-panel-text>
+                <ol>
+                  <li>
+                    Fairness: The system handles different tasks or users
+                    without bias.
+                  </li>
+                  <li>
+                    Transparency: I understand how the system/AI arrives at its
+                    decisions.
+                  </li>
+                  <li>
+                    Privacy: I feel confident that personal data is protected.
+                  </li>
+                  <li>
+                    Accountability: It is clear who or what is responsible for
+                    errors.
+                  </li>
+                  <li>
+                    Trust: Overall, I trust the system to operate ethically and
+                    in my best interest.
+                  </li>
+                </ol>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-col>
+      </v-row>
+
+      <!-- Share dialog (Build Link pop-out) -->
       <v-dialog v-model="shareOpen" max-width="640">
         <v-card>
           <v-card-title>Public Survey Link</v-card-title>
@@ -76,7 +193,16 @@
             <div class="mb-2">
               Share this link with pilot users to answer directly:
             </div>
+
             <v-row class="mb-2">
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Pilot"
+                  :model-value="selectedPilotTag || '—'"
+                  prepend-inner-icon="mdi-tag-outline"
+                  readonly
+                />
+              </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
                   label="App version (prefill)"
@@ -92,6 +218,7 @@
                 />
               </v-col>
             </v-row>
+
             <v-text-field
               :model-value="surveyHref"
               readonly
@@ -99,6 +226,7 @@
               append-inner-icon="mdi-content-copy"
               @click:append-inner="copy(surveyHref)"
             />
+
             <div
               class="my-4"
               style="display: flex; gap: 16px; align-items: center"
@@ -119,81 +247,24 @@
                 </div>
               </div>
             </div>
+
             <v-alert type="info" variant="tonal">
-              You can also append <code>&app_version=...</code> and
-              <code>&ai_model_version=...</code> to prefill metadata.
+              You can also append <code>&amp;app_version=...</code> and
+              <code>&amp;ai_model_version=...</code> to prefill metadata.
             </v-alert>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn variant="flat" color="primary" @click="copy(publicLink)"
+            <v-btn variant="text" :href="surveyHref" target="_blank"
+              >Open</v-btn
+            >
+            <v-btn variant="flat" color="primary" @click="copy(surveyHref)"
               >Copy</v-btn
             >
             <v-btn variant="text" @click="shareOpen = false">Close</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
-
-      <!-- Evaluation Questions -->
-      <v-expansion-panels class="mt-6">
-        <v-expansion-panel>
-          <v-expansion-panel-title>SUS Questions</v-expansion-panel-title>
-          <v-expansion-panel-text>
-            <ol>
-              <li>I think I would like to use this system frequently.</li>
-              <li>I found the system unnecessarily complex.</li>
-              <li>I thought the system was easy to use.</li>
-              <li>
-                I think I would need the support of a technical person to use
-                this system.
-              </li>
-              <li>
-                I found the various functions in this system were well
-                integrated.
-              </li>
-              <li>
-                I thought there was too much inconsistency in this system.
-              </li>
-              <li>
-                I would imagine most people would learn to use this system
-                quickly.
-              </li>
-              <li>I found the system very difficult to use.</li>
-              <li>I felt very confident using the system.</li>
-              <li>
-                I needed to learn many things before I could get going with this
-                system.
-              </li>
-            </ol>
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-        <v-expansion-panel>
-          <v-expansion-panel-title>Ethics Questions</v-expansion-panel-title>
-          <v-expansion-panel-text>
-            <ol>
-              <li>
-                Fairness: The system handles different tasks or users without
-                bias.
-              </li>
-              <li>
-                Transparency: I understand how the system/AI arrives at its
-                decisions.
-              </li>
-              <li>
-                Privacy: I feel confident that personal data is protected.
-              </li>
-              <li>
-                Accountability: It is clear who or what is responsible for
-                errors.
-              </li>
-              <li>
-                Trust: Overall, I trust the system to operate ethically and in
-                my best interest.
-              </li>
-            </ol>
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-      </v-expansion-panels>
     </v-container>
   </BaseLayout>
 </template>
@@ -327,6 +398,23 @@ function exportData() {
   link.click();
 }
 
+function goCompare() {
+  // opens the compare page with the current pilot preselected
+  router.push({
+    name: "SurveyCompare",
+    query: { pilot: selectedPilotTag.value || "" },
+  });
+}
+
+function refresh() {
+  // reload current mode (pilot-level or version-level)
+  loadData(selectedPilotTag.value || null);
+}
+
+function toggleChartType() {
+  isLineChart.value = !isLineChart.value;
+}
+
 // function slug(s) {
 //   return String(s || "")
 //     .trim()
@@ -381,3 +469,10 @@ async function copy(text) {
   }
 }
 </script>
+
+<style scoped>
+.control-rail {
+  position: sticky;
+  top: 72px; /* adjust if your app bar height differs */
+}
+</style>
