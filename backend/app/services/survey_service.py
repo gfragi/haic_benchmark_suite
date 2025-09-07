@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
+from sqlalchemy import text, func
 from app.schemas.survey import SurveyCreate
 from app.models.survey import Survey
 import uuid
@@ -76,3 +77,41 @@ def aggregate_survey_metrics(db: Session, pilot_tag: Optional[str] = None):
             "ethics_values": v["ethics"]
         }
     return out
+
+
+def distinct_app_versions(session: Session, pilot_tag: str) -> List[str]:
+    # Postgres: pull distinct app versions for a pilot from the *surveys* table
+    stmt = text("""
+        SELECT DISTINCT app_version
+        FROM surveys
+        WHERE pilot_tag = :pilot
+          AND app_version IS NOT NULL
+        ORDER BY app_version
+    """)
+    rows = session.execute(stmt, {"pilot": pilot_tag}).all()
+    # rows are tuples when using text(); first column is app_version
+    return [r[0] for r in rows]
+
+
+
+def aggregate_for_version(db: Session, pilot_tag: str, app_version: str) -> Dict[str, Any]:
+    """
+    Return a simple payload for one (pilot, version) with the fields the UI expects.
+    Falls back to zeros if the version has no data.
+    """
+    all_stats: Dict[str, Dict[str, Any]] = aggregate_survey_metrics(db, pilot_tag=pilot_tag) or {}
+    row: Optional[Dict[str, Any]] = all_stats.get(app_version)
+
+    if not row:
+        return {"pilot_tag": pilot_tag, "app_version": app_version,
+                "avg_sus": 0.0, "avg_ethics": 0.0, "count": 0}
+
+    # Map/normalize keys from your aggregator to what the UI expects.
+    # If your aggregator already uses these names, this is a straight pass-through.
+    return {
+        "pilot_tag": pilot_tag,
+        "app_version": app_version,
+        "avg_sus": float(row.get("avg_sus", 0.0)),
+        "avg_ethics": float(row.get("avg_ethics", 0.0)),
+        "count": int(row.get("count", 0)),
+    }

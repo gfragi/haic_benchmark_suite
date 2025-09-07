@@ -53,6 +53,7 @@
     "vue-cli-plugin-vuetify": "~2.5.8",
     "vue3-form-wizard": "^0.2.4",
     "vue3-notification": "^0.0.3",
+    "vuetify-loader": "^2.0.0-alpha.9",
     "webpack": "^5.94.0",
     "webpack-plugin-vuetify": "^3.1.1"
   }
