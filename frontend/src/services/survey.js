@@ -14,3 +14,11 @@ export async function fetchVersions(pilotTag) {
   // backend may return { versions: [...] } or just [...]
   return Array.isArray(data) ? data : data?.versions ?? [];
 }
+
+export async function fetchQuestionAverages(pilotTag, appVersion) {
+  if (!pilotTag || !appVersion) return null;
+  const { data } = await apiClient.get("/v1/survey/question-averages", {
+    params: { pilot_tag: pilotTag, app_version: appVersion },
+  });
+  return data || null;
+}
