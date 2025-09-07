@@ -115,3 +115,42 @@ def aggregate_for_version(db: Session, pilot_tag: str, app_version: str) -> Dict
         "avg_ethics": float(row.get("avg_ethics", 0.0)),
         "count": int(row.get("count", 0)),
     }
+    
+def question_averages(session: Session, pilot_tag: str, app_version: str):
+    """
+    Returns:
+      {
+        "sus": { "sus_q1": 3.9, ..., "sus_q10": 3.2 },
+        "ethics": { "q_fairness": 4.2, ... }
+      }
+    Averages are on the 1..5 scale.
+    This version uses JSON functions so it works if columns are JSON (not JSONB).
+    """
+    stmt = text("""
+      WITH base AS (
+        SELECT tam_sus_responses, ethics_responses
+        FROM surveys
+        WHERE pilot_tag = :pilot AND app_version = :ver
+      )
+      SELECT
+        (
+          SELECT json_object_agg(key, avg_val ORDER BY key)
+          FROM (
+            SELECT key, AVG( (value)::numeric ) AS avg_val
+            FROM base, json_each_text(tam_sus_responses)
+            GROUP BY key
+          ) s
+        ) AS sus,
+        (
+          SELECT json_object_agg(key, avg_val ORDER BY key)
+          FROM (
+            SELECT key, AVG( (value)::numeric ) AS avg_val
+            FROM base, json_each_text(ethics_responses)
+            GROUP BY key
+          ) e
+        ) AS ethics
+      ;
+    """)
+    row = session.execute(stmt, {"pilot": pilot_tag, "ver": app_version}).first()
+    # row[0] and row[1] can be None if no data
+    return {"sus": row[0] or {}, "ethics": row[1] or {}} if row else {"sus": {}, "ethics": {}}
