@@ -3,7 +3,7 @@ import random
 import uuid
 from datetime import datetime, timezone
 
-API_URL = "http://localhost:8000/survey"
+API_URL = "http://localhost:8000/api/v1/survey"
 
 PILOT_TAGS = ["SmartTicketing", "SmartEnergy", "Healthcare", "Manufacturing"]
 APP_VERSIONS = ["1.0.0", "1.2.0", "2.0.1", "2.1.0", "2.2.0"]

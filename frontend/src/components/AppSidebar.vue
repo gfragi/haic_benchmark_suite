@@ -47,7 +47,7 @@ export default {
         },
         {
           title: "Simulator",
-          icon: "mdi-play-circle",
+          icon: "mdi-flask",
           route: "/simulate",
         },
         { title: "About", icon: "mdi-information", route: "/about" },
