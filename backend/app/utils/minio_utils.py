@@ -7,6 +7,7 @@ import requests
 import urllib3
 from minio import Minio
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -119,3 +120,35 @@ def delete_file(config_id: int, log_name: str):
     client = get_minio_client()
     log_path = f"{config_id}/{log_name}"
     client.remove_object(MINIO_BUCKET, log_path)
+
+
+def put_json(config_id: int, filename: str, data: dict) -> str:
+    """
+    Store a JSON object under config_id/filename in the MINIO_BUCKET.
+    Returns the object path.
+    """
+    client = get_minio_client()
+    object_name = os.path.join(str(config_id), filename)
+    encoded = json.dumps(data, indent=2).encode("utf-8")
+    client.put_object(
+        MINIO_BUCKET,
+        object_name,
+        io.BytesIO(encoded),
+        len(encoded),
+        content_type="application/json"
+    )
+    return object_name
+
+
+def get_json(config_id: int, filename: str) -> dict:
+    """
+    Fetch a JSON object from MinIO and return as Python dict.
+    """
+    client = get_minio_client()
+    object_name = os.path.join(str(config_id), filename)
+    response = client.get_object(MINIO_BUCKET, object_name)
+    try:
+        return json.load(response)
+    finally:
+        response.close()
+        response.release_conn()
