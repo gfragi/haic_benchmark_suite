@@ -29,17 +29,19 @@
       <v-row>
         <!-- Sidebar -->
         <v-col cols="2">
-          <v-list dense>
+          <v-list density="compact">
             <v-list-item
               v-for="group in groupOptions"
               :key="group.value"
               @click="selectedGroup = group.value"
               :class="{ 'selected-group': selectedGroup === group.value }"
               style="cursor: pointer"
+              :title="groupedMetrics[group.value]?.group_description || ''"
             >
-              <v-list-item>
+              <template #prepend>
                 <v-icon>{{ getGroupIcon(group.value) }}</v-icon>
-              </v-list-item>
+              </template>
+
               <v-list-item-title class="text-caption">
                 {{ group.title }}
               </v-list-item-title>
@@ -68,7 +70,7 @@
                 :chartId="'chart-' + index"
                 :chartData="chartData[metric]"
                 :chartType="'line'"
-                :chartOptions="chartOptions"
+                :chartOptions="getChartOptions(metric)"
               />
               <div v-else class="text-caption text-medium-emphasis">
                 No data yet for this metric.
@@ -183,6 +185,166 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+
+    // --- helper: pull current numeric values for a metric (skip nulls) ---
+    valuesFor(metric) {
+      const ds = this.chartData?.[metric]?.datasets?.[0]?.data ?? [];
+      return ds.filter((v) => typeof v === "number" && !Number.isNaN(v));
+    },
+
+    // --- helper: compute a sensible max (>0) with headroom ---
+    headroomMax(metric, fallback = 1) {
+      const vals = this.valuesFor(metric);
+      const m = Math.max(...(vals.length ? vals : [fallback]));
+      // add 10% headroom; ensure it's > 0
+      return Math.max((m || 0) * 1.1, fallback);
+    },
+
+    getChartOptions(metricName) {
+      // base options + “N/A” tooltips
+      const base = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true },
+          tooltip: {
+            callbacks: {
+              label: (ctx) =>
+                ctx.raw === null || ctx.raw === undefined
+                  ? "N/A"
+                  : `${ctx.raw}`,
+            },
+          },
+        },
+      };
+
+      // OUTCOME (extended) mode: keep your previous buckets
+      if (!this.coreMode) {
+        const timeMetrics = new Set([
+          "Response Time",
+          "Task Completion Time",
+          "Time to Resolution",
+        ]);
+        const countMetrics = new Set(["Safety Incidents"]);
+
+        if (timeMetrics.has(metricName)) {
+          return {
+            ...base,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { callback: (v) => `${v} s` },
+              },
+            },
+          };
+        }
+        if (countMetrics.has(metricName)) {
+          return {
+            ...base,
+            scales: {
+              y: { beginAtZero: true, ticks: { precision: 0, stepSize: 1 } },
+            },
+          };
+        }
+        // default outcome: rates/probabilities
+        return {
+          ...base,
+          scales: {
+            y: {
+              beginAtZero: true,
+              suggestedMax: 1,
+              max: 1,
+              ticks: { callback: (v) => Number(v).toFixed(2) },
+            },
+          },
+        };
+      }
+
+      // CORE (minimal) mode: per-metric ranges
+      // EL: [0, +inf)
+      if (metricName === "EL") {
+        return {
+          ...base,
+          scales: {
+            y: {
+              beginAtZero: true,
+              suggestedMax: this.headroomMax("EL", 1),
+              ticks: { callback: (v) => `${v}` },
+            },
+          },
+        };
+      }
+
+      // D (avg action duration): [0, +inf) in seconds
+      if (metricName === "D") {
+        return {
+          ...base,
+          scales: {
+            y: {
+              beginAtZero: true,
+              suggestedMax: this.headroomMax("D", 1),
+              ticks: { callback: (v) => `${v} s` },
+            },
+          },
+        };
+      }
+
+      // F (interactions per minute): [0, +inf) — typical 0-10/min
+      if (metricName === "F") {
+        return {
+          ...base,
+          scales: {
+            y: {
+              beginAtZero: true,
+              suggestedMax: this.headroomMax("F", 10),
+              ticks: { callback: (v) => `${v}` },
+            },
+          },
+        };
+      }
+
+      // A (adaptability): usually [-1, +1]
+      if (metricName === "A") {
+        return {
+          ...base,
+          scales: {
+            y: {
+              suggestedMin: -1,
+              suggestedMax: 1,
+              ticks: { callback: (v) => Number(v).toFixed(2) },
+            },
+          },
+        };
+      }
+
+      // HCL, Tr, S, EfficiencyScore: [0, 1]
+      if (["HCL", "Tr", "S", "EfficiencyScore"].includes(metricName)) {
+        return {
+          ...base,
+          scales: {
+            y: {
+              beginAtZero: true,
+              suggestedMax: 1,
+              max: 1,
+              ticks: { callback: (v) => Number(v).toFixed(2) },
+            },
+          },
+        };
+      }
+
+      // Fallback for any other core metric: clamp to [0,1]
+      return {
+        ...base,
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMax: 1,
+            max: 1,
+            ticks: { callback: (v) => Number(v).toFixed(2) },
+          },
+        },
+      };
     },
 
     async fetchRuns() {
