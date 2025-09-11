@@ -44,20 +44,36 @@ export default {
       validator: (v) => ["line", "bar"].includes(v),
     },
     chartOptions: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: function (ctx) {
-              return ctx.raw === null ? "N/A" : ctx.raw;
+      type: Object,
+      default: () => ({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                // when data point is null -> show N/A
+                return ctx.raw === null || ctx.raw === undefined
+                  ? "N/A"
+                  : `${ctx.raw}`;
+              },
+            },
+          },
+          legend: { display: true },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              // keep tick labels readable; show “N/A” only in tooltip
+              callback: (v) => v,
             },
           },
         },
-      },
+      }),
     },
   },
-  data: () => ({ chart: null, isRendering: false, queuedUpdate: false }),
+  data: () => ({ chart: null, isRendering: false, queuePending: false }),
   async mounted() {
     await this.renderChartSafely();
   },
@@ -121,10 +137,10 @@ export default {
       this.isRendering = false;
     },
     updateOrRender(resetAll = false) {
-      if (this.queuedUpdate) return;
-      this.queuedUpdate = true;
+      if (this.queuePending) return;
+      this.queuePending = true;
       queueMicrotask(() => {
-        this.queuedUpdate = false;
+        this.queuePending = false;
         if (this.chart && this._hasData()) {
           if (resetAll) this.chart.config.type = this.chartType;
           this.chart.data = this._plain(this.chartData);

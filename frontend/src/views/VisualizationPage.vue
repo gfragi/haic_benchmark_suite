@@ -57,6 +57,12 @@
               md="6"
             >
               <h3 class="text-h6 mb-2">{{ metric }}</h3>
+              <p class="text-caption mb-2" style="min-height: 32px">
+                {{
+                  metricDescriptions?.[selectedGroup]?.[metric] ??
+                  "No description"
+                }}
+              </p>
               <ChartComponent
                 v-if="chartData[metric]"
                 :chartId="'chart-' + index"
@@ -113,6 +119,7 @@ export default {
       selectedGroup: null,
       groupOptions: [],
       groupedMetrics: {}, // from /evaluate/metrics (for outcome mode)
+      metricDescriptions: {}, // { [group]: { [metricName]: description|null } }
 
       // data for charts
       chartData: {},
@@ -191,14 +198,29 @@ export default {
     },
 
     async fetchMetricGroups() {
-      const { data } = await evaluationService.getMetrics();
-      this.groupedMetrics = data || {};
-      this.groupOptions = Object.keys(this.groupedMetrics).map((g) => ({
-        title: g,
-        value: g,
-      }));
-      this.selectedGroup = this.groupOptions[0]?.value || null;
-      this.updateSelectedMetrics();
+      // const { data } = await evaluationService.getMetrics();
+      this.isLoading = true;
+      evaluationService.getMetrics().then((response) => {
+        this.groupedMetrics = response.data;
+        // Build a group -> metricName -> description map
+        const descMap = {};
+        Object.entries(this.groupedMetrics).forEach(([group, payload]) => {
+          const inner = {};
+          (payload.metrics || []).forEach((m) => {
+            inner[m.name] = m.description ?? null;
+          });
+          descMap[group] = inner;
+        });
+        this.metricDescriptions = descMap;
+
+        this.groupOptions = Object.keys(this.groupedMetrics).map((group) => ({
+          title: group,
+          value: group,
+        }));
+        this.selectedGroup = this.groupOptions[0].value;
+        this.updateSelectedMetrics();
+        this.fetchData && this.fetchData();
+      });
     },
 
     prepareCoreGroups() {
