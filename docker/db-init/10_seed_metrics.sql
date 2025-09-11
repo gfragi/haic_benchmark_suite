@@ -92,3 +92,105 @@ VALUES
     ('Adversarial Robustness',   (SELECT id FROM grp WHERE name='Robustness and Generalization')),
     ('Domain Generalization',    (SELECT id FROM grp WHERE name='Robustness and Generalization'))
 ON CONFLICT DO NOTHING;
+
+DO $$
+BEGIN
+-- === Metric group descriptions ============================================
+UPDATE metric_groups SET description =
+'Measures how accurately the system achieves the intended task (correctness and quality of outputs).'
+WHERE id = 1; -- Effectiveness
+
+UPDATE metric_groups SET description =
+'Measures speed and resource use: how quickly and efficiently the system delivers results.'
+WHERE id = 2; -- Efficiency
+
+UPDATE metric_groups SET description =
+'Measures how well the system adapts over time, learns from feedback, and improves.'
+WHERE id = 3; -- Adaptability and Learning
+
+UPDATE metric_groups SET description =
+'Measures the quality of human–AI teamwork: alignment, assistance, and joint outcomes.'
+WHERE id = 4; -- Collaboration and Interaction
+
+UPDATE metric_groups SET description =
+'Measures safety, reliability, and user confidence while avoiding harmful behavior.'
+WHERE id = 5; -- Trust and Safety
+
+UPDATE metric_groups SET description =
+'Measures performance under distribution shifts, edge cases, and adversarial conditions.'
+WHERE id = 6; -- Robustness and Generalization
+
+
+-- === Metric descriptions ===================================================
+-- Effectiveness (id 1–5)
+UPDATE metrics SET description = 'Share of correct predictions (0–1).'
+WHERE id = 1;  -- Prediction Accuracy
+UPDATE metrics SET description = 'Positive predictive value of model outputs (0–1).'
+WHERE id = 2;  -- Precision
+UPDATE metrics SET description = 'Sensitivity: fraction of positives correctly found (0–1).'
+WHERE id = 3;  -- Recall
+UPDATE metrics SET description = 'End-to-end accuracy at the system level (0–1).'
+WHERE id = 4;  -- Overall System Accuracy
+UPDATE metrics SET description = 'Rate of accuracy improvement across versions or time.'
+WHERE id = 5;  -- Model Improvement Rate
+
+-- Efficiency (id 6–13)
+UPDATE metrics SET description = 'Time from input to model response (seconds).'
+WHERE id = 6;  -- Response Time
+UPDATE metrics SET description = 'How much guidance accelerates learning or task success (0–1).'
+WHERE id = 7;  -- Teaching Efficiency
+UPDATE metrics SET description = 'Efficiency of information requests or queries (0–1).'
+WHERE id = 8;  -- Query Efficiency
+UPDATE metrics SET description = 'Compute / memory / bandwidth efficiency (0–1, higher = better).'
+WHERE id = 9;  -- Resource Utilization
+UPDATE metrics SET description = 'Elapsed time to complete the task (seconds).'
+WHERE id = 10; -- Task Completion Time
+UPDATE metrics SET description = 'Speed/quality of fixing errors or refining outputs (0–1).'
+WHERE id = 11; -- Correction Efficiency
+UPDATE metrics SET description = 'Retention of relevant knowledge over time (0–1).'
+WHERE id = 12; -- Error Reduction Rate  << NOTE
+UPDATE metrics SET description = 'Share of previously made errors that no longer occur (0–1).'
+WHERE id = 12; -- Error Reduction Rate (clarified)
+UPDATE metrics SET description = 'User or system’s ability to recall learned information (0–1).'
+WHERE id = 13; -- Knowledge Retention
+
+-- Adaptability & Learning (id 14–18)
+UPDATE metrics SET description = 'Observed impact of user feedback on model behavior (0–1).'
+WHERE id = 14; -- Feedback Impact
+UPDATE metrics SET description = 'Overall capacity to adjust to new goals, data, or instructions (0–1).'
+WHERE id = 15; -- Adaptability Score
+UPDATE metrics SET description = 'Effect that corrections have on subsequent outputs (0–1).'
+WHERE id = 16; -- Impact of Corrections
+UPDATE metrics SET description = 'Learning progress per unit time or interaction (0–1).'
+WHERE id = 17; -- Learning Efficiency
+UPDATE metrics SET description = 'Rate of meeting stated objectives or acceptance criteria (0–1).'
+WHERE id = 18; -- Objective Fulfillment Rate
+
+-- Collaboration & Interaction (id 19–23)
+UPDATE metrics SET description = 'Agreement between human judgment and AI suggestion (0–1).'
+WHERE id = 19; -- Human-AI Agreement Rate
+UPDATE metrics SET description = 'Portion of steps where AI provides useful assistance (0–1).'
+WHERE id = 20; -- AI Assistance Rate
+UPDATE metrics SET description = 'Quality of decisions made with AI vs without AI (0–1).'
+WHERE id = 21; -- Decision Effectiveness
+UPDATE metrics SET description = 'Elapsed time from issue start to satisfactory resolution (seconds).'
+WHERE id = 22; -- Time to Resolution
+UPDATE metrics SET description = 'Reduction in human effort compared to baseline (0–1 or %).'
+WHERE id = 23; -- Human Effort Saved
+
+-- Trust & Safety (id 24–27)
+UPDATE metrics SET description = 'User-reported or model-estimated confidence in outputs (0–1).'
+WHERE id = 24; -- Confidence
+UPDATE metrics SET description = 'Composite trust indicator derived from quality, transparency, and safety (0–1).'
+WHERE id = 25; -- Trust Score
+UPDATE metrics SET description = 'Count of safety issues or policy violations (count).'
+WHERE id = 26; -- Safety Incidents
+UPDATE metrics SET description = 'Service reliability / uptime / fault-free rate (0–1).'
+WHERE id = 27; -- System Reliability
+
+-- Robustness & Generalization (id 28–29)
+UPDATE metrics SET description = 'Resistance to adversarial or worst-case inputs (0–1).'
+WHERE id = 28; -- Adversarial Robustness
+UPDATE metrics SET description = 'Ability to maintain performance on new domains or distributions (0–1).'
+WHERE id = 29; -- Domain Generalization
+END$$;
