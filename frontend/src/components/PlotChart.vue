@@ -32,25 +32,32 @@ Chart.register(
   Legend,
   Tooltip
 );
-
-// Optional: kill animations to avoid RAF races during tab switches
 Chart.defaults.animation = false;
 
 export default {
   name: "PlotChart",
   props: {
-    chartData: { type: Object, required: true }, // { labels:[], datasets:[] }
+    chartData: { type: Object, required: true },
     chartType: {
       type: String,
       default: "line",
       validator: (v) => ["line", "bar"].includes(v),
     },
     chartOptions: {
-      type: Object,
-      default: () => ({ responsive: true, maintainAspectRatio: false }),
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function (ctx) {
+              return ctx.raw === null ? "N/A" : ctx.raw;
+            },
+          },
+        },
+      },
     },
   },
-  data: () => ({ chart: null, isRendering: false }),
+  data: () => ({ chart: null, isRendering: false, queuedUpdate: false }),
   async mounted() {
     await this.renderChartSafely();
   },
@@ -76,7 +83,6 @@ export default {
   },
   methods: {
     _plain(obj) {
-      // strip Vue reactivity (no proxies) and deep clone
       const raw = toRaw(obj);
       try {
         return structuredClone(raw);
@@ -106,27 +112,19 @@ export default {
       }
 
       this.destroyChart();
-
       const data = this._plain(this.chartData);
       const options = this._plain(this.chartOptions);
 
-      // VERY IMPORTANT: prevent Vue from making the Chart instance reactive
       this.chart = markRaw(
-        new Chart(ctx, {
-          type: this.chartType,
-          data,
-          options,
-        })
+        new Chart(ctx, { type: this.chartType, data, options })
       );
-
       this.isRendering = false;
     },
     updateOrRender(resetAll = false) {
-      // debounce microtask to avoid recursive watcher storms
-      if (this._queued) return;
-      this._queued = true;
+      if (this.queuedUpdate) return;
+      this.queuedUpdate = true;
       queueMicrotask(() => {
-        this._queued = false;
+        this.queuedUpdate = false;
         if (this.chart && this._hasData()) {
           if (resetAll) this.chart.config.type = this.chartType;
           this.chart.data = this._plain(this.chartData);
