@@ -1,7 +1,9 @@
 ## K8s configuration
+
 This directory contains the configuration files for deploying the application on Kubernetes.
 
 ### Secret for github registry
+
 To create a secret for the GitHub registry, use the following command:
 
 ```bash
@@ -22,7 +24,9 @@ kubectl create secret generic benchmarking-secret \
   --from-env-file=k8s/.env \
   --namespace=benchmarking
 ```
+
 ### Generate a Kubernetes secret for the frontend
+
 To generate a Kubernetes secret for the frontend, use the following command:
 
 ```bash
@@ -58,6 +62,7 @@ docker push ghcr.io/gfragi/haic-frontend:latest
 ```
 
 ## Install NGINX Ingress Controller
+
 ```bash
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
