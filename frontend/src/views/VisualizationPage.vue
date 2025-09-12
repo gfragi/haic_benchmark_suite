@@ -12,16 +12,15 @@
 
           <!-- Mode toggle -->
           <div class="d-flex align-center ga-4 mb-4">
-            <v-switch
-              v-model="coreMode"
-              inset
-              color="primary"
-              :label="
-                coreMode
-                  ? 'Core (minimal) metrics'
-                  : 'Outcome (extended) metrics'
-              "
-            />
+            <v-switch v-model="coreMode" inset color="primary">
+              <template #label>
+                {{
+                  coreMode
+                    ? "Core (minimal) metrics"
+                    : "Outcome (extended) metrics"
+                }}
+              </template>
+            </v-switch>
           </div>
         </v-col>
       </v-row>
@@ -58,15 +57,17 @@
               cols="10"
               md="6"
             >
-              <h3 class="text-h6 mb-2">{{ metric }}</h3>
+              <h3 class="text-h6 mb-2">{{ labelFor(metric) }}</h3>
               <p class="text-caption mb-2" style="min-height: 32px">
                 {{
-                  metricDescriptions?.[selectedGroup]?.[metric] ??
-                  "No description"
+                  coreMode
+                    ? CORE_DESCRIPTIONS[metric] || "No description"
+                    : metricDescriptions?.[selectedGroup]?.[metric] ||
+                      "No description"
                 }}
               </p>
               <ChartComponent
-                v-if="chartData[metric]"
+                v-if="chartData[metric] && chartData[metric].labels?.length"
                 :chartId="'chart-' + index"
                 :chartData="chartData[metric]"
                 :chartType="'line'"
@@ -86,14 +87,14 @@
         </v-col>
       </v-row>
 
-      <v-overlay :value="isLoading">
+      <v-overlay v-model="isLoading">
         <v-progress-circular indeterminate size="64"></v-progress-circular>
       </v-overlay>
 
-      <v-snackbar v-model="snackbar" :color="snackbarColor" top>
+      <v-snackbar v-model="snackbar" :color="snackbarColor" location="top">
         {{ snackbarText }}
-        <template #action="{ attrs }">
-          <v-btn text v-bind="attrs" @click="snackbar = false">Close</v-btn>
+        <template #actions>
+          <v-btn variant="text" @click="snackbar = false">Close</v-btn>
         </template>
       </v-snackbar>
     </v-container>
@@ -108,24 +109,48 @@ import BaseLayout from "@/components/BaseLayout.vue";
 
 const CORE_GROUP = "Core HAIC";
 
+const FRIENDLY = {
+  // Core (minimal)
+  F: "Interactions per Minute",
+  D: "Avg. Action Duration (s)",
+  HCL: "Human Cognitive Load (proxy)",
+  Tr: "Trust Score",
+  A: "Adaptability",
+  S: "Similarity (Human vs Surrogate)",
+  EL: "Efficiency Loss",
+  EfficiencyScore: "Composite Efficiency Score",
+  // Outcome (examples already readable; keep as-is)
+};
+
+function labelFor(metricCode) {
+  return FRIENDLY[metricCode] || metricCode;
+}
+
 export default {
   components: { ChartComponent, BaseLayout },
   data() {
     return {
       configId: null,
 
-      // mode
-      coreMode: false,
-
       // grouping + selection
       selectedGroup: null,
       groupOptions: [],
-      groupedMetrics: {}, // from /evaluate/metrics (for outcome mode)
-      metricDescriptions: {}, // { [group]: { [metricName]: description|null } }
 
-      // data for charts
-      chartData: {},
-      labels: [], // ai_model_version labels (sorted unique)
+      // Core metric descriptions
+      CORE_DESCRIPTIONS: {
+        F: "Interactions per minute. Higher = more active collaboration, too high may mean churn.",
+        D: "Average duration of actions (seconds). High = bottlenecks; lower = smoother flow.",
+        HCL: "1 − avg(RT)/RTmax. Higher = easier on the human, lower = heavier cognitive load.",
+        Tr: "1 − errors/N. Proxy for trust/acceptance of the system.",
+        A: "Relative improvement across the session. >0 improving, <0 degrading.",
+        S: "Distribution overlap / match rate between human and surrogate; higher = more faithful.",
+        EL: "(T_actual − T_baseline) / T_baseline. 0 is optimal; higher = wasted time vs baseline.",
+        EfficiencyScore:
+          "Composite normalised efficiency score from the adapter (0…1).",
+      },
+
+      // mode
+      coreMode: false,
       selectedMetrics: [],
 
       // raw runs
@@ -421,7 +446,7 @@ export default {
           labels: this.labels,
           datasets: [
             {
-              label: metric,
+              label: labelFor(metric),
               data: new Array(this.labels.length).fill(null), // null → “gap” not zero
               fill: false,
               borderColor: this.getChartColor(idx),
