@@ -3,9 +3,12 @@ import axios from "axios";
 import keycloak from "@/services/keycloak";
 
 const api = axios.create({
-  baseURL: (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VUE_APP_API_BASE_URL)
-    ? import.meta.env.VUE_APP_API_BASE_URL
-    : process.env.VUE_APP_API_BASE_URL,
+  baseURL:
+    typeof import.meta !== "undefined" &&
+    import.meta.env &&
+    import.meta.env.VUE_APP_API_BASE_URL
+      ? import.meta.env.VUE_APP_API_BASE_URL
+      : process.env.VUE_APP_API_BASE_URL,
   // withCredentials: true, // if need cookies
 });
 
