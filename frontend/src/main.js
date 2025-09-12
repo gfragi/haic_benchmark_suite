@@ -15,10 +15,8 @@ console.log("Keycloak config:", {
 });
 // Treat /survey as PUBLIC (no forced login)
 const isPublicPath = () => {
-
   return window.location.pathname === "/survey";
 };
-
 
 const publicRedirect = () =>
   window.location.origin + window.location.pathname + window.location.search;
