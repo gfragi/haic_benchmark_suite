@@ -15,16 +15,11 @@ console.log("Keycloak config:", {
 });
 // Treat /survey as PUBLIC (no forced login)
 const isPublicPath = () => {
-  // keep it simple — if you add more public routes, extend this check
+
   return window.location.pathname === "/survey";
 };
 
-// keycloak
-//   .init({
-//     onLoad: "login-required",
-//     checkLoginIframe: false,
-//     redirectUri: window.location.origin,
-//   })
+
 const publicRedirect = () =>
   window.location.origin + window.location.pathname + window.location.search;
 
