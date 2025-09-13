@@ -1,43 +1,58 @@
-import os
+import json
 import tempfile
+from typing import List
+
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
-import json
+
 from app.utils.log_templates import generate_log
 
 router = APIRouter()
 
 
-class GenerateLogRequest(BaseModel):
-    app_type: str
-    count: int
-
-
-
 @router.get("/generate")
 def generate_log_endpoint(
-    app_type: str = Query("radiologist", description="Type of application to generate logs for"),
-    count: int = Query(100, description="Number of log entries to generate"),
-    start_date: str = Query("2024-02-10T13:00:00Z", description="Start date of the log period"),
-    end_date: str = Query("2024-05-10T13:00:00Z", description="End date of the log period"),
-    ai_model_version_range: str = Query("1.0.0 - 3.0.0", description="Range of model versions")
+    app_type: str = Query("hmi_xr", description="App type: hmi_xr | radiologist | <custom>"),
+    count: int = Query(3, ge=1, le=1000, description="Number of sessions to generate"),
+    start_date: str = Query("2025-09-10T13:00:00Z"),
+    end_date: str = Query("2025-09-12T13:00:00Z"),
+    ai_model_version_range: str = Query("1.0.0-2.0.0"),
+    rt_max: float = Query(5.0, description="Max acceptable response time (s) for HCL"),
+    baseline_s: float = Query(0.0, description="Baseline task time (s) for EL"),
+    app_version: str = Query("1.0.0"),
 ):
+    """
+    Returns an array of *adapter-ready* session logs.
+    Use /download to fetch a file if you need one.
+    """
+    logs: List[dict] = [
+        generate_log(
+            app_type,
+            start_date,
+            end_date,
+            ai_model_version_range,
+            rt_max=rt_max,
+            baseline_s=baseline_s,
+            app_version=app_version,
+        )
+        for _ in range(count)
+    ]
 
-    logs = [generate_log(app_type, start_date, end_date, ai_model_version_range) for _ in range(count)]
+    # Also stash to a temp file for easy manual download/debugging
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+    with open(tmp.name, "w", encoding="utf-8") as f:
+        json.dump(logs, f, ensure_ascii=False, indent=2)
 
-# Save logs to a temporary file
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
-    with open(temp_file.name, 'w') as f:
-        json.dump(logs, f)
-
-    return logs
+    return {"count": len(logs), "file_path": tmp.name, "logs": logs}
 
 
-
-@router.get("/download/")
-async def download_log(file_path: str):
-    if os.path.exists(file_path):
-        return FileResponse(path=file_path, filename="generated_logs.json", media_type='application/json')
-    else:
+@router.get("/download")
+def download_log(file_path: str):
+    try:
+        return FileResponse(
+            path=file_path,
+            filename="generated_logs.json",
+            media_type="application/json",
+        )
+    except Exception:
         raise HTTPException(status_code=404, detail="File not found")

@@ -1,154 +1,224 @@
-from datetime import datetime, timedelta
+from __future__ import annotations
+
+from datetime import datetime, timedelta, timezone
 import random
 import uuid
-from fastapi import HTTPException
-from app.utils.generic_functions import random_date
 
-def generate_simple_unique_id(prefix: str) -> str:
-    return f"{prefix}-{uuid.uuid4()}"
 
-# Template with placeholders to be dynamically replaced
-logs_templates = {
-    "dss_img_recog": {
+# -------------------------------
+# helpers
+# -------------------------------
+def _uid(prefix: str) -> str:
+    return f"{prefix}-{uuid.uuid4().hex[:8]}"
+
+def _iso_utc(dt: datetime) -> str:
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+def random_dt(start: datetime, end: datetime) -> datetime:
+    """Uniform random datetime in [start, end]."""
+    start_ts = start.timestamp()
+    end_ts = end.timestamp()
+    return datetime.fromtimestamp(random.uniform(start_ts, end_ts), tz=timezone.utc)
+
+def _bounded_norm(mu: float, sigma: float, lo: float, hi: float) -> float:
+    x = random.normalvariate(mu, sigma)
+    return float(max(lo, min(hi, x)))
+
+def _rand_choice_prob(p_true=0.5) -> bool:
+    return random.random() < p_true
+
+def _maybe(n):
+    """Return n or None with small probability for realism."""
+    return n if random.random() > 0.05 else None
+
+
+# -------------------------------
+# schema builders (match adapter)
+# -------------------------------
+def build_core_like_session(
+    *,
+    session_prefix: str,
+    user_id: str,
+    app_version: str,
+    ai_model_version: str,
+    start: datetime,
+    end: datetime,
+    rt_max: float = 5.0,
+    baseline_s: float = 0.0,
+) -> dict:
+    """Generic session compatible with your compute_from_log adapter."""
+    # times
+    st = random_dt(start, end - timedelta(minutes=2))
+    et = random_dt(st + timedelta(seconds=30), end)
+
+    # “system” validation summary (optional but useful)
+    acc = _maybe(_bounded_norm(0.84, 0.06, 0.0, 1.0))
+    prec = _maybe(_bounded_norm(0.82, 0.08, 0.0, 1.0))
+    rec = _maybe(_bounded_norm(0.80, 0.08, 0.0, 1.0))
+
+    # review outcomes
+    fp = int(max(0, random.gauss(2, 1)))
+    fn = int(max(0, random.gauss(1, 1)))
+    det = int(max(1, random.gauss(10, 3)))
+    human_confirm = _bounded_norm(0.8, 0.1, 0.0, 1.0)
+    corr_time = max(5, int(random.gauss(40, 20)))
+
+    # decisions timeline (very light; adapter only needs a few fields)
+    decisions = []
+    t_cursor = 0.0
+    for k in range(random.randint(2, 5)):
+        dur = max(0.2, random.gauss(2.0, 1.0))
+        decisions.append({
+            "t": round(t_cursor, 2),
+            "agent": user_id,
+            "actor_type": "human",
+            "action": random.choice(["inspect", "adjust", "confirm", "assist"]),
+            "duration_s": round(dur, 2),
+            "correct": _rand_choice_prob(0.85),
+        })
+        t_cursor += dur + random.uniform(0.2, 2.0)
+
+    # performance log (for “Human Effort Saved” surrogate etc.)
+    human_effort = {user_id: int(random.gauss(45, 15))}
+
+    return {
+        "session_id": _uid(session_prefix),
+        "user_id": user_id,
+        "ai_model_version": ai_model_version,
+        "app_version": app_version,
+        "start_time": _iso_utc(st),
+        "end_time": _iso_utc(et),
+
         "interaction_data": {
-            "image_id": "img-" + str(uuid.uuid4()),  # Unique ID for each image
-            "presentation_time": lambda: random_date(datetime.now() - timedelta(days=1), datetime.now()).isoformat(),
-            "result": lambda: random.choice(["true_positive", "false_positive", "true_negative", "false_negative"]),
-            "ai_detection_results": lambda: random.choice(["true_positive", "false_positive", "true_negative", "false_negative"]),
-            "outcome": lambda: random.choice(["correct", "incorrect"]),
-            "performance_at_t": lambda: random.uniform(0.7, 0.9),
-            "performance_at_t_1": lambda: random.uniform(0.6, 0.7),
-            "time_interval": lambda: random.randint(1800, 7200),  # Time interval in seconds
-
-            # Efficiency metrics
-            "response_time": lambda: random.uniform(100, 500),  # Response time in milliseconds
-            "performance_improvement": lambda: random.uniform(0.01, 0.1),
-            "time_spent": lambda: random.randint(1000, 5000),  # Time spent in seconds
-            "reached_target": lambda: random.choice([True, False]),
-            "resources_used": lambda: random.randint(20, 100),
-            "total_resources": 100,  # Assuming a fixed maximum resource value for simplicity
-            "time_without_ai": lambda: random.randint(300, 600),
-            "time_with_ai": lambda: random.randint(150, 400),
-            "correction_effectiveness": lambda: random.uniform(0.5, 1.0),
-            "correction_time": lambda: random.randint(50, 200),
-            "errors_before": lambda: random.randint(5, 15),
-            "errors_after": lambda: random.randint(0, 10),
-            "pre_retention_performance": lambda: random.uniform(0.6, 0.8),
-            "post_retention_performance": lambda: random.uniform(0.75, 0.9),
-
-            # Adaptability and Learning metrics
-            "pre_feedback_performance": lambda: random.uniform(0.6, 0.7),
-            "post_feedback_performance": lambda: random.uniform(0.7, 0.85),
-            "pre_adaptation_performance": lambda: random.uniform(0.6, 0.75),
-            "post_adaptation_performance": lambda: random.uniform(0.75, 0.85),
-            "pre_correction_performance": lambda: random.uniform(0.6, 0.8),
-            "post_correction_performance": lambda: random.uniform(0.75, 0.9),
-            "learning_gain": lambda: random.uniform(0.01, 0.05),
-            "learning_time": lambda: random.randint(200, 1000),
-            "objective_status": lambda: random.choice(["achieved", "not achieved"]),
-
-            # Collaboration and Interaction metrics
-            "human_decision": lambda: random.choice(["approve", "reject"]),
-            "ai_suggestion": lambda: random.choice(["approve", "reject"]),
-            "ai_assisted": lambda: random.choice([True, False]),
-            "decision_outcome": lambda: random.choice(["successful", "unsuccessful"]),
-            "resolution_time": lambda: random.randint(50, 300),
-            "effort_without_ai": lambda: random.randint(5, 15),
-            "effort_with_ai": lambda: random.randint(1, 10),
-
-            # Trust and Safety metrics
-            "confidence_level": lambda: random.uniform(0.0, 1.0),
-            "trust_rating": lambda: random.randint(6, 10),
-            "trust_scale_maximum": 10,
-            "safety_incidents": lambda: random.randint(0, 2),
-            "uptime": lambda: random.randint(4500, 5000),
-            "total_time": 6000,
-
-            # Robustness and Generalization metrics
-            "performance_adversarial": lambda: random.uniform(0.6, 0.8),
-            "performance_normal": lambda: random.uniform(0.8, 0.95),
-            "performance_across_domains": lambda: random.uniform(0.7, 0.9),
-            "baseline_performance": lambda: random.uniform(0.65, 0.8),
+            "validation_data": {
+                "system_metrics": {
+                    "accuracy": acc,
+                    "precision": prec,
+                    "recall": rec,
+                },
+                "processing_time_seconds": round(max(0.2, random.gauss(4.5, 1.0)), 2),
+                "confidence_level": _maybe(_bounded_norm(0.75, 0.1, 0.0, 1.0)),
+            },
+            "review_data": {
+                "false_positives": fp,
+                "false_negatives": fn,
+                "detections_confirmed": det,
+                "human_confirmation_rate": human_confirm,
+                "time_spent_on_corrections_seconds": corr_time,
+            },
+            "alert_data": None,
         },
-        "retrain_events": [
-            {
-                "retraining_time": lambda: random_date(datetime.now() - timedelta(days=365), datetime.now()).isoformat(),
-                "initial_metrics": {
-                    "detection_accuracy": lambda: random.uniform(0.6, 0.8),
-                    "false_positive_rate": lambda: random.uniform(0.05, 0.15),
-                    "false_negative_rate": lambda: random.uniform(0.05, 0.15),
-                },
-                "post_retraining_metrics": {
-                    "detection_accuracy": lambda: random.uniform(0.8, 0.95),
-                    "false_positive_rate": lambda: random.uniform(0.02, 0.1),
-                    "false_negative_rate": lambda: random.uniform(0.02, 0.1),
-                },
-                "retraining_details": {
-                    "time_taken_seconds": lambda: random.randint(1800, 7200),  # Retraining time in seconds
-                    "data_used": "feedback and corrections from the review",
-                    "ai_model_version_after_retraining": lambda: f"{random.randint(1, 5)}.{random.randint(0, 9)}.{random.randint(0, 9)}",
-                },
-            }
-        ]
-    },
-    # Additional templates for dss_smart_cities, dss_smart_energy, etc. can follow the same structure.
-}
 
-def generate_simple_unique_id(prefix: str) -> str:
-    return f"{prefix}-{uuid.uuid4()}"
+        "performance_logs": {
+            "human_effort_seconds": human_effort
+        },
 
-def parse_version(version_str: str) -> list[int]:
-    """Turn '1.0.0' into [1, 0, 0], stripping whitespace."""
-    return [int(p) for p in version_str.strip().split(".")]
+        "decisions": decisions,
 
-# Log generation function with dynamic field generation
-def generate_log(app_type: str, start_datetime: str, end_datetime: str, ai_model_version_range: str, custom_data=None):
-    if app_type not in logs_templates:
-        raise ValueError(f"Unsupported app type: {app_type}")
-
-    # parse datetimes
-    start_datetime = datetime.strptime(start_datetime, '%Y-%m-%dT%H:%M:%SZ')
-    end_datetime = datetime.strptime(end_datetime, '%Y-%m-%dT%H:%M:%SZ')
-
-    # parse the version range into two [major, minor, patch] lists
-    version_start_str, version_end_str = ai_model_version_range.split("-")
-    version_start = parse_version(version_start_str)
-    version_end   = parse_version(version_end_str)
-
-    # pick random version within each component’s bounds
-    major = random.randint(version_start[0], version_end[0])
-    minor = random.randint(version_start[1], version_end[1])
-    patch = random.randint(version_start[2], version_end[2])
-
-    session_start = random_date(start_datetime, end_datetime)
-    session_end   = random_date(session_start, end_datetime)
-
-    log = {
-        "session_id": generate_simple_unique_id(app_type),
-        "user_id":    generate_simple_unique_id(app_type),
-        "ai_model_version": f"{major}.{minor}.{patch}",
-        "app_version":      "1.0.0",
-        "start_time":       session_start.isoformat() + 'Z',
-        "end_time":         session_end.isoformat()   + 'Z',
+        # meta carries rt_max & baseline_s for minimal metrics
+        "meta": {
+            "schema_version": "1.0",
+            "task_name": session_prefix,
+            "task_parameters": {"environment": session_prefix, "rt_max": rt_max, "baseline_s": baseline_s},
+        },
     }
 
-    # Populate interaction_data
-    interaction_data = logs_templates[app_type]["interaction_data"]
-    log["interaction_data"] = {
-        key: (custom_data[key] if custom_data and key in custom_data else (value() if callable(value) else value))
-        for key, value in interaction_data.items()
-    }
 
-    # Populate retrain_events
-    retrain_events_template = logs_templates[app_type]["retrain_events"]
-    log["retrain_events"] = [
-        {
-            "retraining_time":       event["retraining_time"](),
-            "initial_metrics":       {k: (v() if callable(v) else v) for k, v in event["initial_metrics"].items()},
-            "post_retraining_metrics": {k: (v() if callable(v) else v) for k, v in event["post_retraining_metrics"].items()},
-            "retraining_details":    {k: (v() if callable(v) else v) for k, v in event["retraining_details"].items()}
-        }
-        for event in retrain_events_template
-    ]
+def build_hmi_xr_session(
+    *,
+    user_id: str,
+    app_version: str,
+    ai_model_version: str,
+    start: datetime,
+    end: datetime,
+    rt_max: float = 5.0,
+    baseline_s: float = 0.0,
+) -> dict:
+    """HMI/XR flavored session (names match your partner’s domain)."""
+    base = build_core_like_session(
+        session_prefix="hmi_xr_evaluation",
+        user_id=user_id,
+        app_version=app_version,
+        ai_model_version=ai_model_version,
+        start=start,
+        end=end,
+        rt_max=rt_max,
+        baseline_s=baseline_s,
+    )
+    # small XR twist: make “assist” actions include an AI latency
+    for d in base["decisions"]:
+        if d["action"] == "assist":
+            d["latency_ms"] = int(max(120, random.gauss(600, 150)))
+    return base
 
-    return log
+
+# -------------------------------
+# public factory
+# -------------------------------
+def generate_log(
+    app_type: str,
+    start_datetime: str,
+    end_datetime: str,
+    ai_model_version_range: str,
+    *,
+    rt_max: float = 5.0,
+    baseline_s: float = 0.0,
+    app_version: str = "1.0.0",
+) -> dict:
+    """
+    Create ONE session log in the adapter-ready schema.
+
+    app_type ∈ {"radiologist", "hmi_xr"} for now.
+    ai_model_version_range: e.g. "1.0.0-3.2.0"
+    """
+    # parse times
+    start = datetime.fromisoformat(start_datetime.replace("Z", "+00:00"))
+    end   = datetime.fromisoformat(end_datetime.replace("Z", "+00:00"))
+
+    # pick an AI model version within range
+    def _parse(v): return [int(p) for p in v.strip().split(".")]
+    vstart, vend = [_parse(x) for x in ai_model_version_range.split("-")]
+    maj = random.randint(vstart[0], vend[0])
+    minr = random.randint(vstart[1], vend[1])
+    pat = random.randint(vstart[2], vend[2])
+    ai_version = f"{maj}.{minr}.{pat}"
+
+    user_id = _uid("user")
+
+    if app_type.lower() in {"radiologist", "radiology"}:
+        # Radiology also uses the generic core builder; you can add domain quirks later
+        return build_core_like_session(
+            session_prefix="radiology_assist",
+            user_id=user_id,
+            app_version=app_version,
+            ai_model_version=ai_version,
+            start=start,
+            end=end,
+            rt_max=rt_max,
+            baseline_s=baseline_s,
+        )
+
+    if app_type.lower() in {"hmi_xr", "xr", "hmi"}:
+        return build_hmi_xr_session(
+            user_id=user_id,
+            app_version=app_version,
+            ai_model_version=ai_version,
+            start=start,
+            end=end,
+            rt_max=rt_max,
+            baseline_s=baseline_s,
+        )
+
+    # fallback: generic
+    return build_core_like_session(
+        session_prefix=app_type,
+        user_id=user_id,
+        app_version=app_version,
+        ai_model_version=ai_version,
+        start=start,
+        end=end,
+        rt_max=rt_max,
+        baseline_s=baseline_s,
+    )

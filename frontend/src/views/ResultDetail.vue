@@ -8,7 +8,7 @@
           <v-data-table
             :headers="runHeaders"
             :items="runDates"
-            v-model:page="page"
+            v-model="page"
             :items-per-page="itemsPerPage"
             :items-per-page-options="[10, 20, 30]"
             class="elevation-1"
@@ -19,7 +19,7 @@
                 <td>{{ new Date(item.evaluation_date).toLocaleString() }}</td>
                 <td>{{ item.status }}</td>
                 <td>{{ item.ai_model_version }}</td>
-                <td>{{ item.run_description }}</td>
+                <!-- <td>{{ item.run_description }}</td> -->
                 <td>
                   <v-btn
                     size="small"
@@ -69,7 +69,7 @@ export default {
         { title: "Evaluation Date", value: "evaluation_date" },
         { title: "Status", value: "status" },
         { title: "AI Model Version", value: "ai_model_version" },
-        { title: "Description", value: "run_description" },
+        // { title: "Description", value: "run_description" },
         { title: "Download Results", value: "result_link" },
       ],
       page: 1,

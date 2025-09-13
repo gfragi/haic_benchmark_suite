@@ -12,27 +12,72 @@ from app.utils.database import SessionLocal
 from app.utils.minio_utils import get_minio_client
 from app.services.metrics_adapter import compute_from_log
 import traceback
+from typing import Iterable, List, Dict, Any
+
 
 load_dotenv()
 
 minio_client = get_minio_client()
 
+def _get(d: dict, path: Iterable[str], default=None):
+    cur = d
+    for p in path:
+        if not isinstance(cur, dict) or p not in cur:
+            return default
+        cur = cur[p]
+    return cur
 
+def _norm_ver(v: Any) -> str:
+    """Normalize version values: cast to str, strip, map ''/'None' to 'Unknown'."""
+    if v is None:
+        return "Unknown"
+    if isinstance(v, (int, float)):
+        v = str(v)
+    v = str(v).strip()
+    return v if v else "Unknown"
+
+def _ai_version(entry: dict) -> str:
+    # Prefer explicit field; then meta/runMeta fallbacks
+    return _norm_ver(
+        entry.get("ai_model_version")
+        or _get(entry, ["meta", "ai_model_version"])
+        or _get(entry, ["runMeta", "ai_model_version"])
+        or _get(entry, ["runMeta", "app_version"])   # many logs use app_version as the model build id
+    )
+
+def _app_version(entry: dict) -> str:
+    return _norm_ver(
+        entry.get("app_version")
+        or _get(entry, ["runMeta", "app_version"])
+        or _get(entry, ["meta", "app_version"])
+    )
+
+def _iter_entries(payload: Any) -> List[dict]:
+    """
+    Return a flat list of session dicts from:
+      - a list of dicts
+      - a single dict
+      - a dict containing 'sessions' | 'logs' | 'entries'
+    Ignore anything that isn't a dict.
+    """
+    if isinstance(payload, list):
+        return [x for x in payload if isinstance(x, dict)]
+
+    if isinstance(payload, dict):
+        for key in ("sessions", "logs", "entries"):
+            if isinstance(payload.get(key), list):
+                return [x for x in payload[key] if isinstance(x, dict)]
+        return [payload]  # single-session object
+
+    return []
 
 def split_logs_by_ai_model_version(logs_data: list):
-    # Create a dictionary to hold logs by AI model version
     logs_by_ai_version = {}
-
-    # Iterate through the logs and separate them by AI model version
     for entry in logs_data:
-        ai_model_version = entry.get('ai_model_version', "Unknown")
-
-        if ai_model_version not in logs_by_ai_version:
-            logs_by_ai_version[ai_model_version] = []
-
-        # Append the log entry to the corresponding version list
-        logs_by_ai_version[ai_model_version].append(entry)
-
+        ai_model_version = entry.get("ai_model_version")
+        if not ai_model_version:
+            ai_model_version = "Unknown"
+        logs_by_ai_version.setdefault(ai_model_version, []).append(entry)
     return logs_by_ai_version
 
 
@@ -91,14 +136,17 @@ def run_evaluation(config_id: int):
             logs_data = json.loads(raw_bytes.decode("utf-8"))
         except Exception as e:
             raise ValueError(f"Object at '{config.minio_path}' is not valid JSON: {e}")
-
         if isinstance(logs_data, dict):
             logs_data = [logs_data]
         if not isinstance(logs_data, list):
             raise ValueError("Uploaded log must be a JSON object or a list of objects")
 
+        entries = _iter_entries(logs_data)
+        if not entries:
+            raise ValueError("Uploaded log contains no valid session entries.")
+
         # Group by AI model version
-        logs_by_ai_version = split_logs_by_ai_model_version(logs_data)
+        logs_by_ai_version = split_logs_by_ai_model_version(entries )
 
         wrote_any_result = False
 
@@ -107,7 +155,7 @@ def run_evaluation(config_id: int):
                 continue
 
             # Collect app versions for this subset (nice to store in DB row)
-            app_versions = sorted({e.get("app_version", "Unknown") for e in logs})
+            app_versions = sorted({_app_version(e) for e in logs})
             app_version_str = ",".join(app_versions)
 
             # Compute derived metrics per session (adapter is forgiving to missing fields)

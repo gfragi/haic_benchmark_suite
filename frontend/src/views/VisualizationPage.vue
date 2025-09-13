@@ -12,15 +12,16 @@
 
           <!-- Mode toggle -->
           <div class="d-flex align-center ga-4 mb-4">
-            <v-switch v-model="coreMode" inset color="primary">
-              <template #label>
-                {{
-                  coreMode
-                    ? "Core (minimal) metrics"
-                    : "Outcome (extended) metrics"
-                }}
-              </template>
-            </v-switch>
+            <v-switch
+              v-model="coreMode"
+              inset
+              color="primary"
+              :label="
+                coreMode
+                  ? 'Core (minimal) metrics'
+                  : 'Outcome (extended) metrics'
+              "
+            />
           </div>
         </v-col>
       </v-row>
@@ -34,13 +35,12 @@
               :key="group.value"
               @click="selectedGroup = group.value"
               :class="{ 'selected-group': selectedGroup === group.value }"
+              :title="groupedMetrics?.[group.value]?.group_description || ''"
               style="cursor: pointer"
-              :title="groupedMetrics[group.value]?.group_description || ''"
             >
               <template #prepend>
                 <v-icon>{{ getGroupIcon(group.value) }}</v-icon>
               </template>
-
               <v-list-item-title class="text-caption">
                 {{ group.title }}
               </v-list-item-title>
@@ -57,17 +57,16 @@
               cols="10"
               md="6"
             >
+              <!-- Use labelFor(metric) if your template referenced it -->
               <h3 class="text-h6 mb-2">{{ labelFor(metric) }}</h3>
               <p class="text-caption mb-2" style="min-height: 32px">
                 {{
-                  coreMode
-                    ? CORE_DESCRIPTIONS[metric] || "No description"
-                    : metricDescriptions?.[selectedGroup]?.[metric] ||
-                      "No description"
+                  metricDescriptions?.[selectedGroup]?.[metric] ??
+                  "No description"
                 }}
               </p>
               <ChartComponent
-                v-if="chartData[metric] && chartData[metric].labels?.length"
+                v-if="chartData[metric]"
                 :chartId="'chart-' + index"
                 :chartData="chartData[metric]"
                 :chartType="'line'"
@@ -87,14 +86,14 @@
         </v-col>
       </v-row>
 
-      <v-overlay v-model="isLoading">
+      <v-overlay :value="isLoading">
         <v-progress-circular indeterminate size="64"></v-progress-circular>
       </v-overlay>
 
-      <v-snackbar v-model="snackbar" :color="snackbarColor" location="top">
+      <v-snackbar v-model="snackbar" :color="snackbarColor" top>
         {{ snackbarText }}
-        <template #actions>
-          <v-btn variant="text" @click="snackbar = false">Close</v-btn>
+        <template #action="{ attrs }">
+          <v-btn text v-bind="attrs" @click="snackbar = false">Close</v-btn>
         </template>
       </v-snackbar>
     </v-container>
@@ -109,54 +108,20 @@ import BaseLayout from "@/components/BaseLayout.vue";
 
 const CORE_GROUP = "Core HAIC";
 
-const FRIENDLY = {
-  // Core (minimal)
-  F: "Interactions per Minute",
-  D: "Avg. Action Duration (s)",
-  HCL: "Human Cognitive Load (proxy)",
-  Tr: "Trust Score",
-  A: "Adaptability",
-  S: "Similarity (Human vs Surrogate)",
-  EL: "Efficiency Loss",
-  EfficiencyScore: "Composite Efficiency Score",
-  // Outcome (examples already readable; keep as-is)
-};
-
-function labelFor(metricCode) {
-  return FRIENDLY[metricCode] || metricCode;
-}
-
 export default {
   components: { ChartComponent, BaseLayout },
   data() {
     return {
       configId: null,
-
-      // grouping + selection
+      coreMode: false,
       selectedGroup: null,
       groupOptions: [],
-
-      // Core metric descriptions
-      CORE_DESCRIPTIONS: {
-        F: "Interactions per minute. Higher = more active collaboration, too high may mean churn.",
-        D: "Average duration of actions (seconds). High = bottlenecks; lower = smoother flow.",
-        HCL: "1 − avg(RT)/RTmax. Higher = easier on the human, lower = heavier cognitive load.",
-        Tr: "1 − errors/N. Proxy for trust/acceptance of the system.",
-        A: "Relative improvement across the session. >0 improving, <0 degrading.",
-        S: "Distribution overlap / match rate between human and surrogate; higher = more faithful.",
-        EL: "(T_actual − T_baseline) / T_baseline. 0 is optimal; higher = wasted time vs baseline.",
-        EfficiencyScore:
-          "Composite normalised efficiency score from the adapter (0…1).",
-      },
-
-      // mode
-      coreMode: false,
+      groupedMetrics: {},
+      metricDescriptions: {},
+      chartData: {},
+      labels: [],
       selectedMetrics: [],
-
-      // raw runs
       runData: [],
-
-      // ui
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -166,18 +131,14 @@ export default {
           tooltip: {
             callbacks: {
               label(ctx) {
-                // show N/A instead of null
-                const v = ctx.parsed.y;
+                const v = ctx.parsed?.y;
                 return `${ctx.dataset.label}: ${v == null ? "N/A" : v}`;
               },
             },
           },
         },
-        scales: {
-          y: { beginAtZero: true },
-        },
+        scales: { y: { beginAtZero: true } },
       },
-
       isLoading: false,
       snackbar: false,
       snackbarText: "",
@@ -189,20 +150,31 @@ export default {
     this.bootstrap();
   },
   methods: {
+    // 🔧 ADD THIS: labelFor used in template
+    labelFor(metric) {
+      // Friendly labels for core metrics (you can extend this)
+      const map = {
+        EL: "EL (Efficiency Loss, ↑ worse)",
+        D: "D (Avg. Action Duration, s)",
+        F: "F (Interactions/min)",
+        HCL: "HCL (Human Cognitive Load proxy)",
+        Tr: "Tr (Trust proxy)",
+        A: "A (Adaptability Δ)",
+        S: "S (Similarity)",
+        EfficiencyScore: "EfficiencyScore (normalized)",
+      };
+      return map[metric] || metric;
+    },
+
     async bootstrap() {
       this.isLoading = true;
       try {
-        // Always fetch runs first (labels depend on this)
         await this.fetchRuns();
-
-        // Outcome mode: fetch metric catalogue to build left menu
         if (!this.coreMode) {
           await this.fetchMetricGroups();
         } else {
           this.prepareCoreGroups();
         }
-
-        // Build datasets across all runs
         await this.populateAllRuns();
       } catch (e) {
         console.error(e);
@@ -212,22 +184,24 @@ export default {
       }
     },
 
-    // --- helper: pull current numeric values for a metric (skip nulls) ---
-    valuesFor(metric) {
-      const ds = this.chartData?.[metric]?.datasets?.[0]?.data ?? [];
-      return ds.filter((v) => typeof v === "number" && !Number.isNaN(v));
+    _finiteVals(metric) {
+      const arr = this.chartData?.[metric]?.datasets?.[0]?.data || [];
+      return arr.filter((v) => Number.isFinite(v));
     },
-
-    // --- helper: compute a sensible max (>0) with headroom ---
-    headroomMax(metric, fallback = 1) {
-      const vals = this.valuesFor(metric);
-      const m = Math.max(...(vals.length ? vals : [fallback]));
-      // add 10% headroom; ensure it's > 0
-      return Math.max((m || 0) * 1.1, fallback);
+    _niceHeadroomMax(values, fallback = 1) {
+      const max = Math.max(...values, 0);
+      const base = max || fallback;
+      // add 10–20% headroom and round to a “nice” step
+      const head = base * 1.2;
+      // compute a magnitude (1, 2, 5 * 10^k) to round up to
+      const mag = Math.pow(10, Math.floor(Math.log10(head || 1)));
+      const steps = [1, 2, 5, 10].map((s) => s * mag);
+      const nice = steps.find((s) => head <= s) ?? steps[steps.length - 1];
+      return nice;
     },
 
     getChartOptions(metricName) {
-      // base options + “N/A” tooltips
+      // Default base options
       const base = {
         responsive: true,
         maintainAspectRatio: false,
@@ -244,127 +218,118 @@ export default {
         },
       };
 
-      // OUTCOME (extended) mode: keep your previous buckets
-      if (!this.coreMode) {
-        const timeMetrics = new Set([
-          "Response Time",
-          "Task Completion Time",
-          "Time to Resolution",
-        ]);
-        const countMetrics = new Set(["Safety Incidents"]);
+      // If we're in Core mode, honor the agreed ranges per metric
+      if (this.coreMode) {
+        // [0, 1] metrics
+        const zeroToOne = new Set(["HCL", "Tr", "S", "EfficiencyScore"]);
+        // Unbounded, seconds
+        const seconds = new Set(["D"]);
+        // Unbounded, generic
+        const unbounded = new Set(["F", "EL"]);
 
-        if (timeMetrics.has(metricName)) {
+        if (zeroToOne.has(metricName)) {
           return {
             ...base,
             scales: {
               y: {
                 beginAtZero: true,
+                max: 1,
+                ticks: { callback: (v) => Number(v).toFixed(2) },
+              },
+            },
+          };
+        }
+
+        if (metricName === "A") {
+          // [-1, 1] for Adaptability Δ
+          return {
+            ...base,
+            scales: {
+              y: {
+                min: -1,
+                max: 1,
+                ticks: { callback: (v) => Number(v).toFixed(2) },
+              },
+            },
+          };
+        }
+
+        if (seconds.has(metricName)) {
+          const vals = this._finiteVals(metricName);
+          const suggested = this._niceHeadroomMax(vals, 1);
+          return {
+            ...base,
+            scales: {
+              y: {
+                beginAtZero: true,
+                suggestedMax: suggested,
                 ticks: { callback: (v) => `${v} s` },
               },
             },
           };
         }
-        if (countMetrics.has(metricName)) {
+
+        if (unbounded.has(metricName)) {
+          const vals = this._finiteVals(metricName);
+          const suggested = this._niceHeadroomMax(
+            vals,
+            metricName === "F" ? 10 : 1
+          );
           return {
             ...base,
             scales: {
-              y: { beginAtZero: true, ticks: { precision: 0, stepSize: 1 } },
+              y: {
+                beginAtZero: true,
+                suggestedMax: suggested,
+              },
             },
           };
         }
-        // default outcome: rates/probabilities
+        // fallback for any future core metric
         return {
           ...base,
-          scales: {
-            y: {
-              beginAtZero: true,
-              suggestedMax: 1,
-              max: 1,
-              ticks: { callback: (v) => Number(v).toFixed(2) },
-            },
-          },
+          scales: { y: { beginAtZero: true } },
         };
       }
 
-      // CORE (minimal) mode: per-metric ranges
-      // EL: [0, +inf)
-      if (metricName === "EL") {
-        return {
-          ...base,
-          scales: {
-            y: {
-              beginAtZero: true,
-              suggestedMax: this.headroomMax("EL", 1),
-              ticks: { callback: (v) => `${v}` },
-            },
-          },
-        };
-      }
+      // ----- Outcome (extended) mode rules (as you already had) -----
+      const timeMetrics = new Set([
+        "Response Time",
+        "Task Completion Time",
+        "Time to Resolution",
+      ]);
+      const countMetrics = new Set(["Safety Incidents"]);
 
-      // D (avg action duration): [0, +inf) in seconds
-      if (metricName === "D") {
+      if (timeMetrics.has(metricName)) {
         return {
           ...base,
           scales: {
             y: {
               beginAtZero: true,
-              suggestedMax: this.headroomMax("D", 1),
               ticks: { callback: (v) => `${v} s` },
             },
           },
         };
       }
 
-      // F (interactions per minute): [0, +inf) — typical 0-10/min
-      if (metricName === "F") {
+      if (countMetrics.has(metricName)) {
         return {
           ...base,
           scales: {
             y: {
               beginAtZero: true,
-              suggestedMax: this.headroomMax("F", 10),
-              ticks: { callback: (v) => `${v}` },
+              ticks: { precision: 0, stepSize: 1 },
             },
           },
         };
       }
 
-      // A (adaptability): usually [-1, +1]
-      if (metricName === "A") {
-        return {
-          ...base,
-          scales: {
-            y: {
-              suggestedMin: -1,
-              suggestedMax: 1,
-              ticks: { callback: (v) => Number(v).toFixed(2) },
-            },
-          },
-        };
-      }
-
-      // HCL, Tr, S, EfficiencyScore: [0, 1]
-      if (["HCL", "Tr", "S", "EfficiencyScore"].includes(metricName)) {
-        return {
-          ...base,
-          scales: {
-            y: {
-              beginAtZero: true,
-              suggestedMax: 1,
-              max: 1,
-              ticks: { callback: (v) => Number(v).toFixed(2) },
-            },
-          },
-        };
-      }
-
-      // Fallback for any other core metric: clamp to [0,1]
+      // default: probabilities / rates → clamp to [0, 1]
       return {
         ...base,
         scales: {
           y: {
             beginAtZero: true,
-            suggestedMax: 1,
             max: 1,
             ticks: { callback: (v) => Number(v).toFixed(2) },
           },
@@ -375,7 +340,6 @@ export default {
     async fetchRuns() {
       const { data } = await resultService.getResultsByConfig(this.configId);
       this.runData = data || [];
-      // make sorted unique labels of AI model versions
       const labels = (this.runData || [])
         .map((r) => r.ai_model_version)
         .filter(Boolean);
@@ -385,36 +349,31 @@ export default {
     },
 
     async fetchMetricGroups() {
-      // const { data } = await evaluationService.getMetrics();
       this.isLoading = true;
-      evaluationService.getMetrics().then((response) => {
-        this.groupedMetrics = response.data;
-        // Build a group -> metricName -> description map
-        const descMap = {};
-        Object.entries(this.groupedMetrics).forEach(([group, payload]) => {
-          const inner = {};
-          (payload.metrics || []).forEach((m) => {
-            inner[m.name] = m.description ?? null;
-          });
-          descMap[group] = inner;
+      const { data } = await evaluationService.getMetrics();
+      this.groupedMetrics = data || {};
+      const descMap = {};
+      Object.entries(this.groupedMetrics).forEach(([group, payload]) => {
+        const inner = {};
+        (payload.metrics || []).forEach((m) => {
+          inner[m.name] = m.description ?? null;
         });
-        this.metricDescriptions = descMap;
-
-        this.groupOptions = Object.keys(this.groupedMetrics).map((group) => ({
-          title: group,
-          value: group,
-        }));
-        this.selectedGroup = this.groupOptions[0].value;
-        this.updateSelectedMetrics();
-        this.fetchData && this.fetchData();
+        descMap[group] = inner;
       });
+      this.metricDescriptions = descMap;
+
+      this.groupOptions = Object.keys(this.groupedMetrics).map((group) => ({
+        title: group,
+        value: group,
+      }));
+      this.selectedGroup = this.groupOptions[0]?.value || null;
+      this.updateSelectedMetrics();
+      this.isLoading = false;
     },
 
     prepareCoreGroups() {
-      // left menu for core mode
       this.groupOptions = [{ title: CORE_GROUP, value: CORE_GROUP }];
       this.selectedGroup = CORE_GROUP;
-      // fixed metric list for core mode
       this.selectedMetrics = [
         "F",
         "D",
@@ -428,7 +387,7 @@ export default {
     },
 
     updateSelectedMetrics() {
-      if (this.coreMode) return; // core uses fixed list
+      if (this.coreMode) return;
       if (this.selectedGroup && this.groupedMetrics[this.selectedGroup]) {
         this.selectedMetrics = this.groupedMetrics[
           this.selectedGroup
@@ -440,14 +399,13 @@ export default {
 
     async populateAllRuns() {
       this.chartData = {};
-      // create base chartData objects for each selected metric up-front
       this.selectedMetrics.forEach((metric, idx) => {
         this.chartData[metric] = {
           labels: this.labels,
           datasets: [
             {
-              label: labelFor(metric),
-              data: new Array(this.labels.length).fill(null), // null → “gap” not zero
+              label: this.labelFor(metric),
+              data: new Array(this.labels.length).fill(null),
               fill: false,
               borderColor: this.getChartColor(idx),
               tension: 0.1,
@@ -455,14 +413,10 @@ export default {
           ],
         };
       });
-
-      // fill values from each run
       for (const run of this.runData) {
         if (!run?.id) continue;
         await this.populateRun(run);
       }
-
-      // force reactivity
       this.chartData = { ...this.chartData };
     },
 
@@ -472,37 +426,30 @@ export default {
         run.id
       );
       if (!data) return;
-
-      // source: outcome groups or core interaction
       const source = this.coreMode
         ? data.aggregates?.interaction || {}
         : data.aggregates?.by_group || {};
-
       const version = run.ai_model_version;
       const idx = this.labels.indexOf(version);
       if (idx === -1) return;
 
       if (this.coreMode) {
-        // flat metrics mapping
         this.selectedMetrics.forEach((metric) => {
           const val = source?.[metric] ?? null;
           if (metric in this.chartData)
             this.chartData[metric].datasets[0].data[idx] = val;
         });
       } else {
-        // group → metric → value
         const groupBlock = source?.[this.selectedGroup] || {};
         this.selectedMetrics.forEach((metric) => {
           const v = groupBlock?.[metric];
           if (metric in this.chartData) {
-            // write value or null if missing
             this.chartData[metric].datasets[0].data[idx] = v ?? null;
           }
         });
       }
     },
 
-    // UI helpers
     showMessage(text, color = "info") {
       this.snackbarText = text;
       this.snackbarColor = color;
@@ -538,11 +485,9 @@ export default {
     },
   },
   watch: {
-    // switching mode rebuilds left menu + charts
     coreMode() {
       this.bootstrap();
     },
-    // switching group (outcome mode) refreshes metrics + charts
     selectedGroup() {
       if (this.coreMode) return;
       this.updateSelectedMetrics();
