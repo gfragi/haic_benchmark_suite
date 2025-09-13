@@ -24,7 +24,7 @@
 
       <v-row>
         <!-- Left Sidebar for Metric Groups -->
-        <v-col cols="3">
+        <v-col cols="3" v-if="groupedMetrics">
           <v-list dense>
             <v-list-item
               v-for="(group, groupName) in groupedMetrics"
@@ -33,9 +33,9 @@
               :class="{ 'selected-group': selectedGroup === groupName }"
               style="cursor: pointer"
             >
-              <v-list-item>
+              <template #prepend>
                 <v-icon>{{ getGroupIcon(groupName) }}</v-icon>
-              </v-list-item>
+              </template>
               <v-list-item-title>{{ groupName }}</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -246,21 +246,16 @@ export default {
     // Fetch the grouped metrics from the database
     fetchRunMetrics() {
       evaluationService
-        .getMetrics() // Call the /evaluate/metrics endpoint
+        .getMetrics()
         .then((response) => {
-          console.log("Fetched Metrics Data:", response.data);
-          this.groupedMetrics = response.data; // Backend response already grouped
-          console.log("Grouped Metrics:", this.groupedMetrics);
-
-          // Fetch metric values and match them
-          this.fetchMetricValues();
-
-          // Set the first group as selected by default
-          this.selectedGroup = Object.keys(this.groupedMetrics)[0];
+          this.groupedMetrics = response.data || {};
+          return this.fetchMetricValues();
         })
-        .catch((error) => {
-          console.error("Error fetching run metrics:", error);
-        });
+        .then(() => {
+          this.selectedGroup =
+            Object.keys(this.groupedMetrics || {})[0] || null;
+        })
+        .catch((err) => console.error("Error fetching run metrics:", err));
     },
 
     // Fetch the metric values from the relevant JSON file
@@ -268,47 +263,38 @@ export default {
       evaluationService
         .getResultDetail(this.configId, this.runId)
         .then((response) => {
-          const metricValues = response.data.metrics;
-          this.applicationVersion = response.data.app_version;
-          this.aiModelVersion = response.data.ai_model_version;
+          // values are under aggregates.by_group
+          const byGroup = response.data?.aggregates?.by_group || {};
 
-          console.log("Fetched Metric Values from JSON:", metricValues);
+          // normalize versions in header
+          const av = response.data?.app_versions;
+          this.applicationVersion =
+            Array.isArray(av) && av.length
+              ? av.join(", ")
+              : response.data?.app_version || "Unknown";
+          this.aiModelVersion = response.data?.ai_model_version || "Unknown";
 
-          // Iterate through groups and match values with their metrics
+          // merge values into the metric catalogue we got from /evaluate/metrics
           for (const groupName in this.groupedMetrics) {
-            const metricsList = this.groupedMetrics[groupName].metrics;
+            const metricsList = this.groupedMetrics[groupName].metrics || [];
+            const groupValues = byGroup[groupName] || {};
 
-            // Iterate through each metric in the group
             metricsList.forEach((metric) => {
-              console.log("Checking metric:", metric.name); // Debugging
-
-              // Check if the metric name exists in the JSON for the group and handle `0` values properly
-              if (
-                metricValues[groupName] &&
-                metricValues[groupName][metric.name] !== undefined &&
-                metricValues[groupName][metric.name] !== null
-              ) {
-                metric.value = metricValues[groupName][metric.name];
-                console.log(`Assigned value to ${metric.name}:`, metric.value); // Debugging
-              } else {
-                metric.value = "No value available"; // Fallback if no value found
-                console.log(`${metric.name} not found in fetched values`); // Debugging
-              }
+              const v = groupValues[metric.name];
+              // keep 0 as valid value; only treat null/undefined as missing
+              metric.value =
+                v === null || v === undefined ? "No value available" : v;
             });
           }
 
-          // Force Vue to detect changes (optional, depending on your reactivity setup)
+          // force reactivity after deep edits
           this.groupedMetrics = { ...this.groupedMetrics };
-
-          console.log(
-            "Updated Grouped Metrics with values:",
-            this.groupedMetrics
-          );
         })
         .catch((error) => {
           console.error("Error fetching metric values from JSON:", error);
         });
     },
+
     fetchConfigDetails() {
       configurationService
         .getConfigById(this.configId)
