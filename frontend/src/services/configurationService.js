@@ -28,8 +28,11 @@ export async function generateConfig(payload) {
 }
 
 export async function listConfigs() {
-  const { data } = await apiClient.get("/v1/env/list_configs");
-  return data?.available_configs || [];
+  const { data } = await apiClient.get(`/v1/env/list_configs`);
+  // backend returns {available_configs:[...]}
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.available_configs)) return data.available_configs;
+  return [];
 }
 
 export async function loadConfig(name) {
