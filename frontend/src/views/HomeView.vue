@@ -186,7 +186,7 @@
             <v-card-actions>
               <v-btn
                 color="primary"
-                :to="{ path: '/simulator', query: { mode: 'build' } }"
+                :to="{ path: '/simulate', query: { mode: 'build' } }"
               >
                 <v-icon left class="mr-2">mdi-flask</v-icon>
                 Open Simulator
