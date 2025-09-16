@@ -14,15 +14,22 @@ function rag(value, bands, higherIsBetter = true) {
   }
 }
 
+function b(html) {
+  // wrap a label in <strong>…</strong> so v-html renders it bold
+  return `<strong>${html}</strong>`;
+}
+
 export function summarizeRunBrief(result = {}) {
   const decs = result.decisions || [];
   const N = decs.length;
+
   let T = 0;
   if (N >= 2) {
     const t0 = Number(decs[0]?.t) || 0;
     const t1 = Number(decs[N - 1]?.t) || t0;
     T = Math.max(0, t1 - t0);
   }
+
   const m = result.metrics || {};
   const F = Number(m.F || 0);
   const H = Number(m.HCL || 0);
@@ -32,6 +39,7 @@ export function summarizeRunBrief(result = {}) {
 
   const task = result.task || "Scenario";
   const env = result.environment || "env";
+
   let s = `${task} (${env}): ${N} actions in ~${T.toFixed(
     1
   )}s · pace ${F.toFixed(1)}/min · efficiency ${ES.toFixed(2)} (EL=${EL.toFixed(
@@ -64,16 +72,19 @@ export function deriveAuxRates(result = {}) {
   const N = decs.length;
   const off = decs.filter((d) => d.off_role_action).length;
   const offRate = N ? off / N : 0;
+
   let T = 0;
   if (N >= 2) {
     const t0 = Number(decs[0]?.t) || 0;
     const t1 = Number(decs[N - 1]?.t) || t0;
     T = Math.max(0, t1 - t0);
   }
+
   const prog = decs.filter((d) => {
     const et = String(d.event_type || "").toLowerCase();
     return et === "progress" || et === "checklist_progress";
   }).length;
+
   const progPerSec = T > 0 ? prog / T : 0;
   return { offrole_rate: offRate, progress_per_sec: progPerSec };
 }
@@ -87,58 +98,94 @@ export function interpretMetrics(metrics = {}, aux = {}) {
   const S = Number(metrics.S || 0);
   const EL = Number(metrics.EL || 0);
   const ES = Number(metrics.EfficiencyScore || 0);
+
   const off = Number(aux.offrole_rate || 0);
   const progPS = Number(aux.progress_per_sec || 0);
 
   const out = [];
-  const [pEmoji, pLabel] = rag(F, [5, 15], true);
-  out.push(
-    `${pEmoji} **Pace** (${F.toFixed(1)}/min): ${pLabel} activity level.`
-  );
 
-  // Duration (lower is better): choose bands appropriate for your domain
-  const [dE, dL] = rag(D, [0.2, 0.5], false);
-  out.push(`${dE} **Action duration** (D=${D.toFixed(2)}s): ${dL}.`);
-
-  const [hE, hL] = rag(H, [0.6, 0.8], true);
-  out.push(
-    `${hE} **Responsiveness** (HCL=${H.toFixed(2)}): ${hL} reaction speed.`
-  );
-
-  const [aE, aL] = rag(Tr, [0.9, 0.97], true);
-  out.push(`${aE} **Accuracy** (Tr=${Tr.toFixed(2)}): ${aL} error rate.`);
-
-  if (A >= 0.1)
-    out.push(`🟢 **Adaptability** (A=+${A.toFixed(2)}): learning trend.`);
-  else if (A <= -0.1)
-    out.push(`🔴 **Adaptability** (A=${A.toFixed(2)}): degrading trend.`);
-  else out.push(`🟡 **Adaptability** (A=${A.toFixed(2)}): stable.`);
-
-  const [sE] = rag(S, [0.5, 0.8], true); // only emoji needed
-  if (S >= 0.8)
+  // Pace
+  {
+    const [pEmoji, pLabel] = rag(F, [5, 15], true);
     out.push(
-      `${sE} **Surrogate alignment** (S=${S.toFixed(2)}): high agreement.`
+      `${pEmoji} ${b("Pace")} (${F.toFixed(1)}/min): ${pLabel} activity level.`
     );
-  else if (S <= 0.5)
-    out.push(`${sE} **Surrogate alignment** (S=${S.toFixed(2)}): diverging.`);
-  else
+  }
+
+  // Duration (lower better)
+  {
+    const [dE, dL] = rag(D, [0.2, 0.5], false);
+    out.push(`${dE} ${b("Action duration")} (D=${D.toFixed(2)}s): ${dL}.`);
+  }
+
+  // Responsiveness
+  {
+    const [hE, hL] = rag(H, [0.6, 0.8], true);
     out.push(
-      `${sE} **Surrogate alignment** (S=${S.toFixed(2)}): partial match.`
+      `${hE} ${b("Responsiveness")} (HCL=${H.toFixed(
+        2
+      )}): ${hL} reaction speed.`
     );
+  }
 
-  const [oE, oL] = rag(off, [0.05, 0.1], false);
-  out.push(
-    `${oE} **Policy conformity** (off-role ${(off * 100).toFixed(1)}%): ${oL}.`
-  );
+  // Accuracy (Tr)
+  {
+    const [aE, aL] = rag(Tr, [0.9, 0.97], true);
+    out.push(`${aE} ${b("Accuracy")} (Tr=${Tr.toFixed(2)}): ${aL} error rate.`);
+  }
 
-  if (progPS > 0)
-    out.push(`🟢 **Task progress**: ${progPS.toFixed(2)} ticks/sec.`);
-  else out.push("🟡 **Task progress**: no explicit ticks.");
+  // Adaptability
+  if (A >= 0.1) {
+    out.push(`🟢 ${b("Adaptability")} (A=+${A.toFixed(2)}): learning trend.`);
+  } else if (A <= -0.1) {
+    out.push(`🔴 ${b("Adaptability")} (A=${A.toFixed(2)}): degrading trend.`);
+  } else {
+    out.push(`🟡 ${b("Adaptability")} (A=${A.toFixed(2)}): stable.`);
+  }
 
-  const [eE, eL] = rag(ES, [0.6, 0.8], true);
-  out.push(
-    `${eE} **Efficiency** (score=${ES.toFixed(2)}, EL=${EL.toFixed(2)}): ${eL}.`
-  );
+  // Surrogate alignment
+  {
+    const [sE] = rag(S, [0.5, 0.8], true);
+    if (S >= 0.8)
+      out.push(
+        `${sE} ${b("Surrogate alignment")} (S=${S.toFixed(2)}): high agreement.`
+      );
+    else if (S <= 0.5)
+      out.push(
+        `${sE} ${b("Surrogate alignment")} (S=${S.toFixed(2)}): diverging.`
+      );
+    else
+      out.push(
+        `${sE} ${b("Surrogate alignment")} (S=${S.toFixed(2)}): partial match.`
+      );
+  }
+
+  // Policy conformity (off-role)
+  {
+    const [oE, oL] = rag(off, [0.05, 0.1], false);
+    out.push(
+      `${oE} ${b("Policy conformity")} (off-role ${(off * 100).toFixed(
+        1
+      )}%): ${oL}.`
+    );
+  }
+
+  // Task progress
+  if (progPS > 0) {
+    out.push(`🟢 ${b("Task progress")}: ${progPS.toFixed(2)} ticks/sec.`);
+  } else {
+    out.push(`🟡 ${b("Task progress")}: no explicit ticks.`);
+  }
+
+  // Efficiency
+  {
+    const [eE, eL] = rag(ES, [0.6, 0.8], true);
+    out.push(
+      `${eE} ${b("Efficiency")} (score=${ES.toFixed(2)}, EL=${EL.toFixed(
+        2
+      )}): ${eL}.`
+    );
+  }
 
   return out;
 }
