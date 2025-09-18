@@ -2,14 +2,15 @@
 import json
 from pathlib import Path
 from typing import Dict, Any
-from haic_mvp_sim.engine.run_sim import run_from_config
-from haic_mvp_sim.engine.datasets import load_csv, make_script_from_dataset
-from haic_mvp_sim.engine.policies import ThresholdPolicy, L2DPolicy
-from haic_mvp_sim.engine.evaluate import compute_metrics
+from engine.run_sim import run_from_config
+from engine.datasets import load_csv, make_script_from_dataset
+from engine.policies import ThresholdPolicy, L2DPolicy
+from engine.evaluate import compute_metrics
 
-def run_experiment(dataset_csv: str, mode: str = "baseline", results_dir: str = "results"):
-    rows = load_csv(dataset_csv)
-    cfg: Dict[str, Any] = {
+def run_experiment(dataset_csv: str, mode: str = "baseline", results_dir: str = "results"): # Run an experiment on a dataset with a specified mode
+    rows = load_csv(dataset_csv) # Load dataset
+
+    cfg: Dict[str, Any] = { # Configuration for the simulation
         "sim_id": f"exp_{mode}",
         "environment": {"id":"HAIC_Exp","class":"base.Environment","attributes":{"task":"classification"}},
         "agents": [
@@ -20,7 +21,7 @@ def run_experiment(dataset_csv: str, mode: str = "baseline", results_dir: str = 
                     for i in range(len(rows))],
         "script": []
     }
-    policy = ThresholdPolicy() if mode=="baseline" else L2DPolicy()
+    policy = ThresholdPolicy() if mode=="baseline" else L2DPolicy() # Choose policy based on mode
     cfg["script"] = make_script_from_dataset(rows, "AI", "H", ai_policy=policy, human_accuracy=0.9)
     out_log = run_from_config(cfg, results_dir=results_dir)
     log = json.loads(Path(out_log).read_text(encoding="utf-8"))

@@ -7,24 +7,24 @@ from datetime import datetime
 SCHEMA_VERSION = "1.0.0"
 
 @dataclass
-class Entity:
+class Entity: # Base class for Agent and Object
     entity_id: str
     attributes: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
-class Object(Entity):
-    affordances: List[str] = field(default_factory=list)
+class Object(Entity): # e.g. a document, image, or item to be classified/reviewed
+    affordances: List[str] = field(default_factory=list) # e.g. ["classify", "review"]
 
 @dataclass
-class Agent(Entity):
-    model: Optional[str] = None
-    affordances: List[str] = field(default_factory=list)
+class Agent(Entity): # e.g. an AI model or human reviewer
+    model: Optional[str] = None # e.g. "ai", "human"
+    affordances: List[str] = field(default_factory=list) # e.g. ["classify", "review"]
     def act(self, action: str, obj: Object, effect: Optional[Dict[str, Any]] = None, t: Optional[int] = None):
         if action not in (set(self.affordances) | set(obj.affordances)):
             raise ValueError(f"Action '{action}' not allowed for {self.entity_id} on {obj.entity_id}")
         return Decision(SCHEMA_VERSION, "", t if t is not None else 0, self.entity_id, action, obj.entity_id, effect or {})
 
-@dataclass
+@dataclass # Immutable record of an action taken by an agent on an object
 class Decision:
     schema_version: str
     sim_id: str
@@ -38,7 +38,7 @@ class Decision:
     def to_json(self) -> Dict[str, Any]:
         return asdict(self)
 
-class Environment:
+class Environment: # Manages agents, objects, and logs decisions
     def __init__(self, env_id: str, attributes: Optional[Dict[str, Any]] = None):
         self.env_id = env_id
         self.attributes = attributes or {}
@@ -46,12 +46,17 @@ class Environment:
         self.objects: Dict[str, Object] = {}
         self.sim_id: str = self.attributes.get("sim_id", "")
         self.logs: List[Decision] = []
+
     def add_agent(self, agent: Agent): self.agents[agent.entity_id] = agent
+
     def add_object(self, obj: Object): self.objects[obj.entity_id] = obj
+
     def record(self, decision: Decision):
         if not decision.sim_id: decision.sim_id = self.sim_id
         self.logs.append(decision)
+
     def to_log_json(self) -> Dict[str, Any]:
+
         return {
             "schema_version": SCHEMA_VERSION,
             "env_id": self.env_id,
