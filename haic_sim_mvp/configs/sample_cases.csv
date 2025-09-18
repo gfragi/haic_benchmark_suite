@@ -1,0 +1,11 @@
+case_id,ai_prob,ground_truth
+1,0.90,positive
+2,0.40,not_positive
+3,0.62,positive
+4,0.10,not_positive
+5,0.55,positive
+6,0.48,not_positive
+7,0.30,not_positive
+8,0.72,positive
+9,0.51,positive
+10,0.20,not_positive
