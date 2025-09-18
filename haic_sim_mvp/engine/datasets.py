@@ -2,9 +2,10 @@
 import csv, random
 from typing import Dict, List, Any, Iterable
 
-def load_csv(path: str) -> List[Dict[str, Any]]:
+def load_csv(path: str) -> List[Dict[str, Any]]: # Load a CSV file into a list of dictionaries
     with open(path, "r", encoding="utf-8") as f: return list(csv.DictReader(f))
 
+# Create a simulation script from dataset rows
 def make_script_from_dataset(rows: Iterable[Dict[str, Any]], ai_agent_id: str, human_agent_id: str,
                              object_id_prefix="O", positive_label="positive", ai_policy=None, human_accuracy=0.9):
     script, t = [], 0

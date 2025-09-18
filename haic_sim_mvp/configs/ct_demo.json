@@ -3,79 +3,40 @@
   "environment": {
     "id": "CT_Diagnosis",
     "class": "base.Environment",
-    "attributes": {
-      "task": "classification"
-    }
+    "attributes": { "task": "classification", "domain": "medical" }
   },
+
   "agents": [
     {
       "id": "A1",
-      "class": "haic_mvp_sim.user_plugins.medical.Radiologist",
+      "class": "user_plugins.medical.Radiologist",
       "model": "human",
-      "attributes": {
-        "viewed_cases": []
-      },
-      "affordances": [
-        "view",
-        "classify"
-      ]
+      "attributes": { "viewed_cases": [] },
+      "affordances": ["view", "classify"]
     },
     {
       "id": "A2",
       "class": "base.Agent",
       "model": "ai",
-      "attributes": {
-        "name": "DiagNet-v1"
-      },
-      "affordances": [
-        "classify"
-      ]
+      "attributes": { "name": "DiagNet-v1" },
+      "affordances": ["classify"]
     }
   ],
+
   "objects": [
     {
       "id": "O1",
-      "class": "haic_mvp_sim.user_plugins.medical.CTImage",
-      "attributes": {
-        "type": "CT",
-        "patient_id": "P001"
-      },
-      "affordances": [
-        "view",
-        "classify"
-      ]
+      "class": "user_plugins.medical.CTImage",
+      "attributes": { "type": "CT", "patient_id": "P001" },
+      "affordances": ["view", "classify"]
     }
   ],
+
   "script": [
-    {
-      "t": 1,
-      "agent": "A1",
-      "action": "view",
-      "object": "O1",
-      "effect": {
-        "ui": "opened_viewer"
-      },
-      "latency_ms": 1200
-    },
-    {
-      "t": 2,
-      "agent": "A2",
-      "action": "classify",
-      "object": "O1",
-      "effect": {
-        "ai_label": "benign",
-        "prob": 0.82
-      }
-    },
-    {
-      "t": 3,
-      "agent": "A1",
-      "action": "classify",
-      "object": "O1",
-      "effect": {
-        "human_label": "benign"
-      },
-      "correct": true
-    }
+    { "t": 1, "agent": "A1", "action": "view", "object": "O1", "latency_ms": 1200 },
+    { "t": 2, "agent": "A2", "action": "classify", "object": "O1",
+      "effect": { "ai_label": "benign", "prob": 0.82 } },
+    { "t": 3, "agent": "A1", "action": "classify", "object": "O1",
+      "effect": { "human_label": "benign" }, "correct": true }
   ]
 }
