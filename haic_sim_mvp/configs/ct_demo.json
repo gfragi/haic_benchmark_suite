@@ -34,9 +34,9 @@
 
   "script": [
     { "t": 1, "agent": "A1", "action": "view", "object": "O1", "latency_ms": 1200 },
-    { "t": 2, "agent": "A2", "action": "classify", "object": "O1",
+    { "t": 2, "agent": "A2", "action": "classify", "object": "O1", "latency_ms": 300,
       "effect": { "ai_label": "benign", "prob": 0.82 } },
-    { "t": 3, "agent": "A1", "action": "classify", "object": "O1",
+    { "t": 3, "agent": "A1", "action": "classify", "object": "O1", "latency_ms": 1500,
       "effect": { "human_label": "benign" }, "correct": true }
   ]
 }

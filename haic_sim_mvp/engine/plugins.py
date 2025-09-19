@@ -1,9 +1,13 @@
-
+# haic_sim_mvp/engine/plugins.py
 import importlib
 from typing import Any, Dict
-from .base import Agent, Object, Environment, Agent as BaseAgent, Object as BaseObject, Environment as BaseEnv
+from .base import Agent as BaseAgent, Object as BaseObject, Environment as BaseEnv
 
-CLASS_REGISTRY = {"base.Agent": Agent, "base.Object": Object, "base.Environment": Environment} # Pre-register base classes
+CLASS_REGISTRY = {
+    "base.Agent": BaseAgent,
+    "base.Object": BaseObject,
+    "base.Environment": BaseEnv,
+}
 
 def load_class(path: str):
     if path in CLASS_REGISTRY:
@@ -31,7 +35,6 @@ def make_object(spec: Dict[str, Any]) -> BaseObject:
         attributes=spec.get("attributes", {}),
         affordances=spec.get("affordances", []),
     )
-
 
 def make_environment(spec: Dict[str, Any]) -> BaseEnv:
     cls = load_class(spec.get("class", "base.Environment"))

@@ -6,6 +6,8 @@ from engine.run_sim import run_from_config
 from engine.datasets import load_csv, make_script_from_dataset
 from engine.policies import ThresholdPolicy, L2DPolicy
 from engine.evaluate import compute_metrics
+from engine.metrics_bridge import haic_metrics_for_log
+
 
 def run_experiment(dataset_csv: str, mode: str = "baseline", results_dir: str = "results"): # Run an experiment on a dataset with a specified mode
     rows = load_csv(dataset_csv) # Load dataset
@@ -28,6 +30,10 @@ def run_experiment(dataset_csv: str, mode: str = "baseline", results_dir: str = 
     metrics = compute_metrics(log)
     Path(out_log.replace(".json","_metrics.json")).write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     return {"log": out_log, "summary": metrics}
+
+haic = haic_metrics_for_log(log)  # baseline_s, rt_max can also be passed
+haic_path = out_log.replace(".json", "_haic_metrics.json")
+Path(haic_path).write_text(json.dumps(haic, indent=2), encoding="utf-8")
 
 if __name__ == "__main__":
     import argparse, json as _j
