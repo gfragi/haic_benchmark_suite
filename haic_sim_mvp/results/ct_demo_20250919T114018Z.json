@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0.0",
+  "env_id": "CT_Diagnosis",
+  "sim_id": "ct_demo",
+  "timestamp": "2025-09-19T11:40:18.403297Z",
+  "attributes": {
+    "task": "classification",
+    "domain": "medical"
+  },
+  "agents": {
+    "A1": {
+      "attributes": {
+        "viewed_cases": [
+          "O1"
+        ]
+      },
+      "model": "human",
+      "affordances": [
+        "view",
+        "classify"
+      ]
+    },
+    "A2": {
+      "attributes": {
+        "name": "DiagNet-v1"
+      },
+      "model": "ai",
+      "affordances": [
+        "classify"
+      ]
+    }
+  },
+  "objects": {
+    "O1": {
+      "attributes": {
+        "type": "CT",
+        "patient_id": "P001"
+      },
+      "affordances": [
+        "view",
+        "classify"
+      ]
+    }
+  },
+  "decisions": [
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "ct_demo",
+      "t": 1,
+      "agent_id": "A1",
+      "action": "view",
+      "object_id": "O1",
+      "effect": {},
+      "correct": null,
+      "latency_ms": 1200
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "ct_demo",
+      "t": 2,
+      "agent_id": "A2",
+      "action": "classify",
+      "object_id": "O1",
+      "effect": {
+        "ai_label": "benign",
+        "prob": 0.82
+      },
+      "correct": null,
+      "latency_ms": 300
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "ct_demo",
+      "t": 3,
+      "agent_id": "A1",
+      "action": "classify",
+      "object_id": "O1",
+      "effect": {
+        "human_label": "benign"
+      },
+      "correct": true,
+      "latency_ms": 1500
+    }
+  ]
+}

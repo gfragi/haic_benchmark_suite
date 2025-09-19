@@ -1,7 +1,7 @@
 
 from dataclasses import dataclass
 from typing import Optional, Dict, Any
-from engine.base import Agent, Object
+from haic_sim_mvp.engine.base import Agent, Object
 
 @dataclass
 class Radiologist(Agent):
