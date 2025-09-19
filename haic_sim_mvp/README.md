@@ -41,7 +41,8 @@ Assumes Python 3.10+ and a virtualenv.
 # 1) Create & activate venv (recommended)
 python3 -m venv .venv && source .venv/bin/activate
 
-# 2) (If you keep deps) pip install -r requirements.txt
+# 2) Install dependencies 
+pip install -r requirements.txt
 
 
 # 3) Run the scripted demo (Radiology)
@@ -302,7 +303,7 @@ We compute the following pillars directly from the MVP logs using `interaction_m
 | Human-Centeredness           | HCL | 1 - mean(RT) / RT_max                            | [0, 1]         | Lower RT → higher HCL. |
 | Trust / Transparency         | Tr  | 1 - errors / N_labeled                           | [0, 1]         | Fewer errors/overrides → higher trust. |
 | Adaptability                 | A   | (Acc_late - Acc_early) / Acc_early (tanh-clamped)| ≈ [-1, 1]      | Improvement over the session. |
-| Similarity (Surrogates)      | S   | exp(-KL(P_human || P_surrogate)) or match rate   | [0, 1]         | Fidelity of surrogate to human. |
+| Similarity (Surrogates)      | S   | exp(-KL(P_human \|\| P_surrogate)) or match rate   | [0, 1]         | Fidelity of surrogate to human. |
 
 ### How to compute (CLI)
 
