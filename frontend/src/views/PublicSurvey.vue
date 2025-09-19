@@ -337,16 +337,29 @@ async function onSubmit() {
 
   submitting.value = true;
   try {
-    const endpoint =
-      process.env?.VUE_APP_SURVEY_ENDPOINT ||
-      import.meta?.env?.VITE_SURVEY_ENDPOINT ||
-      "http://localhost:8000/api/v1/survey";
+    // Prefer a BASE url and then join with the path
+    const base =
+      import.meta?.env?.VITE_API_BASE ||
+      process.env?.VUE_APP_API_BASE ||
+      "https://hua-benchmarking.ddns.net";
+
+    const endpoint = `${base.replace(/\/+$/, "")}/api/v1/survey`; // <- single slash
+
     const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(buildPayload()),
     });
-    if (!res.ok) throw new Error(`Server responded ${res.status}`);
+
+    if (!res.ok) {
+      const msg = await res.text().catch(() => "");
+      throw new Error(
+        `Server responded ${res.status} ${res.statusText}${
+          msg ? `: ${msg}` : ""
+        }`
+      );
+    }
+
     submitOk.value = true;
     resetForm();
   } catch (e) {
