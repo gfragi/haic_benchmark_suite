@@ -290,6 +290,25 @@ class MyPolicy(Policy):
 
 (Extend in `engine/evaluate.py`: add agreement, calibration, utility/cost, coverage curves.)
 
+### HAIC Pillars & Metrics
+
+We compute the following pillars directly from the MVP logs using `interaction_metrics`:
+
+| Pillar (Theme)               | Key | Formula (concept)                                | Range          | Story |
+|------------------------------|-----|--------------------------------------------------|----------------|-------|
+| Performance / Efficiency     | EL  | (T_actual - T_baseline) / T_baseline            | [0, +∞)        | Effort loss vs baseline (0 is best). |
+|                              | D   | mean(action duration)                            | [0, +∞)        | Atomic step duration; longer = bottlenecks. |
+| Interaction / Collaboration  | F   | N / (T/60)                                       | [0, +∞)        | Interactions per minute. |
+| Human-Centeredness           | HCL | 1 - mean(RT) / RT_max                            | [0, 1]         | Lower RT → higher HCL. |
+| Trust / Transparency         | Tr  | 1 - errors / N_labeled                           | [0, 1]         | Fewer errors/overrides → higher trust. |
+| Adaptability                 | A   | (Acc_late - Acc_early) / Acc_early (tanh-clamped)| ≈ [-1, 1]      | Improvement over the session. |
+| Similarity (Surrogates)      | S   | exp(-KL(P_human || P_surrogate)) or match rate   | [0, 1]         | Fidelity of surrogate to human. |
+
+### How to compute (CLI)
+
+```bash
+
+python tools/run_metrics.py --log results/<your_run>.json --baseline 45 --rt-max 5 --by-agent
 ## FastAPI Integration (example)
 
 ```python
