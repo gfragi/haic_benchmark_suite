@@ -17,6 +17,111 @@ from haic_sim_mvp.engine.evaluate import compute_metrics as base_metrics
 # --- YAML/JSON helpers ---
 import json, io, difflib
 from pathlib import Path
+import pandas as pd
+
+def _normalize_step(s: dict) -> dict:
+    s = dict(s or {})
+    # common aliases
+    if "obj" in s and "object" not in s:
+        s["object"] = s.pop("obj")
+    # types
+    if "t" in s:
+        try: s["t"] = int(s["t"])
+        except: pass
+    if "latency_ms" in s and s["latency_ms"] is not None:
+        try: s["latency_ms"] = int(s["latency_ms"])
+        except: pass
+    if "correct" in s and isinstance(s["correct"], str):
+        s["correct"] = s["correct"].lower() in {"1","true","yes","y"}
+    return s
+
+def _steps_to_df(steps: list[dict]) -> pd.DataFrame:
+    rows = []
+    for s in steps or []:
+        s = _normalize_step(s)
+        rows.append({
+            "t": s.get("t", 1),
+            "agent": s.get("agent",""),
+            "action": s.get("action",""),
+            "object": s.get("object",""),
+            "latency_ms": s.get("latency_ms"),
+            "correct": s.get("correct", None),
+            "effect_json": json.dumps(s.get("effect", None), ensure_ascii=False)
+        })
+    if not rows:
+        rows = [{"t":1,"agent":"","action":"","object":"","latency_ms":None,"correct":None,"effect_json":"null"}]
+    df = pd.DataFrame(rows).sort_values("t")
+    return df
+
+def _df_to_steps(df) -> list[dict]:
+    """Convert an edited data_editor frame back to a list of script steps."""
+    import pandas as pd
+    out: list[dict] = []
+
+    # 1) Normalize input into a DataFrame
+    if df is None:
+        return out
+    if not isinstance(df, pd.DataFrame):
+        try:
+            df = pd.DataFrame(df)
+        except Exception:
+            return out
+
+    # 2) Ensure columns exist
+    for col in ["t", "agent", "action", "object", "latency_ms", "correct", "effect_json"]:
+        if col not in df.columns:
+            df[col] = None
+
+    # 3) Sort safely by t (create sequence if t is all NaN)
+    if df["t"].isna().all():
+        df["t"] = range(1, len(df) + 1)
+    df2 = df.sort_values("t", kind="stable", na_position="first")
+
+    # 4) Row → step
+    for _, r in df2.iterrows():
+        # effect json
+        eff = None
+        txt = (r.get("effect_json") or "").strip()
+        if txt:
+            try:
+                eff = json.loads(txt)
+            except Exception:
+                eff = {"raw": txt}  # keep whatever was typed
+
+        # latency
+        lat = r.get("latency_ms")
+        if pd.isna(lat):
+            lat = None
+        else:
+            try:
+                lat = int(lat)
+            except Exception:
+                lat = None
+
+        # t
+        tval = r.get("t")
+        try:
+            tval = int(tval)
+        except Exception:
+            tval = len(out) + 1
+
+        step = {
+            "t": tval,
+            "agent": (r.get("agent") or "").strip(),
+            "action": (r.get("action") or "").strip(),
+            "object": (r.get("object") or "").strip(),
+            "latency_ms": lat,
+        }
+
+        c = r.get("correct")
+        if c is not None and not pd.isna(c):
+            step["correct"] = bool(c)
+        if eff is not None:
+            step["effect"] = eff
+
+        out.append(step)
+
+    return out
 
 try:
     import yaml  # PyYAML
@@ -682,10 +787,60 @@ with tab_builder:
                 "attributes": _parse_json_obj(o_attrs),
             })
 
-    # -- 4) Script
-    with step_tabs[3]:
-        templ = st.selectbox("Script template", ["Radiology (view → AI classify → Human classify)", "Empty"],
-                             index=0 if not cfg.get("script") else 1, key=k("templ"))
+# -- 4) Script
+with step_tabs[3]:
+    # detect if imported config already carries a script
+    imported_steps = cfg.get("script", []) or []
+    has_imported = len(imported_steps) > 0
+
+    mode = st.radio(
+        "Script mode",
+        options=["Use imported script", "Generate from template"],
+        index=0 if has_imported else 1,
+        horizontal=True,
+        key=k("script_mode"),
+        help="Keep and edit the script that came from the imported config, or generate a template."
+    )
+
+    generated_steps = []  # will fill only if template mode
+
+    if mode == "Use imported script":
+        st.caption("Edit your script inline. Add/delete rows as needed.")
+        df = _steps_to_df(imported_steps)
+        edited = st.data_editor(
+            df,
+            num_rows="dynamic",
+            use_container_width=True,
+            column_config={
+                "t": st.column_config.NumberColumn("t", min_value=0, step=1),
+                "agent": st.column_config.TextColumn("agent", help="Must match an agent id"),
+                "action": st.column_config.TextColumn("action"),
+                "object": st.column_config.TextColumn("object", help="Must match an object id"),
+                "latency_ms": st.column_config.NumberColumn("latency_ms", min_value=0, step=10, help="Optional"),
+                "correct": st.column_config.CheckboxColumn("correct", help="Optional"),
+                "effect_json": st.column_config.TextColumn("effect (JSON)", width="large",
+                    help='e.g., {"ai_label":"benign","prob":0.82}'),
+            },
+            hide_index=True,
+        )
+        # persist the edited script into session so Preview reflects it
+        st.session_state["builder_script"] = _df_to_steps(edited)
+
+        # light validation
+        missing_ids = []
+        agent_ids = {a["id"] for a in agents_specs}
+        obj_ids   = {o["id"] for o in objs_specs}
+        for s in st.session_state["builder_script"]:
+            if s["agent"] and s["agent"] not in agent_ids:
+                missing_ids.append(f"agent '{s['agent']}'")
+            if s["object"] and s["object"] not in obj_ids:
+                missing_ids.append(f"object '{s['object']}'")
+        if missing_ids:
+            st.warning("Unknown ids in script: " + ", ".join(sorted(set(missing_ids))))
+
+    else:  # Generate from template
+        templ = st.selectbox("Template", ["Radiology (view → AI classify → Human classify)", "Empty"],
+                             index=0 if not has_imported else 1, key=k("templ"))
         c1, c2, c3 = st.columns(3)
         ai_label = c1.text_input("AI label", value="benign", key=k("ai_label"))
         ai_prob  = c2.number_input("AI prob", 0.0, 1.0, value=0.82, step=0.01, key=k("ai_prob"))
@@ -694,7 +849,25 @@ with tab_builder:
         lat_view = d1.number_input("Latency view (ms)", 0, value=1200, step=10, key=k("lat_view"))
         lat_ai   = d2.number_input("Latency AI classify (ms)", 0, value=220, step=10, key=k("lat_ai"))
         lat_h    = d3.number_input("Latency Human classify (ms)", 0, value=950, step=10, key=k("lat_h"))
-        correct  = d4.checkbox("Mark final human step as correct", value=True, key=k("correct"))
+        correct  = d4.checkbox("Final human step correct", value=True, key=k("correct"))
+
+        if templ.startswith("Radiology") and agents_specs and objs_specs:
+            a_human = agents_specs[0]["id"]
+            a_ai = agents_specs[1]["id"] if len(agents_specs) > 1 else agents_specs[0]["id"]
+            obj = objs_specs[0]["id"]
+            generated_steps = [
+                {"t": 1, "agent": a_human, "action": "view", "object": obj, "latency_ms": int(lat_view)},
+                {"t": 2, "agent": a_ai, "action": "classify", "object": obj,
+                 "latency_ms": int(lat_ai), "effect": {"ai_label": ai_label, "prob": float(ai_prob)}},
+                {"t": 3, "agent": a_human, "action": "classify", "object": obj,
+                 "latency_ms": int(lat_h), "effect": {"human_label": human_label}, "correct": bool(correct)},
+            ]
+        else:
+            generated_steps = []
+
+        # keep in state so preview uses exactly what the user sees
+        st.session_state["builder_script"] = generated_steps
+
 
     # -- 5) Plugin (optional)
     with step_tabs[4]:
@@ -714,17 +887,15 @@ with tab_builder:
         "objects": objs_specs,
         "script": []
     }
-    if templ.startswith("Radiology") and agents_specs and objs_specs:
-        a_human = agents_specs[0]["id"]
-        a_ai = agents_specs[1]["id"] if len(agents_specs) > 1 else agents_specs[0]["id"]
-        obj = objs_specs[0]["id"]
-        config_preview["script"] = [
-            {"t": 1, "agent": a_human, "action": "view", "object": obj, "latency_ms": int(lat_view)},
-            {"t": 2, "agent": a_ai, "action": "classify", "object": obj,
-             "latency_ms": int(lat_ai), "effect": {"ai_label": ai_label, "prob": float(ai_prob)}},
-            {"t": 3, "agent": a_human, "action": "classify", "object": obj,
-             "latency_ms": int(lat_h), "effect": {"human_label": human_label}, "correct": bool(correct)},
-        ]
+
+    config_preview = {
+        "sim_id": sim_id,
+        "environment": {"id": env_id, "class": "base.Environment",
+                        "attributes": {"task": task, "domain": domain}},
+        "agents": agents_specs,
+        "objects": objs_specs,
+        "script": st.session_state.get("builder_script", cfg.get("script", [])),
+    }
 
     # -- 6) Preview / Save / Import
     with step_tabs[5]:
