@@ -1,24 +1,24 @@
 // robust helpers for all current/future response shapes
 import api from "./axios";
 
-// unwrap common backend response shapes
-const unwrap = (payload) => {
-  let x =
-    payload?.simulation_result ??
-    payload?.result ??
-    payload?.run ??
-    payload?.log ??
-    payload?.content ??
-    payload;
-  if (typeof x === "string") {
-    try {
-      x = JSON.parse(x);
-    } catch {
-      /* keep as-is */
-    }
-  }
-  return x;
-};
+// // unwrap common backend response shapes
+// const unwrap = (payload) => {
+//   let x =
+//     payload?.simulation_result ??
+//     payload?.result ??
+//     payload?.run ??
+//     payload?.log ??
+//     payload?.content ??
+//     payload;
+//   if (typeof x === "string") {
+//     try {
+//       x = JSON.parse(x);
+//     } catch {
+//       /* keep as-is */
+//     }
+//   }
+//   return x;
+// };
 
 // function unbox(data) {
 //   // accept {simulation_result}, {result}, {run}, {log}, {content}, bare object, or JSON string
