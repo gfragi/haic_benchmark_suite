@@ -14,6 +14,81 @@ from haic_sim_mvp.engine.datasets import load_csv, make_script_from_dataset
 from haic_sim_mvp.engine.policies import ThresholdPolicy, L2DPolicy
 from haic_sim_mvp.engine.evaluate import compute_metrics as base_metrics
 
+# --- YAML/JSON helpers ---
+import json, io, difflib
+from pathlib import Path
+
+try:
+    import yaml  # PyYAML
+except Exception:
+    yaml = None
+
+REQUIRED_KEYS = ["environment", "agents", "objects", "script"]
+
+def to_yaml(cfg: dict) -> str:
+    if yaml is None:
+        return "# Install PyYAML for YAML export\n" + json.dumps(cfg, indent=2)
+    # Safe, readable dump; keep keys order if possible
+    return yaml.safe_dump(cfg, sort_keys=False, allow_unicode=True)
+
+def to_json(cfg: dict) -> str:
+    return json.dumps(cfg, indent=2, ensure_ascii=False)
+
+def parse_any(text: str) -> dict:
+    text = (text or "").strip()
+    if not text:
+        raise ValueError("Empty input.")
+    # Try JSON first (strict), then YAML
+    try:
+        return json.loads(text)
+    except Exception:
+        pass
+    if yaml is None:
+        raise ValueError("Not valid JSON and PyYAML not installed.")
+    try:
+        data = yaml.safe_load(text)
+        if not isinstance(data, dict):
+            raise ValueError("Top-level YAML must be a mapping/object.")
+        return data
+    except Exception as e:
+        raise ValueError(f"YAML parse error: {e}")
+
+def validate_cfg(cfg: dict) -> list[str]:
+    errs = []
+    for k in REQUIRED_KEYS:
+        if k not in cfg:
+            errs.append(f"Missing required key: '{k}'")
+    # Minimal shape checks
+    env = cfg.get("environment", {})
+    if not isinstance(env, dict) or "id" not in env or "class" not in env:
+        errs.append("environment must include 'id' and 'class'.")
+    for sec in ("agents", "objects"):
+        arr = cfg.get(sec, [])
+        if not isinstance(arr, list) or not all(isinstance(x, dict) for x in arr):
+            errs.append(f"'{sec}' must be a list of objects.")
+        else:
+            for i, x in enumerate(arr):
+                if "id" not in x or "class" not in x:
+                    errs.append(f"{sec}[{i}] must include 'id' and 'class'.")
+                if "affordances" in x and not isinstance(x["affordances"], list):
+                    errs.append(f"{sec}[{i}].affordances must be a list.")
+    steps = cfg.get("script", [])
+    if not isinstance(steps, list):
+        errs.append("'script' must be a list.")
+    else:
+        for i, s in enumerate(steps):
+            if not all(k in s for k in ("t","agent","action","object")):
+                errs.append(f"script[{i}] must have t, agent, action, object.")
+    return errs
+
+def unified_diff(a: str, b: str, a_name="current", b_name="loaded") -> str:
+    lines = difflib.unified_diff(
+        a.splitlines(keepends=True),
+        b.splitlines(keepends=True),
+        fromfile=a_name, tofile=b_name, n=3
+    )
+    return "".join(lines)
+
 # ---- A/B comparison helpers ----
 from typing import Dict, Any, Tuple, List
 
@@ -167,7 +242,6 @@ def _plugin_skeleton(module_name: str, agent_class: str, object_class: str, enfo
     """).strip() + "\n"
 
 
-import streamlit as st
 from streamlit.components.v1 import html as st_html
 
 def render_mermaid(code: str, height: int = 260):
@@ -485,87 +559,122 @@ with tab_compare:
 
 # ---------- Builder (custom config) ----------
 with tab_builder:
-    st.subheader("Config & Plugin Builder")
-    with st.expander("How this works"):
+    # ---------- State & helpers ----------
+    if "builder_cfg" not in st.session_state:
+        st.session_state["builder_cfg"] = {
+            "sim_id": "ct_demo",
+            "environment": {"id": "CT_Diagnosis", "class": "base.Environment",
+                            "attributes": {"task": "classification", "domain": "medical"}},
+            "agents": [
+                {"id": "A1", "class": "user_plugins.medical.Radiologist",
+                 "model": "human", "affordances": ["view","classify"], "attributes": {"viewed_cases": []}},
+                {"id": "A2", "class": "base.Agent",
+                 "model": "ai", "affordances": ["classify"], "attributes": {}},
+            ],
+            "objects": [
+                {"id": "O1", "class": "user_plugins.medical.CTImage",
+                 "affordances": ["view","classify"], "attributes": {"type":"CT","patient_id":"P001"}}
+            ],
+            "script": []
+        }
+    if "builder_ver" not in st.session_state:
+        st.session_state["builder_ver"] = 0
 
-        # Clean two-column explainer + diagram
-        left, right = st.columns([1.3, 1.4])
-        with left:
+    def k(name: str) -> str:
+        """Versioned widget keys to avoid 'cannot modify after instantiation' errors."""
+        return f"{name}__v{st.session_state['builder_ver']}"
+
+    cfg = st.session_state["builder_cfg"]  # source of truth
+
+    st.subheader("Config & Plugin Builder")
+
+    with st.expander("How this works", expanded=False):
+        c1, c2 = st.columns([1.3, 1.4])
+        with c1:
             st.markdown(
                 """
-            **How this works**
-
-            - **Form sections:** *Environment → Agents → Objects → Script → (optional) Plugin scaffold → Save/Run.*
-            - **Radiology template:** instantly creates the 3-step script *(view → AI classify → Human classify)* with your latencies & labels.
-            - **Plugin scaffold:** writes `user_plugins/<module>.py` with your **Agent** & **Object** classes (optionally enforces *“view before classify”*).
-            - **Save:** writes the config into your **`configs_dir`** *(from sidebar)*.
-            - **Run:** executes the config and writes the log into **`results_dir`**.
-            - **Auto-link:** if you create a plugin here, **Agent 1** and **Object 1** are auto-set to `user_plugins.<module>.<Class>`.
-                        """
+- **Steps:** *Environment → Agents → Objects → Script → (optional) Plugin → Preview/Save/Run*  
+- **Templates:** Radiology creates *(view → AI classify → Human classify)*  
+- **Plugin scaffold:** writes `user_plugins/<module>.py` (can enforce “view before classify”)  
+- **Save:** config to **configs_dir** · **Run:** log to **results_dir**  
+- **Auto-link:** If you scaffold a plugin, Agent 1 / Object 1 are auto-linked
+                """
             )
-        with right:
+        with c2:
             render_mermaid(
                 """
-                    flowchart LR
-                    ENV[Environment] --> AG[Agents]
-                    ENV --> OBJ[Objects]
-                    AG -- affordances --> SCR[Script]
-                    OBJ -- affordances --> SCR
-                    SCR --> PLG{Plugin?}
-                    PLG --> CFG[Save: configs_dir]
-                    CFG --> RUN[Run]
-                    RUN --> LOG[Results: results_dir]
-                    LOG --> MET[Interaction Metrics]
-                """
-                , height=280
+                flowchart LR
+                  ENV[Environment] --> AG[Agents]
+                  ENV --> OBJ[Objects]
+                  AG -- affordances --> SCR[Script]
+                  OBJ -- affordances --> SCR
+                  SCR --> PLG{Plugin?}
+                  PLG --> CFG[Save → configs_dir]
+                  CFG --> RUN[Run]
+                  RUN --> LOG[Results → results_dir]
+                  LOG --> MET[HAIC Metrics]
+                """,
+                height=260
             )
 
+    # ---------- Multi-step form ----------
+    step_tabs = st.tabs(["1) Environment", "2) Agents", "3) Objects", "4) Script", "5) Plugin", "6) Preview / Save"])
 
+    # -- 1) Environment
+    with step_tabs[0]:
+        col1, col2 = st.columns(2)
+        sim_id = col1.text_input("sim_id", value=cfg.get("sim_id","ct_demo"), key=k("sim_id"))
+        env_id = col2.text_input("environment.id", value=cfg["environment"].get("id","ENV"), key=k("env_id"))
+        col3, col4 = st.columns(2)
+        task = col3.text_input("environment.attributes.task", value=cfg["environment"]["attributes"].get("task","classification"), key=k("task"))
+        domain = col4.text_input("environment.attributes.domain", value=cfg["environment"]["attributes"].get("domain","medical"), key=k("domain"))
 
-    with st.form("builder_form", clear_on_submit=False):
-        st.markdown("### 1. Environment")
-        col_env1, col_env2 = st.columns(2)
-        sim_id = col_env1.text_input("sim_id", value="ct_demo")
-        env_id = col_env2.text_input("environment.id", value="CT_Diagnosis")
-        col_env3, col_env4 = st.columns(2)
-        task = col_env3.text_input("environment.attributes.task", value="classification")
-        domain = col_env4.text_input("environment.attributes.domain", value="medical")
-
-        st.markdown("---")
-        st.markdown("### 2. Agents")
-        n_agents = st.number_input("How many agents?", min_value=1, max_value=6, value=2, step=1)
+    # -- 2) Agents
+    with step_tabs[1]:
+        n_agents = st.number_input("How many agents?", 1, 6, value=max(1, len(cfg.get("agents", []))), step=1, key=k("n_agents"))
         agents_specs = []
         for i in range(int(n_agents)):
+            defaults = cfg["agents"][i] if i < len(cfg["agents"]) else {
+                "id": f"A{i+1}", "class": "base.Agent", "model": "human" if i == 0 else "ai",
+                "affordances": ["view","classify"] if i == 0 else ["classify"], "attributes": {}
+            }
             st.markdown(f"**Agent {i+1}**")
             ca, cb, cc = st.columns(3)
-            a_id = ca.text_input(f"agent[{i}].id", value=("A1" if i==0 else "A2"), key=f"a_id_{i}")
-            a_model = cb.selectbox(f"agent[{i}].model", ["human","ai","surrogate"], index=(0 if i==0 else 1), key=f"a_model_{i}")
-            a_class = cc.text_input(f"agent[{i}].class",
-                                    value=("user_plugins.medical.Radiologist" if i==0 else "base.Agent"),
-                                    key=f"a_class_{i}")
-            aff = st.text_input(f"agent[{i}].affordances (comma-separated)", value="view, classify" if i==0 else "classify", key=f"a_aff_{i}")
-            attrs = st.text_area(f"agent[{i}].attributes (JSON)", value=("{}" if i>0 else '{"viewed_cases": []}'), key=f"a_attrs_{i}", height=80)
+            a_id = ca.text_input("id", value=defaults["id"], key=k(f"a_{i}_id"))
+            a_model = cb.selectbox("model", ["human","ai","surrogate"],
+                                   index=["human","ai","surrogate"].index(defaults.get("model","ai")),
+                                   key=k(f"a_{i}_model"))
+            a_class = cc.text_input("class", value=defaults.get("class","base.Agent"), key=k(f"a_{i}_class"))
+            c2a, c2b = st.columns([1,1])
+            aff_str = c2a.text_input("affordances (comma-separated)",
+                                     value=", ".join(defaults.get("affordances",[])), key=k(f"a_{i}_aff"))
+            attrs_str = c2b.text_area("attributes (JSON)", value=json.dumps(defaults.get("attributes",{}), indent=2),
+                                      height=90, key=k(f"a_{i}_attrs"))
             agents_specs.append({
                 "id": a_id,
                 "class": a_class,
                 "model": a_model,
-                "affordances": _parse_affordances(aff),
-                "attributes": _parse_json_obj(attrs),
+                "affordances": _parse_affordances(aff_str),
+                "attributes": _parse_json_obj(attrs_str),
             })
 
-        st.markdown("---")
-        st.markdown("### 3. Objects")
-        n_objs = st.number_input("How many objects?", min_value=1, max_value=100, value=1, step=1)
+    # -- 3) Objects
+    with step_tabs[2]:
+        n_objs = st.number_input("How many objects?", 1, 50, value=max(1, len(cfg.get("objects", []))), step=1, key=k("n_objs"))
         objs_specs = []
         for i in range(int(n_objs)):
+            defaults = cfg["objects"][i] if i < len(cfg["objects"]) else {
+                "id": f"O{i+1}", "class": "base.Object",
+                "affordances": ["view","classify"], "attributes": {}
+            }
             st.markdown(f"**Object {i+1}**")
             co, cp, cq = st.columns(3)
-            o_id = co.text_input(f"object[{i}].id", value=("O1" if i==0 else f"O{i+1}"), key=f"o_id_{i}")
-            o_class = cp.text_input(f"object[{i}].class",
-                                    value=("user_plugins.medical.CTImage" if i==0 else "base.Object"),
-                                    key=f"o_class_{i}")
-            o_aff = cq.text_input(f"object[{i}].affordances (comma-separated)", value="view, classify", key=f"o_aff_{i}")
-            o_attrs = st.text_area(f"object[{i}].attributes (JSON)", value='{"type":"CT","patient_id":"P001"}' if i==0 else "{}", key=f"o_attrs_{i}", height=70)
+            o_id = co.text_input("id", value=defaults["id"], key=k(f"o_{i}_id"))
+            o_class = cp.text_input("class", value=defaults.get("class","base.Object"), key=k(f"o_{i}_class"))
+            o_aff = cq.text_input("affordances (comma-separated)",
+                                  value=", ".join(defaults.get("affordances",[])), key=k(f"o_{i}_aff"))
+            o_attrs = st.text_area("attributes (JSON)", value=json.dumps(defaults.get("attributes",{}), indent=2),
+                                   height=80, key=k(f"o_{i}_attrs"))
             objs_specs.append({
                 "id": o_id,
                 "class": o_class,
@@ -573,95 +682,130 @@ with tab_builder:
                 "attributes": _parse_json_obj(o_attrs),
             })
 
-        st.markdown("---")
-        st.markdown("### 4. Script template")
-        templ = st.selectbox("Script", ["Radiology (view → AI classify → Human classify)", "Empty"], index=0)
-        ai_label = st.text_input("AI label (if Radiology template)", value="benign")
-        ai_prob  = st.number_input("AI prob (0.0-1.0)", min_value=0.0, max_value=1.0, value=0.82, step=0.01)
-        human_label = st.text_input("Human label (if Radiology template)", value="benign")
-        lat_view = st.number_input("Latency view (ms)", min_value=0, value=1200, step=10)
-        lat_ai   = st.number_input("Latency AI classify (ms)", min_value=0, value=220, step=10)
-        lat_h    = st.number_input("Latency Human classify (ms)", min_value=0, value=950, step=10)
-        correct  = st.checkbox("Mark final human step as correct", value=True)
+    # -- 4) Script
+    with step_tabs[3]:
+        templ = st.selectbox("Script template", ["Radiology (view → AI classify → Human classify)", "Empty"],
+                             index=0 if not cfg.get("script") else 1, key=k("templ"))
+        c1, c2, c3 = st.columns(3)
+        ai_label = c1.text_input("AI label", value="benign", key=k("ai_label"))
+        ai_prob  = c2.number_input("AI prob", 0.0, 1.0, value=0.82, step=0.01, key=k("ai_prob"))
+        human_label = c3.text_input("Human label", value="benign", key=k("h_label"))
+        d1, d2, d3, d4 = st.columns(4)
+        lat_view = d1.number_input("Latency view (ms)", 0, value=1200, step=10, key=k("lat_view"))
+        lat_ai   = d2.number_input("Latency AI classify (ms)", 0, value=220, step=10, key=k("lat_ai"))
+        lat_h    = d3.number_input("Latency Human classify (ms)", 0, value=950, step=10, key=k("lat_h"))
+        correct  = d4.checkbox("Mark final human step as correct", value=True, key=k("correct"))
 
-        st.markdown("---")
-        st.markdown("### 5. Optional: scaffold a User Plugin file")
+    # -- 5) Plugin (optional)
+    with step_tabs[4]:
+        st.caption("Optional plugin scaffold (keeps the core clean).")
         colp1, colp2, colp3 = st.columns(3)
-        module_name = colp1.text_input("Module (user_plugins.<module>)", value="medical")
-        agent_class_name = colp2.text_input("Agent class name", value="Radiologist")
-        object_class_name = colp3.text_input("Object class name", value="CTImage")
-        enforce_gate = st.checkbox("Enforce 'view before classify' in plugin", value=True)
-        write_plugin = st.checkbox("Create/overwrite plugin file **and auto-link Agent 1 & Object 1**", value=False)
+        module_name = colp1.text_input("Module (user_plugins.<module>)", value="medical", key=k("pl_mod"))
+        agent_class_name = colp2.text_input("Agent class name", value="Radiologist", key=k("pl_agent"))
+        object_class_name = colp3.text_input("Object class name", value="CTImage", key=k("pl_obj"))
+        enforce_gate = st.checkbox("Enforce 'view before classify'", value=True, key=k("pl_gate"))
+        write_plugin = st.checkbox("Create/overwrite plugin file and auto-link Agent 1 & Object 1", value=False, key=k("pl_write"))
 
-        st.markdown("---")
+    # Assemble a preview config from the current widgets (live)
+    config_preview = {
+        "sim_id": sim_id,
+        "environment": {"id": env_id, "class": "base.Environment", "attributes": {"task": task, "domain": domain}},
+        "agents": agents_specs,
+        "objects": objs_specs,
+        "script": []
+    }
+    if templ.startswith("Radiology") and agents_specs and objs_specs:
+        a_human = agents_specs[0]["id"]
+        a_ai = agents_specs[1]["id"] if len(agents_specs) > 1 else agents_specs[0]["id"]
+        obj = objs_specs[0]["id"]
+        config_preview["script"] = [
+            {"t": 1, "agent": a_human, "action": "view", "object": obj, "latency_ms": int(lat_view)},
+            {"t": 2, "agent": a_ai, "action": "classify", "object": obj,
+             "latency_ms": int(lat_ai), "effect": {"ai_label": ai_label, "prob": float(ai_prob)}},
+            {"t": 3, "agent": a_human, "action": "classify", "object": obj,
+             "latency_ms": int(lat_h), "effect": {"human_label": human_label}, "correct": bool(correct)},
+        ]
+
+    # -- 6) Preview / Save / Import
+    with step_tabs[5]:
+        st.markdown("#### Live Preview")
+        cprev1, cprev2 = st.columns([1,1])
+        with cprev1:
+            st.code(to_yaml(config_preview), language="yaml")
+        with cprev2:
+            st.code(to_json(config_preview), language="json")
+
+        st.markdown("#### Save / Run")
         col_save1, col_save2, col_save3 = st.columns(3)
-        cfg_filename = col_save1.text_input("Config filename", value=f"{sim_id}.json")
-        run_after_save = col_save2.checkbox("Run after save", value=False)
-        overwrite_cfg = col_save3.checkbox("Overwrite if exists", value=False)
+        cfg_filename = col_save1.text_input("Config filename", value=f"{sim_id}.json", key=k("fname"))
+        run_after_save = col_save2.checkbox("Run after save", value=False, key=k("run_now"))
+        overwrite_cfg = col_save3.checkbox("Overwrite if exists", value=False, key=k("overwrite"))
 
-        submitted = st.form_submit_button("Preview & Save")
+        # Primary action
+        if st.button("Save (and Run if selected)", type="primary", key=k("save_btn")):
+            # 1) Optional plugin scaffold
+            if write_plugin:
+                plugin_path = USER_PLUGINS_DIR / f"{module_name.strip()}.py"
+                code = _plugin_skeleton(
+                    module_name.strip() or "medical",
+                    agent_class_name.strip() or "Radiologist",
+                    object_class_name.strip() or "CTImage",
+                    enforce_view_before_classify=enforce_gate
+                )
+                plugin_path.write_text(code, encoding="utf-8")
+                st.success(f"Plugin written: {plugin_path}")
+                # Auto-link Agent 1 / Object 1
+                if config_preview["agents"]:
+                    config_preview["agents"][0]["class"] = f"user_plugins.{module_name}.{agent_class_name}"
+                if config_preview["objects"]:
+                    config_preview["objects"][0]["class"] = f"user_plugins.{module_name}.{object_class_name}"
 
-    if submitted:
-        # 1) Optionally write the plugin file first
-        if write_plugin:
-            plugin_path = USER_PLUGINS_DIR / f"{module_name.strip()}.py"
-            code = _plugin_skeleton(
-                module_name.strip() or "medical",
-                agent_class_name.strip() or "Radiologist",
-                object_class_name.strip() or "CTImage",
-                enforce_view_before_classify=enforce_gate
-            )
-            plugin_path.write_text(code, encoding="utf-8")
-            st.success(f"Plugin written: {plugin_path}")
-            st.info(f"Use in config as: user_plugins.{module_name}.{agent_class_name} / user_plugins.{module_name}.{object_class_name}")
-            # **Auto-link Agent 1 & Object 1** to the new plugin classes
-            if agents_specs:
-                agents_specs[0]["class"] = f"user_plugins.{module_name}.{agent_class_name}"
-            if objs_specs:
-                objs_specs[0]["class"] = f"user_plugins.{module_name}.{object_class_name}"
+            # 2) Persist config
+            tgt = configs_dir / cfg_filename
+            if tgt.exists() and not overwrite_cfg:
+                st.warning(f"Config exists: {tgt} (enable 'Overwrite' to replace)")
+            else:
+                tgt.write_text(json.dumps(config_preview, indent=2), encoding="utf-8")
+                st.success(f"Config saved: {tgt}")
+                # Keep as the active builder_cfg and bump version so widgets re-instantiate safely
+                st.session_state["builder_cfg"] = config_preview
+                st.session_state["builder_ver"] += 1
 
-        # 2) Build the config dict
-        config = {
-            "sim_id": sim_id,
-            "environment": {
-                "id": env_id,
-                "class": "base.Environment",
-                "attributes": {"task": task, "domain": domain}
-            },
-            "agents": agents_specs,
-            "objects": objs_specs,
-            "script": []
-        }
+                # 3) Optional run
+                if run_after_save:
+                    out_path = run_from_config(config_preview, results_dir=str(results_dir))
+                    st.success(f"Run complete → {out_path}")
 
-        # 3) Optional Radiology script template
-        if templ.startswith("Radiology") and agents_specs and objs_specs:
-            a_human = agents_specs[0]["id"]
-            a_ai = agents_specs[1]["id"] if len(agents_specs) > 1 else agents_specs[0]["id"]
-            obj = objs_specs[0]["id"]
-            config["script"] = [
-                {"t": 1, "agent": a_human, "action": "view", "object": obj, "latency_ms": int(lat_view)},
-                {"t": 2, "agent": a_ai, "action": "classify", "object": obj,
-                 "latency_ms": int(lat_ai), "effect": {"ai_label": ai_label, "prob": float(ai_prob)}},
-                {"t": 3, "agent": a_human, "action": "classify", "object": obj,
-                 "latency_ms": int(lat_h), "effect": {"human_label": human_label}, "correct": bool(correct)},
-            ]
-
-        # 4) Preview
-        st.markdown("#### Preview config")
-        st.code(json.dumps(config, indent=2), language="json")
-
-        # 5) Save config
-        tgt = configs_dir / cfg_filename
-        if tgt.exists() and not overwrite_cfg:
-            st.warning(f"Config exists: {tgt} (enable 'Overwrite' to replace)")
-        else:
-            tgt.write_text(json.dumps(config, indent=2), encoding="utf-8")
-            st.success(f"Config saved: {tgt}")
-
-        # 6) Run now (optional)
-        if run_after_save:
-            out_path = run_from_config(config, results_dir=str(results_dir))
-            st.success(f"Run complete → {out_path}")
+        st.divider()
+        st.markdown("#### Paste / Import (YAML or JSON)")
+        pasted = st.text_area("Paste here", height=200, placeholder="YAML or JSON…", key=k("paste"))
+        up = st.file_uploader("…or upload a file", type=["yaml","yml","json"], key=k("upload"))
+        col_imp1, col_imp2 = st.columns([1,1])
+        with col_imp1:
+            if st.button("Parse & Validate", key=k("parse_btn")):
+                try:
+                    text = pasted
+                    if up is not None:
+                        text = up.read().decode("utf-8")
+                    loaded = parse_any(text)
+                    errs = validate_cfg(loaded)
+                    if errs:
+                        st.error("Validation issues:\n- " + "\n- ".join(errs))
+                    else:
+                        st.session_state["loaded_cfg"] = loaded
+                        st.success("Parsed OK ✅ — click **Apply to form**.")
+                except Exception as e:
+                    st.error(f"Parse error: {e}")
+        with col_imp2:
+            if st.button("Apply to form", key=k("apply_btn")):
+                loaded = st.session_state.get("loaded_cfg")
+                if not loaded:
+                    st.warning("Nothing to apply. Parse a config first.")
+                else:
+                    st.session_state["builder_cfg"] = loaded
+                    st.session_state["builder_ver"] += 1  # force fresh widget keys
+                    st.success("Applied to form. Re-rendering…")
+                    st.rerun()
 
 # ---------- 🏁 Overview ----------
 with tab_overview:
