@@ -203,14 +203,24 @@ def _val(x, default=0.0):
     except Exception:
         return default
 
-def collect_all_metrics(log: Dict[str, Any]) -> Dict[str, float]:
-    """Merge base metrics into one flat dict."""
+def collect_all_metrics(log: dict) -> dict:
+    """Merge base metrics + HAIC pillars and guarantee all keys exist."""
     base = base_metrics(log) or {}
     pillars = haic_metrics_for_log(log) or {}
     out = {}
     out.update(base)
     out.update(pillars)
-    return {k: _val(v) for k, v in out.items()}
+    out = {k: _val(v) for k, v in out.items()}
+
+    # ensure all KPIs & Pillars are present so downstream never KeyErrors
+    for _, key, _, _ in KPI_SPECS:
+        out.setdefault(key, 0.0)
+    for _, key, _, _ in PILLAR_SPECS:
+        out.setdefault(key, 0.0)
+    # bonus: a few common aliases some logs might have
+    if "avg_latency" in out and "avg_latency_ms" not in out:
+        out["avg_latency_ms"] = _val(out["avg_latency"])
+    return out
 
 # label, key, better('high'|'low'), fmt
 KPI_SPECS = [
@@ -233,67 +243,71 @@ PILLAR_SPECS = [
 ]
 
 def _delta_color(better: str) -> str:
-    # st.metric coloring: 'normal' => green if delta>0, 'inverse' => green if delta<0
     return "inverse" if better == "low" else "normal"
 
-def _bullet_changes(ma: Dict[str, float], mb: Dict[str, float]) -> List[str]:
+def _g(d: dict, key: str) -> float:
+    return _val(d.get(key), 0.0)
+
+def _bullet_changes(ma: dict, mb: dict):
     bullets = []
-    if mb.get("accuracy",0) != ma.get("accuracy",0):
-        d = mb["accuracy"] - ma["accuracy"]
-        bullets.append(("✅" if d>0 else "⚠️") + f" Accuracy {'+' if d>=0 else ''}{d:.2f}")
-    if mb.get("avg_latency_ms",0) != ma.get("avg_latency_ms",0):
-        d = ma["avg_latency_ms"] - mb["avg_latency_ms"]  # positive = faster
-        bullets.append(("🚀" if d>0 else "🐢") + f" Latency {'-' if d<0 else ''}{abs(d):.0f} ms")
-    if mb.get("defer_rate",0) != ma.get("defer_rate",0):
-        d = mb["defer_rate"] - ma["defer_rate"]
-        bullets.append(("👥" if d>0 else "🤖") + f" Defer {'+' if d>=0 else ''}{d:.2f}")
+    # Accuracy
+    d_acc = _g(mb, "accuracy") - _g(ma, "accuracy")
+    if d_acc != 0:
+        bullets.append(("✅" if d_acc > 0 else "⚠️") + f" Accuracy {d_acc:+.2f}")
+    # Latency (lower is better → show speed gain)
+    d_lat_ms = _g(ma, "avg_latency_ms") - _g(mb, "avg_latency_ms")
+    if d_lat_ms != 0:
+        bullets.append(("🚀" if d_lat_ms > 0 else "🐢") + f" Latency {d_lat_ms:+.0f} ms")
+    # Defer rate
+    d_def = _g(mb, "defer_rate") - _g(ma, "defer_rate")
+    if d_def != 0:
+        bullets.append(("👥" if d_def > 0 else "🤖") + f" Defer {d_def:+.2f}")
     return bullets
 
-def render_ab_comparison(log_A: Dict[str,Any], log_B: Dict[str,Any], name_A="Baseline", name_B="L2D-like"):
+def render_ab_comparison(log_A, log_B, name_A="Baseline", name_B="L2D-like"):
     ma = collect_all_metrics(log_A)
     mb = collect_all_metrics(log_B)
 
-    # quick verdict heuristic (accuracy, then EfficiencyScore, then latency)
-    verdict = name_B if (mb.get("accuracy",0), mb.get("EfficiencyScore",0), -mb.get("avg_latency_ms",1e9)) > \
-                        (ma.get("accuracy",0), ma.get("EfficiencyScore",0), -ma.get("avg_latency_ms",1e9)) else name_A
+    # verdict: accuracy → EfficiencyScore → (lower) latency
+    a_tuple = (_g(ma, "accuracy"), _g(ma, "EfficiencyScore"), -_g(ma, "avg_latency_ms"))
+    b_tuple = (_g(mb, "accuracy"), _g(mb, "EfficiencyScore"), -_g(mb, "avg_latency_ms"))
+    verdict = name_B if b_tuple > a_tuple else name_A
     st.success(f"**A/B finished – suggested winner: {verdict}**")
 
-    # bullets
     for line in _bullet_changes(ma, mb):
         st.write(line)
-    st.caption("Note: Δ below is **B − A**. Green = better for that metric (e.g., lower is better for latency & defer).")
+    st.caption("Δ below is **B − A**. Green means better for that metric (e.g., lower is better for latency & defer).")
 
-    # --- KPIs row ---
+    # KPIs row
     st.markdown("#### Core KPIs")
     colA, colB = st.columns(2)
     with colA:
         st.markdown(f"**A — {name_A}**")
         kcols = st.columns(len(KPI_SPECS))
-        for i,(label,key,better,fmt) in enumerate(KPI_SPECS):
-            kcols[i].metric(label, fmt.format(ma.get(key,0)))
+        for i, (label, key, better, fmt) in enumerate(KPI_SPECS):
+            kcols[i].metric(label, fmt.format(_g(ma, key)))
     with colB:
         st.markdown(f"**B — {name_B}**")
         kcols = st.columns(len(KPI_SPECS))
-        for i,(label,key,better,fmt) in enumerate(KPI_SPECS):
-            a = ma.get(key,0); b = mb.get(key,0)
-            d = b - a
-            kcols[i].metric(label, fmt.format(b), delta=("{:+.2f}".format(d) if "latency" not in key else "{:+.0f}".format(d)),
-                            delta_color=_delta_color(better))
+        for i, (label, key, better, fmt) in enumerate(KPI_SPECS):
+            d = _g(mb, key) - _g(ma, key)
+            delta_str = f"{d:+.0f}" if "latency" in key else f"{d:+.2f}"
+            kcols[i].metric(label, fmt.format(_g(mb, key)), delta=delta_str, delta_color=_delta_color(better))
 
-    # --- Pillars grid ---
+    # Pillars
     st.markdown("#### HAIC Interaction metrics")
     colA, colB = st.columns(2)
     with colA:
         st.markdown(f"**A — {name_A}**")
         pcols = st.columns(len(PILLAR_SPECS))
-        for i,(label,key,better,fmt) in enumerate(PILLAR_SPECS):
-            pcols[i].metric(label, fmt.format(ma.get(key,0)))
+        for i, (label, key, better, fmt) in enumerate(PILLAR_SPECS):
+            pcols[i].metric(label, fmt.format(_g(ma, key)))
     with colB:
         st.markdown(f"**B — {name_B}**")
         pcols = st.columns(len(PILLAR_SPECS))
-        for i,(label,key,better,fmt) in enumerate(PILLAR_SPECS):
-            a = ma.get(key,0); b = mb.get(key,0); d = b - a
-            pcols[i].metric(label, fmt.format(b), delta="{:+.2f}".format(d), delta_color=_delta_color(better))
+        for i, (label, key, better, fmt) in enumerate(PILLAR_SPECS):
+            d = _g(mb, key) - _g(ma, key)
+            pcols[i].metric(label, fmt.format(_g(mb, key)), delta=f"{d:+.2f}", delta_color=_delta_color(better))
 
 
 
@@ -471,69 +485,108 @@ with tab_run_cfg:
 # ---------- Dataset A/B (dropdown for csv) ----------
 with tab_run_csv:
     st.subheader("Run dataset-driven A/B")
+
     with st.expander("Why this matters / how to judge A vs B"):
         left, right = st.columns([1.5, 1])
         with left:
             st.markdown(
                 """
-        ### **What this A/B does**
+### **What this A/B does**
+- **Same dataset, two policies.** Each CSV row (e.g., `ai_prob`, `ground_truth`) becomes a simulated *case*.
+- **Baseline (threshold):** if `ai_prob >= threshold` → AI classifies, else Human.
+- **L2D-like (defer):** if `ai_prob` is in an uncertainty band (around τ) → defer to Human; otherwise AI.
+- Engine executes and logs; we compute **base** and **HAIC interaction** metrics.
 
-        - **Same dataset, two policies.** Each CSV row (e.g., `ai_prob`, `ground_truth`) becomes a simulated *case*.
-        - **Script generator** turns each row into a step and applies a **policy** to decide *who acts*:
-        - **Baseline (threshold):** if `ai_prob >= threshold` -> AI classifies, else Human.
-        - **L2D-like (defer):** if `ai_prob` is in an uncertainty band (around τ) -> defer to Human; otherwise AI.
-        - The **engine** executes the generated script and logs every decision (time, actor, action, correctness, latency).
-        - We compute **base metrics** (accuracy, AI/Human accuracy, defer rate, avg latency) and,  **HAIC interaction metrics** (F, D, HCL, Tr, A, S, EL, EfficiencyScore).
-        - Because the **dataset stays identical**, any metric difference comes from the **policy**, not from the data.
-"""
-            """
-
-            ### **How to judge A/B**
-
-        - Prefer the policy that **improves accuracy** without unacceptable **latency** or **defer rate** growth.
-        - If **L2D** beats Baseline on accuracy with a *small* defer bump -> good trade if human capacity allows.
-        - Watch **HCL** (higher is easier for humans) and **EL/EfficiencyScore** for overall effort.
-        - If deferral is very high but accuracy barely moves, consider tuning threshold/τ or tightening the uncertainty band.
-    """
-        )
+### **How to judge A/B**
+- Prefer higher **accuracy** without unacceptable **latency** or **defer rate** growth.
+- If **L2D** boosts accuracy with a small defer bump → good trade (capacity permitting).
+- Watch **HCL** and **EL/EfficiencyScore** for human effort/load.
+                """
+            )
         with right:
             render_mermaid(
                 """
-                flowchart TD
-                CSV[Dataset CSV] --> GEN[Script Generator] --> POL{Select Policy}
-                POL -->|baseline| BASE[Threshold]
-                POL -->|l2d| L2D[L2D-like]
-                BASE --> ENG[Engine]
-                L2D --> ENG
-                ENG --> LOG[Logs] --> MET[Interaction Metrics]
-                """
-                , height=800
-                )
+flowchart TD
+  CSV[Dataset CSV] --> MAP[Column Mapper]
+  MAP --> GEN[Script Generator]
+  GEN --> POL{Select Policy}
+  POL -->|baseline| BASE[Threshold]
+  POL -->|l2d| L2D[L2D-like]
+  BASE --> ENG[Engine]
+  L2D --> ENG
+  ENG --> LOG[Logs] --> MET[Interaction Metrics]
+                """,
+                height=320
+            )
 
-
+    # Pick CSV
     csv_files = list_csv(configs_dir)
     csv_choices = [p.relative_to(configs_dir).as_posix() for p in csv_files]
     csv_sel = st.selectbox("Select dataset CSV", csv_choices, index=0 if csv_choices else None)
 
+    # Policy knobs
     c1, c2, c3 = st.columns(3)
-    threshold = c1.slider("Baseline threshold", 0.0, 1.0, 0.5, 0.01)
+    threshold = c1.slider("Baseline threshold", 0.0, 1.0, 0.50, 0.01)
     c1.caption("Lower → more AI coverage, fewer deferrals; may hurt accuracy if model is weak.")
-
-    # τ is constrained to [0.50, 0.99] so the uncertainty band (1-τ, τ) is valid
     tau = c2.slider("L2D τ (uncertainty band)", 0.50, 0.99, 0.70, 0.01)
     c2.caption("Higher → wider defer band (1-τ, τ) → more human load; can boost accuracy.")
-
-    human_acc = c3.slider("Human accuracy (assumption)", 0.5, 1.0, 0.90, 0.01)
+    human_acc = c3.slider("Human accuracy (assumption)", 0.50, 1.00, 0.90, 0.01)
     c3.caption("Used when policy defers to human; tune to your domain.")
 
-    # --- Live coverage preview (only needs ai_prob column) ---
-    try:
-        df_preview = pd.read_csv(configs_dir / csv_sel)
-        if "ai_prob" in df_preview.columns:
-            p = pd.to_numeric(df_preview["ai_prob"], errors="coerce").clip(0, 1).dropna()
-            # Baseline: AI acts if p >= threshold
+    # --- Column mapping + normalization ---
+    df_std = None
+    if csv_sel:
+        raw_df = pd.read_csv(configs_dir / csv_sel, skipinitialspace=True)
+        raw_df.columns = [str(c).strip() for c in raw_df.columns]
+        lc_map = {c.lower(): c for c in raw_df.columns}
+
+        def pick(*cands):
+            for name in cands:
+                if name in lc_map:
+                    return lc_map[name]
+            return None
+
+        # Auto-detect likely columns
+        col_prob = pick("ai_prob", "p_ai", "prob", "score", "risk_score")
+        col_gt   = pick("ground_truth", "gt", "label", "secure_gt", "target", "y")
+        col_ai_l = pick("ai_latency_ms", "ai_compute_ms")
+        col_h_l  = pick("human_latency_ms", "human_est_ms")
+
+        st.caption("Map your CSV columns (auto-detected where possible)")
+        m1, m2, m3, m4 = st.columns(4)
+        prob_col = m1.selectbox(
+            "Probability column",
+            raw_df.columns,
+            index=(raw_df.columns.get_loc(col_prob) if col_prob in raw_df.columns else 0),
+        )
+        gt_col = m2.selectbox(
+            "Ground-truth column",
+            raw_df.columns,
+            index=(raw_df.columns.get_loc(col_gt) if col_gt in raw_df.columns else 0),
+        )
+        ai_lat_col = m3.selectbox(
+            "AI latency (optional)",
+            ["—"] + list(raw_df.columns),
+            index=(0 if not col_ai_l else 1 + raw_df.columns.get_loc(col_ai_l)),
+        )
+        h_lat_col = m4.selectbox(
+            "Human latency (optional)",
+            ["—"] + list(raw_df.columns),
+            index=(0 if not col_h_l else 1 + raw_df.columns.get_loc(col_h_l)),
+        )
+
+        # Canonicalize headers for downstream code
+        rename = {}
+        if prob_col != "ai_prob":          rename[prob_col] = "ai_prob"
+        if gt_col   != "ground_truth":     rename[gt_col]   = "ground_truth"
+        if ai_lat_col != "—":              rename[ai_lat_col] = "ai_latency_ms"
+        if h_lat_col  != "—":              rename[h_lat_col]  = "human_latency_ms"
+        df_std = raw_df.rename(columns=rename)
+
+        # --- Coverage preview (uses normalized ai_prob only) ---
+        if "ai_prob" in df_std.columns:
+            p = pd.to_numeric(df_std["ai_prob"], errors="coerce").clip(0, 1).dropna()
             baseline_ai_cov = float((p >= threshold).mean())
-            # L2D: defer if p in (1-τ, τ); AI acts otherwise
             band_lo, band_hi = (1.0 - tau), tau
             l2d_defer = float(((p > band_lo) & (p < band_hi)).mean())
             l2d_ai_cov = 1.0 - l2d_defer
@@ -542,59 +595,70 @@ with tab_run_csv:
             pc[0].metric("Baseline: AI coverage (≈)", f"{baseline_ai_cov:.0%}")
             pc[1].metric("L2D: defer rate (≈)", f"{l2d_defer:.0%}")
             pc[2].metric("L2D: AI coverage (≈)", f"{l2d_ai_cov:.0%}")
-            st.caption(f"Uncertainty band: ({band_lo:.2f}, {band_hi:.2f}). Preview uses only `ai_prob` distribution; actual accuracy depends on ground truth and your policy.")
+            st.caption(f"Uncertainty band: ({band_lo:.2f}, {band_hi:.2f}). Preview uses only `ai_prob` distribution.")
         else:
-            st.info("CSV preview: column `ai_prob` not found; coverage preview skipped.")
-    except Exception as e:
-        st.warning(f"CSV preview error: {e}")
+            st.info("CSV preview: **ai_prob** column not found. Map it above to enable coverage preview.")
 
     st.markdown(
-    "> **Rule of thumb:** Lower threshold → more AI, faster; "
-    "Higher τ → more human review, potentially higher accuracy but slower."
-)
-    if csv_sel and st.button("Run A/B now"):
-        rows = load_csv(str(configs_dir / csv_sel))
+        "> **Rule of thumb:** Lower threshold → more AI, faster; "
+        "Higher τ → more human review, potentially higher accuracy but slower."
+    )
 
-        # Build shared sim scaffold from dataset
+    # --- Run A/B with the normalized DataFrame ---
+    if df_std is not None and st.button("Run A/B now"):
+        # Prepare rows (dicts) and basic typing
+        rows = df_std.to_dict(orient="records")
+        for r in rows:
+            r["ai_prob"] = float(pd.to_numeric(r.get("ai_prob", 0), errors="coerce") or 0)
+
+        # Auto-pick positive label from ground_truth values (e.g., 'secure'/'insecure' or 'positive'/'not_positive')
+        pos_label = "positive"
+        if "ground_truth" in df_std.columns:
+            vals = {str(v).strip().lower() for v in df_std["ground_truth"].dropna().unique()}
+            if "secure" in vals:            pos_label = "secure"
+            elif "positive" in vals:        pos_label = "positive"
+            elif vals:                      pos_label = sorted(vals)[0]  # fallback
+
+        # Build shared sim scaffold
         base_cfg = {
-            "environment": {"id":"HAIC_Exp","class":"base.Environment","attributes":{"task":"classification"}},
+            "environment": {"id": "HAIC_Exp", "class": "base.Environment",
+                            "attributes": {"task": "classification"}},
             "agents": [
-                {"id":"AI","class":"base.Agent","model":"ai","affordances":["classify"]},
-                {"id":"H","class":"base.Agent","model":"human","affordances":["classify"]},
+                {"id": "AI", "class": "base.Agent", "model": "ai", "affordances": ["classify"]},
+                {"id": "H",  "class": "base.Agent", "model": "human", "affordances": ["classify"]},
             ],
-            "objects": [{"id": f"O{i+1}","class":"base.Object","attributes":{"row":i+1},"affordances":["classify"]}
+            "objects": [{"id": f"O{i+1}", "class": "base.Object",
+                         "attributes": {"row": i+1}, "affordances": ["classify"]}
                         for i in range(len(rows))],
         }
 
         # A: Baseline
         cfg_A = dict(base_cfg)
         cfg_A["sim_id"] = "exp_baseline"
-        cfg_A["script"] = make_script_from_dataset(rows, "AI", "H",
-                            ai_policy=ThresholdPolicy(threshold=threshold),
-                            positive_label="positive", human_accuracy=human_acc)
+        cfg_A["script"] = make_script_from_dataset(
+            rows, "AI", "H",
+            ai_policy=ThresholdPolicy(threshold=threshold),
+            positive_label=pos_label,
+            human_accuracy=human_acc,
+        )
         out_A = run_from_config(cfg_A, results_dir=str(results_dir))
         log_A = json.loads(Path(out_A).read_text(encoding="utf-8"))
 
         # B: L2D-like
         cfg_B = dict(base_cfg)
         cfg_B["sim_id"] = "exp_l2d"
-        cfg_B["script"] = make_script_from_dataset(rows, "AI", "H",
-                            ai_policy=L2DPolicy(tau=tau),
-                            positive_label="positive", human_accuracy=human_acc)
+        cfg_B["script"] = make_script_from_dataset(
+            rows, "AI", "H",
+            ai_policy=L2DPolicy(tau=tau),
+            positive_label=pos_label,
+            human_accuracy=human_acc,
+        )
         out_B = run_from_config(cfg_B, results_dir=str(results_dir))
         log_B = json.loads(Path(out_B).read_text(encoding="utf-8"))
 
-        # Show side-by-side
-        st.success("A/B finished")
+        # Show side-by-side verdict + metrics
         render_ab_comparison(log_A, log_B, name_A="Baseline", name_B="L2D-like")
-        
-        # cols = st.columns(2)
-        # with cols[0]:
-        #     st.markdown("**A — Baseline**")
-        #     show_base_and_haic(log_A)
-        # with cols[1]:
-        #     st.markdown("**B — L2D-like**")
-        #     show_base_and_haic(log_B)
+
 
 # ---------- 📊 Results & Compare ----------
 with tab_compare:
