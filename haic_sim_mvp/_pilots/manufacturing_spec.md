@@ -39,7 +39,7 @@ We compare policies (heuristics, RL, RL+deferral) on identical data and quantify
 
 ## Policies to compare
 
-1. BaselineThreshold(τ₀)
+1.** BaselineThreshold(τ₀)**
 
     - If `ai_prob ≥ τ₀` → **AI assigns**, else **Human decides**.
 
@@ -56,7 +56,7 @@ We compare policies (heuristics, RL, RL+deferral) on identical data and quantify
 
 ## Data Sources (dataset-driven mode)
 
-Minimal CSV (works with your A/B tab mapper):
+### Minimal CSV (works with your A/B tab mapper):
 
 ```bash
 job_id, ai_prob, ground_truth, ai_latency_ms, human_latency_ms, module_id, vendor, shift, proc_time_s, energy_wh
@@ -66,31 +66,93 @@ J002,   0.41,    late,         35,            1400,             M2,       extern
 ```
 
 - **Required**: `ai_prob` (0..1), `ground_truth` (e.g., `on_time`/`late` or `secure`/`insecure`), `job_id`.
-
 - **Optional**: `ai_latency_ms`, `human_latency_ms`, `module_id/vendor/shift` (for fairness), `proc_time_s`, `energy_wh`.
+
+### Dataset→Script mapping (engine does this):
+
+- Each row → one **case** (object = `Job_i`).
+
+- Policy decides who acts; we log:
+  - `effect` (e.g., `{assign_to:"M2", ai_prob:0.78}`) on AI step.
+  - correct on final step if it **matches ground_truth** (meets objective).
 
 ## Metrics of interest
 
-- **Base**: accuracy, defer_rate, avg_latency_ms.
+### Technical (from `engine.evaluate`)
 
-- **HAIC Interaction metrics**: F, D, HCL, Tr, A, S, EL, EfficiencyScore.
+- accuracy (meets objective fraction)
+- ai_accuracy / human_accuracy
+- defer_rate
+- avg_latency_ms (mix of AI/Human steps)
 
-- **Fairness**: slices by region, asset_type, weather_regime, time_of_day.
+### HAIC interaction metrics
 
-- **Trust/Usability**: SUS + trust item; Operator overrides as proxy for trust.
+- F (interactions/min), D (mean action duration), HCL (1 − RT/RTmax)
+- Tr (1 − errors/N_labeled), A (late−early accuracy, tanh-clamped), S (surrogate similarity)
+- EL + EfficiencyScore (effort loss vs baseline)
 
-## Config Skeleton
+### Fairness (optional, easy to add)
+
+- Outcome parity (accuracy) by `vendor/module/shift`
+- Override asymmetry (human override rate) by group
+- Load equity (task share, wait times) by group
+
+## Config Skeleton (scripted demo)
 
 ```json
 {
-  "sim_id": "pilot_<name>_v0",
-  "environment": {"id": "ENV", "class": "base.Environment",
-    "attributes": {"task": "<task>", "domain": "<domain>"}},
+  "sim_id": "kuba_demo",
+  "environment": {
+    "id": "KUBA",
+    "class": "base.Environment",
+    "attributes": { "task": "scheduling", "domain": "manufacturing" }
+  },
   "agents": [
-    {"id": "H", "class": "base.Agent", "model": "human", "affordances": ["view","classify","approve","reject"]},
-    {"id": "AI", "class": "base.Agent", "model": "ai", "affordances": ["classify"]}
+    { "id": "OP",  "class": "base.Agent", "model": "human", "affordances": ["set_goal","approve","override"] },
+    { "id": "SRL", "class": "base.Agent", "model": "ai",     "affordances": ["assign"] }
   ],
-  "objects": [{"id": "X", "class": "base.Object", "affordances": ["view","classify","approve"]}],
-  "script": []  // filled via dataset->script or scripted steps
+  "objects": [
+    { "id": "J1", "class": "base.Object", "affordances": ["assign","process"], "attributes": {"type":"job"} },
+    { "id": "M1", "class": "base.Object", "affordances": ["process"], "attributes": {"type":"module"} }
+  ],
+  "script": [
+    { "t": 1, "agent": "SRL", "action": "assign", "object": "J1",
+      "latency_ms": 40, "effect": {"assign_to":"M1","ai_prob":0.78} },
+    { "t": 2, "agent": "OP", "action": "approve", "object": "J1",
+      "latency_ms": 1200, "correct": true }
+  ]
 }
 ```
+
+### (Optional) Plugin scaffold `user_plugins/manufacturing.py`
+
+```python
+
+from dataclasses import dataclass
+from typing import Optional, Dict, Any
+from haic_sim_mvp.engine.base import Agent, Object
+
+@dataclass
+class Operator(Agent):
+    def act(self, action: str, obj: Object,
+            effect: Optional[Dict[str, Any]] = None, t: Optional[int] = None):
+        # Example policy gate: require 'assign' exists before 'approve'
+        if action in {"approve","override"} and not effect and not obj.attributes.get("assigned"):
+            raise ValueError("No assignment to approve/override")
+        return super().act(action, obj, effect, t)
+
+@dataclass
+class Workcell(Object):
+    pass
+```
+
+- Register in `haic_sim_mvp/engine/__init__.py`:
+`user_plugins.kuba.Operator`, `user_plugins.kuba.Workcell`.
+
+## Acceptance checks (v0)
+
+- A/B completes on a 50–200 row CSV with mapped columns; logs appear in `results/`.
+- Metrics render without KeyErrors; Comparison suggests a winner.
+- Changing τ increases defer_rate and (usually) accuracy up to a point.
+- Optional fairness slices show differences by `vendor/module` if provided.
+
