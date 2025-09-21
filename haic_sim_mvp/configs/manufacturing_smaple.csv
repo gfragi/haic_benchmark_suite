@@ -1,0 +1,11 @@
+job_id, ai_prob, ground_truth, ai_latency_ms, human_latency_ms, module_id, vendor, shift, proc_time_s, energy_wh
+J001,   0.78,    on_time,      40,            1200,             M1,       in_house, day, 45,         520
+J002,   0.41,    late,         35,            1400,             M2,       external, night, 60,       740
+J003,   0.85,    on_time,      50,            1100,             M1,       in_house, day, 30,         480
+J004,   0.33,    late,         45,            1300,             M3,       external, night, 75,       860
+J005,   0.59,    on_time,      38,            1250,             M2,       in_house, day, 50,         600
+J006,   0.72,    on_time,      42,            1150,             M1,       external, night, 40,       500
+J007,   0.25,    late,         48,            1350,             M3,       in_house, day, 70,         800
+J008,   0.61,    on_time,      36,            1200,             M2,       external, night, 55,       650
+J009,   0.88,    on_time,      39,            1180,             M1,       in_house, day, 35,         450
+J010,   0.44,    late,         44,            1320,             M3,       external, night, 65,       780
