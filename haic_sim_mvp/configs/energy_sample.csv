@@ -1,11 +1,11 @@
-grid_id, prob_secure, secure_gt, al_flag, risk_score, region, asset_type, weather_regime, time_of_day, ai_compute_ms, human_est_ms
-G001,    0.68,       secure,   1,       0.72,       "North", "Line",    "HighWind",      "Night",    40,            900
-G002,    0.45,       insecure, 0,       0.55,       "South", "Transformer", "Clear",    "Day",      35,            850
-G003,    0.82,       secure,   1,       0.30,       "East",  "Line",    "Rain",         "Evening", 50,            920
-G004,    0.30,       insecure, 0,       0.80,       "West",  "Substation", "Snow",     "Morning", 45,            880
-G005,    0.55,       secure,   1,       0.60,       "North", "Line",    "Clear",        "Day",      38,            910
-G006,    0.75,       secure,   0,       0.40,       "South", "Transformer", "HighWind", "Night",    42,            870
-G007,    0.20,       insecure, 1,       0.90,       "East",  "Line",    "Rain",         "Evening", 48,            930
-G008,    0.60,       secure,   0,       0.50,       "West",  "Substation", "Snow",     "Morning", 36,            860
-G009,    0.85,       secure,   1,       0.25,       "North", "Line",    "Clear",        "Day",      39,            940
-G010,    0.40,       insecure, 0,       0.70,       "South", "Transformer", "HighWind", "Night",    44,            890
+grid_id,ai_prob,secure_gt,al_flag,risk_score,region,asset_type,weather_regime,time_of_day,ai_compute_ms,human_est_ms
+G001,0.68,secure,1,0.72,"North","Line","HighWind","Night",40,900
+G002,0.45,insecure,0,0.55,"South","Transformer","Clear","Day",35,850
+G003,0.82,secure,1,0.30,"East","Line","Rain","Evening",50,920
+G004,0.30,insecure,0,0.80,"West","Substation","Snow","Morning",45,880
+G005,0.55,secure,1,0.60,"North","Line","Clear","Day",38,910
+G006,0.75,secure,0,0.40,"South","Transformer","HighWind","Night",42,870
+G007,0.20,insecure,1,0.90,"East","Line","Rain","Evening",48,930
+G008,0.60,secure,0,0.50,"West","Substation","Snow","Morning",36,860
+G009,0.85,secure,1,0.25,"North","Line","Clear","Day",39,940
+G010,0.40,insecure,0,0.70,"South","Transformer","HighWind","Night",44,890
