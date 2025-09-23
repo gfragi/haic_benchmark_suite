@@ -247,7 +247,26 @@
                 </div>
               </div>
             </div>
-
+            <div class="text-caption text-medium-emphasis mt-4 mb-1">
+              Question set
+            </div>
+            <v-switch
+              v-model="autoAttachLatest"
+              color="primary"
+              inset
+              label="Auto-attach latest for selected pilot"
+            />
+            <v-text-field
+              v-model="selectedSchemaId"
+              label="schema_id (optional)"
+              :hint="
+                autoAttachLatest
+                  ? 'Auto-filled when available; you can override.'
+                  : 'Paste a schema_id to pin a specific version.'
+              "
+              persistent-hint
+              prepend-inner-icon="mdi-identifier"
+            />
             <v-alert type="info" variant="tonal">
               You can also append <code>&amp;app_version=...</code> and
               <code>&amp;ai_model_version=...</code> to prefill metadata.
@@ -279,6 +298,10 @@ import { useRouter } from "vue-router";
 import debounce from "lodash.debounce";
 import semver from "semver";
 import QRCode from "qrcode";
+import { fetchLatestSchemaForPilot } from "@/services/surveySchemas";
+
+const selectedSchemaId = ref("");
+const autoAttachLatest = ref(true);
 
 const comparisonMode = ref("versions");
 const aggregatedData = ref({});
@@ -294,15 +317,13 @@ const router = useRouter();
 
 const surveyHref = computed(() => {
   const origin = window.location.origin;
-
-  // include only non-empty values
   const query = {
     pilot_tag: selectedPilotTag.value || undefined,
     app_version: selectedAppVersion.value || undefined,
     ai_model_version: selectedModelVersion.value || undefined,
+    schema_id: (selectedSchemaId.value || "").trim() || undefined, // NEW
   };
-
-  const href = router.resolve({ name: "PublicSurvey", query }).href; // e.g. /survey?pilot_tag=Healthcare&app_version=v1
+  const href = router.resolve({ name: "PublicSurvey", query }).href;
   return `${origin}${href}`;
 });
 
@@ -443,6 +464,20 @@ watch(surveyHref, async (url) => {
     console.error("QR gen error:", e);
   }
 });
+
+watch(
+  [shareOpen, selectedPilotTag, autoAttachLatest],
+  async ([open, pilot, auto]) => {
+    if (!open || !auto || !pilot) return;
+    try {
+      const latest = await fetchLatestSchemaForPilot(pilot);
+      selectedSchemaId.value = latest?.schema_id || "";
+    } catch (e) {
+      console.error("Failed to fetch pilot schema:", e);
+      selectedSchemaId.value = "";
+    }
+  }
+);
 
 function openShare() {
   shareOpen.value = true;
