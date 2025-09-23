@@ -18,12 +18,12 @@ const INFERRED_HOST = (() => {
       return `${u.protocol}//${u.host}`;
     }
   } catch (_e) {
-    void 0;
+    /* ignore */
   }
   return "";
 })();
 
-
+// 👇 NEW: guess :8000 when running the UI on :8080 in dev
 const DEV_GUESS =
   typeof window !== "undefined" &&
   (window.location.hostname === "localhost" ||
@@ -43,6 +43,7 @@ const SCHEMAS_BASE =
   (/^https?:\/\//i.test(BASE) ? BASE : "") +
   `${BASE ? "" : ""}/api/v1/survey/schemas`;
 
+// ---- API calls ----
 export async function fetchSchemaById(id) {
   const res = await fetch(`${SCHEMAS_BASE}/${encodeURIComponent(id)}`, {
     headers: { Accept: "application/json" },
@@ -62,4 +63,15 @@ export async function fetchLatestSchemaForPilot(pilotTag) {
     throw new Error(`Failed to fetch pilot schema (HTTP ${res.status})`);
   const text = await res.text();
   return text ? JSON.parse(text) : null;
+}
+
+// 👇 Ensure POST uses the same base (previously it might have used a relative /api path)
+export async function createSchema(payload) {
+  const res = await fetch(`${SCHEMAS_BASE}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`Failed to create schema (HTTP ${res.status})`);
+  return res.json(); // { schema_id, ... }
 }
