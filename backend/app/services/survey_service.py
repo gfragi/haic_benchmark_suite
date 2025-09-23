@@ -1,3 +1,4 @@
+#survey_service.py
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import text, func
@@ -6,8 +7,14 @@ from app.models.survey import Survey
 import uuid
 from math import sqrt
 from statistics import mean, pstdev
+from app.services.survey_schema_service import fetch_schema_by_id, validate_answers_against_schema
+
 
 def create_survey(db: Session, survey_data: SurveyCreate):
+    if survey_data.schema_id:
+        schema = fetch_schema_by_id(db, survey_data.schema_id)
+        validate_answers_against_schema(schema, survey_data.domain_specific or {})
+        
     db_survey = Survey(
         survey_id=uuid.UUID(survey_data.survey_id),
         user_id=survey_data.user_id,
@@ -15,6 +22,7 @@ def create_survey(db: Session, survey_data: SurveyCreate):
         pilot_tag=survey_data.pilot_tag,
         app_version=survey_data.app_version,
         ai_model_version=survey_data.ai_model_version,
+        schema_id=uuid.UUID(survey_data.schema_id) if survey_data.schema_id else None,
         tam_sus_responses=survey_data.tam_sus_responses.dict(),
         ethics_responses=survey_data.ethics_responses.dict(),
         domain_specific=survey_data.domain_specific

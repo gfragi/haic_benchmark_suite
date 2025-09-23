@@ -17,6 +17,8 @@ const options = [
   "SmartEnergy",
   "Healthcare",
   "Manufacturing",
+  "BenchmarkingSuite",
+  "ExplainerDashboard",
 ];
 
 const emit = defineEmits(["update:pilotTag"]);

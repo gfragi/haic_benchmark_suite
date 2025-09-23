@@ -185,11 +185,11 @@
 
 <script setup>
 import { ref, computed } from "vue";
-
 const pilotTagFromUrl = !!getParam("pilot_tag");
-const pilotTag = ref(getParam("pilot_tag") || "");
-const appVersion = ref(getParam("app_version") || "");
-const aiModelVersion = ref(getParam("ai_model_version") || "");
+const pilotTag = ref(getParam("pilot_tag") || sessionStorage.getItem("pilot_tag") || "");
+const appVersion = ref(getParam("app_version") || sessionStorage.getItem("app_version") || "");
+const aiModelVersion = ref(getParam("ai_model_version") || sessionStorage.getItem("ai_model_version") || "");
+const userId = ref(getParam("user_id") || "anonymous");
 
 const formRef = ref(null);
 const formValid = ref(false);
@@ -197,6 +197,13 @@ const consent = ref(false);
 const submitting = ref(false);
 const submitOk = ref(false);
 const submitError = ref("");
+
+// persist context fields during the session
+watch([pilotTag, appVersion, aiModelVersion], ([p, a, m]) => {
+  sessionStorage.setItem("pilot_tag", p || "");
+  sessionStorage.setItem("app_version", a || "");
+  sessionStorage.setItem("ai_model_version", m || "");
+});
 
 const sus = ref({
   sus_q1: 0,
@@ -297,24 +304,56 @@ const allAnswered = computed(() => {
   return susOk && ethOk;
 });
 
+// SUS scoring (Brooke 1996): odd items (1,3,5,7,9): x-1; even items (2,4,6,8,10): 5-x; sum*2.5
+const susScore = computed(() => {
+  const v = sus.value;
+  const odd = (v.sus_q1-1) + (v.sus_q3-1) + (v.sus_q5-1) + (v.sus_q7-1) + (v.sus_q9-1);
+  const even = (5 - v.sus_q2) + (5 - v.sus_q4) + (5 - v.sus_q6) + (5 - v.sus_q8) + (5 - v.sus_q10);
+  const raw = odd + even;
+  const score = raw * 2.5;
+  return Number.isFinite(score) ? Math.max(0, Math.min(100, score)) : 0;
+});
+
+const ethicsAvg = computed(() => {
+  const vals = Object.values(ethics.value).filter((x) => x >= 1);
+  if (!vals.length) return 0;
+  return +(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2);
+});
+function sanitizeEndpoint(url) {
+  const envUrl = (url || "").replace(/\/+$/, "");
+  if (!/^https?:\/\//i.test(envUrl)) return envUrl; // allow relative for dev
+  try {
+    const u = new URL(envUrl);
+    return u.toString().replace(/\/+$/, "");
+  } catch {
+    return envUrl;
+  }
+}
+
+
 function buildPayload() {
   const domain_specific = {};
   for (const item of domainItems.value) {
     if (item.label?.trim())
       domain_specific[item.label.trim()] = Number(item.value) || 0;
   }
-  return {
-    survey_id: uuidv4(),
-    user_id: "anonymous",
-    timestamp: new Date().toISOString(),
-    pilot_tag: pilotTag.value,
-    app_version: appVersion.value || "unknown",
-    ai_model_version: aiModelVersion.value || "unknown",
-    tam_sus_responses: { ...sus.value },
-    ethics_responses: { ...ethics.value },
-    domain_specific,
-  };
-}
+   return {
+     survey_id: uuidv4(),
+    user_id: userId.value || "anonymous",
+     timestamp: new Date().toISOString(),
+     pilot_tag: pilotTag.value,
+     app_version: appVersion.value || "unknown",
+     ai_model_version: aiModelVersion.value || "unknown",
+     tam_sus_responses: { ...sus.value },
+     ethics_responses: { ...ethics.value },
+     domain_specific,
+     // optional client-side convenience (server can ignore)
+     _client_summaries: {
+       sus_score: susScore.value,
+       ethics_avg: ethicsAvg.value,
+     },
+   };
+ }
 
 async function onSubmit() {
   submitError.value = "";
@@ -337,10 +376,11 @@ async function onSubmit() {
 
   submitting.value = true;
   try {
-    const endpoint =
+    const endpoint = sanitizeEndpoint(
       process.env?.VUE_APP_SURVEY_ENDPOINT ||
       import.meta?.env?.VITE_SURVEY_ENDPOINT ||
-      "http://localhost:8000/api/v1/survey";
+        "http://localhost:8000/api/v1/survey"
+    );
     const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
