@@ -186,102 +186,145 @@
       </v-row>
 
       <!-- Share dialog (Build Link pop-out) -->
-      <v-dialog v-model="shareOpen" max-width="640">
+      <v-dialog v-model="shareOpen" max-width="860">
         <v-card>
-          <v-card-title>Public Survey Link</v-card-title>
-          <v-card-text>
-            <div class="mb-2">
-              Share this link with pilot users to answer directly:
-            </div>
+          <v-card-title>Public Survey</v-card-title>
 
-            <v-row class="mb-2">
-              <v-col cols="12" md="6">
-                <v-text-field
-                  label="Pilot"
-                  :model-value="selectedPilotTag || '—'"
-                  prepend-inner-icon="mdi-tag-outline"
-                  readonly
-                />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  label="App version (prefill)"
-                  v-model="selectedAppVersion"
-                  prepend-inner-icon="mdi-application-cog"
-                />
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  label="AI model version (prefill)"
-                  v-model="selectedModelVersion"
-                  prepend-inner-icon="mdi-robot-outline"
-                />
-              </v-col>
-            </v-row>
+          <!-- Tabs -->
+          <v-tabs v-model="shareTab" grow>
+            <v-tab value="link">Link</v-tab>
+            <v-tab value="schema">Question Set</v-tab>
+          </v-tabs>
 
-            <v-text-field
-              :model-value="surveyHref"
-              readonly
-              prepend-inner-icon="mdi-link-variant"
-              append-inner-icon="mdi-content-copy"
-              @click:append-inner="copy(surveyHref)"
-            />
-
-            <div
-              class="my-4"
-              style="display: flex; gap: 16px; align-items: center"
-            >
-              <v-img
-                :src="qrDataUrl"
-                width="140"
-                height="140"
-                alt="Survey QR"
-                class="rounded"
-              />
-              <div class="text-body-2">
-                Scan to open the survey on mobile.
-                <div class="mt-2">
-                  <v-btn size="small" variant="outlined" @click="downloadQR">
-                    <v-icon start>mdi-download</v-icon> Download QR
-                  </v-btn>
+          <v-window v-model="shareTab">
+            <!-- Tab A: existing Link UI (unchanged, just wrapped) -->
+            <v-window-item value="link">
+              <v-card-text>
+                <div class="mb-2">
+                  Share this link with pilot users to answer directly:
                 </div>
-              </div>
-            </div>
-            <div class="text-caption text-medium-emphasis mt-4 mb-1">
-              Question set
-            </div>
-            <v-switch
-              v-model="autoAttachLatest"
-              color="primary"
-              inset
-              label="Auto-attach latest for selected pilot"
-            />
-            <v-text-field
-              v-model="selectedSchemaId"
-              label="schema_id (optional)"
-              :hint="
-                autoAttachLatest
-                  ? 'Auto-filled when available; you can override.'
-                  : 'Paste a schema_id to pin a specific version.'
-              "
-              persistent-hint
-              prepend-inner-icon="mdi-identifier"
-            />
-            <v-alert type="info" variant="tonal">
-              You can also append <code>&amp;app_version=...</code> and
-              <code>&amp;ai_model_version=...</code> to prefill metadata.
-            </v-alert>
-          </v-card-text>
+
+                <v-row class="mb-2">
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="Pilot"
+                      :model-value="selectedPilotTag || '—'"
+                      prepend-inner-icon="mdi-tag-outline"
+                      readonly
+                    />
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="App version (prefill)"
+                      v-model="selectedAppVersion"
+                      prepend-inner-icon="mdi-application-cog"
+                    />
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="AI model version (prefill)"
+                      v-model="selectedModelVersion"
+                      prepend-inner-icon="mdi-robot-outline"
+                    />
+                  </v-col>
+                </v-row>
+
+                <v-text-field
+                  :model-value="surveyHref"
+                  readonly
+                  prepend-inner-icon="mdi-link-variant"
+                  append-inner-icon="mdi-content-copy"
+                  @click:append-inner="copy(surveyHref)"
+                />
+
+                <div
+                  class="my-4"
+                  style="display: flex; gap: 16px; align-items: center"
+                >
+                  <v-img
+                    :src="qrDataUrl"
+                    width="140"
+                    height="140"
+                    alt="Survey QR"
+                    class="rounded"
+                  />
+                  <div class="text-body-2">
+                    Scan to open the survey on mobile.
+                    <div class="mt-2">
+                      <v-btn
+                        size="small"
+                        variant="outlined"
+                        @click="downloadQR"
+                      >
+                        <v-icon start>mdi-download</v-icon> Download QR
+                      </v-btn>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-caption text-medium-emphasis mt-4 mb-1">
+                  Question set
+                </div>
+                <v-switch
+                  v-model="autoAttachLatest"
+                  color="primary"
+                  inset
+                  label="Auto-attach latest for selected pilot"
+                />
+                <v-text-field
+                  v-model="selectedSchemaId"
+                  label="schema_id (optional)"
+                  :hint="
+                    autoAttachLatest
+                      ? 'Auto-filled when available; you can override.'
+                      : 'Paste a schema_id to pin a specific version.'
+                  "
+                  persistent-hint
+                  prepend-inner-icon="mdi-identifier"
+                />
+                <v-alert type="info" variant="tonal">
+                  You can also append <code>&amp;app_version=...</code> and
+                  <code>&amp;ai_model_version=...</code> to prefill metadata.
+                </v-alert>
+              </v-card-text>
+            </v-window-item>
+
+            <!-- Tab B: inline Question Set editor -->
+            <v-window-item value="schema">
+              <v-card-text>
+                <div style="max-height: 60vh; overflow: auto">
+                  <QuestionSetEditor
+                    :pilot-tag="selectedPilotTag"
+                    @created="onSchemaCreated"
+                    @error="onSchemaError"
+                  />
+                </div>
+              </v-card-text>
+            </v-window-item>
+          </v-window>
+
           <v-card-actions>
             <v-spacer />
-            <v-btn variant="text" :href="surveyHref" target="_blank"
+            <!-- Only show Open/Copy when on the Link tab -->
+            <v-btn
+              v-if="shareTab === 'link'"
+              variant="text"
+              :href="surveyHref"
+              target="_blank"
               >Open</v-btn
             >
-            <v-btn variant="flat" color="primary" @click="copy(surveyHref)"
+            <v-btn
+              v-if="shareTab === 'link'"
+              variant="flat"
+              color="primary"
+              @click="copy(surveyHref)"
               >Copy</v-btn
             >
             <v-btn variant="text" @click="shareOpen = false">Close</v-btn>
           </v-card-actions>
+          <v-snackbar v-model="snack.show" :color="snack.color" timeout="3000">
+            {{ snack.text }}
+          </v-snackbar>
         </v-card>
       </v-dialog>
     </v-container>
@@ -321,30 +364,31 @@ const surveyHref = computed(() => {
     pilot_tag: selectedPilotTag.value || undefined,
     app_version: selectedAppVersion.value || undefined,
     ai_model_version: selectedModelVersion.value || undefined,
-    schema_id: (selectedSchemaId.value || "").trim() || undefined, // NEW
+    schema_id: (selectedSchemaId.value || "").trim() || undefined,
   };
   const href = router.resolve({ name: "PublicSurvey", query }).href;
   return `${origin}${href}`;
 });
 
-// const surveyHref = computed(() => {
-//   const href = router.resolve({
-//     name: "PublicSurvey",
-//     query: {
-//       pilot_tag: selectedPilotTag.value || undefined,
-//       app_version: selectedAppVersion.value || undefined,
-//       ai_model_version: selectedModelVersion.value || undefined,
-//     },
-//   }).href;
+import QuestionSetEditor from "@/components/QuestionSetEditor.vue"; // new
+const shareTab = ref("link");
+const snack = ref({ show: false, text: "", color: "success" });
 
-//   const hash = new URLSearchParams({
-//     pilot_tag: selectedPilotTag.value || "",
-//     app_version: selectedAppVersion.value || "",
-//     ai_model_version: selectedModelVersion.value || "",
-//   }).toString();
-
-//   return `${window.location.origin}${href}#${hash}`;
-// });
+function onSchemaCreated(s) {
+  selectedSchemaId.value = s?.schema_id || "";
+  shareTab.value = "link";
+  snack.value = {
+    show: true,
+    text: `Question set saved (schema_id: ${selectedSchemaId.value.slice(
+      0,
+      8
+    )}…)`,
+    color: "success",
+  };
+  setTimeout(() => {
+    shareOpen.value = false;
+  }, 300);
+}
 
 const totalSurveys = computed(() =>
   Object.values(aggregatedData.value).reduce(
@@ -352,6 +396,14 @@ const totalSurveys = computed(() =>
     0
   )
 );
+
+function onSchemaError(e) {
+  snack.value = {
+    show: true,
+    text: `Save failed: ${e?.message || e}`,
+    color: "error",
+  };
+}
 
 const chartTitle = computed(() => {
   if (comparisonMode.value === "versions") {
@@ -435,27 +487,6 @@ function refresh() {
 function toggleChartType() {
   isLineChart.value = !isLineChart.value;
 }
-
-// function slug(s) {
-//   return String(s || "")
-//     .trim()
-//     .replace(/\s+/g, "-") // spaces -> dashes
-//     .replace(/[^\w-]/g, ""); // strip odd chars
-// }
-
-// const publicLink = computed(() => {
-//   const pilot = slug(selectedPilotTag.value);
-//   const base = pilot
-//     ? `${window.location.origin}/survey/:pilot_tag?${encodeURIComponent(pilot)}`
-//     : `${window.location.origin}/survey`;
-//   const params = new URLSearchParams();
-//   if (selectedAppVersion.value)
-//     params.set("app_version", selectedAppVersion.value);
-//   if (selectedModelVersion.value)
-//     params.set("ai_model_version", selectedModelVersion.value);
-//   const qs = params.toString();
-//   return qs ? `${base}?${qs}` : base;
-// });
 
 watch(surveyHref, async (url) => {
   try {
