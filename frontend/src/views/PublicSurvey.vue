@@ -108,19 +108,145 @@
         <v-divider class="my-6" />
 
         <!-- Domain-specific (optional, dynamic) -->
+        <!-- Domain-specific (optional) -->
         <div class="d-flex align-center mb-2">
-          <div class="text-h6">Domain-specific (optional)</div>
+          <div class="text-h6">
+            Domain-specific
+            <span v-if="domainSchema?.name" class="text-caption"
+              >· {{ domainSchema.name }}</span
+            >
+          </div>
           <v-spacer />
-          <v-btn
-            size="small"
-            variant="text"
-            prepend-icon="mdi-plus"
-            @click="addDomainItem"
-            >Add item</v-btn
+          <v-chip v-if="schemaId" size="small" class="ml-2" label
+            >schema_id={{ schemaId }}</v-chip
           >
         </div>
-        <div v-if="domainItems.length === 0" class="text-body-2 mb-2">
-          You can add custom items relevant to your pilot.
+
+        <v-alert
+          v-if="domainError"
+          type="warning"
+          variant="tonal"
+          class="mb-3"
+          >{{ domainError }}</v-alert
+        >
+
+        <!-- A) Schema-driven rendering -->
+        <div v-if="domainSchema && domainSchema.questions?.length">
+          <div
+            v-for="(q, i) in domainSchema.questions"
+            :key="q.id"
+            class="mb-4"
+          >
+            <div class="mb-2">
+              <strong>{{ i + 1 }}.</strong>
+              <span>{{ q.label }}</span>
+              <span v-if="q.required" class="text-error ml-1">*</span>
+              <div v-if="q.group" class="text-caption text-medium-emphasis">
+                {{ q.group }}
+              </div>
+            </div>
+
+            <!-- Likert -->
+            <div v-if="q.type === 'likert'">
+              <div class="d-flex align-center gap-2">
+                <span class="text-caption">{{
+                  q.scale?.min_label || "1"
+                }}</span>
+                <v-btn-toggle
+                  v-model="domainAnswers[q.id]"
+                  divided
+                  mandatory
+                  class="mx-2"
+                >
+                  <v-btn v-for="n in q.scale?.max || 5" :key="n" :value="n">{{
+                    n
+                  }}</v-btn>
+                </v-btn-toggle>
+                <span class="text-caption">{{
+                  q.scale?.max_label || "5"
+                }}</span>
+              </div>
+            </div>
+
+            <!-- Single choice -->
+            <v-select
+              v-else-if="q.type === 'single'"
+              v-model="domainAnswers[q.id]"
+              :items="q.options || []"
+              label="Select"
+              :rules="q.required ? [(v) => !!v || 'Required'] : []"
+              hide-details="auto"
+            />
+
+            <!-- Multi choice -->
+            <v-select
+              v-else-if="q.type === 'multi'"
+              v-model="domainAnswers[q.id]"
+              :items="q.options || []"
+              label="Select one or more"
+              multiple
+              chips
+              :rules="
+                q.required ? [(v) => !!(v && v.length) || 'Required'] : []
+              "
+              hide-details="auto"
+            />
+
+            <!-- Number -->
+            <v-text-field
+              v-else-if="q.type === 'number'"
+              v-model.number="domainAnswers[q.id]"
+              type="number"
+              hide-details="auto"
+              :rules="q.required ? [(v) => v !== null || 'Required'] : []"
+            />
+
+            <!-- Boolean -->
+            <v-switch
+              v-else-if="q.type === 'boolean'"
+              v-model="domainAnswers[q.id]"
+              color="primary"
+              hide-details
+              inset
+            />
+
+            <!-- Text (default) -->
+            <v-text-field
+              v-else
+              v-model="domainAnswers[q.id]"
+              label="Your answer"
+              :rules="q.required ? [(v) => !!v || 'Required'] : []"
+              hide-details="auto"
+            />
+
+            <v-divider class="mt-3" />
+          </div>
+        </div>
+
+        <!-- B) Fallback to your ad-hoc builder when no schema exists -->
+        <div v-else>
+          <div class="d-flex align-center mb-2">
+            <div class="text-body-2">
+              No predefined questions for this link.
+            </div>
+            <v-spacer />
+            <v-btn
+              size="small"
+              variant="text"
+              prepend-icon="mdi-plus"
+              @click="addDomainItem"
+              >Add item</v-btn
+            >
+          </div>
+          <div
+            v-if="
+              (!domainSchema || !domainSchema.questions?.length) &&
+              domainItems.length === 0
+            "
+            class="text-body-2 mb-2"
+          >
+            You can add custom items relevant to your pilot.
+          </div>
         </div>
 
         <v-row v-for="(item, i) in domainItems" :key="item.id" class="mb-2">
@@ -184,12 +310,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-
-const pilotTagFromUrl = !!getParam("pilot_tag");
-const pilotTag = ref(getParam("pilot_tag") || "");
-const appVersion = ref(getParam("app_version") || "");
-const aiModelVersion = ref(getParam("ai_model_version") || "");
+const userId = ref(getParam("user_id") || "anonymous");
 
 const formRef = ref(null);
 const formValid = ref(false);
@@ -197,6 +318,59 @@ const consent = ref(false);
 const submitting = ref(false);
 const submitOk = ref(false);
 const submitError = ref("");
+
+import { ref, computed, onMounted, watch } from "vue";
+const pilotTagFromUrl = !!getParam("pilot_tag");
+const pilotTag = ref(
+  getParam("pilot_tag") || sessionStorage.getItem("pilot_tag") || ""
+);
+const appVersion = ref(
+  getParam("app_version") || sessionStorage.getItem("app_version") || ""
+);
+const aiModelVersion = ref(
+  getParam("ai_model_version") ||
+    sessionStorage.getItem("ai_model_version") ||
+    ""
+);
+
+import {
+  fetchSchemaById,
+  fetchLatestSchemaForPilot,
+} from "@/services/surveySchemas";
+
+const schemaId = ref(getParam("schema_id") || "");
+const domainSchema = ref(null); // { schema_id, questions: [...] }
+const domainAnswers = ref({}); // keyed by question.id when schema-driven
+const domainError = ref("");
+
+onMounted(async () => {
+  try {
+    if (schemaId.value) {
+      domainSchema.value = await fetchSchemaById(schemaId.value);
+    } else if (pilotTag.value) {
+      const latest = await fetchLatestSchemaForPilot(pilotTag.value);
+      if (latest) domainSchema.value = latest; // optional auto-load
+    }
+
+    // initialize answer model for required questions
+    if (domainSchema.value?.questions?.length) {
+      for (const q of domainSchema.value.questions) {
+        if (q.type === "multi") domainAnswers.value[q.id] = [];
+        else if (q.type === "boolean") domainAnswers.value[q.id] = false;
+        else domainAnswers.value[q.id] = null;
+      }
+    }
+  } catch (e) {
+    domainError.value = e?.message || "Failed to load extra questions.";
+  }
+});
+
+// persist context fields during the session
+watch([pilotTag, appVersion, aiModelVersion], ([p, a, m]) => {
+  sessionStorage.setItem("pilot_tag", p || "");
+  sessionStorage.setItem("app_version", a || "");
+  sessionStorage.setItem("ai_model_version", m || "");
+});
 
 const sus = ref({
   sus_q1: 0,
@@ -279,40 +453,97 @@ const ethicsQuestions = [
   { key: "q_trust", label: "I trust the system’s recommendations." },
 ];
 
-function uuidv4() {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
-    (
-      c ^
-      ((crypto.getRandomValues
-        ? crypto.getRandomValues(new Uint8Array(1))[0]
-        : (Math.random() * 256) | 0) &
-        (15 >> (c / 4)))
-    ).toString(16)
-  );
-}
-
 const allAnswered = computed(() => {
   const susOk = Object.values(sus.value).every((v) => v >= 1 && v <= 5);
   const ethOk = Object.values(ethics.value).every((v) => v >= 1 && v <= 5);
   return susOk && ethOk;
 });
 
+// SUS scoring (Brooke 1996): odd items (1,3,5,7,9): x-1; even items (2,4,6,8,10): 5-x; sum*2.5
+const susScore = computed(() => {
+  const v = sus.value;
+  const odd =
+    v.sus_q1 -
+    1 +
+    (v.sus_q3 - 1) +
+    (v.sus_q5 - 1) +
+    (v.sus_q7 - 1) +
+    (v.sus_q9 - 1);
+  const even =
+    5 -
+    v.sus_q2 +
+    (5 - v.sus_q4) +
+    (5 - v.sus_q6) +
+    (5 - v.sus_q8) +
+    (5 - v.sus_q10);
+  const raw = odd + even;
+  const score = raw * 2.5;
+  return Number.isFinite(score) ? Math.max(0, Math.min(100, score)) : 0;
+});
+
+const ethicsAvg = computed(() => {
+  const vals = Object.values(ethics.value).filter((x) => x >= 1);
+  if (!vals.length) return 0;
+  return +(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2);
+});
+function sanitizeEndpoint(url) {
+  const envUrl = (url || "").replace(/\/+$/, "");
+  if (!/^https?:\/\//i.test(envUrl)) return envUrl; // allow relative for dev
+  try {
+    const u = new URL(envUrl);
+    return u.toString().replace(/\/+$/, "");
+  } catch {
+    return envUrl;
+  }
+}
+
 function buildPayload() {
+  // A) schema-driven case
+  if (domainSchema.value?.questions?.length) {
+    // Validate required
+    for (const q of domainSchema.value.questions) {
+      if (q.required) {
+        const v = domainAnswers.value[q.id];
+        const ok =
+          (q.type === "multi" && Array.isArray(v) && v.length > 0) ||
+          (q.type !== "multi" && v !== null && v !== undefined && v !== "");
+        if (!ok) throw new Error(`Please answer: ${q.label}`);
+      }
+    }
+    return {
+      user_id: userId.value || "anonymous",
+      pilot_tag: pilotTag.value,
+      app_version: appVersion.value || "unknown",
+      ai_model_version: aiModelVersion.value || "unknown",
+      schema_id: domainSchema.value.schema_id, // NEW
+      tam_sus_responses: { ...sus.value },
+      ethics_responses: { ...ethics.value },
+      domain_specific: { ...domainAnswers.value }, // keyed by q.id
+      _client_summaries: {
+        sus_score: susScore.value,
+        ethics_avg: ethicsAvg.value,
+      },
+    };
+  }
+
+  // B) ad-hoc fallback (your current behavior)
   const domain_specific = {};
   for (const item of domainItems.value) {
-    if (item.label?.trim())
-      domain_specific[item.label.trim()] = Number(item.value) || 0;
+    if (!item.label) continue;
+    domain_specific[item.id || item.label] = Number(item.value) || 0;
   }
   return {
-    survey_id: uuidv4(),
-    user_id: "anonymous",
-    timestamp: new Date().toISOString(),
+    user_id: userId.value || "anonymous",
     pilot_tag: pilotTag.value,
     app_version: appVersion.value || "unknown",
     ai_model_version: aiModelVersion.value || "unknown",
     tam_sus_responses: { ...sus.value },
     ethics_responses: { ...ethics.value },
     domain_specific,
+    _client_summaries: {
+      sus_score: susScore.value,
+      ethics_avg: ethicsAvg.value,
+    },
   };
 }
 
@@ -337,10 +568,11 @@ async function onSubmit() {
 
   submitting.value = true;
   try {
-    const endpoint =
+    const endpoint = sanitizeEndpoint(
       process.env?.VUE_APP_SURVEY_ENDPOINT ||
-      import.meta?.env?.VITE_SURVEY_ENDPOINT ||
-      "http://localhost:8000/api/v1/survey";
+        import.meta?.env?.VITE_SURVEY_ENDPOINT ||
+        "http://localhost:8000/api/v1/survey"
+    );
     const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
