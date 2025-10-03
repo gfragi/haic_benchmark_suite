@@ -21,6 +21,8 @@ from app.services.metrics_adapter import compute_from_log
 from app.utils.minio_utils import get_minio_client
 
 from app.utils.minio_utils import put_json
+import re
+from collections import defaultdict
 
 
 router = APIRouter()
@@ -28,7 +30,11 @@ logger = logging.getLogger(__name__)
 MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 minio_client = get_minio_client()
 
-load_dotenv()
+def _sanitize(s: str) -> str:
+    if s is None:
+        return "Unknown"
+    s = re.sub(r"[^A-Za-z0-9._-]+", "_", str(s)).strip("_")
+    return s or "Unknown"
 
 
 @router.post("/upload")
@@ -37,14 +43,18 @@ async def upload_log(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    # 1) Read bytes ONCE
     raw = await file.read()
+
+    # Parse JSON
     try:
         payload = json.loads(raw.decode("utf-8"))
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=400, detail=f"Invalid JSON file: {e.msg}")
 
-    # 2) Compute derived (support object or list of objects)
+    # Unwrap generator wrapper: {count, file_path, logs: [...]}
+    if isinstance(payload, dict) and isinstance(payload.get("logs"), list):
+        payload = payload["logs"]
+
     def _mean_map(dicts, key):
         from statistics import mean
         items = [d.get(key) for d in dicts if isinstance(d, dict)]
@@ -55,26 +65,12 @@ async def upload_log(
             out[k] = mean(vals) if vals else None
         return out
 
-    if isinstance(payload, list):
-        derived_list = [compute_from_log(p) for p in payload if isinstance(p, dict)]
-        derived = {
-            "by_metric": _mean_map(derived_list, "by_metric"),
-            "by_pillar": _mean_map(derived_list, "by_pillar"),
-            "interaction": _mean_map(derived_list, "interaction"),
-        }
-    elif isinstance(payload, dict):
-        derived = compute_from_log(payload)
-    else:
-        raise HTTPException(status_code=400, detail="JSON must be an object or an array of objects")
-
-    # 3) Build object names
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     stem = (file.filename.rsplit(".", 1)[0] if file.filename and "." in file.filename
             else (file.filename or f"log-{uuid.uuid4().hex}"))
-    orig_name = f"{configuration_id}/uploads/{stem}.{ts}.json"
-    derived_name = f"{configuration_id}/uploads/{stem}.{ts}.derived.json"
 
-    # 4) Put both objects to MinIO (no reuse of exhausted stream)
+    # Store original upload once
+    orig_name = f"{configuration_id}/uploads/{stem}.{ts}.json"
     try:
         minio_client.put_object(
             bucket_name=MINIO_BUCKET,
@@ -83,17 +79,52 @@ async def upload_log(
             length=len(raw),
             content_type="application/json",
         )
-        enc = json.dumps(derived, ensure_ascii=False, indent=2).encode("utf-8")
-        minio_client.put_object(
-            bucket_name=MINIO_BUCKET,
-            object_name=derived_name,
-            data=io.BytesIO(enc),
-            length=len(enc),
-            content_type="application/json",
-        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"MinIO upload failed: {e}")
-    
+
+    results = {"original": orig_name, "derived_by_version": {}}
+
+    def _write_derived(ver: str, derived: dict):
+        derived_name = f"{configuration_id}/uploads/{stem}.{ts}.v{ver}.derived.json"
+        enc = json.dumps(derived, ensure_ascii=False, indent=2).encode("utf-8")
+        minio_client.put_object(
+            MINIO_BUCKET, derived_name, io.BytesIO(enc), len(enc),
+            content_type="application/json"
+        )
+        results["derived_by_version"][ver] = {"path": derived_name, "summary": derived}
+        return derived_name
+
+    try:
+        if isinstance(payload, dict):
+            # Single session
+            ver = _sanitize(payload.get("ai_model_version") or "Unknown")
+            derived = compute_from_log(payload)
+            _write_derived(ver, derived)
+
+        elif isinstance(payload, list):
+            # Group by ai_model_version
+            groups = defaultdict(list)
+            for p in payload:
+                if isinstance(p, dict):
+                    ver = _sanitize(p.get("ai_model_version") or "Unknown")
+                    groups[ver].append(p)
+
+            for ver, logs in groups.items():
+                derived_list = [compute_from_log(p) for p in logs]
+                derived = {
+                    "by_metric": _mean_map(derived_list, "by_metric"),
+                    "by_pillar": _mean_map(derived_list, "by_pillar"),
+                    "interaction": _mean_map(derived_list, "interaction"),
+                    "count": len(logs),
+                    "ai_model_version": ver,
+                }
+                _write_derived(ver, derived)
+        else:
+            raise HTTPException(status_code=400, detail="JSON must be an object or an array of objects")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Processing failed: {e}")
+
+    # Update the config to point at the original upload (evaluation reads this)
     config = db.query(EvaluationConfig).get(configuration_id)
     if not config:
         raise HTTPException(status_code=404, detail="Evaluation configuration not found.")
@@ -103,9 +134,8 @@ async def upload_log(
     db.refresh(config)
 
     return {
-        "detail": f"Uploaded and processed log for configuration {configuration_id}.",
-        "minio_paths": {"original": orig_name, "derived": derived_name},
-        "derived": derived,
+        "detail": f"Uploaded and processed log(s) for configuration {configuration_id}.",
+        "minio_paths": results,
     }
 
 
