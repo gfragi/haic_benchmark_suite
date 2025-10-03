@@ -1,0 +1,34 @@
+{
+  "sim_id": "pilot_se_v0",
+  "environment": {
+    "id": "SE_ENV",
+    "class": "base.Environment",
+    "attributes": { "task": "grid_security", "domain": "energy" }
+  },
+  "agents": [
+    { "id": "OP",  "class": "base.Agent", "model": "human",
+      "affordances": ["view","inspect","accept","reject","annotate"] },
+    { "id": "FAI", "class": "base.Agent", "model": "ai",
+      "affordances": ["forecast"] },
+    { "id": "SAI", "class": "base.Agent", "model": "ai",
+      "affordances": ["classify","explain"] }
+  ],
+  "objects": [
+    { "id": "Twin", "class": "base.Object",
+      "attributes": {"kind":"digital_twin"},
+      "affordances": ["simulate"] },
+    { "id": "GS", "class": "base.Object",
+      "attributes": {"kind":"grid_state"},
+      "affordances": ["forecast","classify","view","inspect"] }
+  ],
+  "script": [
+    { "t": 1, "agent": "FAI", "action": "forecast", "object": "GS",
+      "effect": {"prob_secure": 0.68, "xai": {"top_lines":["L12","L07"]}},
+      "latency_ms": 120 },
+    { "t": 2, "agent": "SAI", "action": "classify", "object": "GS",
+      "effect": {"label": "secure", "prob": 0.68}, "latency_ms": 40 },
+    { "t": 3, "agent": "OP", "action": "inspect", "object": "GS", "latency_ms": 900 },
+    { "t": 4, "agent": "OP", "action": "accept", "object": "GS",
+      "effect": {"note": "No N-1 violation observed"}, "correct": true }
+  ]
+}

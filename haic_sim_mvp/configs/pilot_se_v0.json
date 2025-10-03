@@ -1,0 +1,71 @@
+{
+  "sim_id": "pilot_se_v0",
+  "environment": {
+    "id": "SE_ENV",
+    "class": "base.Environment",
+    "attributes": {
+      "task": "grid_security",
+      "domain": "energy"
+    }
+  },
+  "agents": [
+    {
+      "id": "OP",
+      "class": "base.Agent",
+      "model": "human",
+      "affordances": [
+        "view",
+        "inspect",
+        "accept",
+        "reject",
+        "annotate"
+      ],
+      "attributes": {}
+    },
+    {
+      "id": "FAI",
+      "class": "base.Agent",
+      "model": "ai",
+      "affordances": [
+        "forecast"
+      ],
+      "attributes": {}
+    },
+    {
+      "id": "SAI",
+      "class": "base.Agent",
+      "model": "ai",
+      "affordances": [
+        "classify",
+        "explain"
+      ],
+      "attributes": {}
+    }
+  ],
+  "objects": [
+    {
+      "id": "Twin",
+      "class": "base.Object",
+      "affordances": [
+        "simulate"
+      ],
+      "attributes": {
+        "kind": "digital_twin"
+      }
+    },
+    {
+      "id": "GS",
+      "class": "base.Object",
+      "affordances": [
+        "forecast",
+        "classify",
+        "view",
+        "inspect"
+      ],
+      "attributes": {
+        "kind": "grid_state"
+      }
+    }
+  ],
+  "script": []
+}

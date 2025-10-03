@@ -13,6 +13,7 @@ from app.utils.minio_utils import get_minio_client
 from app.services.metrics_adapter import compute_from_log
 import traceback
 from typing import Iterable, List, Dict, Any
+from collections import defaultdict
 
 
 load_dotenv()
@@ -71,14 +72,12 @@ def _iter_entries(payload: Any) -> List[dict]:
 
     return []
 
-def split_logs_by_ai_model_version(logs_data: list):
-    logs_by_ai_version = {}
+def split_logs_by_ai_model_version(logs_data: list[dict]) -> dict[str, list[dict]]:
+    groups = defaultdict(list)
     for entry in logs_data:
-        ai_model_version = entry.get("ai_model_version")
-        if not ai_model_version:
-            ai_model_version = "Unknown"
-        logs_by_ai_version.setdefault(ai_model_version, []).append(entry)
-    return logs_by_ai_version
+        if isinstance(entry, dict):
+            groups[_ai_version(entry)].append(entry)  # <-- uses your helper
+    return groups
 
 
 def _mean_map(dicts: list[dict]) -> dict:
@@ -131,16 +130,31 @@ def run_evaluation(config_id: int):
                 obj.release_conn()
             except Exception:
                 pass
+        try:
+            text = raw_bytes.decode("utf-8")
+        except Exception as e:
+            raise ValueError(f"Object at '{config.minio_path}' is not valid UTF-8: {e}")
 
         try:
-            logs_data = json.loads(raw_bytes.decode("utf-8"))
-        except Exception as e:
-            raise ValueError(f"Object at '{config.minio_path}' is not valid JSON: {e}")
+            logs_data = json.loads(text)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Object at '{config.minio_path}' is not valid JSON: {e.msg}")
+
+        # --- unwrap common wrappers AFTER successful parse ---
+        # Supports: {logs:[...]}, {sessions:[...]}, {entries:[...]}
+        if isinstance(logs_data, dict):
+            for key in ("logs", "sessions", "entries"):
+                if isinstance(logs_data.get(key), list):
+                    logs_data = logs_data[key]
+                    break
+
+        # --- normalize to a list of objects ---
         if isinstance(logs_data, dict):
             logs_data = [logs_data]
         if not isinstance(logs_data, list):
-            raise ValueError("Uploaded log must be a JSON object or a list of objects")
+            raise ValueError("Uploaded log must be a JSON object or a list/array of objects")
 
+        # Flatten / validate entries
         entries = _iter_entries(logs_data)
         if not entries:
             raise ValueError("Uploaded log contains no valid session entries.")

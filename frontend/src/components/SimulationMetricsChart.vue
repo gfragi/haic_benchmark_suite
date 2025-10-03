@@ -1,57 +1,71 @@
 <template>
-  <Bar :data="chartData" :options="chartOptions" />
+  <div v-if="pairs.length" class="w-100">
+    <canvas ref="canvas"></canvas>
+  </div>
+  <v-alert v-else type="info" variant="tonal">No metrics to display.</v-alert>
 </template>
 
 <script setup>
-import { Bar } from "vue-chartjs";
+import { onMounted, onBeforeUnmount, ref, watch, computed } from "vue";
 import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
+  Chart,
+  BarController,
   BarElement,
   CategoryScale,
   LinearScale,
-} from "chart.js";
-
-// Register Chart.js components
-ChartJS.register(
-  Title,
   Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale
-);
+} from "chart.js";
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip);
 
-// Props
 const props = defineProps({
-  metrics: {
-    type: Object,
-    required: true,
-  },
+  metrics: { type: Object, default: () => ({}) },
 });
 
-// Create chart data from metrics
-const chartData = {
-  labels: Object.keys(props.metrics),
-  datasets: [
-    {
-      label: "Simulation Metrics",
-      backgroundColor: "#42A5F5",
-      data: Object.values(props.metrics),
-    },
-  ],
-};
+const canvas = ref(null);
+let chart;
 
-const chartOptions = {
-  responsive: true,
-  plugins: {
-    legend: { display: false },
-    title: {
-      display: true,
-      text: "Simulation Metrics",
+const pairs = computed(() => {
+  // order like the Streamlit bar: F, D, HCL, Tr, A, S, EL, EfficiencyScore
+  const m = props.metrics || {};
+  const order = ["F", "D", "HCL", "Tr", "A", "S", "EL", "EfficiencyScore"];
+  return order.filter((k) => k in m).map((k) => ({ k, v: Number(m[k]) }));
+});
+
+function render() {
+  if (!canvas.value) return;
+  if (chart) {
+    chart.destroy();
+    chart = null;
+  }
+  if (!pairs.value.length) return;
+
+  const labels = pairs.value.map((p) => p.k);
+  const values = pairs.value.map((p) => p.v);
+
+  chart = new Chart(canvas.value.getContext("2d"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{ data: values }],
     },
-  },
-};
+    options: {
+      responsive: true,
+      plugins: { tooltip: { enabled: true } },
+      scales: {
+        x: { ticks: { autoSkip: false } },
+        y: { beginAtZero: true },
+      },
+    },
+  });
+}
+
+onMounted(render);
+onBeforeUnmount(() => chart && chart.destroy());
+watch(() => props.metrics, render, { deep: true });
 </script>
+
+<style scoped>
+.w-100 {
+  width: 100%;
+}
+</style>
