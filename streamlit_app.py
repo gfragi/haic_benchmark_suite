@@ -425,7 +425,7 @@ def show_decisions_table(log: dict):
         if old in df.columns and new not in df.columns:
             df[new] = df[old]
     cols = [c for c in ["t","agent_id","action","object_id","latency_ms","correct","effect"] if c in df.columns]
-    st.dataframe(df[cols], width='stretch', height=360)
+    st.dataframe(df[cols], use_container_width=True, height=360)
     ch = st.columns(2)
     if "latency_ms" in df.columns and "t" in df.columns:
         ch[0].line_chart(df[["t","latency_ms"]].set_index("t"))
