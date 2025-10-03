@@ -1,0 +1,249 @@
+{
+  "schema_version": "1.0.0",
+  "env_id": "HAIC_Exp",
+  "sim_id": "exp_baseline",
+  "timestamp": "2025-09-21T12:59:29.884449Z",
+  "attributes": {
+    "task": "classification"
+  },
+  "agents": {
+    "AI": {
+      "attributes": {},
+      "model": "ai",
+      "affordances": [
+        "classify"
+      ]
+    },
+    "H": {
+      "attributes": {},
+      "model": "human",
+      "affordances": [
+        "classify"
+      ]
+    }
+  },
+  "objects": {
+    "O1": {
+      "attributes": {
+        "row": 1
+      },
+      "affordances": [
+        "classify"
+      ]
+    },
+    "O2": {
+      "attributes": {
+        "row": 2
+      },
+      "affordances": [
+        "classify"
+      ]
+    },
+    "O3": {
+      "attributes": {
+        "row": 3
+      },
+      "affordances": [
+        "classify"
+      ]
+    },
+    "O4": {
+      "attributes": {
+        "row": 4
+      },
+      "affordances": [
+        "classify"
+      ]
+    },
+    "O5": {
+      "attributes": {
+        "row": 5
+      },
+      "affordances": [
+        "classify"
+      ]
+    },
+    "O6": {
+      "attributes": {
+        "row": 6
+      },
+      "affordances": [
+        "classify"
+      ]
+    },
+    "O7": {
+      "attributes": {
+        "row": 7
+      },
+      "affordances": [
+        "classify"
+      ]
+    },
+    "O8": {
+      "attributes": {
+        "row": 8
+      },
+      "affordances": [
+        "classify"
+      ]
+    },
+    "O9": {
+      "attributes": {
+        "row": 9
+      },
+      "affordances": [
+        "classify"
+      ]
+    },
+    "O10": {
+      "attributes": {
+        "row": 10
+      },
+      "affordances": [
+        "classify"
+      ]
+    }
+  },
+  "decisions": [
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "exp_baseline",
+      "t": 1,
+      "agent_id": "AI",
+      "action": "classify",
+      "object_id": "O1",
+      "effect": {
+        "ai_label": "not_positive",
+        "ai_conf": 0.68
+      },
+      "correct": false,
+      "latency_ms": 200
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "exp_baseline",
+      "t": 2,
+      "agent_id": "AI",
+      "action": "classify",
+      "object_id": "O2",
+      "effect": {
+        "ai_label": "not_positive",
+        "ai_conf": 0.45
+      },
+      "correct": false,
+      "latency_ms": 200
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "exp_baseline",
+      "t": 3,
+      "agent_id": "AI",
+      "action": "classify",
+      "object_id": "O3",
+      "effect": {
+        "ai_label": "not_positive",
+        "ai_conf": 0.82
+      },
+      "correct": false,
+      "latency_ms": 200
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "exp_baseline",
+      "t": 4,
+      "agent_id": "AI",
+      "action": "classify",
+      "object_id": "O4",
+      "effect": {
+        "ai_label": "not_positive",
+        "ai_conf": 0.3
+      },
+      "correct": false,
+      "latency_ms": 200
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "exp_baseline",
+      "t": 5,
+      "agent_id": "AI",
+      "action": "classify",
+      "object_id": "O5",
+      "effect": {
+        "ai_label": "not_positive",
+        "ai_conf": 0.55
+      },
+      "correct": false,
+      "latency_ms": 200
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "exp_baseline",
+      "t": 6,
+      "agent_id": "AI",
+      "action": "classify",
+      "object_id": "O6",
+      "effect": {
+        "ai_label": "not_positive",
+        "ai_conf": 0.75
+      },
+      "correct": false,
+      "latency_ms": 200
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "exp_baseline",
+      "t": 7,
+      "agent_id": "AI",
+      "action": "classify",
+      "object_id": "O7",
+      "effect": {
+        "ai_label": "not_positive",
+        "ai_conf": 0.2
+      },
+      "correct": false,
+      "latency_ms": 200
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "exp_baseline",
+      "t": 8,
+      "agent_id": "AI",
+      "action": "classify",
+      "object_id": "O8",
+      "effect": {
+        "ai_label": "not_positive",
+        "ai_conf": 0.6
+      },
+      "correct": false,
+      "latency_ms": 200
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "exp_baseline",
+      "t": 9,
+      "agent_id": "AI",
+      "action": "classify",
+      "object_id": "O9",
+      "effect": {
+        "ai_label": "positive",
+        "ai_conf": 0.85
+      },
+      "correct": true,
+      "latency_ms": 200
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "exp_baseline",
+      "t": 10,
+      "agent_id": "AI",
+      "action": "classify",
+      "object_id": "O10",
+      "effect": {
+        "ai_label": "not_positive",
+        "ai_conf": 0.4
+      },
+      "correct": false,
+      "latency_ms": 200
+    }
+  ]
+}

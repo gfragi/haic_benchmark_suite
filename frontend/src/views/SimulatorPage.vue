@@ -881,20 +881,42 @@ async function runSim() {
   if (!selectedConfig.value) return;
   running.value = true;
   try {
-    result.value = await simulate(selectedConfig.value, seed.value);
+    const res = await simulate(selectedConfig.value, seed.value);
+    // normalize so UI always has the fields it expects
+    result.value = {
+      decisions: res?.decisions ?? [],
+      metrics: res?.metrics ?? {},
+      task: res?.task ?? res?.scenario ?? "Scenario",
+      environment: res?.environment ?? (res?.info?.environment || "env"),
+      seed: res?.seed ?? null,
+      agents: res?.agents ?? [],
+      config_hash: res?.config_hash ?? null,
+      config_path: res?.config_path ?? null,
+      info: res?.info ?? {},
+    };
     tab.value = "live";
-    toast("Run complete", "success");
-  } catch (e) {
-    toast(e?.message || "Run failed", "error");
   } finally {
     running.value = false;
     await refreshRuns();
   }
 }
+
 async function loadRun(file) {
-  browsed.value = await loadMetrics(file);
+  const res = await loadMetrics(file);
+  browsed.value = {
+    decisions: res?.decisions ?? [],
+    metrics: res?.metrics ?? {},
+    task: res?.task ?? res?.scenario ?? "Scenario",
+    environment: res?.environment ?? (res?.info?.environment || "env"),
+    seed: res?.seed ?? null,
+    agents: res?.agents ?? [],
+    config_hash: res?.config_hash ?? null,
+    config_path: res?.config_path ?? null,
+    info: res?.info ?? {},
+  };
   tab.value = "browse";
 }
+
 function downloadJson() {
   if (!result.value) return;
   const blob = new Blob([JSON.stringify(result.value, null, 2)], {

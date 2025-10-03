@@ -1,0 +1,4493 @@
+{
+  "task": "Overcooked Cramped Room (v2)",
+  "seed": 122,
+  "agents": [
+    "agent_0",
+    "agent_1"
+  ],
+  "profiles": [
+    "chef",
+    "chef"
+  ],
+  "metrics": {
+    "F": 1221.4285714285722,
+    "D": 0.05463859649122808,
+    "HCL": 0.945361403508772,
+    "Tr": 0.14912280701754388,
+    "A": -0.24491866240370916,
+    "S": 0.32205569455434585,
+    "EL": 0.0,
+    "EfficiencyScore": 1.0
+  },
+  "decisions": [
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.0,
+      "actor_type": "ai",
+      "latency_ms": 311.0,
+      "duration_s": 0.062200000000000005,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.0,
+      "actor_type": "ai",
+      "latency_ms": 86.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.1,
+      "actor_type": "ai",
+      "latency_ms": 477.0,
+      "duration_s": 0.09540000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.1,
+      "actor_type": "ai",
+      "latency_ms": 205.0,
+      "duration_s": 0.041,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.2,
+      "actor_type": "ai",
+      "latency_ms": 243.0,
+      "duration_s": 0.048600000000000004,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 0.2,
+      "actor_type": "ai",
+      "latency_ms": 193.0,
+      "duration_s": 0.0386,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.30000000000000004,
+      "actor_type": "ai",
+      "latency_ms": 111.0,
+      "duration_s": 0.022200000000000004,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.30000000000000004,
+      "actor_type": "ai",
+      "latency_ms": 355.0,
+      "duration_s": 0.071,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.4,
+      "actor_type": "ai",
+      "latency_ms": 368.0,
+      "duration_s": 0.07360000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 0.4,
+      "actor_type": "ai",
+      "latency_ms": 273.0,
+      "duration_s": 0.0546,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "INTERACT",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 0.5,
+      "actor_type": "ai",
+      "latency_ms": 283.0,
+      "duration_s": 0.056600000000000004,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": true,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.5,
+      "actor_type": "ai",
+      "latency_ms": 150.0,
+      "duration_s": 0.03,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.6,
+      "actor_type": "ai",
+      "latency_ms": 298.0,
+      "duration_s": 0.0596,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.6,
+      "actor_type": "ai",
+      "latency_ms": 234.0,
+      "duration_s": 0.0468,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.7,
+      "actor_type": "ai",
+      "latency_ms": 404.0,
+      "duration_s": 0.08080000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.7,
+      "actor_type": "ai",
+      "latency_ms": 462.0,
+      "duration_s": 0.09240000000000001,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "INTERACT",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 0.7999999999999999,
+      "actor_type": "ai",
+      "latency_ms": 451.0,
+      "duration_s": 0.0902,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.7999999999999999,
+      "actor_type": "ai",
+      "latency_ms": 178.0,
+      "duration_s": 0.0356,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.8999999999999999,
+      "actor_type": "ai",
+      "latency_ms": 485.0,
+      "duration_s": 0.097,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.8999999999999999,
+      "actor_type": "ai",
+      "latency_ms": 452.0,
+      "duration_s": 0.09040000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 0.9999999999999999,
+      "actor_type": "ai",
+      "latency_ms": 410.0,
+      "duration_s": 0.082,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 0.9999999999999999,
+      "actor_type": "ai",
+      "latency_ms": 254.0,
+      "duration_s": 0.050800000000000005,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "INTERACT",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 1.0999999999999999,
+      "actor_type": "ai",
+      "latency_ms": 498.0,
+      "duration_s": 0.09960000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.0999999999999999,
+      "actor_type": "ai",
+      "latency_ms": 262.0,
+      "duration_s": 0.05240000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.2,
+      "actor_type": "ai",
+      "latency_ms": 142.0,
+      "duration_s": 0.0284,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.2,
+      "actor_type": "ai",
+      "latency_ms": 308.0,
+      "duration_s": 0.0616,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.3,
+      "actor_type": "ai",
+      "latency_ms": 279.0,
+      "duration_s": 0.0558,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "STAY",
+      "correct": true,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.3,
+      "actor_type": "ai",
+      "latency_ms": 227.0,
+      "duration_s": 0.0454,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.4000000000000001,
+      "actor_type": "ai",
+      "latency_ms": 391.0,
+      "duration_s": 0.0782,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "STAY",
+      "correct": true,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.4000000000000001,
+      "actor_type": "ai",
+      "latency_ms": 197.0,
+      "duration_s": 0.039400000000000004,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.5000000000000002,
+      "actor_type": "ai",
+      "latency_ms": 79.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 1.5000000000000002,
+      "actor_type": "ai",
+      "latency_ms": 143.0,
+      "duration_s": 0.0286,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.6000000000000003,
+      "actor_type": "ai",
+      "latency_ms": 327.0,
+      "duration_s": 0.0654,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.6000000000000003,
+      "actor_type": "ai",
+      "latency_ms": 300.0,
+      "duration_s": 0.06,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "STAY",
+      "correct": true,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.7000000000000004,
+      "actor_type": "ai",
+      "latency_ms": 76.0,
+      "duration_s": 0.02,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.7000000000000004,
+      "actor_type": "ai",
+      "latency_ms": 290.0,
+      "duration_s": 0.058,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.8000000000000005,
+      "actor_type": "ai",
+      "latency_ms": 74.0,
+      "duration_s": 0.02,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": true,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.8000000000000005,
+      "actor_type": "ai",
+      "latency_ms": 220.0,
+      "duration_s": 0.044,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.9000000000000006,
+      "actor_type": "ai",
+      "latency_ms": 190.0,
+      "duration_s": 0.038,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 1.9000000000000006,
+      "actor_type": "ai",
+      "latency_ms": 229.0,
+      "duration_s": 0.04580000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.0000000000000004,
+      "actor_type": "ai",
+      "latency_ms": 328.0,
+      "duration_s": 0.0656,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "STAY",
+      "correct": true,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.0000000000000004,
+      "actor_type": "ai",
+      "latency_ms": 414.0,
+      "duration_s": 0.08280000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.1000000000000005,
+      "actor_type": "ai",
+      "latency_ms": 290.0,
+      "duration_s": 0.058,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": true,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.1000000000000005,
+      "actor_type": "ai",
+      "latency_ms": 487.0,
+      "duration_s": 0.0974,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.2000000000000006,
+      "actor_type": "ai",
+      "latency_ms": 439.0,
+      "duration_s": 0.08780000000000002,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": true,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.2000000000000006,
+      "actor_type": "ai",
+      "latency_ms": 408.0,
+      "duration_s": 0.0816,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.3000000000000007,
+      "actor_type": "ai",
+      "latency_ms": 172.0,
+      "duration_s": 0.0344,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 2.3000000000000007,
+      "actor_type": "ai",
+      "latency_ms": 257.0,
+      "duration_s": 0.05140000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.400000000000001,
+      "actor_type": "ai",
+      "latency_ms": 113.0,
+      "duration_s": 0.022600000000000002,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.400000000000001,
+      "actor_type": "ai",
+      "latency_ms": 139.0,
+      "duration_s": 0.027800000000000002,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.500000000000001,
+      "actor_type": "ai",
+      "latency_ms": 191.0,
+      "duration_s": 0.038200000000000005,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.500000000000001,
+      "actor_type": "ai",
+      "latency_ms": 480.0,
+      "duration_s": 0.096,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.600000000000001,
+      "actor_type": "ai",
+      "latency_ms": 483.0,
+      "duration_s": 0.0966,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.600000000000001,
+      "actor_type": "ai",
+      "latency_ms": 284.0,
+      "duration_s": 0.0568,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.700000000000001,
+      "actor_type": "ai",
+      "latency_ms": 139.0,
+      "duration_s": 0.027800000000000002,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.700000000000001,
+      "actor_type": "ai",
+      "latency_ms": 159.0,
+      "duration_s": 0.0318,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.800000000000001,
+      "actor_type": "ai",
+      "latency_ms": 143.0,
+      "duration_s": 0.0286,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": true,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.800000000000001,
+      "actor_type": "ai",
+      "latency_ms": 202.0,
+      "duration_s": 0.040400000000000005,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.9000000000000012,
+      "actor_type": "ai",
+      "latency_ms": 100.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 2.9000000000000012,
+      "actor_type": "ai",
+      "latency_ms": 267.0,
+      "duration_s": 0.0534,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.0000000000000013,
+      "actor_type": "ai",
+      "latency_ms": 481.0,
+      "duration_s": 0.09620000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.0000000000000013,
+      "actor_type": "ai",
+      "latency_ms": 113.0,
+      "duration_s": 0.022600000000000002,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.1000000000000014,
+      "actor_type": "ai",
+      "latency_ms": 363.0,
+      "duration_s": 0.07260000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.1000000000000014,
+      "actor_type": "ai",
+      "latency_ms": 346.0,
+      "duration_s": 0.0692,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.2000000000000015,
+      "actor_type": "ai",
+      "latency_ms": 206.0,
+      "duration_s": 0.0412,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 3.2000000000000015,
+      "actor_type": "ai",
+      "latency_ms": 371.0,
+      "duration_s": 0.0742,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.3000000000000016,
+      "actor_type": "ai",
+      "latency_ms": 422.0,
+      "duration_s": 0.0844,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.3000000000000016,
+      "actor_type": "ai",
+      "latency_ms": 284.0,
+      "duration_s": 0.0568,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.4000000000000017,
+      "actor_type": "ai",
+      "latency_ms": 363.0,
+      "duration_s": 0.07260000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.4000000000000017,
+      "actor_type": "ai",
+      "latency_ms": 266.0,
+      "duration_s": 0.053200000000000004,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.5000000000000018,
+      "actor_type": "ai",
+      "latency_ms": 414.0,
+      "duration_s": 0.08280000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.5000000000000018,
+      "actor_type": "ai",
+      "latency_ms": 196.0,
+      "duration_s": 0.039200000000000006,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.600000000000002,
+      "actor_type": "ai",
+      "latency_ms": 98.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.600000000000002,
+      "actor_type": "ai",
+      "latency_ms": 96.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "INTERACT",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 3.700000000000002,
+      "actor_type": "ai",
+      "latency_ms": 418.0,
+      "duration_s": 0.08360000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.700000000000002,
+      "actor_type": "ai",
+      "latency_ms": 314.0,
+      "duration_s": 0.06280000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.800000000000002,
+      "actor_type": "ai",
+      "latency_ms": 369.0,
+      "duration_s": 0.07379999999999999,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.800000000000002,
+      "actor_type": "ai",
+      "latency_ms": 206.0,
+      "duration_s": 0.0412,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 3.900000000000002,
+      "actor_type": "ai",
+      "latency_ms": 290.0,
+      "duration_s": 0.058,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 3.900000000000002,
+      "actor_type": "ai",
+      "latency_ms": 343.0,
+      "duration_s": 0.06860000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "STAY",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.000000000000002,
+      "actor_type": "ai",
+      "latency_ms": 66.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.000000000000002,
+      "actor_type": "ai",
+      "latency_ms": 496.0,
+      "duration_s": 0.0992,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "INTERACT",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 4.100000000000001,
+      "actor_type": "ai",
+      "latency_ms": 165.0,
+      "duration_s": 0.033,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "STAY",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.100000000000001,
+      "actor_type": "ai",
+      "latency_ms": 300.0,
+      "duration_s": 0.06,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "INTERACT",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 4.200000000000001,
+      "actor_type": "ai",
+      "latency_ms": 361.0,
+      "duration_s": 0.0722,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.200000000000001,
+      "actor_type": "ai",
+      "latency_ms": 54.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.300000000000001,
+      "actor_type": "ai",
+      "latency_ms": 196.0,
+      "duration_s": 0.039200000000000006,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 4.300000000000001,
+      "actor_type": "ai",
+      "latency_ms": 64.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.4,
+      "actor_type": "ai",
+      "latency_ms": 363.0,
+      "duration_s": 0.07260000000000001,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": true,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.4,
+      "actor_type": "ai",
+      "latency_ms": 219.0,
+      "duration_s": 0.043800000000000006,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.5,
+      "actor_type": "ai",
+      "latency_ms": 276.0,
+      "duration_s": 0.055200000000000006,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.5,
+      "actor_type": "ai",
+      "latency_ms": 249.0,
+      "duration_s": 0.049800000000000004,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.6,
+      "actor_type": "ai",
+      "latency_ms": 159.0,
+      "duration_s": 0.0318,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.6,
+      "actor_type": "ai",
+      "latency_ms": 177.0,
+      "duration_s": 0.0354,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.699999999999999,
+      "actor_type": "ai",
+      "latency_ms": 307.0,
+      "duration_s": 0.0614,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.699999999999999,
+      "actor_type": "ai",
+      "latency_ms": 126.0,
+      "duration_s": 0.025200000000000004,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.799999999999999,
+      "actor_type": "ai",
+      "latency_ms": 325.0,
+      "duration_s": 0.065,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 4.799999999999999,
+      "actor_type": "ai",
+      "latency_ms": 55.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.899999999999999,
+      "actor_type": "ai",
+      "latency_ms": 314.0,
+      "duration_s": 0.06280000000000001,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 4.899999999999999,
+      "actor_type": "ai",
+      "latency_ms": 75.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.999999999999998,
+      "actor_type": "ai",
+      "latency_ms": 164.0,
+      "duration_s": 0.0328,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 4.999999999999998,
+      "actor_type": "ai",
+      "latency_ms": 78.0,
+      "duration_s": 0.02,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 5.099999999999998,
+      "actor_type": "ai",
+      "latency_ms": 471.0,
+      "duration_s": 0.0942,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 5.099999999999998,
+      "actor_type": "ai",
+      "latency_ms": 172.0,
+      "duration_s": 0.0344,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "INTERACT",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 5.1999999999999975,
+      "actor_type": "ai",
+      "latency_ms": 357.0,
+      "duration_s": 0.0714,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "NORTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.7,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 5.1999999999999975,
+      "actor_type": "ai",
+      "latency_ms": 146.0,
+      "duration_s": 0.029200000000000004,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 5.299999999999997,
+      "actor_type": "ai",
+      "latency_ms": 464.0,
+      "duration_s": 0.09280000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "SOUTH",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.7,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 5.299999999999997,
+      "actor_type": "ai",
+      "latency_ms": 55.0,
+      "duration_s": 0.02,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "STAY",
+      "correct": true,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 5.399999999999997,
+      "actor_type": "ai",
+      "latency_ms": 224.0,
+      "duration_s": 0.044800000000000006,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": false,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "WEST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.7,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 5.399999999999997,
+      "actor_type": "ai",
+      "latency_ms": 488.0,
+      "duration_s": 0.0976,
+      "ai_suggested": false,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "STAY",
+      "correct": true,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.7,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 5.4999999999999964,
+      "actor_type": "ai",
+      "latency_ms": 297.0,
+      "duration_s": 0.05940000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 1.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 0.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 5.4999999999999964,
+      "actor_type": "ai",
+      "latency_ms": 400.0,
+      "duration_s": 0.08,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_0",
+      "action": "EAST",
+      "correct": false,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.7,
+        "INTERACT": 0.06000000000000001
+      },
+      "t": 5.599999999999996,
+      "actor_type": "ai",
+      "latency_ms": 378.0,
+      "duration_s": 0.07560000000000001,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "expert",
+        "role": "chef",
+        "metadata": {}
+      }
+    },
+    {
+      "agent": "agent_1",
+      "action": "INTERACT",
+      "correct": true,
+      "probs": {
+        "STAY": 0.0,
+        "NORTH": 0.0,
+        "SOUTH": 0.0,
+        "WEST": 0.0,
+        "EAST": 0.0,
+        "INTERACT": 1.0
+      },
+      "surrogate_probs": {
+        "STAY": 0.06000000000000001,
+        "NORTH": 0.06000000000000001,
+        "SOUTH": 0.06000000000000001,
+        "WEST": 0.06000000000000001,
+        "EAST": 0.06000000000000001,
+        "INTERACT": 0.7
+      },
+      "t": 5.599999999999996,
+      "actor_type": "ai",
+      "latency_ms": 390.0,
+      "duration_s": 0.078,
+      "ai_suggested": true,
+      "human_accepted": false,
+      "successful_outcome": true,
+      "unsafe_event": false,
+      "manual_intervention": false,
+      "off_role_action": false,
+      "profile": {
+        "profile_id": "chef",
+        "skill_level": "novice",
+        "role": "chef",
+        "metadata": {}
+      }
+    }
+  ],
+  "info": {
+    "layout": "cramped_room",
+    "pot_onions": 0,
+    "cooking": false,
+    "cook_ticks": 0,
+    "ready": false,
+    "delivered": 2,
+    "target_deliveries": 2
+  },
+  "status": "success",
+  "config_hash": "22b8978cf39f7701",
+  "config_path": "/home/gfragi/haic_benchmark_suite/haic_env_builder/configs/Overcooked-CrampedRoom_v2_env.yaml",
+  "config": {
+    "environment": "overcooked",
+    "env_params": {
+      "layout_name": "cramped_room",
+      "horizon_s": 30,
+      "dt": 0.12
+    },
+    "dt": 0.1
+  },
+  "events": [
+    {
+      "event_type": "onion_added",
+      "count": 1,
+      "t": 0.2
+    },
+    {
+      "event_type": "onion_added",
+      "count": 2,
+      "t": 0.4
+    },
+    {
+      "event_type": "onion_added",
+      "count": 3,
+      "t": 0.5
+    },
+    {
+      "event_type": "cooking_started",
+      "t": 0.7999999999999999
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 1,
+      "t": 0.7999999999999999
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 2,
+      "t": 0.8999999999999999
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 3,
+      "t": 0.9999999999999999
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 4,
+      "t": 1.0999999999999999
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 5,
+      "t": 1.2
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 6,
+      "t": 1.3
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 7,
+      "t": 1.4000000000000001
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 8,
+      "t": 1.5000000000000002
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 9,
+      "t": 1.6000000000000003
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 10,
+      "t": 1.7000000000000004
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 11,
+      "t": 1.8000000000000005
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 12,
+      "t": 1.9000000000000006
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 13,
+      "t": 2.0000000000000004
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 14,
+      "t": 2.1000000000000005
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 15,
+      "t": 2.2000000000000006
+    },
+    {
+      "event_type": "soup_ready",
+      "t": 2.2000000000000006
+    },
+    {
+      "event_type": "soup_delivered",
+      "delivered": 1,
+      "t": 2.3000000000000007
+    },
+    {
+      "event_type": "onion_added",
+      "count": 1,
+      "t": 3.2000000000000015
+    },
+    {
+      "event_type": "onion_added",
+      "count": 2,
+      "t": 3.700000000000002
+    },
+    {
+      "event_type": "onion_added",
+      "count": 3,
+      "t": 3.900000000000002
+    },
+    {
+      "event_type": "cooking_started",
+      "t": 4.100000000000001
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 1,
+      "t": 4.100000000000001
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 2,
+      "t": 4.200000000000001
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 3,
+      "t": 4.300000000000001
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 4,
+      "t": 4.4
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 5,
+      "t": 4.5
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 6,
+      "t": 4.6
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 7,
+      "t": 4.699999999999999
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 8,
+      "t": 4.799999999999999
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 9,
+      "t": 4.899999999999999
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 10,
+      "t": 4.999999999999998
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 11,
+      "t": 5.099999999999998
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 12,
+      "t": 5.1999999999999975
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 13,
+      "t": 5.299999999999997
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 14,
+      "t": 5.399999999999997
+    },
+    {
+      "event_type": "cooking_tick",
+      "tick": 15,
+      "t": 5.4999999999999964
+    },
+    {
+      "event_type": "soup_ready",
+      "t": 5.4999999999999964
+    },
+    {
+      "event_type": "soup_delivered",
+      "delivered": 2,
+      "t": 5.599999999999996
+    }
+  ],
+  "metrics_by_agent": {
+    "agent_0": {
+      "F": 610.7142857142861,
+      "D": 0.058642105263157905,
+      "HCL": 0.9413578947368421,
+      "Tr": 0.1228070175438597,
+      "A": 0.0,
+      "S": 0.30841023379107957,
+      "EL": 0.0,
+      "EfficiencyScore": 1.0
+    },
+    "agent_1": {
+      "F": 610.7142857142861,
+      "D": 0.05063508771929825,
+      "HCL": 0.9493649122807017,
+      "Tr": 0.17543859649122806,
+      "A": -0.46211715726000974,
+      "S": 0.33216636693654294,
+      "EL": 0.0,
+      "EfficiencyScore": 1.0
+    }
+  }
+}

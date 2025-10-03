@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HAIC MVP Decision Log",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "env_id": {
+      "type": "string"
+    },
+    "sim_id": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "attributes": {
+      "type": "object"
+    },
+    "agents": {
+      "type": "object"
+    },
+    "objects": {
+      "type": "object"
+    },
+    "decisions": {
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "env_id",
+    "sim_id",
+    "timestamp",
+    "decisions"
+  ]
+}
