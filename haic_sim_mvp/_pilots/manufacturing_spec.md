@@ -35,11 +35,11 @@ We compare policies (heuristics, RL, RL+deferral) on identical data and quantify
 
 ## HITL Workflow (minimal loop)
 
-[![HITL workflow](../figures/BS_diagrams-smart_energy.png)](../figures/BS_diagrams-smart_energy.png)
+[![HITL workflow](../figures/BS_diagrams-smart_manufacturing.png)](../figures/BS_diagrams-smart_manufacturing.png)
 
 ## Policies to compare
 
-1.** BaselineThreshold(τ₀)**
+1. **BaselineThreshold(τ₀)**
 
     - If `ai_prob ≥ τ₀` → **AI assigns**, else **Human decides**.
 

@@ -21,21 +21,20 @@ CREATE TABLE IF NOT EXISTS public.metrics (
 );
 
 -- Ensure uniqueness to avoid duplicates (safe if already present)
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_indexes WHERE schemaname='public' AND indexname='uq_metric_groups_name'
-    ) THEN
-        CREATE UNIQUE INDEX uq_metric_groups_name ON public.metric_groups(name);
-    END IF;
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_indexes WHERE schemaname='public' AND indexname='uq_metrics_name'
-    ) THEN
-        CREATE UNIQUE INDEX uq_metrics_name ON public.metrics(name);
-    END IF;
-END$$;
+-- DO $$
+-- BEGIN
+--     IF NOT EXISTS (
+--         SELECT 1 FROM pg_indexes WHERE schemaname='public' AND indexname='uq_metric_groups_name'
+--     ) THEN
+--         CREATE UNIQUE INDEX uq_metric_groups_name ON public.metric_groups(name);
+--     END IF;
+--     IF NOT EXISTS (
+--         SELECT 1 FROM pg_indexes WHERE schemaname='public' AND indexname='uq_metrics_name'
+--     ) THEN
+--         CREATE UNIQUE INDEX uq_metrics_name ON public.metrics(name);
+--     END IF;
+-- END$$;
 
--- Seed groups
 INSERT INTO public.metric_groups (name) VALUES
     ('Performance'),
     ('Efficiency'),
@@ -45,7 +44,6 @@ INSERT INTO public.metric_groups (name) VALUES
     ('Robustness and Generalization')
 ON CONFLICT (name) DO NOTHING;
 
--- Helper: get group id by name
 WITH grp AS (
     SELECT id, name FROM public.metric_groups
 )
