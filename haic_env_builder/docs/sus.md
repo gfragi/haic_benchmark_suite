@@ -15,7 +15,7 @@ The survey is available at the following route in the frontend:
 Parameters are passed as **query strings**. Example:
 
 ```
-https://hua-benchmarking.ddns.net//survey?pilot_tag=SmartEnergy&app_version=v3.2.0&ai_model_version=v1.0.0
+https://benchmark.humaine-horizon.eu//survey?pilot_tag=SmartEnergy&app_version=v3.2.0&ai_model_version=v1.0.0
 ```
 
 ### Required Parameters
