@@ -1,218 +1,273 @@
-import datetime
+from datetime import datetime, timezone
 import io
 import json
 import os
 import uuid
 from dotenv import load_dotenv
-from minio import Minio, S3Error
 from sqlmodel import Session
-from app.services.metrics import Metrics
+from metrics_core.outcome_metrics import Metrics
 from app.models import EvaluationConfig, LogEntry
-from app.services.agg_metrics import calculate_metrics_for_group, save_evaluation_result
 from app.models.results import EvaluationResult, MetricGroup
 from app.utils.database import SessionLocal
-from app.utils.minio_client_keycloak import get_minio_client
+from app.utils.minio_utils import get_minio_client
+from app.services.metrics_adapter import compute_from_log
+import traceback
+from typing import Iterable, List, Dict, Any
+from collections import defaultdict
 
 
 load_dotenv()
 
 minio_client = get_minio_client()
 
+def _get(d: dict, path: Iterable[str], default=None):
+    cur = d
+    for p in path:
+        if not isinstance(cur, dict) or p not in cur:
+            return default
+        cur = cur[p]
+    return cur
 
+def _norm_ver(v: Any) -> str:
+    """Normalize version values: cast to str, strip, map ''/'None' to 'Unknown'."""
+    if v is None:
+        return "Unknown"
+    if isinstance(v, (int, float)):
+        v = str(v)
+    v = str(v).strip()
+    return v if v else "Unknown"
 
-def evaluate_logs(config: EvaluationConfig, logs_data: list, db: Session):
+def _ai_version(entry: dict) -> str:
+    # Prefer explicit field; then meta/runMeta fallbacks
+    return _norm_ver(
+        entry.get("ai_model_version")
+        or _get(entry, ["meta", "ai_model_version"])
+        or _get(entry, ["runMeta", "ai_model_version"])
+        or _get(entry, ["runMeta", "app_version"])   # many logs use app_version as the model build id
+    )
 
-    # Initialize sets to track unique versions
-    unique_app_versions = set()
-    unique_ai_model_versions = set()
+def _app_version(entry: dict) -> str:
+    return _norm_ver(
+        entry.get("app_version")
+        or _get(entry, ["runMeta", "app_version"])
+        or _get(entry, ["meta", "app_version"])
+    )
 
-    # Aggregating interaction data across all sessions
-    all_interaction_data = []
-    for session in logs_data:
-        interaction_data = session.get("interaction_data", {})
-        all_interaction_data.append(interaction_data)
+def _iter_entries(payload: Any) -> List[dict]:
+    """
+    Return a flat list of session dicts from:
+      - a list of dicts
+      - a single dict
+      - a dict containing 'sessions' | 'logs' | 'entries'
+    Ignore anything that isn't a dict.
+    """
+    if isinstance(payload, list):
+        return [x for x in payload if isinstance(x, dict)]
 
-    # Iterate through logs to collect versions and compute metrics
+    if isinstance(payload, dict):
+        for key in ("sessions", "logs", "entries"):
+            if isinstance(payload.get(key), list):
+                return [x for x in payload[key] if isinstance(x, dict)]
+        return [payload]  # single-session object
+
+    return []
+
+def split_logs_by_ai_model_version(logs_data: list[dict]) -> dict[str, list[dict]]:
+    groups = defaultdict(list)
     for entry in logs_data:
-        # Collect the app version and AI model version from the main entry
-        app_version = entry.get('app_version', "Unknown")
-        ai_model_version = entry.get('ai_model_version', "Unknown")
-        unique_app_versions.add(app_version)
-        unique_ai_model_versions.add(ai_model_version)
-
-        # Check retrain events and collect AI model versions after retraining
-        # if 'retrain_events' in entry:
-        #     for event in entry['retrain_events']:
-        #         retrained_version = event.get('retraining_details', {}).get('ai_model_version_after_retraining')
-        #         if retrained_version:
-        #             unique_ai_model_versions.add(retrained_version)
-
-    # Initialize the dictionary to hold metrics grouped by metric group
-    metrics_results_by_group = {}
-
-    # Fetch metric groups from the database
-    metric_groups = db.query(MetricGroup).all()
-
-    # Loop through each metric group and calculate metrics for each group
-    for group in metric_groups:
-        group_results = {}
-
-        for metric in group.metrics:
-            if metric.name == "Prediction Accuracy":
-                group_results["Prediction Accuracy"] = Metrics.Effectiveness.calculate_prediction_accuracy(all_interaction_data)
-            elif metric.name == "Response Time":
-                group_results["Response Time"] = Metrics.Efficiency.calculate_response_time(all_interaction_data)
-            elif metric.name == "Teaching Efficiency":
-                group_results["Teaching Efficiency"] = Metrics.Efficiency.calculate_teaching_efficiency(all_interaction_data)
-            elif metric.name == "Overall System Accuracy":
-                group_results["Overall System Accuracy"] = Metrics.Effectiveness.calculate_overall_system_accuracy(all_interaction_data)
-            elif metric.name == "Objective Fulfillment Rate":
-                group_results["Objective Fulfillment Rate"] = Metrics.AdaptabilityAndLearning.calculate_objective_fulfillment_rate(all_interaction_data)
-            elif metric.name == "Feedback Impact":
-                group_results["Feedback Impact"] = Metrics.AdaptabilityAndLearning.calculate_feedback_impact(all_interaction_data)
-            elif metric.name == "Adaptability Score":
-                group_results["Adaptability Score"] = Metrics.AdaptabilityAndLearning.calculate_adaptability_score(all_interaction_data)
-            elif metric.name == "Query Efficiency":
-                group_results["Query Efficiency"] = Metrics.Efficiency.calculate_query_efficiency(all_interaction_data)
-            elif metric.name == "Error Reduction Rate":
-                group_results["Error Reduction Rate"] = Metrics.Efficiency.calculate_error_reduction_rate(all_interaction_data)
-            elif metric.name == "Confidence":
-                group_results["Confidence"] = Metrics.TrustAndSafety.calculate_confidence(all_interaction_data)
-            elif metric.name == "Model Improvement Rate":
-                group_results["Model Improvement Rate"] = Metrics.Effectiveness.calculate_model_improvement_rate(all_interaction_data)
-            elif metric.name == "Resource Utilization":
-                group_results["Resource Utilization"] = Metrics.Efficiency.calculate_resource_utilization(all_interaction_data)
-            elif metric.name == "Impact of Corrections":
-                group_results["Impact of Corrections"] = Metrics.AdaptabilityAndLearning.calculate_impact_of_corrections(all_interaction_data)
-            elif metric.name == "Decision Effectiveness":
-                group_results["Decision Effectiveness"] = Metrics.CollaborationAndInteraction.calculate_decision_effectiveness(all_interaction_data)
-            elif metric.name == "Knowledge Retention":
-                group_results["Knowledge Retention"] = Metrics.Efficiency.calculate_knowledge_retention(all_interaction_data)
-            elif metric.name == "Task Completion Time":
-                group_results["Task Completion Time"] = Metrics.Efficiency.calculate_task_completion_time(all_interaction_data)
-            elif metric.name == "Trust Score":
-                group_results["Trust Score"] = Metrics.TrustAndSafety.calculate_trust_score(all_interaction_data)
-            elif metric.name == "Safety Incidents":
-                group_results["Safety Incidents"] = Metrics.TrustAndSafety.calculate_safety_incidents(all_interaction_data)
-            elif metric.name == "Adversarial Robustness":
-                group_results["Adversarial Robustness"] = Metrics.RobustnessAndGeneralization.calculate_adversarial_robustness(all_interaction_data)
-            elif metric.name == "Domain Generalization":
-                group_results["Domain Generalization"] = Metrics.RobustnessAndGeneralization.calculate_domain_generalization(all_interaction_data)
-            elif metric.name == "System Reliability":
-                group_results["System Reliability"] = Metrics.TrustAndSafety.calculate_system_reliability(all_interaction_data)
-            elif metric.name == "Precision":
-                group_results["Precision"] = Metrics.Effectiveness.calculate_precision(all_interaction_data)
-            elif metric.name == "Recall":
-                group_results["Recall"] = Metrics.Effectiveness.calculate_recall(all_interaction_data)
-            elif metric.name == "Human-AI Agreement Rate":
-                group_results["Human-AI Agreement Rate"] = Metrics.CollaborationAndInteraction.calculate_human_ai_agreement_rate(all_interaction_data)
-            elif metric.name == "Time to Resolution":
-                group_results["Time to Resolution"] = Metrics.CollaborationAndInteraction.calculate_time_to_resolution(all_interaction_data)
-            elif metric.name == "Human Effort Saved":
-                group_results["Human Effort Saved"] = Metrics.CollaborationAndInteraction.calculate_human_effort_saved(all_interaction_data)
-            elif metric.name == "AI Assistance Rate":
-                group_results["AI Assistance Rate"] = Metrics.CollaborationAndInteraction.calculate_ai_assistance_rate(all_interaction_data)
-            elif metric.name == "Learning Efficiency":
-                group_results["Learning Efficiency"] = Metrics.AdaptabilityAndLearning.calculate_learning_efficiency(all_interaction_data)
-            elif metric.name == "Correction Efficiency":
-                group_results["Correction Efficiency"] = Metrics.Efficiency.calculate_correction_efficiency(all_interaction_data)
-
-        # Save the results of this group into the final results dictionary
-        metrics_results_by_group[group.name] = group_results
+        if isinstance(entry, dict):
+            groups[_ai_version(entry)].append(entry)  # <-- uses your helper
+    return groups
 
 
-    # Convert sets to lists for JSON serialization
-    unique_app_versions = list(unique_app_versions)
-    unique_ai_model_versions = list(unique_ai_model_versions)
-
-    return metrics_results_by_group, unique_app_versions, unique_ai_model_versions
-
-
-
-def split_logs_by_ai_model_version(logs_data: list):
-    # Create a dictionary to hold logs by AI model version
-    logs_by_ai_version = {}
-
-    # Iterate through the logs and separate them by AI model version
-    for entry in logs_data:
-        ai_model_version = entry.get('ai_model_version', "Unknown")
-
-        if ai_model_version not in logs_by_ai_version:
-            logs_by_ai_version[ai_model_version] = []
-
-        # Append the log entry to the corresponding version list
-        logs_by_ai_version[ai_model_version].append(entry)
-
-        # Also check for retrain events and track those versions
-        # if 'retrain_events' in entry:
-        #     for event in entry['retrain_events']:
-        #         retrained_version = event.get('retraining_details', {}).get('ai_model_version_after_retraining')
-        #         if retrained_version:
-        #             if retrained_version not in logs_by_ai_version:
-        #                 logs_by_ai_version[retrained_version] = []
-        #             logs_by_ai_version[retrained_version].append(event)
-
-    return logs_by_ai_version
-
+def _mean_map(dicts: list[dict]) -> dict:
+    """
+    Mean-aggregate numeric values across a list of homogenous dicts.
+    Non-numeric / missing values are ignored.
+    """
+    out: dict = {}
+    if not dicts:
+        return out
+    all_keys = set().union(*(d.keys() for d in dicts))
+    for k in all_keys:
+        vals = [d.get(k) for d in dicts if isinstance(d.get(k), (int, float))]
+        out[k] = (sum(vals) / len(vals)) if vals else None
+    return out
 
 
 def run_evaluation(config_id: int):
     new_session = SessionLocal()
+    bucket = os.getenv("MINIO_BUCKET")
 
     try:
-        config = new_session.query(EvaluationConfig).get(config_id)
+        if not bucket:
+            raise ValueError("MINIO_BUCKET env var is missing.")
+
+        config: EvaluationConfig | None = new_session.query(EvaluationConfig).get(config_id)
         if not config:
-            raise ValueError("Configuration not found")
+            raise ValueError(f"Configuration {config_id} not found")
 
-        # Fetch logs from MinIO (existing logic)
-        logs_file_object = minio_client.get_object(os.getenv("MINIO_BUCKET"), config.minio_path)
-        logs_data = json.load(io.BytesIO(logs_file_object.read()))
-
-        # Split logs by AI model version
-        logs_by_ai_version = split_logs_by_ai_model_version(logs_data)
-
-        # Evaluate logs for each AI model version separately
-        for ai_model_version, logs in logs_by_ai_version.items():
-            print(f"Evaluating AI model version: {ai_model_version}")
-            results_by_group, app_versions, _ = evaluate_logs(config, logs, new_session)
-
-            # Join the app versions into a comma-separated string
-            app_version_str = ', '.join(app_versions)
-
-            result_data = {
-                'configuration_id': config.id,
-                'evaluation_date': str(datetime.datetime.utcnow()),
-                'app_version': app_version_str,  # List of unique app versions
-                'ai_model_version': ai_model_version,  # Single AI model version for this evaluation
-                'metrics': results_by_group,
-            }
-
-            # Save results to MinIO
-            result_file_path = f"{config.id}/results/{uuid.uuid4()}.json"
-            result_json = json.dumps(result_data)
-            minio_client.put_object(
-                bucket_name=os.getenv("MINIO_BUCKET"),
-                object_name=result_file_path,
-                data=io.BytesIO(result_json.encode('utf-8')),
-                length=len(result_json)
+        if not config.minio_path:
+            raise ValueError(
+                f"No minio_path set for EvaluationConfig {config_id}. "
+                f"Upload or register a log first."
             )
 
-            # Save EvaluationResult with the current AI model version
+        # Read the uploaded logs JSON from MinIO
+        try:
+            obj = minio_client.get_object(bucket, config.minio_path)
+        except Exception as e:
+            raise RuntimeError(
+                f"Failed to get object from MinIO (bucket='{bucket}', path='{config.minio_path}'): {e}"
+            )
+
+        try:
+            raw_bytes = obj.read()
+        finally:
+            # ensure connection is always released
+            try:
+                obj.close()
+                obj.release_conn()
+            except Exception:
+                pass
+        try:
+            text = raw_bytes.decode("utf-8")
+        except Exception as e:
+            raise ValueError(f"Object at '{config.minio_path}' is not valid UTF-8: {e}")
+
+        try:
+            logs_data = json.loads(text)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Object at '{config.minio_path}' is not valid JSON: {e.msg}")
+
+        # --- unwrap common wrappers AFTER successful parse ---
+        # Supports: {logs:[...]}, {sessions:[...]}, {entries:[...]}
+        if isinstance(logs_data, dict):
+            for key in ("logs", "sessions", "entries"):
+                if isinstance(logs_data.get(key), list):
+                    logs_data = logs_data[key]
+                    break
+
+        # --- normalize to a list of objects ---
+        if isinstance(logs_data, dict):
+            logs_data = [logs_data]
+        if not isinstance(logs_data, list):
+            raise ValueError("Uploaded log must be a JSON object or a list/array of objects")
+
+        # Flatten / validate entries
+        entries = _iter_entries(logs_data)
+        if not entries:
+            raise ValueError("Uploaded log contains no valid session entries.")
+
+        # Group by AI model version
+        logs_by_ai_version = split_logs_by_ai_model_version(entries )
+
+        wrote_any_result = False
+
+        for ai_model_version, logs in logs_by_ai_version.items():
+            if not logs:
+                continue
+
+            # Collect app versions for this subset (nice to store in DB row)
+            app_versions = sorted({_app_version(e) for e in logs})
+            app_version_str = ",".join(app_versions)
+
+            # Compute derived metrics per session (adapter is forgiving to missing fields)
+            derived_list = []
+            for entry in logs:
+                try:
+                    derived = compute_from_log(entry)  # -> {"by_metric","by_pillar","interaction"}
+                except Exception as e:
+                    print(f"[evaluate] compute_from_log failed for entry: {repr(e)}")
+                    derived = {"by_metric": {}, "by_pillar": {}, "interaction": {}}
+                derived_list.append(derived)
+
+            # Aggregate across sessions for this AI model version
+            agg_by_metric   = _mean_map([d.get("by_metric", {})   for d in derived_list])
+            agg_by_pillar   = _mean_map([d.get("by_pillar", {})   for d in derived_list])
+            agg_interaction = _mean_map([d.get("interaction", {}) for d in derived_list])
+
+            # Transform by-metric into your grouped layout (keeps compatibility with your UI)
+            results_by_group = {
+                "Effectiveness": {
+                    k: v for k, v in agg_by_metric.items()
+                    if k in ("Prediction Accuracy","Precision","Recall","Overall System Accuracy","Model Improvement Rate")
+                },
+                "Efficiency": {
+                    k: v for k, v in agg_by_metric.items()
+                    if k in ("Response Time","Task Completion Time","Error Reduction Rate","Resource Utilization",
+                             "Teaching Efficiency","Correction Efficiency","Knowledge Retention")
+                },
+                "Adaptability and Learning": {
+                    k: v for k, v in agg_by_metric.items()
+                    if k in ("Feedback Impact","Adaptability Score","Impact of Corrections","Learning Efficiency",
+                             "Objective Fulfillment Rate")
+                },
+                "Collaboration and Interaction": {
+                    k: v for k, v in agg_by_metric.items()
+                    if k in ("AI Assistance Rate","Human-AI Agreement Rate","Decision Effectiveness","Time to Resolution",
+                             "Human Effort Saved")
+                },
+                "Trust and Safety": {
+                    k: v for k, v in agg_by_metric.items()
+                    if k in ("Trust Score","Confidence","Safety Incidents","System Reliability")
+                },
+                "Robustness and Generalization": {
+                    k: v for k, v in agg_by_metric.items()
+                    if k in ("Adversarial Robustness","Domain Generalization")
+                },
+            }
+
+            # Compose the result payload we store to MinIO
+            result_data = {
+                "configuration_id": config.id,
+                "ai_model_version": ai_model_version,
+                "app_versions": app_versions,
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "source_log_path": config.minio_path,
+                "aggregates": {
+                    "by_metric": agg_by_metric,
+                    "by_pillar": agg_by_pillar,
+                    "by_group": results_by_group,
+                    "interaction": agg_interaction,
+                },
+            }
+
+            # Persist results JSON to MinIO
+            result_file_path = f"{config.id}/results/{uuid.uuid4()}.json"
+            encoded = json.dumps(result_data, ensure_ascii=False, indent=2).encode("utf-8")
+            minio_client.put_object(
+                bucket_name=bucket,
+                object_name=result_file_path,
+                data=io.BytesIO(encoded),
+                length=len(encoded),
+                content_type="application/json",
+            )
+
+            # Save EvaluationResult row
             db_result = EvaluationResult(
-                configuration_id=config.id,
-                evaluation_date=datetime.datetime.utcnow(),
-                result_minio_path=result_file_path,
-                app_version=app_version_str,  # Store app versions as a comma-separated string
-                ai_model_version=ai_model_version  # Single AI model version for this evaluation
+                configuration_id = config.id,
+                evaluation_date  = datetime.now(timezone.utc),
+                result_minio_path= result_file_path,
+                app_version      = app_version_str,
+                ai_model_version = ai_model_version,
             )
             new_session.add(db_result)
             new_session.commit()
 
-        config.evaluation_status = EvaluationConfig.STATUS_COMPLETED
+            wrote_any_result = True
+
+        config.evaluation_status = (
+            EvaluationConfig.STATUS_COMPLETED if wrote_any_result
+            else EvaluationConfig.STATUS_FAILED
+        )
 
     except Exception as e:
-        config.evaluation_status = EvaluationConfig.STATUS_FAILED
-        print(f"Error during evaluation: {e}")
+        # rich error reporting
+        print(f"[evaluate] Error during evaluation: {repr(e)}")
+        print(traceback.format_exc())
+        if 'config' in locals() and config:
+            config.evaluation_status = EvaluationConfig.STATUS_FAILED
     finally:
         new_session.commit()
         new_session.close()

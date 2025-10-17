@@ -1,0 +1,9 @@
+kubectl -n benchmarking create configmap pg-init-sql \
+  --from-file=00_init.sql \
+  --from-file=10_seed_metrics.sql \
+  --from-file=12_create_surveys.sql \
+  
+
+kubectl  apply -f postgres-job.yaml -n benchmarking
+
+kubectl -n benchmarking logs job/postgres-seed -f

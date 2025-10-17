@@ -1,54 +1,43 @@
-export function groupMetricsByCategory(result) {
-  const metricMapping = {
-    "Prediction Accuracy": "Effectiveness",
-    Precision: "Effectiveness",
-    Recall: "Effectiveness",
-    "Overall System Accuracy": "Effectiveness",
-    "Model Improvement Rate": "Effectiveness",
-    "Response Time": "Efficiency",
-    "Teaching Efficiency": "Efficiency",
-    "Query Efficiency": "Efficiency",
-    "Resource Utilization": "Efficiency",
-    "Task Completion Time": "Efficiency",
-    "Correction Efficiency": "Efficiency",
-    "Error Reduction Rate": "Efficiency",
-    "Knowledge Retention": "Efficiency",
-    "Feedback Impact": "Adaptability and Learning",
-    "Adaptability Score": "Adaptability and Learning",
-    "Impact Of Corrections": "Adaptability and Learning",
-    "Learning Efficiency": "Adaptability and Learning",
-    "Objective Fulfillment Rate": "Adaptability and Learning",
-    "Human Ai Agreement Rate": "Collaboration and Interaction",
-    "Ai Assistance Rate": "Collaboration and Interaction",
-    "Decision Effectiveness": "Collaboration and Interaction",
-    "Time To Resolution": "Collaboration and Interaction",
-    "Human Effort Saved": "Collaboration and Interaction",
-    Confidence: "Trust and Safety",
-    "Trust Score": "Trust and Safety",
-    "Safety Incidents": "Trust and Safety",
-    "System Reliability": "Trust and Safety",
-    "Adversarial Robustness": "Robustness and Generalization",
-    "Domain Generalization": "Robustness and Generalization",
-  };
-
-  const groupedMetrics = {
-    Effectiveness: [],
-    Efficiency: [],
-    "Adaptability and Learning": [],
-    "Collaboration and Interaction": [],
-    "Trust and Safety": [],
-    "Robustness and Generalization": [],
-  };
-
-  Object.keys(result).forEach((key) => {
-    const group = metricMapping[key];
-    if (group) {
-      groupedMetrics[group].push({
-        metric: key,
-        value: result[key],
-      });
-    }
-  });
-
-  return groupedMetrics;
-}
+// src/utils/metricMappingUtil.js
+export const CORE_METRIC_META = {
+  F: {
+    label: "F (interactions/min)",
+    pillar: "Interaction / Collaboration",
+    fmt: (x) => x?.toFixed(2),
+  },
+  D: {
+    label: "D (avg action duration, s)",
+    pillar: "Performance / Efficiency",
+    fmt: (x) => x?.toFixed(2),
+  },
+  HCL: {
+    label: "HCL (human-centeredness)",
+    pillar: "Human-Centeredness",
+    fmt: (x) => `${Math.round((x || 0) * 100)}%`,
+  },
+  Tr: {
+    label: "Tr (trust proxy)",
+    pillar: "Trust / Transparency",
+    fmt: (x) => `${Math.round((x || 0) * 100)}%`,
+  },
+  A: {
+    label: "A (adaptability)",
+    pillar: "Adaptability",
+    fmt: (x) => x?.toFixed(2),
+  },
+  S: {
+    label: "S (similarity)",
+    pillar: "Similarity (Surrogates)",
+    fmt: (x) => `${Math.round((x || 0) * 100)}%`,
+  },
+  EL: {
+    label: "EL (effort loss)",
+    pillar: "Performance / Efficiency",
+    fmt: (x) => `${((x || 0) * 100).toFixed(1)}%`,
+  },
+  EfficiencyScore: {
+    label: "Efficiency Score",
+    pillar: "Performance / Efficiency",
+    fmt: (x) => `${Math.round((x || 0) * 100)}%`,
+  },
+};

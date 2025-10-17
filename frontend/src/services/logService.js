@@ -2,17 +2,17 @@ import apiClient from "./axios";
 
 export default {
   getLogsByConfigId(configId) {
-    return apiClient.get(`/logs/${configId}`);
+    return apiClient.get(`/v1/logs/${configId}`);
   },
   downloadLog(logName) {
-    return apiClient.get(`/logs/download/${logName}`);
+    return apiClient.get(`/v1/logs/download/${logName}`);
   },
   deleteLog(logName) {
-    return apiClient.delete(`/logs/${logName}`);
+    return apiClient.delete(`/v1/logs/${logName}`);
   },
   uploadLog(formData, configId) {
     return apiClient.post(
-      `/logs/upload?configuration_id=${configId}`,
+      `/v1/logs/upload?configuration_id=${configId}`,
       formData,
       {
         headers: {

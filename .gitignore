@@ -173,3 +173,4 @@ docker/minio-init/data/.minio.sys/*
 
 docker/minio-initdocker/minio-init/data/.minio.sys
 docker/minio-init/data/.minio.sys
+.minio.sys/

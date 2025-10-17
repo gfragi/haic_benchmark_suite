@@ -1,0 +1,3 @@
+from typing import List, Dict, Any, Protocol
+class Adapter(Protocol):
+    def to_decisions(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]: ...

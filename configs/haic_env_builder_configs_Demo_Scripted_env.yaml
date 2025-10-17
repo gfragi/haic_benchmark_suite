@@ -1,0 +1,45 @@
+task:
+  name: Demo Scripted
+  description: v1
+  parameters:
+    environment: scripted
+    env_params:
+      script:
+        tasks:
+        - id: task-1
+          name: Review & Decide
+          actions:
+          - id: a1
+            name: look
+            actor: human1
+            duration_s: 0.8
+            correct: true
+          - id: a2
+            name: suggest
+            actor: ai1
+            latency_ms: 200
+            correct: true
+    dt: 0.1
+    rt_max: 5.0
+agents:
+- name: Radiologist
+  modality: policy
+  capabilities: []
+  runtime_params: {}
+  id: human1
+  profile: default
+- name: AI Assistant
+  modality: policy
+  capabilities: []
+  runtime_params: {}
+  id: ai1
+  profile: gpt
+profiles:
+- profile_id: default
+  metadata: {}
+  type: human
+  parameters: {}
+- profile_id: gpt
+  metadata: {}
+  type: ai
+  parameters: {}

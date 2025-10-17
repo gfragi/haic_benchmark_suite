@@ -31,110 +31,110 @@
               <h3 class="text-h6 font-weight-bold">Key Features</h3>
               <v-list dense>
                 <v-list-item>
-                  <v-list-item-icon>
+                  <v-list-item>
                     <v-icon>mdi-cog</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                  </v-list-item>
+                  <div>
                     <v-list-item-title
                       ><strong>Evaluation Configuration:</strong> Create and
                       manage evaluation configurations with
                       ease.</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-icon>
+                  <v-list-item>
                     <v-icon>mdi-file-upload</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                  </v-list-item>
+                  <div>
                     <v-list-item-title
                       ><strong>Log Ingestion:</strong> Upload and process log
                       files to generate evaluation results.</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-icon>
+                  <v-list-item>
                     <v-icon>mdi-chart-bar</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                  </v-list-item>
+                  <div>
                     <v-list-item-title
                       ><strong>Dynamic Reporting:</strong> Generate detailed
                       reports and visualizations of evaluation
                       metrics.</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-icon>
+                  <v-list-item>
                     <v-icon>mdi-database</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                  </v-list-item>
+                  <div>
                     <v-list-item-title
                       ><strong>Log Generation Tool:</strong> Create synthetic
                       log data tailored to specific application
                       types.</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-icon>
+                  <v-list-item>
                     <v-icon>mdi-api</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                  </v-list-item>
+                  <div>
                     <v-list-item-title
                       ><strong>API Endpoints:</strong> Access various endpoints
                       for managing configurations, logs, and
                       results.</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
               </v-list>
               <v-divider class="my-4"></v-divider>
               <h3 class="text-h6 font-weight-bold">Technologies Used</h3>
               <v-list dense>
                 <v-list-item>
-                  <v-list-item-icon>
+                  <v-list-item>
                     <v-icon>mdi-server</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                  </v-list-item>
+                  <div>
                     <v-list-item-title
                       ><strong>Backend:</strong> FastAPI, SQLAlchemy,
                       Alembic</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-icon>
+                  <v-list-item>
                     <v-icon>mdi-web</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                  </v-list-item>
+                  <div>
                     <v-list-item-title
                       ><strong>Frontend:</strong> Vue 3, Vuetify,
                       Chart.js</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-icon>
+                  <v-list-item>
                     <v-icon>mdi-database</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                  </v-list-item>
+                  <div>
                     <v-list-item-title
                       ><strong>Database:</strong> PostgreSQL</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-icon>
+                  <v-list-item>
                     <v-icon>mdi-docker</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                  </v-list-item>
+                  <div>
                     <v-list-item-title
                       ><strong>Containerization:</strong> Docker, Docker
                       Compose</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
               </v-list>
               <v-divider class="my-4"></v-divider>
@@ -145,45 +145,45 @@
               </p>
               <v-list dense>
                 <v-list-item>
-                  <v-list-item-content>
+                  <div>
                     <v-list-item-title
                       >1. Fork the repository.</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-content>
+                  <div>
                     <v-list-item-title
                       >2. Create a feature branch (<code
                         >git checkout -b feature/your-feature</code
                       >).</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-content>
+                  <div>
                     <v-list-item-title
                       >3. Commit your changes (<code
                         >git commit -am 'Add some feature'</code
                       >).</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-content>
+                  <div>
                     <v-list-item-title
                       >4. Push to the branch (<code
                         >git push origin feature/your-feature</code
                       >).</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-content>
+                  <div>
                     <v-list-item-title
                       >5. Create a new Pull Request.</v-list-item-title
                     >
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
               </v-list>
               <v-btn color="primary" class="mt-4" @click="goToGitHub"
@@ -227,7 +227,7 @@ export default {
 .v-list-item-title {
   font-size: 16px;
 }
-.v-list-item-icon {
+.v-list-item {
   margin-right: 10px;
 }
 </style>

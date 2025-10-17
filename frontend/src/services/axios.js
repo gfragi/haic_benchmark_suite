@@ -1,24 +1,24 @@
+// src/services/axios.js
 import axios from "axios";
-import keycloak from "./keycloak";
+import keycloak from "@/services/keycloak";
 
-axios.interceptors.request.use(
-  (config) => {
-    const token = keycloak.token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-const apiClient = axios.create({
-  baseURL: "import.meta.env.VUE_APP_API_BASE_URL",
-  withCredentials: false,
-  headers: {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-  },
+const api = axios.create({
+  baseURL:
+    typeof import.meta !== "undefined" &&
+    import.meta.env &&
+    import.meta.env.VUE_APP_API_BASE_URL
+      ? import.meta.env.VUE_APP_API_BASE_URL
+      : process.env.VUE_APP_API_BASE_URL,
+  // withCredentials: true, // if need cookies
 });
 
-export default apiClient;
+// Attach bearer token if logged in
+api.interceptors.request.use((config) => {
+  if (keycloak?.authenticated && keycloak?.token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${keycloak.token}`;
+  }
+  return config;
+});
+
+export default api;

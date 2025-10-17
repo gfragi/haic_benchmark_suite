@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-seed
+  namespace: benchmarking
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: psql
+          image: postgres:15
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef: { name: benchmarking-secret, key: DB_PASSWORD }
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef: { name: benchmarking-secret, key: DB_NAME }
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef: { name: benchmarking-secret, key: DB_USER }
+          command:
+            - bash
+            - -lc
+            - |
+              set -euo pipefail
+              PSQL="psql -v ON_ERROR_STOP=1 -h postgres -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""
+
+              if $PSQL -tAc "SELECT to_regclass('public.configurations') IS NULL" | grep -q t; then
+                echo "==> Fresh DB: applying /init/00_init_dump.sql"
+                $PSQL -f /init/00_init_dump.sql
+              else
+                echo "==> DB already initialized: skipping 00_init_dump.sql"
+              fi
+
+              echo "==> Applying /init/10_seed_metrics.sql"
+              $PSQL -f /init/10_seed_metrics.sql
+
+              echo "==> Applying /init/12_create_surveys.sql"
+              $PSQL -f /init/12_create_surveys.sql
+          volumeMounts:
+            - name: init-sql
+              mountPath: /init
+      volumes:
+        - name: init-sql
+          configMap:
+            name: pg-init-sql

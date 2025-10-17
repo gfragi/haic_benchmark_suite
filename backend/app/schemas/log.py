@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Union
+from typing import Any, List, Optional, Dict, Union
 
 
 class SystemMetrics(BaseModel):
@@ -102,7 +102,4 @@ class LogSchema(BaseModel):
     performance_infrastructure: Optional[PerformanceInfrastructure] = None
     performance_logs: Optional[PerformanceLogs] = None
     ai_model_data: Optional[AIModelData] = None
-
-
-class LogCompleteSchema(LogSchema):
-    configuration_id: int
+    decisions: Optional[List[Dict[str, Any]]] = None

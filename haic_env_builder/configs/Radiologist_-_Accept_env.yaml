@@ -1,0 +1,9 @@
+task:
+  name: Radiologist - Accept
+  parameters:
+    environment: ct_scan
+    env_params: {}
+    dt: 0.1
+    rt_max: 5.0
+agents: []
+profiles: []

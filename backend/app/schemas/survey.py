@@ -1,5 +1,6 @@
+# app/schemas/survey.py
 from pydantic import BaseModel, Field
-from typing import Optional, Dict
+from typing import Any, Optional, Dict
 from datetime import datetime
 import uuid
 
@@ -23,6 +24,8 @@ class EthicsResponses(BaseModel):
     q_trust: int = Field(..., ge=1, le=5, description="Trust: Overall, I trust this system to operate ethically and in my best interest.")
 
 class SurveyCreate(BaseModel):
+    schema_id: Optional[str] = Field(
+        None, description="ID of the domain-specific question set used to render this survey")
     survey_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     user_id: str = Field(..., description="An anonymized identifier for the respondent")
     timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -31,6 +34,6 @@ class SurveyCreate(BaseModel):
     ai_model_version: Optional[str] = Field(None, description="Version of the AI model being used")
     tam_sus_responses: TAMSUSResponses
     ethics_responses: EthicsResponses
-    domain_specific: Optional[Dict[str, int]] = Field(
+    domain_specific: Optional[Dict[str, Any]] = Field(
         None, description="Optional domain-specific responses, e.g., for pilot-specific questions"
     )

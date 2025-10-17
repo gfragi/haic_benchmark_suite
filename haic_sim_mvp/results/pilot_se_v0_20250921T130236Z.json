@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0.0",
+  "env_id": "SE_ENV",
+  "sim_id": "pilot_se_v0",
+  "timestamp": "2025-09-21T13:02:36.851257Z",
+  "attributes": {
+    "task": "grid_security",
+    "domain": "energy"
+  },
+  "agents": {
+    "OP": {
+      "attributes": {},
+      "model": "human",
+      "affordances": [
+        "view",
+        "inspect",
+        "accept",
+        "reject",
+        "annotate"
+      ]
+    },
+    "FAI": {
+      "attributes": {},
+      "model": "ai",
+      "affordances": [
+        "forecast"
+      ]
+    },
+    "SAI": {
+      "attributes": {},
+      "model": "ai",
+      "affordances": [
+        "classify",
+        "explain"
+      ]
+    }
+  },
+  "objects": {
+    "Twin": {
+      "attributes": {
+        "kind": "digital_twin"
+      },
+      "affordances": [
+        "simulate"
+      ]
+    },
+    "GS": {
+      "attributes": {
+        "kind": "grid_state"
+      },
+      "affordances": [
+        "forecast",
+        "classify",
+        "view",
+        "inspect"
+      ]
+    }
+  },
+  "decisions": []
+}

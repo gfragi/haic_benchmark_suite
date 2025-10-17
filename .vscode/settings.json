@@ -11,5 +11,8 @@
         "haic",
         "kubeflow"
     ],
-    "ruff.enable": false
+    "ruff.enable": false,
+    "python.analysis.extraPaths": [
+        "./packages/metrics_core"
+    ]
 }

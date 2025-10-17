@@ -1,177 +1,224 @@
-import json
+from datetime import datetime, timezone
+import json, os, io, uuid
 import logging
-import os
 from dotenv import load_dotenv
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query
 from fastapi.encoders import jsonable_encoder
 from jsonschema import ValidationError
-from minio import Minio, S3Error
 from sqlalchemy.orm import Session
+
 from app.models import LogEntry
-from app.schemas.log import LogCompleteSchema, LogSchema
-from app.utils.database import get_db
-from app.utils.generic_functions import save_log_entry, get_config_by_id
-from app.utils.minio_utils import upload_file
 from app.models.configuration import EvaluationConfig
-from app.utils.minio_client_keycloak import get_minio_client
+from app.schemas.log import LogSchema
+from app.utils.database import get_db
+from app.utils.generic_functions import get_config_by_id
+from app.utils.minio_utils import upload_file, list_files, download_file, delete_file
+
+import http.client as http_client
+
+http_client.HTTPConnection.debuglevel = 1
+
+from app.services.metrics_adapter import compute_from_log
+from app.utils.minio_utils import get_minio_client
+
+from app.utils.minio_utils import put_json
+import re
+from collections import defaultdict
+
 
 router = APIRouter()
-
-# Initialize a logger
 logger = logging.getLogger(__name__)
-
-load_dotenv()
-
+MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 minio_client = get_minio_client()
+
+
+def _sanitize(s: str) -> str:
+    if s is None:
+        return "Unknown"
+    s = re.sub(r"[^A-Za-z0-9._-]+", "_", str(s)).strip("_")
+    return s or "Unknown"
 
 
 @router.post("/upload")
 async def upload_log(
-    configuration_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)
+    configuration_id: int = Query(..., description="Evaluation configuration id"),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
 ):
-    # Fetch the configuration to associate with the logs
-    config = get_config_by_id(configuration_id, db)
+    raw = await file.read()
+
+    # Parse JSON
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON file: {e.msg}")
+
+    # Unwrap generator wrapper: {count, file_path, logs: [...]}
+    if isinstance(payload, dict) and isinstance(payload.get("logs"), list):
+        payload = payload["logs"]
+
+    def _mean_map(dicts, key):
+        from statistics import mean
+
+        items = [d.get(key) for d in dicts if isinstance(d, dict)]
+        out = {}
+        keys = set().union(*(x.keys() for x in items)) if items else set()
+        for k in keys:
+            vals = [x.get(k) for x in items if isinstance(x.get(k), (int, float))]
+            out[k] = mean(vals) if vals else None
+        return out
+
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+    stem = (
+        file.filename.rsplit(".", 1)[0]
+        if file.filename and "." in file.filename
+        else (file.filename or f"log-{uuid.uuid4().hex}")
+    )
+
+    # Store original upload once
+    orig_name = f"{configuration_id}/uploads/{stem}.{ts}.json"
+    try:
+        minio_client.put_object(
+            bucket_name=MINIO_BUCKET,
+            object_name=orig_name,
+            data=io.BytesIO(raw),
+            length=len(raw),
+            content_type="application/json",
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"MinIO upload failed: {e}")
+
+    results = {"original": orig_name, "derived_by_version": {}}
+
+    def _write_derived(ver: str, derived: dict):
+        derived_name = f"{configuration_id}/uploads/{stem}.{ts}.v{ver}.derived.json"
+        enc = json.dumps(derived, ensure_ascii=False, indent=2).encode("utf-8")
+        minio_client.put_object(
+            MINIO_BUCKET,
+            derived_name,
+            io.BytesIO(enc),
+            len(enc),
+            content_type="application/json",
+        )
+        results["derived_by_version"][ver] = {"path": derived_name, "summary": derived}
+        return derived_name
+
+    try:
+        if isinstance(payload, dict):
+            # Single session
+            ver = _sanitize(payload.get("ai_model_version") or "Unknown")
+            derived = compute_from_log(payload)
+            _write_derived(ver, derived)
+
+        elif isinstance(payload, list):
+            # Group by ai_model_version
+            groups = defaultdict(list)
+            for p in payload:
+                if isinstance(p, dict):
+                    ver = _sanitize(p.get("ai_model_version") or "Unknown")
+                    groups[ver].append(p)
+
+            for ver, logs in groups.items():
+                derived_list = [compute_from_log(p) for p in logs]
+                derived = {
+                    "by_metric": _mean_map(derived_list, "by_metric"),
+                    "by_pillar": _mean_map(derived_list, "by_pillar"),
+                    "interaction": _mean_map(derived_list, "interaction"),
+                    "count": len(logs),
+                    "ai_model_version": ver,
+                }
+                _write_derived(ver, derived)
+        else:
+            raise HTTPException(
+                status_code=400, detail="JSON must be an object or an array of objects"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Processing failed: {e}")
+
+    # Update the config to point at the original upload (evaluation reads this)
+    config = db.query(EvaluationConfig).get(configuration_id)
     if not config:
         raise HTTPException(
             status_code=404, detail="Evaluation configuration not found."
         )
-
-    # Read the content of the file
-    content = await file.read()
-
-    # Attempt to parse the JSON content
-    try:
-        json_data = json.loads(
-            content.decode("utf-8")
-        )  # Ensure decoding of bytes to string
-    except json.JSONDecodeError as e:
-        raise HTTPException(status_code=400, detail=f"Invalid JSON format: {e.msg}")
-
-    # Process each log in the JSON array
-    if not isinstance(json_data, list):
-        raise HTTPException(status_code=400, detail="Expected a list of logs")
-
-    # Validate each log against the schema
-    for log_data in json_data:
-        try:
-            validated_log = LogSchema(**log_data)
-            log_entry_data = jsonable_encoder(validated_log)
-            log_entry_data["configuration_id"] = configuration_id
-            log_entry = LogEntry(**log_entry_data)
-            db.add(log_entry)
-        except ValidationError as e:
-            # Log the error if validation fails and skip this log
-            logger.error(f"Log file structure invalid: {e}")
-            continue
-
-    # Commit valid logs to the database
+    config.minio_path = orig_name
+    db.add(config)
     db.commit()
-
-    # Upload the original file to MinIO (not the parsed JSON)
-    try:
-        minio_path = await upload_file(content, configuration_id)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to upload log file to MinIO: {str(e)}"
-        )
-
-    # Store the MinIO path in the database
-    config.minio_path = minio_path
-    db.commit()
+    db.refresh(config)
 
     return {
-        "detail": f"Successfully uploaded the log file and associated it with configuration ID {configuration_id}.",
-        "minio_path": minio_path,
+        "detail": f"Uploaded and processed log(s) for configuration {configuration_id}.",
+        "minio_paths": results,
     }
 
 
 @router.get("/{config_id}")
-def list_logs(config_id: int):
-    # List objects in the config's folder
+def get_logs(config_id: int):
     try:
-        objects = minio_client.list_objects(
-            os.getenv("MINIO_BUCKET"), prefix=f"{config_id}/", recursive=True
-        )
-        log_files = [obj.object_name for obj in objects]
-        return {"logs": log_files}
-    except S3Error as e:
+        return {"logs": list_files(config_id)}
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/download/{config_id}/{log_name}")
-def download_log(config_id: int, log_name: str):
+def get_download_url(config_id: int, log_name: str):
     try:
-        log_path = f"{config_id}/{log_name}"
-        url = minio_client.presigned_get_object(os.getenv("MINIO_BUCKET"), log_path)
-        return {"download_url": url}
-    except S3Error as e:
+        return {"download_url": download_file(config_id, log_name)}
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.delete("/{config_id}/{log_name}")
-def delete_log(config_id: int, log_name: str):
+def remove_log(config_id: int, log_name: str):
     try:
-        log_path = f"{config_id}/{log_name}"
-        minio_client.remove_object(os.getenv("MINIO_BUCKET"), log_path)
+        delete_file(config_id, log_name)
         return {"detail": "Log deleted successfully"}
-    except S3Error as e:
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Log registration in database
-@router.post("/register")
-def register_log(log: LogCompleteSchema, db: Session = Depends(get_db)):
-    config = (
-        db.query(EvaluationConfig)
-        .filter(EvaluationConfig.id == log.configuration_id)
-        .first()
-    )
-    if not config:
-        raise HTTPException(status_code=404, detail="Configuration not found")
+@router.post("/register", response_model=dict)
+def register_log(
+    log: LogSchema,
+    configuration_id: int = Query(..., description="Evaluation configuration id"),
+    db: Session = Depends(get_db),
+):
+    """
+    Accepts JSON directly (no file), computes derived KPIs, stores both JSON and *.derived.json in MinIO,
+    updates EvaluationConfig.minio_path, and returns the derived block.
+    """
+    payload = log.model_dump()
 
-    # new_log = Log(name=log.name, config_id=log.config_id, minio_path=log.minio_path)
-    # db.add(new_log)
-    # db.commit()
-    # db.refresh(new_log)
-    new_log = LogEntry(**log.model_dump())
-    return save_log_entry(new_log, db)
+    # 1) Compute derived
+    derived = compute_from_log(payload)
 
+    # 2) Build deterministic names
+    session_part = payload.get("session_id") or "log"
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+    original_name = f"uploads/{session_part}.{ts}.json"
+    derived_name = f"uploads/{session_part}.{ts}.derived.json"
 
-# Add logs as json, instead of file
-@router.post("/{config_id}/add_log")
-async def add_log(logs: list[LogSchema], config_id: int, db: Session = Depends(get_db)):
+    # 3) Store original + derived in MinIO
+    put_json(configuration_id, original_name, payload)
+    put_json(configuration_id, derived_name, derived)
 
-    # Fetch the configuration to associate with the logs
-    config = get_config_by_id(config_id, db)
+    # 4) Update config.minio_path to point to the original JSON
+    config = db.query(EvaluationConfig).get(configuration_id)
     if not config:
         raise HTTPException(
             status_code=404, detail="Evaluation configuration not found."
         )
-
-    logs_list = []
-
-    for log in logs:
-        log_obj = jsonable_encoder(log)
-        logs_list.append(log_obj)
-
-        # Validate each log against the schema
-        log_entry = LogEntry(**log_obj)
-        log_entry = save_log_entry(log_entry, db)
-
-    # Upload the original file to MinIO (not the parsed JSON)
-    try:
-        content = json.dumps(logs_list).encode("utf-8")
-        minio_path = await upload_file(content, config_id)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to upload log file to MinIO: {str(e)}"
-        )
-
-    # Store the MinIO path in the database
-    config.minio_path = minio_path
+    config.minio_path = f"{configuration_id}/{original_name}"
+    db.add(config)
     db.commit()
+    db.refresh(config)
 
+    # 5) Response
     return {
-        "detail": f"Successfully inserted the log data, and associated the resulting file with the configuration ID {config_id}.",
-        "minio_path": minio_path,
+        "detail": "Registered log.",
+        "minio_paths": {
+            "original": f"{configuration_id}/{original_name}",
+            "derived": f"{configuration_id}/{derived_name}",
+        },
+        "derived": derived,
     }

@@ -1,59 +1,53 @@
-from fastapi import Depends, FastAPI
-from app.routers import logs, configuration, evaluate, reporting, log_generator
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-
+# main.py
+import os
+from fastapi import FastAPI, APIRouter
+from app.routers import logs, configuration, evaluate, log_generator, meta
+from app.routers import fairness, env_builder, simulator, results, survey, survey_schema
 from fastapi.middleware.cors import CORSMiddleware
-from .utils.keycloak_utils import decode_jwt_token
-
-from app.routers import results
-from app.routers import survey 
+from app.services.seed_core_metrics import seed_core_definitions
+from app.routers import collab
 
 
 app = FastAPI(
     title="Human-AI Benchmark Suite",
     description="An application to evaluate Human-AI collaboration.",
-    version="1.0.0",
+    version="2.0.1",
+    docs_url="/api/docs",            # optional
+    openapi_url="/api/openapi.json", # optional
 )
-security = HTTPBearer()
 
-
-origins = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",# The URL of the frontend
-    "http://frontend:8080",  # The URL of the frontend
-    # Add other origins if needed
-]
+async def on_startup():
+    if os.getenv("SEED_CORE_METRICS", "false").lower() in {"1","true","yes","on"}:
+        # don’t crash the server if DB isn’t ready—log and continue
+        try:
+            seed_core_definitions()
+        except Exception as e:
+            print(f"[core-metrics] Seed skipped due to error: {e}")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Import and include your routers
-app.include_router(logs.router, prefix="/logs", tags=["Logs"])
-app.include_router(configuration.router, prefix="/configuration", tags=["Configuration"])
-app.include_router(evaluate.router, prefix="/evaluate", tags=["Evaluation"])
-app.include_router(results.router, prefix="/results", tags=["Results"])
-app.include_router(reporting.router, prefix="/reporting", tags=["Reporting"])
-app.include_router(log_generator.router, prefix="/log-generator", tags=["Log Generator"])
-app.include_router(survey.router , prefix="/survey", tags=["Survey"])
+api = APIRouter(prefix="/api/v1", )
 
-def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
-):
-    token = credentials.credentials
-    payload = decode_jwt_token(token)
-    # You could map this payload to a user model or simply return the payload
-    return payload
+api.include_router(logs.router,           prefix="/logs",          tags=["Logs"])
+api.include_router(configuration.router,  prefix="/configuration", tags=["Configuration"])
+api.include_router(evaluate.router,       prefix="/evaluate",      tags=["Evaluation"])
+api.include_router(results.router,        prefix="/results",       tags=["Results"])
+# api.include_router(reporting.router,      prefix="/reporting",     tags=["Reporting"])
+# api.include_router(core_metrics.router,   prefix="/core-metrics",  tags=["Core Metrics"])
+api.include_router(log_generator.router,  prefix="/log-generator", tags=["Log Generator"])
+api.include_router(survey.router,         prefix="/survey",        tags=["Survey"])
+api.include_router(survey_schema.router, prefix="/survey/schemas", tags=["Survey Schemas"])
+api.include_router(fairness.router,       prefix="/fairness",      tags=["Fairness"])
+api.include_router(env_builder.router,    prefix="/env", tags=["Environment Builder"])
+api.include_router(simulator.router,      prefix="/simulator", tags=["Simulator"])
+api.include_router(collab.router,        prefix="/collab-metrics", tags=["Collaboration Metrics"])
 
-@app.get("/protected")
-def protected_route(current_user=Depends(get_current_user)):
-    return {
-        "message": "You have accessed a protected route!",
-        "user": current_user
-    }
+app.include_router(meta.router,           prefix="/meta", tags=["Meta"])
 
-
+app.include_router(api)

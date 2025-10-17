@@ -8,32 +8,49 @@ import keycloak from "./services/keycloak";
 
 loadFonts();
 
-// Log config so you can verify it in the browser console:
 console.log("Keycloak config:", {
   url: process.env.VUE_APP_KEYCLOAK_URL,
   realm: process.env.VUE_APP_KEYCLOAK_REALM,
   clientId: process.env.VUE_APP_KEYCLOAK_CLIENT_ID,
 });
+// Treat /survey as PUBLIC (no forced login)
+const isPublicPath = () => {
+  return window.location.pathname === "/survey";
+};
+
+const publicRedirect = () =>
+  window.location.origin + window.location.pathname + window.location.search;
 
 keycloak
   .init({
-    onLoad: "login-required",
+    onLoad: isPublicPath() ? "check-sso" : "login-required",
     checkLoginIframe: false,
-    redirectUri: window.location.origin,
+    // IMPORTANT: keep query params on the public page
+    redirectUri: isPublicPath()
+      ? publicRedirect()
+      : window.location.origin + "/",
   })
-  .then((authenticated) => {
+  .then(async (authenticated) => {
     console.log("Keycloak init resolved:", authenticated);
-    if (authenticated) {
-      const app = createApp(App);
-      app.config.globalProperties.$keycloak = keycloak;
-      app.use(router);
-      app.use(store);
-      app.use(vuetify);
-      app.mount("#app");
-    } else {
-      console.warn("Not authenticated, reloading");
-      window.location.reload();
+    // If not authenticated AND it’s NOT a public route, trigger login.
+    if (!authenticated && !isPublicPath()) {
+      console.warn("Not authenticated, redirecting to login");
+      keycloak.login();
+      return;
     }
+
+    window.__kc = keycloak;
+
+    const app = createApp(App);
+    app.config.globalProperties.$keycloak = keycloak;
+    app.use(router);
+    app.use(store);
+    app.use(vuetify);
+
+    // Wait for first route resolution (helps after SSO redirects)
+    await router.isReady();
+
+    app.mount("#app");
   })
   .catch((err) => {
     console.error("Keycloak init failed:", err);

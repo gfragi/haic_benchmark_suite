@@ -9,12 +9,8 @@
       class="v-list-item"
     >
       <v-list-item>
-        <v-list-item-icon>
-          <v-icon>{{ item.icon }}</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item-content>
+        <v-icon class="mr-2">{{ item.icon }}</v-icon>
+        <v-list-item-title>{{ item.title }}</v-list-item-title>
       </v-list-item>
     </router-link>
   </v-list>
@@ -30,6 +26,16 @@ export default {
         { title: "Configurations", icon: "mdi-cog", route: "/configs" },
         { title: "Log Management", icon: "mdi-file-import", route: "/logs" },
         {
+          title: "Survey Dashboard",
+          icon: "mdi-chart-bar",
+          route: "/survey-dashboard",
+        },
+        {
+          title: "Fairness Evaluation",
+          icon: "mdi-scale-balance",
+          route: "/fairness",
+        },
+        {
           title: "Log Generation",
           icon: "mdi-database-edit",
           route: "/log-generator",
@@ -38,6 +44,11 @@ export default {
           title: "Explore Metrics",
           icon: "mdi-chart-areaspline",
           route: "/metrics",
+        },
+        {
+          title: "Simulator",
+          icon: "mdi-flask",
+          route: "/simulate",
         },
         { title: "About", icon: "mdi-information", route: "/about" },
       ],

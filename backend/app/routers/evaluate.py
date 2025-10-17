@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models import EvaluationResult, LogEntry
-from app.services.metrics import Metrics
+from metrics_core.outcome_metrics import Metrics
 from app.utils.generic_functions import get_config_by_id
 from fastapi import BackgroundTasks
 

@@ -1,23 +1,36 @@
 
-# Use the official Python image as the base image
-FROM python:3.10-slim
+FROM python:3.10.14-slim-bullseye
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libpq-dev curl \
+ && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and system packages to reduce vulnerabilities
+RUN apt-get update && apt-get upgrade -y && pip install --upgrade pip setuptools wheel
 
 # Set the working directory in the container
 WORKDIR /app
+
+# Copy local libraries and requirements file
+COPY haic_env_builder ./haic_env_builder
+COPY packages/metrics_core ./packages/metrics_core
+COPY requirements.txt .
 
 # Install system dependencies 
 RUN apt-get update && apt-get install -y \
     build-essential libpq-dev curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file into the container
-COPY requirements.txt .
 
 # Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+# Copy source code (backend + local libs)
 COPY backend/app ./app
+
+
+# Make local packages importable
+ENV PYTHONPATH=/app
 
 # Expose FastAPI port
 EXPOSE 8000
