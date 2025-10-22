@@ -1,0 +1,313 @@
+{
+  "logs": [
+    {
+      "sim_id": "ns_healthentia",
+      "session_id": "sess-20251017-NS001",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v0.1.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG001",
+          "t": 0.0,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG001",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "II"
+            },
+            "site_id": "site_A"
+          }
+        },
+        {
+          "interaction_id": "IMG001",
+          "t": 1.2,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 940,
+          "payload": {
+            "model_uri": "minio://bucket/models/ns/mdl_001",
+            "metrics": {
+              "auc": 0.86
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG001",
+          "t": 3.0,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "email",
+            "presigned_url_id": "psu_img001"
+          }
+        },
+        {
+          "interaction_id": "IMG001",
+          "t": 6.0,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 8.2,
+          "payload": {
+            "decision": "accept",
+            "note": ""
+          },
+          "correct": true
+        },
+        {
+          "interaction_id": "IMG002",
+          "t": 10.0,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG002",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            },
+            "site_id": "site_A"
+          }
+        },
+        {
+          "interaction_id": "IMG002",
+          "t": 11.2,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 910,
+          "payload": {
+            "model_uri": "minio://bucket/models/ns/mdl_001",
+            "metrics": {
+              "auc": 0.86
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG002",
+          "t": 13.0,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "email",
+            "presigned_url_id": "psu_img002"
+          }
+        },
+        {
+          "interaction_id": "IMG002",
+          "t": 16.0,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 9.5,
+          "payload": {
+            "decision": "reject",
+            "note": ""
+          },
+          "correct": false
+        },
+        {
+          "interaction_id": "IMG003",
+          "t": 20.0,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG003",
+            "cohort": {
+              "cancer_type": "lung",
+              "stage": "II"
+            },
+            "site_id": "site_B"
+          }
+        },
+        {
+          "interaction_id": "IMG003",
+          "t": 21.2,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 980,
+          "payload": {
+            "model_uri": "minio://bucket/models/ns/mdl_001",
+            "metrics": {
+              "auc": 0.86
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG003",
+          "t": 23.0,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "email",
+            "presigned_url_id": "psu_img003"
+          }
+        },
+        {
+          "interaction_id": "IMG003",
+          "t": 26.0,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 7.4,
+          "payload": {
+            "decision": "accept",
+            "note": ""
+          },
+          "correct": true
+        },
+        {
+          "interaction_id": "IMG004",
+          "t": 30.0,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG004",
+            "cohort": {
+              "cancer_type": "lung",
+              "stage": "III"
+            },
+            "site_id": "site_B"
+          }
+        },
+        {
+          "interaction_id": "IMG004",
+          "t": 31.2,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 860,
+          "payload": {
+            "model_uri": "minio://bucket/models/ns/mdl_001",
+            "metrics": {
+              "auc": 0.86
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG004",
+          "t": 33.0,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "email",
+            "presigned_url_id": "psu_img004"
+          }
+        },
+        {
+          "interaction_id": "IMG004",
+          "t": 36.0,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 10.2,
+          "payload": {
+            "decision": "accept",
+            "note": ""
+          },
+          "correct": false
+        },
+        {
+          "interaction_id": "IMG005",
+          "t": 40.0,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG005",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "II"
+            },
+            "site_id": "site_C"
+          }
+        },
+        {
+          "interaction_id": "IMG005",
+          "t": 41.2,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 920,
+          "payload": {
+            "model_uri": "minio://bucket/models/ns/mdl_001",
+            "metrics": {
+              "auc": 0.86
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG005",
+          "t": 43.0,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "email",
+            "presigned_url_id": "psu_img005"
+          }
+        },
+        {
+          "interaction_id": "IMG005",
+          "t": 46.0,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 11.8,
+          "payload": {
+            "decision": "reject",
+            "note": ""
+          },
+          "correct": true
+        },
+        {
+          "interaction_id": "IMG006",
+          "t": 50.0,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG006",
+            "cohort": {
+              "cancer_type": "lung",
+              "stage": "I"
+            },
+            "site_id": "site_C"
+          }
+        },
+        {
+          "interaction_id": "IMG006",
+          "t": 51.2,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 900,
+          "payload": {
+            "model_uri": "minio://bucket/models/ns/mdl_001",
+            "metrics": {
+              "auc": 0.86
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG006",
+          "t": 53.0,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "email",
+            "presigned_url_id": "psu_img006"
+          }
+        },
+        {
+          "interaction_id": "IMG006",
+          "t": 56.0,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 6.7,
+          "payload": {
+            "decision": "accept",
+            "note": ""
+          },
+          "correct": true
+        }
+      ]
+    }
+  ]
+}

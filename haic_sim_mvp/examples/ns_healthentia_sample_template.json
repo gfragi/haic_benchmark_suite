@@ -1,0 +1,115 @@
+{
+  "logs": [
+    {
+      "sim_id": "ns_healthentia",
+      "session_id": "sess-YYYYMMDD-XXXX",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v0.1.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG001",
+          "t": 0.0,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG001",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "II"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG001",
+          "t": 1.2,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 950,
+          "payload": {
+            "model_uri": "minio://bucket/models/ns/mdl_001",
+            "metrics": {
+              "auc": 0.86
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG001",
+          "t": 5.0,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms",
+            "presigned_url_id": "psu_abc123"
+          }
+        },
+        {
+          "interaction_id": "IMG001",
+          "t": 14.0,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 8.2,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          },
+          "correct": true
+        },
+        {
+          "interaction_id": "IMG002",
+          "t": 20.0,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG002",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG002",
+          "t": 22.0,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 900,
+          "payload": {
+            "model_uri": "minio://bucket/models/ns/mdl_001",
+            "metrics": {
+              "auc": 0.86
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG002",
+          "t": 26.0,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "email",
+            "presigned_url_id": "psu_def456"
+          }
+        },
+        {
+          "interaction_id": "IMG002",
+          "t": 35.0,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 7.5,
+          "payload": {
+            "decision": "reject",
+            "note": "rule RS12 conflicts with guideline"
+          },
+          "correct": false
+        }
+      ]
+    }
+  ]
+}
