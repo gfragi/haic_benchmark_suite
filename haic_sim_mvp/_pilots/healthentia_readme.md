@@ -51,9 +51,42 @@ payload: `{ model_id, version, registry }`
 7. `error` — exceptions/timeouts
 payload: `{ where, message, details }`
 
+## 4. Smart Healthcare (NS/Healthentia) — Agents & Objects
+
+### Agents
+
+| ID       | Role                        | `model`   | `actor_type` in logs | Affordances                              | What it represents                     |
+| -------- | --------------------------- | --------- | -------------------- | ---------------------------------------- | -------------------------------------- |
+| **SYS**  | Orchestrator / Data service | `system`  | `system`             | `input_create`, `notify`                 | Ingests inputs; sends notifications.   |
+| **NSAI** | Neuro-symbolic model        | `ai`      | `ai`                 | `train`, `inference`, `explain`          | Training/inference component.          |
+| **XAI**  | Explainability tool         | `ai_tool` | `ai`                 | `generate_xai`                           | SHAP/LIME/etc. artifact generation.    |
+| **MLE**  | ML engineer reviewer        | `human`   | `human`              | `review`, `accept`, `reject`, `annotate` | First human review.                    |
+| **EXP**  | Clinical expert reviewer    | `human`   | `human`              | `review`, `accept`, `reject`, `annotate` | Second human review.                   |
+| **REG**  | Model registry              | `system`  | `system`             | `register_model`, `store_artifacts`      | Registers versions & stores artifacts. |
+
+### Objects
+
+| ID         | Kind            | Affordances         | What it represents                               |
+| ---------- | --------------- | ------------------- | ------------------------------------------------ |
+| **Img**    | `medical_image` | `provide`           | Imaging item or case to review.                  |
+| **Mdl**    | `ns_model`      | `store`, `download` | Versioned NS model artifact.                     |
+| **XaiArt** | `xai_artifact`  | `store`, `view`     | Generated explainability artifact (plots, JSON). |
+
+### Action ↔ Log mapping
+
+| Env `action`       | Log `action` / `event_type`          | Typical payload keys                                        |
+| ------------------ | ------------------------------------ | ----------------------------------------------------------- |
+| `input_create`     | `initial_input_provided`             | `image_id`, `cohort{cancer_type,stage}`, `site_id?`         |
+| `train`            | `model_trained` *(or `ai_response`)* | `model_uri`, `metrics{...}`, `latency_ms`                   |
+| `generate_xai`     | `xai_generated`                      | `technique`, `top_features[]`, `artifact_uri`, `latency_ms` |
+| `notify`           | `human_review_notified`              | `role`, `method`, `presigned_url_id`                        |
+| `review` (MLE/EXP) | `human_review_performed`             | `decision`, `note`, `duration_s`, `correct?`                |
+| `register_model`   | `model_registered`                   | `model_id`, `version`, `registry`                           |
 
 
-## 4. Session Bundle (canonical JSON)
+
+
+## 5. Session Bundle (canonical JSON)
 
 Wrap events in a session bundle when sending to the Benchmarking API:
 
@@ -74,7 +107,7 @@ Wrap events in a session bundle when sending to the Benchmarking API:
 
 Fields per event: `interaction_id`, `t` or `timestamp`, `actor_type`, `action`, optional `duration_s`, optional `latency_ms`, optional `correct`, `payload{}`.
 
-## 5. Wiring Node-RED/Kubeflow/RabbitMQ
+## 6. Wiring Node-RED/Kubeflow/RabbitMQ
 
 Drop the Benchmarking Sampler subflow into the flow (same interface as manufacturing):
 
@@ -100,7 +133,7 @@ Drop the Benchmarking Sampler subflow into the flow (same interface as manufactu
 6. on registry write → model_registered
 
 
-## 6. Metrics mapping (how the dashboard computes)
+## 7. Metrics mapping (how the dashboard computes)
 
 | Metric                       | Source fields / computation                                             |
 | ---------------------------- | ----------------------------------------------------------------------- |
