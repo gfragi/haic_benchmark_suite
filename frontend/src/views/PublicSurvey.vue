@@ -488,16 +488,16 @@ const ethicsAvg = computed(() => {
   if (!vals.length) return 0;
   return +(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2);
 });
-function sanitizeEndpoint(url) {
-  const envUrl = (url || "").replace(/\/+$/, "");
-  if (!/^https?:\/\//i.test(envUrl)) return envUrl; // allow relative for dev
-  try {
-    const u = new URL(envUrl);
-    return u.toString().replace(/\/+$/, "");
-  } catch {
-    return envUrl;
-  }
-}
+// function sanitizeEndpoint(url) {
+//   const envUrl = (url || "").replace(/\/+$/, "");
+//   if (!/^https?:\/\//i.test(envUrl)) return envUrl; // allow relative for dev
+//   try {
+//     const u = new URL(envUrl);
+//     return u.toString().replace(/\/+$/, "");
+//   } catch {
+//     return envUrl;
+//   }
+// }
 
 function buildPayload() {
   // A) schema-driven case
@@ -548,6 +548,39 @@ function buildPayload() {
     },
   };
 }
+function getApiBase() {
+  const SURVEY_EP =
+    import.meta?.env?.VITE_SURVEY_ENDPOINT ||
+    process?.env?.VUE_APP_SURVEY_ENDPOINT ||
+    "";
+
+  // If SURVEY_ENDPOINT is absolute, infer its origin
+  let inferred = "";
+  try {
+    if (SURVEY_EP && /^https?:\/\//i.test(SURVEY_EP)) {
+      const u = new URL(SURVEY_EP);
+      inferred = `${u.protocol}//${u.host}`;
+    }
+  } catch {
+    inferred = "";
+  }
+
+  // Dev guess: UI on :8080 -> API on :8000
+  const devGuess =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1") &&
+    window.location.port === "8080"
+      ? `${window.location.protocol}//${window.location.hostname}:8000`
+      : "";
+
+  const explicit =
+    import.meta?.env?.VITE_API_BASE || process?.env?.VUE_APP_API_BASE || "";
+
+  return (explicit || inferred || devGuess || "").replace(/\/+$/, "");
+}
+
+const SURVEY_POST_URL = `${getApiBase()}/api/v1/survey`.replace(/\/+$/, "");
 
 async function onSubmit() {
   submitError.value = "";
@@ -570,24 +603,16 @@ async function onSubmit() {
 
   submitting.value = true;
   try {
-    const endpoint = sanitizeEndpoint(
-      process.env?.VUE_APP_SURVEY_ENDPOINT ||
-        import.meta?.env?.VITE_SURVEY_ENDPOINT ||
-        "http://localhost:8000/api/v1/survey"
-    );
-    const res = await fetch(endpoint, {
+    const res = await fetch(SURVEY_POST_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(buildPayload()),
     });
 
+    const bodyText = await res.text().catch(() => "");
     if (!res.ok) {
-      const msg = await res.text().catch(() => "");
-      throw new Error(
-        `Server responded ${res.status} ${res.statusText}${
-          msg ? `: ${msg}` : ""
-        }`
-      );
+      const detail = bodyText?.slice(0, 300) || res.statusText;
+      throw new Error(`POST ${res.status} — ${detail}`);
     }
 
     submitOk.value = true;
