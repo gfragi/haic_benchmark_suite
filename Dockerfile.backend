@@ -1,39 +1,41 @@
-
 FROM python:3.10.14-slim-bullseye
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential libpq-dev curl \
+    build-essential \
+    python3-dev \
+    libpq-dev \
+    libssl-dev \
+    libffi-dev \
+    pkg-config \
+    git \
+    curl \
+    netcat-traditional \
  && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip and system packages to reduce vulnerabilities
-RUN apt-get update && apt-get upgrade -y && pip install --upgrade pip setuptools wheel
+# Upgrade pip tooling
+RUN pip install --upgrade pip setuptools wheel
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy local libraries and requirements file
-COPY haic_env_builder ./haic_env_builder
-COPY packages/metrics_core ./packages/metrics_core
+# ---- install python deps (cacheable layer) ----
 COPY requirements.txt .
 
-# Install system dependencies 
-RUN apt-get update && apt-get install -y \
-    build-essential libpq-dev curl && \
-    rm -rf /var/lib/apt/lists/*
-
-
-# Install the dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy source code (backend + local libs)
+# ---- copy source AFTER deps for better caching ----
+COPY haic_env_builder ./haic_env_builder
+COPY packages/metrics_core ./packages/metrics_core
 COPY backend/app ./app
 
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Make local packages importable
+# ---- alembic config & migrations ----
+COPY backend/alembic.ini ./alembic.ini
+COPY backend/alembic ./alembic
+
+# Entrypoint to run migrations, then start API
+COPY docker/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 ENV PYTHONPATH=/app
-
-# Expose FastAPI port
 EXPOSE 8000
 
-# Command to run the application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
