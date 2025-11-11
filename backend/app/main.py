@@ -2,10 +2,11 @@
 import os
 from fastapi import FastAPI, APIRouter
 from app.routers import logs, configuration, evaluate, log_generator, meta
-from app.routers import fairness, env_builder, simulator, results, survey, survey_schema
+from app.routers import fairness, env_builder, simulator, results, survey, survey_schema, env_catalog
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.seed_core_metrics import seed_core_definitions
 from app.routers import collab
+from backend.app.routers import env_catalog
 
 
 app = FastAPI(
@@ -47,6 +48,7 @@ api.include_router(fairness.router,       prefix="/fairness",      tags=["Fairne
 api.include_router(env_builder.router,    prefix="/env", tags=["Environment Builder"])
 api.include_router(simulator.router,      prefix="/simulator", tags=["Simulator"])
 api.include_router(collab.router,        prefix="/collab-metrics", tags=["Collaboration Metrics"])
+api.include_router(env_catalog.router,   prefix="/envs", tags=["Environment Catalog"])
 
 app.include_router(meta.router,           prefix="/meta", tags=["Meta"])
 
