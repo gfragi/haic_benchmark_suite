@@ -113,9 +113,6 @@ def get_env(env_id: str):
     etag = _file_etag(kind, handle)
     return JSONResponse(doc, headers={"ETag": etag, "Cache-Control": "public, max-age=60"})
 
-@router.get("/{env_id}.json")
-def get_env_raw(env_id: str):
-    return get_env(env_id)
 
 @router.get("/{env_id}/blocks")
 def get_env_blocks(env_id: str):
