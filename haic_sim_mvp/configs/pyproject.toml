@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "haic-sim-mvp"
+version = "0.1.0"
+description = "HAIC Simulation MVP configs and helpers"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.package-data]
+haic_sim_mvp = ["configs/*.json"]

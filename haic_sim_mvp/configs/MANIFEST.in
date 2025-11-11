@@ -1,0 +1,1 @@
+recursive-include haic_sim_mvp/configs *.json
