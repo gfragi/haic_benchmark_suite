@@ -4,10 +4,15 @@ from pydantic import BaseModel, Field
 from typing import List, Any, Dict
 from pathlib import Path
 import json, hashlib, datetime
+from importlib import resources
+
+def _config_dir() -> Path:
+    # points inside the installed package dist-info location
+    return Path(resources.files("haic_sim_mvp")).joinpath("configs")
 
 router = APIRouter()
 
-CONFIG_DIR = Path("./haic_sim_mvp/configs")  # adjust if needed
+CONFIG_DIR = _config_dir()
 
 # ---------- helpers ----------
 
