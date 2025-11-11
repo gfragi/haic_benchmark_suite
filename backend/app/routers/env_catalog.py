@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Any, Dict, List
 import json, hashlib, datetime, os
 
-router = APIRouter(prefix="/api/envs", tags=["envs"])
+router = APIRouter()
 
 # ---- locate configs (package first, then env/volume) ----
 def _pkg_configs_root():
