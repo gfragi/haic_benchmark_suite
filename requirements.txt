@@ -87,7 +87,7 @@ matplotlib==3.9.1.post1
 matplotlib-inline==0.1.6
 mdurl==0.1.2
 -e packages/metrics_core
--e haic_env_mvp/haic_sim_mvp/configs
+-e haic_sim_mvp/configs
 minio==7.2.5
 model-archiver==1.0.3
 mpmath==1.3.0
