@@ -6,7 +6,6 @@ from app.routers import fairness, env_builder, simulator, results, survey, surve
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.seed_core_metrics import seed_core_definitions
 from app.routers import collab
-from backend.app.routers import env_catalog
 
 
 app = FastAPI(
