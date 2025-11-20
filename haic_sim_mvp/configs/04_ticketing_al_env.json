@@ -1,0 +1,63 @@
+{
+  "sim_id": "pilot_st_al_v0",
+  "environment": {
+    "id": "ST_AL_ENV",
+    "class": "base.Environment",
+    "attributes": { "task": "active_learning_ticket_triage", "domain": "customer_support" }
+  },
+  "agents": [
+    { "id": "ORCH", "class": "base.Agent", "model": "system",
+      "affordances": ["start_run","notify","promote"] },
+    { "id": "AL", "class": "base.Agent", "model": "ai",
+      "affordances": ["sample_query","score_uncertainty","select_batch"] },
+    { "id": "LAB", "class": "base.Agent", "model": "human",
+      "affordances": ["label","correct","abstain"] },
+    { "id": "MOD", "class": "base.Agent", "model": "ai",
+      "affordances": ["train","predict","evaluate"] },
+    { "id": "DEP", "class": "base.Agent", "model": "system",
+      "affordances": ["deploy","rollback"] }
+  ],
+  "objects": [
+    { "id": "Ticket", "class": "base.Object",
+      "attributes": {"kind":"support_ticket"},
+      "affordances": ["submit","label","triage"] },
+    { "id": "Pool", "class": "base.Object",
+      "attributes": {"kind":"unlabeled_pool"},
+      "affordances": ["snapshot","update"] },
+    { "id": "Sel", "class": "base.Object",
+      "attributes": {"kind":"selection_batch"},
+      "affordances": ["create"] },
+    { "id": "DS", "class": "base.Object",
+      "attributes": {"kind":"dataset"},
+      "affordances": ["append","version"] },
+    { "id": "Mdl", "class": "base.Object",
+      "attributes": {"kind":"model"},
+      "affordances": ["store","register"] }
+  ],
+  "script": [
+    { "t": 0.0, "agent": "ORCH", "action": "start_run", "object": "Pool",
+      "effect": {"pool_size": 12000, "class_proxy": {"billing":0.32,"tech":0.51,"other":0.17}} },
+    { "t": 1.0, "agent": "AL", "action": "sample_query", "object": "Pool",
+      "effect": {"strategy": "entropy", "k": 5, "budget_left": 500}, "latency_ms": 85 },
+    { "t": 1.1, "agent": "AL", "action": "select_batch", "object": "Sel",
+      "effect": {"ids": ["T001","T002","T003","T004","T005"], "utilities": [0.91,0.88,0.87,0.86,0.85]} },
+    { "t": 2.0, "agent": "ORCH", "action": "notify", "object": "Sel",
+      "effect": {"role":"labeler","method":"ui","batch_id":"BATCH_001"} },
+    { "t": 15.0, "agent": "LAB", "action": "label", "object": "Ticket",
+      "effect": {"ticket_id":"T001","label":"billing","confidence":0.9}, "duration_s": 18.0 },
+    { "t": 16.5, "agent": "LAB", "action": "label", "object": "Ticket",
+      "effect": {"ticket_id":"T002","label":"tech","confidence":0.8}, "duration_s": 22.0 },
+    { "t": 18.0, "agent": "LAB", "action": "label", "object": "Ticket",
+      "effect": {"ticket_id":"T003","label":"tech","confidence":0.85}, "duration_s": 17.0 },
+    { "t": 19.5, "agent": "LAB", "action": "label", "object": "Ticket",
+      "effect": {"ticket_id":"T004","label":"other","confidence":0.7}, "duration_s": 25.0 },
+    { "t": 21.0, "agent": "LAB", "action": "label", "object": "Ticket",
+      "effect": {"ticket_id":"T005","label":"billing","confidence":0.88}, "duration_s": 19.0 },
+    { "t": 22.0, "agent": "MOD", "action": "train", "object": "Mdl",
+      "effect": {"dataset_id":"ds_2025_11_17","added_labels":5}, "latency_ms": 12400 },
+    { "t": 34.5, "agent": "MOD", "action": "evaluate", "object": "Mdl",
+      "effect": {"metrics": {"f1_macro":0.782,"acc":0.84,"aupr":0.71}}, "latency_ms": 820 },
+    { "t": 35.0, "agent": "DEP", "action": "deploy", "object": "Mdl",
+      "effect": {"model_id":"mdl_st_42","version":"1.4.2","promote": true} }
+  ]
+}
