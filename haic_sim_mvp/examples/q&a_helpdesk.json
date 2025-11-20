@@ -1,0 +1,43 @@
+{
+  "sim_id": "simple_qa_v0",
+  "environment": {
+    "id": "SIMPLE_QA_ENV",
+    "class": "base.Environment",
+    "attributes": {
+      "task": "simple_qa_assistance",
+      "domain": "generic_helpdesk"
+    }
+  },
+  
+  "script": [
+    {
+      "step": 1,
+      "description": "User asks a question",
+      "agent": "USR",
+      "object": "Question",
+      "affordance": "ask_question"
+    },
+    {
+      "step": 2,
+      "description": "AI proposes an answer and estimates confidence",
+      "agent": "BOT",
+      "object": "Answer",
+      "affordance": "propose_answer"
+    },
+    {
+      "step": 3,
+      "description": "If confidence is low, AI escalates to human operator",
+      "agent": "BOT",
+      "object": "Ticket",
+      "affordance": "escalate",
+      "condition": "low_confidence"
+    },
+    {
+      "step": 4,
+      "description": "Operator reviews ticket and provides final answer",
+      "agent": "OPR",
+      "object": "Answer",
+      "affordance": "provide_answer"
+    }
+  ]
+}

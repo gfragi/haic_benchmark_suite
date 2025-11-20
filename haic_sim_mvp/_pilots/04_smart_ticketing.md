@@ -4,14 +4,14 @@
 
 ---
 
-## 0) What’s in this package
+## 0. What’s in this package
 
 * **Environment config (JSON):** `smart_ticketing_al_env.json` — defines task/domain, agents, objects, and a demo `script` flow.
 * **Sample bundle (JSON):** `smart_ticketing_al_sample.json` — one AL session with per-ticket interactions.
 
 ---
 
-## 1) Environment Config (overview)
+## 1. Environment Config (overview)
 
 The environment config follows the shared schema used across pilots.
 
@@ -83,9 +83,60 @@ The environment config follows the shared schema used across pilots.
 
 Use the `script` as a demo or as a mapping guide for live events.
 
+## 1.1 Sequence Diagram
+
+```plaintextsequenceDiagram
+autonumber
+%% Smart Ticketing (Active Learning) — Pilot-side interactions only (with local logging + export)
+actor LAB as Labeler (Human)
+participant ORCH as ORCH (Orchestrator)
+participant AL as AL (Active Learner)
+participant POOL as Pool (Unlabeled)
+participant SEL as Sel (Selection Batch)
+participant MOD as MOD (Model/Trainer)
+participant DEP as DEP (Deployer)
+participant LOG as Log Buffer (Pilot)
+
+note over ORCH,LOG: session_id minted at run start; interaction_id = ticket_id
+
+ORCH->>POOL: start_run(pool_size, class_proxy)
+ORCH-->>LOG: record pool_snapshot
+
+AL->>POOL: sample_query(strategy, k, budget_left)
+AL-->>ORCH: select_batch(ids[], utilities[])
+AL-->>LOG: record al_query_issued (latency_ms)
+AL-->>LOG: record al_candidates(batch_id, ids[], utilities[])
+
+ORCH->>LAB: notify labelers (batch_id)
+par For each ticket in batch
+    ORCH->>LAB: label_request_sent(ticket_id)
+    ORCH-->>LOG: record label_request_sent [interaction_id=ticket_id]
+    LAB-->>ORCH: label_received(label, confidence) [duration_s]
+    ORCH-->>LOG: record label_received [interaction_id=ticket_id]
+end
+
+AL->>MOD: model_update_started(dataset_id, added_labels)
+AL-->>LOG: record model_update_started
+MOD-->>AL: model_update_finished(metrics) [latency_ms]
+AL-->>LOG: record model_update_finished
+
+ORCH->>DEP: deployment_promoted(model_id, version, promote=true)
+ORCH-->>LOG: record deployment_promoted
+
+alt Abstain or low confidence
+    LAB-->>ORCH: label_received(decision=abstain)
+    ORCH-->>LOG: record label_received(abstain=true)
+else Correction phase (optional)
+    LAB-->>ORCH: correct(ticket_id, new_label)
+    ORCH-->>LOG: record label_corrected
+end
+
+note over LOG: End of session → build JSON bundle for later upload (outside this diagram).
+```
+
 ---
 
-## 2) Data Model & IDs
+## 2. Data Model & IDs
 
 * **sim_id**: app discriminator — e.g., `smart_ticketing_al` or `pilot_st_al_v0`.
 * **session_id**: one AL run (keep stable for the whole cycle).
@@ -94,9 +145,27 @@ Use the `script` as a demo or as a mapping guide for live events.
 * **action**: one of the event names in §3.
 * **meta.task_parameters.rt_max**: SLA threshold (sec) for human label steps; default **60**.
 
+
+## 2.1 Actors & Roles (who is who)
+The main actors in the Smart Ticketing AL pilot are:
+
+| ID   | Role / Responsibility                       | `actor_type` | Typical implementation (examples)                                   | Emits / handles these actions |
+|------|---------------------------------------------|---------------|---------------------------------------------------------------------|-------------------------------|
+| **ORCH** | Orchestrator for an AL run; coordinates pool snapshot, notifications, and promotion | `system`      | Node-RED flow, backend service, pipeline controller                 | `start_run`, `notify`, `deployment_promoted` |
+| **AL**   | Active-learning selector; scores uncertainty and chooses a batch to label          | `ai`          | AL service (e.g., modAL/libact/Sklearn), custom selector microservice | `al_query_issued`, `al_candidates`, (reads pool) |
+| **LAB**  | Human labeler/subject-matter expert; annotates tickets                             | `human`       | Annotator UI, internal tool                                         | `label_received`, `correct`, `abstain` (with `duration_s`) |
+| **MOD**  | Model trainer/evaluator; updates model after new labels                            | `ai`          | Training pipeline (Kubeflow), job runner, notebook                  | `model_update_started`, `model_update_finished` (with `latency_ms`, metrics) |
+| **DEP**  | Deployer/promoter; makes a trained model active in serving                         | `system`      | CI/CD step, model registry hook, KServe/Seldon deployer             | `deployment_promoted` (and optional `rollback`) |
+
+### Objects (referenced in `objects[]`)
+- **Ticket** (`support_ticket`): a single support request; maps to `interaction_id` (= `ticket_id`).
+- **Pool** (`unlabeled_pool`): current unlabeled set seen by AL.
+- **Sel** (`selection_batch`): the chosen ticket batch for labeling in this AL step.
+- **DS** (`dataset`): labeled dataset/version used for training.
+- **Mdl** (`model`): trained model artifact/registry entry.
 ---
 
-## 3) Event Catalog (what to emit)
+## 3. Event Catalog (what to emit)
 
 | Step                          | `actor_type` | `action`                | Must-have payload                            |
 | ----------------------------- | ------------ | ----------------------- | -------------------------------------------- |
@@ -113,7 +182,7 @@ Per-ticket steps must carry **`interaction_id = ticket_id`**.
 
 ---
 
-## 4) Session Bundle (canonical JSON)
+## 4. Session Bundle (canonical JSON)
 
 Wrap events in a session bundle when posting to the Benchmarking API.
 
@@ -169,7 +238,7 @@ Fields per event: `interaction_id`, `t` *or* `timestamp`, `actor_type`, `action`
 
 ---
 
-## 5) Producing logs from Node‑RED (sampler subflow)
+## 5. Producing logs from Node‑RED (sampler subflow)
 
 * Drop the **Benchmarking Sampler** into your flow (same interface as other pilots):
 
@@ -187,14 +256,14 @@ Fields per event: `interaction_id`, `t` *or* `timestamp`, `actor_type`, `action`
 
 ---
 
-## 6) Orchestration / Messaging hooks
+## 6. Orchestration / Messaging hooks
 
 * **MLOps/Training pipeline:** If you call an external trainer, wrap it with sampler events to capture timing and metrics.
 * **RabbitMQ (optional bus):** Set an exchange (e.g., `co_create.st`), routing keys like `al.query`, `al.candidates`, `label.requested`, `label.received`, `model.updated`, `deploy.promoted`. Always propagate headers `session_id`, `interaction_id`.
 
 ---
 
-## 7) Metrics mapping (dashboard)
+## 7. Metrics mapping (dashboard)
 
 | Metric                       | Source fields / computation                                                                                        |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------ |
@@ -209,7 +278,7 @@ Fields per event: `interaction_id`, `t` *or* `timestamp`, `actor_type`, `action`
 
 ---
 
-## 8) Privacy & governance
+## 8. Privacy & governance
 
 * No PII in logs; bucketize user/customer attributes.
 * Keep raw text in storage; logs carry pointers/IDs and summary metadata.
@@ -217,7 +286,7 @@ Fields per event: `interaction_id`, `t` *or* `timestamp`, `actor_type`, `action`
 
 ---
 
-## 9) Validation & go‑live
+## 9. Validation & go‑live
 
 * **Data quality:** unique `event_id` (if present), stable `session_id`, per‑ticket `interaction_id`, UTC timestamps.
 * **Volume:** ≥1 session with ≥5 tickets to validate charts; later target ≥3 sessions and ≥2 app versions.
@@ -226,7 +295,7 @@ Fields per event: `interaction_id`, `t` *or* `timestamp`, `actor_type`, `action`
 
 ---
 
-## 10) Quickstart
+## 10. Quickstart
 
 1. Import the Node‑RED **Benchmarking Sampler** subflow.
 2. Configure `x-api-key`, endpoint `/api/v1/logs`, batching (5–50).
@@ -235,7 +304,7 @@ Fields per event: `interaction_id`, `t` *or* `timestamp`, `actor_type`, `action`
 
 ---
 
-## 11) Troubleshooting
+## 11. Troubleshooting
 
 * **Events not visible:** check `session_id` stability and wrapper `{ "logs": [ ... ] }`.
 * **No fairness slices:** missing group fields (`language`, `priority`, …).
@@ -243,12 +312,10 @@ Fields per event: `interaction_id`, `t` *or* `timestamp`, `actor_type`, `action`
 
 ---
 
-## 12) Versioning
+## 12. Versioning
 
 * **pilot_tag:** `smart_ticketing`
 * **app_version:** semantic version or git SHA
 * **ai_model_version:** model registry tag
-* **config_id:** 9 (current dashboards)
 
-**Owner:** George F.
-**Last updated:** YYYY‑MM‑DD
+**Last updated:**  2025-19-11 by gfragi
