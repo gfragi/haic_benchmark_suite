@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0.0",
+  "env_id": "SE_ENV",
+  "sim_id": "pilot_se_v0",
+  "timestamp": "2025-11-21T11:26:10.476844Z",
+  "attributes": {
+    "task": "grid_security",
+    "domain": "energy"
+  },
+  "agents": {
+    "OP": {
+      "attributes": {},
+      "model": "human",
+      "affordances": [
+        "view",
+        "inspect",
+        "accept",
+        "reject",
+        "annotate"
+      ]
+    },
+    "FAI": {
+      "attributes": {},
+      "model": "ai",
+      "affordances": [
+        "forecast"
+      ]
+    },
+    "SAI": {
+      "attributes": {},
+      "model": "ai",
+      "affordances": [
+        "classify",
+        "explain"
+      ]
+    }
+  },
+  "objects": {
+    "Twin": {
+      "attributes": {
+        "kind": "digital_twin"
+      },
+      "affordances": [
+        "simulate"
+      ]
+    },
+    "GS": {
+      "attributes": {
+        "kind": "grid_state"
+      },
+      "affordances": [
+        "forecast",
+        "classify",
+        "view",
+        "inspect"
+      ]
+    }
+  },
+  "decisions": [
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_se_v0",
+      "t": 1,
+      "agent_id": "FAI",
+      "action": "forecast",
+      "object_id": "GS",
+      "effect": {
+        "prob_secure": 0.68,
+        "xai": {
+          "top_lines": [
+            "L12",
+            "L07"
+          ]
+        }
+      },
+      "correct": null,
+      "latency_ms": 120
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_se_v0",
+      "t": 2,
+      "agent_id": "SAI",
+      "action": "classify",
+      "object_id": "GS",
+      "effect": {
+        "label": "secure",
+        "prob": 0.68
+      },
+      "correct": null,
+      "latency_ms": 40
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_se_v0",
+      "t": 3,
+      "agent_id": "OP",
+      "action": "inspect",
+      "object_id": "GS",
+      "effect": {},
+      "correct": null,
+      "latency_ms": 900
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_se_v0",
+      "t": 4,
+      "agent_id": "OP",
+      "action": "accept",
+      "object_id": "GS",
+      "effect": {
+        "note": "No N-1 violation observed"
+      },
+      "correct": true,
+      "latency_ms": null
+    }
+  ]
+}

@@ -1,0 +1,300 @@
+{
+  "schema_version": "1.0.0",
+  "env_id": "ST_AL_ENV",
+  "sim_id": "pilot_st_al_v0",
+  "timestamp": "2025-11-20T21:25:05.034046Z",
+  "attributes": {
+    "task": "active_learning_ticket_triage",
+    "domain": "customer_support"
+  },
+  "agents": {
+    "ORCH": {
+      "attributes": {},
+      "model": "system",
+      "affordances": [
+        "start_run",
+        "notify",
+        "promote"
+      ]
+    },
+    "AL": {
+      "attributes": {},
+      "model": "ai",
+      "affordances": [
+        "sample_query",
+        "score_uncertainty",
+        "select_batch"
+      ]
+    },
+    "LAB": {
+      "attributes": {},
+      "model": "human",
+      "affordances": [
+        "label",
+        "correct",
+        "abstain"
+      ]
+    },
+    "MOD": {
+      "attributes": {},
+      "model": "ai",
+      "affordances": [
+        "train",
+        "predict",
+        "evaluate"
+      ]
+    },
+    "DEP": {
+      "attributes": {},
+      "model": "system",
+      "affordances": [
+        "deploy",
+        "rollback"
+      ]
+    }
+  },
+  "objects": {
+    "Ticket": {
+      "attributes": {
+        "kind": "support_ticket"
+      },
+      "affordances": [
+        "submit",
+        "label",
+        "triage"
+      ]
+    },
+    "Pool": {
+      "attributes": {
+        "kind": "unlabeled_pool"
+      },
+      "affordances": [
+        "snapshot",
+        "update"
+      ]
+    },
+    "Sel": {
+      "attributes": {
+        "kind": "selection_batch"
+      },
+      "affordances": [
+        "create"
+      ]
+    },
+    "DS": {
+      "attributes": {
+        "kind": "dataset"
+      },
+      "affordances": [
+        "append",
+        "version"
+      ]
+    },
+    "Mdl": {
+      "attributes": {
+        "kind": "model"
+      },
+      "affordances": [
+        "store",
+        "register"
+      ]
+    }
+  },
+  "decisions": [
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 0.0,
+      "agent_id": "ORCH",
+      "action": "start_run",
+      "object_id": "Pool",
+      "effect": {
+        "pool_size": 12000,
+        "class_proxy": {
+          "billing": 0.32,
+          "tech": 0.51,
+          "other": 0.17
+        }
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 1.0,
+      "agent_id": "AL",
+      "action": "sample_query",
+      "object_id": "Pool",
+      "effect": {
+        "strategy": "entropy",
+        "k": 5,
+        "budget_left": 500
+      },
+      "correct": null,
+      "latency_ms": 85
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 1.1,
+      "agent_id": "AL",
+      "action": "select_batch",
+      "object_id": "Sel",
+      "effect": {
+        "ids": [
+          "T001",
+          "T002",
+          "T003",
+          "T004",
+          "T005"
+        ],
+        "utilities": [
+          0.91,
+          0.88,
+          0.87,
+          0.86,
+          0.85
+        ]
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 2.0,
+      "agent_id": "ORCH",
+      "action": "notify",
+      "object_id": "Sel",
+      "effect": {
+        "role": "labeler",
+        "method": "ui",
+        "batch_id": "BATCH_001"
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 15.0,
+      "agent_id": "LAB",
+      "action": "label",
+      "object_id": "Ticket",
+      "effect": {
+        "ticket_id": "T001",
+        "label": "billing",
+        "confidence": 0.9
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 16.5,
+      "agent_id": "LAB",
+      "action": "label",
+      "object_id": "Ticket",
+      "effect": {
+        "ticket_id": "T002",
+        "label": "tech",
+        "confidence": 0.8
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 18.0,
+      "agent_id": "LAB",
+      "action": "label",
+      "object_id": "Ticket",
+      "effect": {
+        "ticket_id": "T003",
+        "label": "tech",
+        "confidence": 0.85
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 19.5,
+      "agent_id": "LAB",
+      "action": "label",
+      "object_id": "Ticket",
+      "effect": {
+        "ticket_id": "T004",
+        "label": "other",
+        "confidence": 0.7
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 21.0,
+      "agent_id": "LAB",
+      "action": "label",
+      "object_id": "Ticket",
+      "effect": {
+        "ticket_id": "T005",
+        "label": "billing",
+        "confidence": 0.88
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 22.0,
+      "agent_id": "MOD",
+      "action": "train",
+      "object_id": "Mdl",
+      "effect": {
+        "dataset_id": "ds_2025_11_17",
+        "added_labels": 5
+      },
+      "correct": null,
+      "latency_ms": 12400
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 34.5,
+      "agent_id": "MOD",
+      "action": "evaluate",
+      "object_id": "Mdl",
+      "effect": {
+        "metrics": {
+          "f1_macro": 0.782,
+          "acc": 0.84,
+          "aupr": 0.71
+        }
+      },
+      "correct": null,
+      "latency_ms": 820
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_st_al_v0",
+      "t": 35.0,
+      "agent_id": "DEP",
+      "action": "deploy",
+      "object_id": "Mdl",
+      "effect": {
+        "model_id": "mdl_st_42",
+        "version": "1.4.2",
+        "promote": true
+      },
+      "correct": null,
+      "latency_ms": null
+    }
+  ]
+}

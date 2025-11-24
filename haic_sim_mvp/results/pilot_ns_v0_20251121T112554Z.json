@@ -1,0 +1,217 @@
+{
+  "schema_version": "1.0.0",
+  "env_id": "NS_ENV",
+  "sim_id": "pilot_ns_v0",
+  "timestamp": "2025-11-21T11:25:54.233979Z",
+  "attributes": {
+    "task": "ns_oncology_review",
+    "domain": "healthcare"
+  },
+  "agents": {
+    "SYS": {
+      "attributes": {},
+      "model": "system",
+      "affordances": [
+        "input_create",
+        "notify"
+      ]
+    },
+    "NSAI": {
+      "attributes": {},
+      "model": "ai",
+      "affordances": [
+        "train",
+        "inference",
+        "explain"
+      ]
+    },
+    "XAI": {
+      "attributes": {},
+      "model": "ai_tool",
+      "affordances": [
+        "generate_xai"
+      ]
+    },
+    "MLE": {
+      "attributes": {},
+      "model": "human",
+      "affordances": [
+        "review",
+        "accept",
+        "reject",
+        "annotate"
+      ]
+    },
+    "EXP": {
+      "attributes": {},
+      "model": "human",
+      "affordances": [
+        "review",
+        "accept",
+        "reject",
+        "annotate"
+      ]
+    },
+    "REG": {
+      "attributes": {},
+      "model": "system",
+      "affordances": [
+        "register_model",
+        "store_artifacts"
+      ]
+    }
+  },
+  "objects": {
+    "Img": {
+      "attributes": {
+        "kind": "medical_image"
+      },
+      "affordances": [
+        "provide"
+      ]
+    },
+    "Mdl": {
+      "attributes": {
+        "kind": "ns_model"
+      },
+      "affordances": [
+        "store",
+        "download"
+      ]
+    },
+    "XaiArt": {
+      "attributes": {
+        "kind": "xai_artifact"
+      },
+      "affordances": [
+        "store",
+        "view"
+      ]
+    }
+  },
+  "decisions": [
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_ns_v0",
+      "t": 0.0,
+      "agent_id": "SYS",
+      "action": "input_create",
+      "object_id": "Img",
+      "effect": {
+        "image_id": "IMG001",
+        "cohort": {
+          "cancer_type": "breast",
+          "stage": "II"
+        }
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_ns_v0",
+      "t": 1.2,
+      "agent_id": "NSAI",
+      "action": "train",
+      "object_id": "Mdl",
+      "effect": {
+        "model_uri": "minio://bucket/models/ns/mdl_001",
+        "metrics": {
+          "auc": 0.86
+        }
+      },
+      "correct": null,
+      "latency_ms": 950
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_ns_v0",
+      "t": 2.2,
+      "agent_id": "XAI",
+      "action": "generate_xai",
+      "object_id": "XaiArt",
+      "effect": {
+        "technique": "shap",
+        "top_features": [
+          "tumor_size",
+          "age",
+          "rule:RS12"
+        ],
+        "artifact_uri": "minio://bucket/xai/IMG001.png"
+      },
+      "correct": null,
+      "latency_ms": 840
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_ns_v0",
+      "t": 5.0,
+      "agent_id": "SYS",
+      "action": "notify",
+      "object_id": "Mdl",
+      "effect": {
+        "role": "ml_engineer",
+        "presigned_url_id": "psu_abc123"
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_ns_v0",
+      "t": 14.0,
+      "agent_id": "MLE",
+      "action": "review",
+      "object_id": "Mdl",
+      "effect": {
+        "decision": "accept",
+        "note": "metrics & XAI consistent"
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_ns_v0",
+      "t": 20.0,
+      "agent_id": "REG",
+      "action": "register_model",
+      "object_id": "Mdl",
+      "effect": {
+        "model_id": "mdl_20251017_09",
+        "version": "1.0.0",
+        "registry": "mlflow"
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_ns_v0",
+      "t": 26.0,
+      "agent_id": "SYS",
+      "action": "notify",
+      "object_id": "Mdl",
+      "effect": {
+        "role": "expert",
+        "presigned_url_id": "psu_def456"
+      },
+      "correct": null,
+      "latency_ms": null
+    },
+    {
+      "schema_version": "1.0.0",
+      "sim_id": "pilot_ns_v0",
+      "t": 35.0,
+      "agent_id": "EXP",
+      "action": "review",
+      "object_id": "Mdl",
+      "effect": {
+        "decision": "accept",
+        "note": "rules align with protocol"
+      },
+      "correct": true,
+      "latency_ms": null
+    }
+  ]
+}
