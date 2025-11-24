@@ -1,0 +1,26 @@
+[project]
+name = "haic-agentbeats"
+version = "0.1.0"
+
+
+[green_agent]
+name = "SmartGridAssessor"
+endpoint = "127.0.0.1:9018"
+command = "python scenarios/smartGrid/smartgrid_assessor.py --host 127.0.0.1 --port 9018"
+
+# command = "uv run python -m scenarios.smartGrid.smartgrid_assessor"
+role = "judge"
+
+[[participants]]
+name = "OpsAgent"
+role = "ops"
+command = "uv run python -m scenarios.smartGrid.ops_agent"
+
+[assessment]
+num_episodes = 1
+difficulty = "medium"
+max_steps = 5
+seed = 1234
+
+[project.scripts]
+agentbeats-run = "agentbeats.run_scenario:main"
