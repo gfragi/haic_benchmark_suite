@@ -12,29 +12,24 @@
  * Do not edit the class manually.
  */
 
+import { MetricsOut } from './metrics-out';
  /**
  * 
  *
  * @export
- * @interface PerformanceLogs
+ * @interface PerAgentMetrics
  */
-export interface PerformanceLogs {
+export interface PerAgentMetrics {
 
     /**
      * @type {any}
-     * @memberof PerformanceLogs
+     * @memberof PerAgentMetrics
      */
-    processingTimeSeconds?: any;
+    agent: any;
 
     /**
-     * @type {any}
-     * @memberof PerformanceLogs
+     * @type {MetricsOut}
+     * @memberof PerAgentMetrics
      */
-    resourceUtilization?: any;
-
-    /**
-     * @type {any}
-     * @memberof PerformanceLogs
-     */
-    humanEffortSeconds?: any;
+    metrics: MetricsOut;
 }

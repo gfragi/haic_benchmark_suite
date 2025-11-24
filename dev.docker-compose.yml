@@ -79,7 +79,7 @@ services:
       - "8080:3000"
     depends_on:
       - backend
-  
+
   # Run only for the integration with HAIC
   node-red:
     image: nodered/node-red
@@ -90,8 +90,6 @@ services:
       - ./node-red:/data
     environment:
       TZ: "Europe/Athens"
-    depends_on:
-      - backend
 
 volumes:
   postgres_data:

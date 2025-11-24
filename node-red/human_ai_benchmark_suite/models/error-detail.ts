@@ -16,37 +16,25 @@
  * 
  *
  * @export
- * @interface AIModelData
+ * @interface ErrorDetail
  */
-export interface AIModelData {
+export interface ErrorDetail {
 
     /**
      * @type {any}
-     * @memberof AIModelData
+     * @memberof ErrorDetail
      */
-    aiModelName?: any;
+    code: any;
 
     /**
      * @type {any}
-     * @memberof AIModelData
+     * @memberof ErrorDetail
      */
-    trainingData?: any;
+    message: any;
 
     /**
      * @type {any}
-     * @memberof AIModelData
+     * @memberof ErrorDetail
      */
-    aiModelSize?: any;
-
-    /**
-     * @type {any}
-     * @memberof AIModelData
-     */
-    inferenceTimeSeconds?: any;
-
-    /**
-     * @type {any}
-     * @memberof AIModelData
-     */
-    deploymentDetails?: any;
+    details?: any;
 }

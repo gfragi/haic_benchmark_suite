@@ -16,43 +16,31 @@
  * 
  *
  * @export
- * @interface AlertData
+ * @interface LikertScale
  */
-export interface AlertData {
+export interface LikertScale {
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof LikertScale
      */
-    alertDetails?: any;
+    min?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof LikertScale
      */
-    alertTime?: any;
+    max?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof LikertScale
      */
-    loadSetpoint?: any;
+    minLabel?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof LikertScale
      */
-    generationSetpoint?: any;
-
-    /**
-     * @type {any}
-     * @memberof AlertData
-     */
-    predictedSecurityState?: any;
-
-    /**
-     * @type {any}
-     * @memberof AlertData
-     */
-    confidenceBound?: any;
+    maxLabel?: any;
 }

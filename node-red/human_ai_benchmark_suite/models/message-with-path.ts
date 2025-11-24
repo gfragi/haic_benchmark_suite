@@ -16,37 +16,19 @@
  * 
  *
  * @export
- * @interface AIModelData
+ * @interface MessageWithPath
  */
-export interface AIModelData {
+export interface MessageWithPath {
 
     /**
      * @type {any}
-     * @memberof AIModelData
+     * @memberof MessageWithPath
      */
-    aiModelName?: any;
+    message: any;
 
     /**
      * @type {any}
-     * @memberof AIModelData
+     * @memberof MessageWithPath
      */
-    trainingData?: any;
-
-    /**
-     * @type {any}
-     * @memberof AIModelData
-     */
-    aiModelSize?: any;
-
-    /**
-     * @type {any}
-     * @memberof AIModelData
-     */
-    inferenceTimeSeconds?: any;
-
-    /**
-     * @type {any}
-     * @memberof AIModelData
-     */
-    deploymentDetails?: any;
+    path: any;
 }

@@ -16,25 +16,13 @@
  * 
  *
  * @export
- * @interface PerformanceLogs
+ * @interface ConfigList
  */
-export interface PerformanceLogs {
+export interface ConfigList {
 
     /**
      * @type {any}
-     * @memberof PerformanceLogs
+     * @memberof ConfigList
      */
-    processingTimeSeconds?: any;
-
-    /**
-     * @type {any}
-     * @memberof PerformanceLogs
-     */
-    resourceUtilization?: any;
-
-    /**
-     * @type {any}
-     * @memberof PerformanceLogs
-     */
-    humanEffortSeconds?: any;
+    availableConfigs: any;
 }

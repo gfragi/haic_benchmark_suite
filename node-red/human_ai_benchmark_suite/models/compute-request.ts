@@ -16,37 +16,29 @@
  * 
  *
  * @export
- * @interface AIModelData
+ * @interface ComputeRequest
  */
-export interface AIModelData {
+export interface ComputeRequest {
 
     /**
      * @type {any}
-     * @memberof AIModelData
+     * @memberof ComputeRequest
      */
-    aiModelName?: any;
+    decisions: any;
 
     /**
+     * Upper cap for reaction-time scaling (sec) used by HCL
+     *
      * @type {any}
-     * @memberof AIModelData
+     * @memberof ComputeRequest
      */
-    trainingData?: any;
+    rtMax?: any;
 
     /**
+     * Baseline duration for EL (efficiency/latency)
+     *
      * @type {any}
-     * @memberof AIModelData
+     * @memberof ComputeRequest
      */
-    aiModelSize?: any;
-
-    /**
-     * @type {any}
-     * @memberof AIModelData
-     */
-    inferenceTimeSeconds?: any;
-
-    /**
-     * @type {any}
-     * @memberof AIModelData
-     */
-    deploymentDetails?: any;
+    baselineS?: any;
 }

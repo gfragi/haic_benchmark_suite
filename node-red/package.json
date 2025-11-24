@@ -4,6 +4,7 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
+        "@flowfuse/node-red-dashboard": "~1.29.0",
         "@greyorange/node-red-contrib-amqp": "^2.6.0",
         "@node-red-contrib-themes/theme-collection": "^4.0.11",
         "@reggae_ulli/node-red-contrib-minio-all-fix": "~0.0.4",
@@ -18,6 +19,6 @@
         "node-red-contrib-mp-function": "~1.1.1",
         "node-red-contrib-object-validation": "^1.0.8",
         "node-red-contrib-python-function": "0.0.5",
-        "node-red-dashboard": "^3.6.5"
+        "node-red-contrib-ts": "^1.2.6"
     }
 }

@@ -16,43 +16,49 @@
  * 
  *
  * @export
- * @interface AlertData
+ * @interface MetricsOut
  */
-export interface AlertData {
+export interface MetricsOut {
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof MetricsOut
      */
-    alertDetails?: any;
+    F: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof MetricsOut
      */
-    alertTime?: any;
+    D: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof MetricsOut
      */
-    loadSetpoint?: any;
+    HCL: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof MetricsOut
      */
-    generationSetpoint?: any;
+    tr: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof MetricsOut
      */
-    predictedSecurityState?: any;
+    A: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof MetricsOut
      */
-    confidenceBound?: any;
+    S: any;
+
+    /**
+     * @type {any}
+     * @memberof MetricsOut
+     */
+    EL: any;
 }

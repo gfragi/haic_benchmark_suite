@@ -16,43 +16,49 @@
  * 
  *
  * @export
- * @interface AlertData
+ * @interface EnvMeta
  */
-export interface AlertData {
+export interface EnvMeta {
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof EnvMeta
      */
-    alertDetails?: any;
+    id: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof EnvMeta
      */
-    alertTime?: any;
+    name: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof EnvMeta
      */
-    loadSetpoint?: any;
+    simId?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof EnvMeta
      */
-    generationSetpoint?: any;
+    domain?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof EnvMeta
      */
-    predictedSecurityState?: any;
+    task?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof EnvMeta
      */
-    confidenceBound?: any;
+    version?: any;
+
+    /**
+     * @type {any}
+     * @memberof EnvMeta
+     */
+    updatedAt?: any;
 }

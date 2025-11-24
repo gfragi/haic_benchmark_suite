@@ -16,43 +16,49 @@
  * 
  *
  * @export
- * @interface AlertData
+ * @interface SurveyQuestionSetOut
  */
-export interface AlertData {
+export interface SurveyQuestionSetOut {
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof SurveyQuestionSetOut
      */
-    alertDetails?: any;
+    name?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof SurveyQuestionSetOut
      */
-    alertTime?: any;
+    pilotTag?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof SurveyQuestionSetOut
      */
-    loadSetpoint?: any;
+    version?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof SurveyQuestionSetOut
      */
-    generationSetpoint?: any;
+    questions: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof SurveyQuestionSetOut
      */
-    predictedSecurityState?: any;
+    active?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof SurveyQuestionSetOut
      */
-    confidenceBound?: any;
+    createdBy?: any;
+
+    /**
+     * @type {any}
+     * @memberof SurveyQuestionSetOut
+     */
+    schemaId: any;
 }

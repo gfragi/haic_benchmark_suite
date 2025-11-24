@@ -12,29 +12,18 @@
  * Do not edit the class manually.
  */
 
+import { ErrorDetail } from './error-detail';
  /**
  * 
  *
  * @export
- * @interface PerformanceLogs
+ * @interface ErrorEnvelope
  */
-export interface PerformanceLogs {
+export interface ErrorEnvelope {
 
     /**
-     * @type {any}
-     * @memberof PerformanceLogs
+     * @type {ErrorDetail}
+     * @memberof ErrorEnvelope
      */
-    processingTimeSeconds?: any;
-
-    /**
-     * @type {any}
-     * @memberof PerformanceLogs
-     */
-    resourceUtilization?: any;
-
-    /**
-     * @type {any}
-     * @memberof PerformanceLogs
-     */
-    humanEffortSeconds?: any;
+    error: ErrorDetail;
 }

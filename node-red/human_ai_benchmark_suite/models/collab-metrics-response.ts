@@ -12,47 +12,48 @@
  * Do not edit the class manually.
  */
 
+import { MetricsOut } from './metrics-out';
  /**
  * 
  *
  * @export
- * @interface AlertData
+ * @interface CollabMetricsResponse
  */
-export interface AlertData {
+export interface CollabMetricsResponse {
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof CollabMetricsResponse
      */
-    alertDetails?: any;
+    version?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof CollabMetricsResponse
      */
-    alertTime?: any;
+    metricsVersion?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof CollabMetricsResponse
      */
-    loadSetpoint?: any;
+    source: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof CollabMetricsResponse
      */
-    generationSetpoint?: any;
+    params: any;
+
+    /**
+     * @type {MetricsOut}
+     * @memberof CollabMetricsResponse
+     */
+    metrics: MetricsOut;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof CollabMetricsResponse
      */
-    predictedSecurityState?: any;
-
-    /**
-     * @type {any}
-     * @memberof AlertData
-     */
-    confidenceBound?: any;
+    byAgent?: any;
 }

@@ -16,61 +16,61 @@
  * 
  *
  * @export
- * @interface InteractionData
+ * @interface SimulationResult
  */
-export interface InteractionData {
+export interface SimulationResult {
 
     /**
      * @type {any}
-     * @memberof InteractionData
+     * @memberof SimulationResult
      */
-    imageId?: any;
+    task: any;
 
     /**
      * @type {any}
-     * @memberof InteractionData
+     * @memberof SimulationResult
      */
-    presentationTime?: any;
+    agents: any;
 
     /**
      * @type {any}
-     * @memberof InteractionData
+     * @memberof SimulationResult
      */
-    validationData?: any;
+    profiles: any;
 
     /**
      * @type {any}
-     * @memberof InteractionData
+     * @memberof SimulationResult
      */
-    reviewData?: any;
+    metrics: any;
 
     /**
      * @type {any}
-     * @memberof InteractionData
+     * @memberof SimulationResult
      */
-    applicationId?: any;
+    decisions: any;
 
     /**
      * @type {any}
-     * @memberof InteractionData
+     * @memberof SimulationResult
      */
-    justificationDocuments?: any;
+    status: any;
 
     /**
      * @type {any}
-     * @memberof InteractionData
+     * @memberof SimulationResult
      */
-    submissionTime?: any;
+    seed?: any;
 
     /**
      * @type {any}
-     * @memberof InteractionData
+     * @memberof SimulationResult
      */
-    loadGenerationData?: any;
+    configHash?: any;
 
     /**
      * @type {any}
-     * @memberof InteractionData
+     * @memberof SimulationResult
      */
-    alertData?: any;
+    logPath?: any;
 }

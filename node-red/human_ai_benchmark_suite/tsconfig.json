@@ -17,6 +17,7 @@
     "outDir": "dist",
     "rootDir": ".",
     "lib": [
+      "es2020",
       "es6",
       "dom"
     ],

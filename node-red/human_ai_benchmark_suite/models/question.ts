@@ -16,43 +16,51 @@
  * 
  *
  * @export
- * @interface AlertData
+ * @interface Question
  */
-export interface AlertData {
+export interface Question {
+
+    /**
+     * Stable identifier; also used as CSV column
+     *
+     * @type {any}
+     * @memberof Question
+     */
+    id: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof Question
      */
-    alertDetails?: any;
+    label: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof Question
      */
-    alertTime?: any;
+    type: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof Question
      */
-    loadSetpoint?: any;
+    required?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof Question
      */
-    generationSetpoint?: any;
+    group?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof Question
      */
-    predictedSecurityState?: any;
+    scale?: any;
 
     /**
      * @type {any}
-     * @memberof AlertData
+     * @memberof Question
      */
-    confidenceBound?: any;
+    options?: any;
 }

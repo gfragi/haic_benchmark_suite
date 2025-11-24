@@ -16,37 +16,25 @@
  * 
  *
  * @export
- * @interface AIModelData
+ * @interface FairnessInput
  */
-export interface AIModelData {
+export interface FairnessInput {
 
     /**
      * @type {any}
-     * @memberof AIModelData
+     * @memberof FairnessInput
      */
-    aiModelName?: any;
+    predictions: any;
 
     /**
      * @type {any}
-     * @memberof AIModelData
+     * @memberof FairnessInput
      */
-    trainingData?: any;
+    labels: any;
 
     /**
      * @type {any}
-     * @memberof AIModelData
+     * @memberof FairnessInput
      */
-    aiModelSize?: any;
-
-    /**
-     * @type {any}
-     * @memberof AIModelData
-     */
-    inferenceTimeSeconds?: any;
-
-    /**
-     * @type {any}
-     * @memberof AIModelData
-     */
-    deploymentDetails?: any;
+    sensitiveFeatures: any;
 }

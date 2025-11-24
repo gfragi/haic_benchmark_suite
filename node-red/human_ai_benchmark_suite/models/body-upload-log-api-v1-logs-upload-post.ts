@@ -16,25 +16,13 @@
  * 
  *
  * @export
- * @interface PerformanceLogs
+ * @interface BodyUploadLogApiV1LogsUploadPost
  */
-export interface PerformanceLogs {
+export interface BodyUploadLogApiV1LogsUploadPost {
 
     /**
      * @type {any}
-     * @memberof PerformanceLogs
+     * @memberof BodyUploadLogApiV1LogsUploadPost
      */
-    processingTimeSeconds?: any;
-
-    /**
-     * @type {any}
-     * @memberof PerformanceLogs
-     */
-    resourceUtilization?: any;
-
-    /**
-     * @type {any}
-     * @memberof PerformanceLogs
-     */
-    humanEffortSeconds?: any;
+    file: any;
 }

@@ -16,6 +16,14 @@
         "env": []
     },
     {
+        "id": "529d431d13d83865",
+        "type": "tab",
+        "label": "Active Learning Healthentia",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "5cd3e556e55bdc82",
         "type": "tab",
         "label": "KF Client Dynamic Triggering examples",
@@ -130,7 +138,7 @@
                 }
             },
             {
-                "name": "IP Address",
+                "name": "Host",
                 "type": "str",
                 "value": "127.0.0.1",
                 "ui": {
@@ -799,6 +807,73 @@
         "icon": "node-red-contrib-custom-icons/haic_icon_small.svg"
     },
     {
+        "id": "ae4aa52ccf644143",
+        "type": "subflow",
+        "name": "HAIC Environment Config",
+        "info": "",
+        "category": "HumAIne HAIC Benchmark Suite",
+        "in": [
+            {
+                "x": 120,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "b4732a42ba36a51a"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 920,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "b1100822be5dff24",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 830,
+                "y": 200,
+                "wires": [
+                    {
+                        "id": "b4732a42ba36a51a",
+                        "port": 1
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "Environment ID",
+                "type": "str",
+                "value": "defaultEnv",
+                "ui": {
+                    "type": "select",
+                    "opts": {
+                        "opts": [
+                            {
+                                "l": {
+                                    "en-US": "defaultEnv"
+                                },
+                                "v": "defaultEnv"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "meta": {},
+        "color": "#58A69F",
+        "outputLabels": [
+            "HAIC Environment Config Variables",
+            "Error"
+        ],
+        "icon": "node-red-contrib-custom-icons/haic_icon_small.svg"
+    },
+    {
         "id": "223eaaa2f11c7912",
         "type": "group",
         "z": "68962323fb8f5a64",
@@ -1025,14 +1100,9 @@
         "id": "53afbf356bbf6601",
         "type": "group",
         "z": "9db4af518e108976",
+        "name": "",
         "style": {
-            "stroke": "#3d3e46",
-            "stroke-opacity": "1",
-            "fill": "#21222c",
-            "fill-opacity": "0.5",
-            "label": true,
-            "label-position": "nw",
-            "color": "#f8f8f2"
+            "label": true
         },
         "nodes": [
             "f445093bc9466b6d",
@@ -1045,9 +1115,9 @@
             "2d000ff74d5823c1",
             "0214858918135093"
         ],
-        "x": 214,
+        "x": 234,
         "y": 339,
-        "w": 852,
+        "w": 832,
         "h": 242
     },
     {
@@ -1176,7 +1246,7 @@
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst RETRIES_NUM = 3;\nconst RETRIES_INTERVAL = 1000;\n\nconst init_msg = {};\n\nconst {\n    Configuration,\n    ConfigurationApi,\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};\n\nconst haic_setup = async (ip, port, username, password, options, use_https = true) => {\n    const scheme = use_https ? 'https://' : \"http://\";\n\n    const configParams = {\n        basePath: `${scheme}${ip}:${port}`,\n    };\n\n    if (username && password) {\n        configParams.username = username;\n        configParams.password = password;\n    }\n\n    if (!isEmpty(options)) {\n        configParams.options = options;\n    }\n\n    const config = new Configuration(configParams);\n    const testClient = new ConfigurationApi(config);\n    let response = null;\n    let err_msg = null;\n\n    try {\n        response = await retryWithDelay(\n            // A test call, given the complete HAIC API client instance.\n            async () => {\n               await testClient.getAllConfigurationsConfigurationListGet();\n            },\n            RETRIES_NUM,\n            RETRIES_INTERVAL,\n        );\n    } catch (err) {\n        err_msg = `Failed to connect to HAIC Benchmarking Suite! Configuration must be invalid! ${err}`;\n        node.error(err_msg);\n    }\n\n    return {\n        \"clientConfig\": config,\n        \"testResponse\": response,\n        \"error\": err_msg\n    };\n\n\n};\n\ncontext.set(\n    \"haic_setup\",\n    haic_setup\n);\n\nconst {\n    clientConfig,\n    testResponse,\n    error,\n} = await haic_setup(\n    env.get(\"IP Address\"),\n    env.get(\"Port\"),\n    env.get(\"Username\"),\n    env.get(\"Password\"),\n    env.get(\"Options\"),\n    env.get(\"Use HTTPS\")\n);\n\nif (error == null) {\n    // Successful setup\n    init_msg.HaicApiClientConfiguration = clientConfig;\n    init_msg.payload = \"HAIC Client Configuration setup successful!\";\n    init_msg.HaicTestCallOutput = testResponse;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.useGlobally = env.get(\"Use Globally\");\n\n    node.send([init_msg, null]);\n} else {\n    // Error during setup\n    init_msg.payload = error;\n    init_msg.error = error;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.FailedHaicApiClientConfiguration = clientConfig;\n\n    node.send([null, init_msg]);\n}",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst RETRIES_NUM = 3;\nconst RETRIES_INTERVAL = 1000;\n\nconst init_msg = {};\n\nconst {\n    Configuration,\n    ConfigurationApi,\n} = humanAiBenchmarkSuite;\n\nconst isEmpty = (obj) => {\n    for (const prop in obj) {\n        if (Object.hasOwn(obj, prop)) {\n            return false;\n        }\n    }\n    return true;\n};\n\nconst delay = (time) => {\n    return new Promise(res => {\n        setTimeout(res, time);\n    })\n};\n\nconst retryWithDelay = async (fn, retries = 3, interval = 100) => {\n    try {\n        return await fn();\n    } catch (err) {\n        if (retries <= 0) throw err;\n        await delay(interval);\n        return retryWithDelay(fn, retries - 1, interval);\n    }\n};\n\nconst haic_setup = async (ip, port, username, password, options, use_https = true) => {\n    const scheme = use_https ? 'https://' : \"http://\";\n\n    const configParams = {\n        basePath: `${scheme}${ip}:${port}`,\n    };\n\n    if (username && password) {\n        configParams.username = username;\n        configParams.password = password;\n    }\n\n    if (!isEmpty(options)) {\n        configParams.options = options;\n    }\n\n    const config = new Configuration(configParams);\n    const testClient = new ConfigurationApi(config);\n    let response = null;\n    let err_msg = null;\n\n    try {\n        response = await retryWithDelay(\n            // A test call, given the complete HAIC API client instance.\n            async () => {\n                await testClient.getAllConfigurationsApiV1ConfigurationListGet();\n            },\n            RETRIES_NUM,\n            RETRIES_INTERVAL,\n        );\n    } catch (err) {\n        err_msg = `Failed to connect to HAIC Benchmarking Suite! Configuration must be invalid! ${err}`;\n        node.error(err_msg);\n    }\n\n    return {\n        \"clientConfig\": config,\n        \"testResponse\": response,\n        \"error\": err_msg\n    };\n\n\n};\n\ncontext.set(\n    \"haic_setup\",\n    haic_setup\n);\n\nconst {\n    clientConfig,\n    testResponse,\n    error,\n} = await haic_setup(\n    env.get(\"Host\"),\n    env.get(\"Port\"),\n    env.get(\"Username\"),\n    env.get(\"Password\"),\n    env.get(\"Options\"),\n    env.get(\"Use HTTPS\")\n);\n\nif (error == null) {\n    // Successful setup\n    init_msg.HaicApiClientConfiguration = clientConfig;\n    init_msg.payload = \"HAIC Client Configuration setup successful!\";\n    init_msg.HaicTestCallOutput = testResponse;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.useGlobally = env.get(\"Use Globally\");\n\n    node.send([init_msg, null]);\n} else {\n    // Error during setup\n    init_msg.payload = error;\n    init_msg.error = error;\n    init_msg.humanAiBenchmarkSuite = humanAiBenchmarkSuite;\n    init_msg.FailedHaicApiClientConfiguration = clientConfig;\n\n    node.send([null, init_msg]);\n}",
         "finalize": "",
         "libs": [
             {
@@ -1184,7 +1254,7 @@
                 "module": "human_ai_benchmark_suite"
             }
         ],
-        "x": 200,
+        "x": 180,
         "y": 60,
         "wires": [
             [
@@ -1227,7 +1297,7 @@
         "finalize": "// Code added here will be run when the\n// node is being stopped or re-deployed.\nconst useGlobally = context.get(\"useGlobally\");\n\nif (useGlobally) {\n    global.set(\"HaicApiClientUtils\", undefined);\n} else {\n    flow.set(\"$parent.HaicApiClientUtils\", undefined);\n}",
         "libs": [],
         "x": 220,
-        "y": 280,
+        "y": 260,
         "wires": [
             [
                 "5718cb282cf1b5a0"
@@ -1239,7 +1309,7 @@
         "type": "function",
         "z": "6d5f83638870930c",
         "name": "SETUP HAIC API Clients",
-        "func": "// Import all client classes\nconst {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n} = humanAiBenchmarkSuite;\nconst haicClasses = {\n    ConfigurationApi,\n    DefaultApi,\n    EvaluationApi,\n    LogGeneratorApi,\n    LogsApi,\n    ReportingApi,\n    ResultsApi,\n    SurveyApi,\n}\n// Import config and utils\nconst config = msg.HaicApiClientConfiguration;\nconst utils = msg.HaicApiClientUtils;\nconst retryWithDelay = utils.retryWithDelay;\nconst processResponse = utils.processResponse;\n\n// ALL CLIENTS AND THE FUNCTIONS SET UP HERE\nconst httpMethods = ['Get', 'Put', 'Post', 'Delete'];\n// Mapping: API Section -> Operation -> Function that does it\nconst haicApiClients = {};\n\nfor (const [originalClassName, ClassConstructor] of Object.entries(haicClasses)) {\n  const className = originalClassName.endsWith('Api')\n    ? originalClassName.slice(0, -3)\n    : originalClassName;\n\n  // ALL CLIENTS GET THE CONFIG HERE\n  const instance = new ClassConstructor(config);\n\n  const methodNames = Object.getOwnPropertyNames(ClassConstructor.prototype)\n    .filter(name => name !== 'constructor');\n\n  const filteredMethods = methodNames.filter(name =>\n    httpMethods.some(verb => name.endsWith(verb))\n  );\n\n  const haicApiWrappers = {};\n\n  filteredMethods.forEach(methodName => {\n    haicApiWrappers[methodName] = async function (...args) {\n      // --- Custom logic BEFORE calling the original async method ---\n      // console.log(`Calling async ${className}.${methodName} with arguments:`, args); //TEST\n      // const start = Date.now(); //TEST\n      console.log(\"ARGUMENTS\", args);\n\n      try {\n        // Await the async method call\n        const result = await retryWithDelay(\n          async () => {\n            return processResponse(await instance[methodName](...args));\n          }\n        );\n\n        // --- Custom logic AFTER the async method resolves ---\n        // const duration = Date.now() - start; // TEST\n        // console.log(`Result from async ${className}.${methodName} (took ${duration}ms):`, result); //TEST\n\n        // Return the awaited result (or a modified version)\n        return result;\n      } catch (error) {\n        console.error(`Error in async ${className}.${methodName}:`, error);\n        throw error; // re-throw or handle error as needed\n      }\n    };\n  });\n\n  haicApiClients[className] = haicApiWrappers;\n}\n\n// console.log(haicApiClients); // TEST\n\n\n// SET THE CLIENTS TO THE APPROPRIATE CONTEXT\nif(msg.useGlobally) {\n    global.set(\"HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", false);\n}\n\n\n",
+        "func": "// Import all client classes\nconst {\n    CollaborationMetricsApi,\n    ConfigurationApi,\n    EnvironmentBuilderApi,\n    EnvironmentCatalogApi,\n    EvaluationApi,\n    FairnessApi,\n    LogGeneratorApi,\n    LogsApi,\n    MetaApi,\n    ResultsApi,\n    SimulatorApi,\n    SurveyApi,\n    SurveySchemasApi,\n} = humanAiBenchmarkSuite;\nconst haicClasses = {\n    CollaborationMetricsApi,\n    ConfigurationApi,\n    EnvironmentBuilderApi,\n    EnvironmentCatalogApi,\n    EvaluationApi,\n    FairnessApi,\n    LogGeneratorApi,\n    LogsApi,\n    MetaApi,\n    ResultsApi,\n    SimulatorApi,\n    SurveyApi,\n    SurveySchemasApi,\n}\n// Import config and utils\nconst config = msg.HaicApiClientConfiguration;\nconst utils = msg.HaicApiClientUtils;\nconst retryWithDelay = utils.retryWithDelay;\nconst processResponse = utils.processResponse;\n\n// ALL CLIENTS AND THE FUNCTIONS SET UP HERE\nconst httpMethods = ['Get', 'Put', 'Post', 'Delete'];\n// Mapping: API Section -> Operation -> Function that does it\nconst haicApiClients = {};\n\nfor (const [originalClassName, ClassConstructor] of Object.entries(haicClasses)) {\n  const className = originalClassName.endsWith('Api')\n    ? originalClassName.slice(0, -3)\n    : originalClassName;\n\n  // ALL CLIENTS GET THE CONFIG HERE\n  const instance = new ClassConstructor(config);\n\n  const methodNames = Object.getOwnPropertyNames(ClassConstructor.prototype)\n    .filter(name => name !== 'constructor');\n\n  const filteredMethods = methodNames.filter(name =>\n    httpMethods.some(verb => name.endsWith(verb))\n  );\n\n  const haicApiWrappers = {};\n\n  filteredMethods.forEach(methodName => {\n    haicApiWrappers[methodName] = async function (...args) {\n      // --- Custom logic BEFORE calling the original async method ---\n      // console.log(`Calling async ${className}.${methodName} with arguments:`, args); //TEST\n      // const start = Date.now(); //TEST\n      console.log(\"ARGUMENTS\", args);\n\n      try {\n        // Await the async method call\n        const result = await retryWithDelay(\n          async () => {\n            return processResponse(await instance[methodName](...args));\n          }\n        );\n\n        // --- Custom logic AFTER the async method resolves ---\n        // const duration = Date.now() - start; // TEST\n        // console.log(`Result from async ${className}.${methodName} (took ${duration}ms):`, result); //TEST\n\n        // Return the awaited result (or a modified version)\n        return result;\n      } catch (error) {\n        console.error(`Error in async ${className}.${methodName}:`, error);\n        throw error; // re-throw or handle error as needed\n      }\n    };\n  });\n\n  haicApiClients[className] = haicApiWrappers;\n}\n\n// console.log(haicApiClients); // TEST\n\n\n// SET THE CLIENTS TO THE APPROPRIATE CONTEXT\nif(msg.useGlobally) {\n    global.set(\"HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", true);\n} else {\n    // Sets on the context of the \"parent\" flow, where this subflow is instantiated.\n    flow.set(\"$parent.HaicApiClients\", haicApiClients);\n    context.set(\"useGlobally\", false);\n}\n\n\n",
         "outputs": 0,
         "timeout": 0,
         "noerr": 0,
@@ -1453,7 +1523,7 @@
         "type": "function",
         "z": "3e0b79a15665c98a",
         "name": "Get Evaluation Config",
-        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\nconst getConfig = configClient.getConfigurationConfigurationConfigurationIdGet;\n\nconst ERROR_MSG = \"Failed to get Evaluation Config\";\n\ndelete msg.payload.operation;\nlet response = null;\n\ntry {\n    response = await getConfig(msg.payload.id);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}.`;\n    msg.error_response = err.response;\n    if (err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n\n}",
+        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\nconst getConfig = configClient.getConfigurationApiV1ConfigurationConfigurationIdGet;\n\nconst ERROR_MSG = \"Failed to get Evaluation Config\";\n\ndelete msg.payload.operation;\nlet response = null;\n\ntry {\n    response = await getConfig(msg.payload.id);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}.`;\n    msg.error_response = err.response;\n    if (err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1702,7 +1772,7 @@
         "type": "function",
         "z": "3e0b79a15665c98a",
         "name": "New Evaluation Config",
-        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\n// Fragiadakis f-ed up the REST semantics here hahaha... POST should be for update, PUT for new, not what it is now.\nconst createConfig = configClient.createConfigurationConfigurationNewPost;\n\nconst ERROR_MSG = \"Failed to create new evaluation config\";\n\ndelete msg.payload.operation;\nlet response = null;\n\ntry {\n    response = await createConfig(msg.payload);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}.`;\n    msg.error_response = err.response;\n    if (err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n}",
+        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\n// Fragiadakis f-ed up the REST semantics here hahaha... POST should be for update, PUT for new, not what it is now.\nconst createConfig = configClient.createConfigurationApiV1ConfigurationNewPost;\n\nconst ERROR_MSG = \"Failed to create new evaluation config\";\n\ndelete msg.payload.operation;\nlet response = null;\n\ntry {\n    response = await createConfig(msg.payload);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}.`;\n    msg.error_response = err.response;\n    if (err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1726,7 +1796,7 @@
         "type": "function",
         "z": "3e0b79a15665c98a",
         "name": "Update Evaluation Config",
-        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\n// Fragiadakis f-ed up the REST semantics here hahaha... POST should be for update, PUT for new, not what it is now.\nconst updateConfig = configClient.updateConfigurationConfigurationUpdateConfigurationIdPut;\n\nconst ERROR_MSG = \"Failed to update Evaluation Config\";\n\ndelete msg.payload.operation;\n\nconst configurationId = msg.payload.configurationId;\ndelete msg.payload.configurationId;\nlet response = null;\n\ntry {\n    response = await updateConfig(msg.payload, configurationId);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}.`;\n    msg.error_response = err.response;\n    if (err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n}",
+        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\n// Fragiadakis f-ed up the REST semantics here hahaha... POST should be for update, PUT for new, not what it is now.\nconst updateConfig = configClient.updateConfigurationApiV1ConfigurationUpdateConfigurationIdPut;\n\nconst ERROR_MSG = \"Failed to update Evaluation Config\";\n\ndelete msg.payload.operation;\n\nconst configurationId = msg.payload.configurationId;\ndelete msg.payload.configurationId;\nlet response = null;\n\ntry {\n    response = await updateConfig(msg.payload, configurationId);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}.`;\n    msg.error_response = err.response;\n    if (err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1750,7 +1820,7 @@
         "type": "function",
         "z": "3e0b79a15665c98a",
         "name": "Delete Evaluation Config",
-        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\nconst deleteConfig = configClient.deleteConfigurationConfigurationDeleteConfigurationIdDelete;\n\nconst ERROR_MSG = \"Failed to delete Evaluation Config\";\n\ndelete msg.payload.operation;\nlet response = null;\n\ntry {\n    response = await deleteConfig(msg.payload.id);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}.`;\n    msg.error_response = err.response;\n    if (err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n}",
+        "func": "const configClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n//Client functions\nconst deleteConfig = configClient.deleteConfigurationApiV1ConfigurationDeleteConfigurationIdDelete;\n\nconst ERROR_MSG = \"Failed to delete Evaluation Config\";\n\ndelete msg.payload.operation;\nlet response = null;\n\ntry {\n    response = await deleteConfig(msg.payload.id);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}.`;\n    msg.error_response = err.response;\n    if (err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1774,7 +1844,7 @@
         "type": "function",
         "z": "9e615b8a6da73d11",
         "name": "Add Evaluation Log",
-        "func": "const logClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Logs; // Common step\n//Client Function\nconst addLog = logClient.addLogLogsConfigIdAddLogPost;\n\nconst ERROR_MSG = \"Failed to register new Evaluation Log\";\n\nconst config_id = msg.payload.config_id;\nconst log_entries = msg.payload.log_entries;\n\nlet response = null;\n\ntry {\n    response = await addLog(log_entries, config_id);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    msg.error_response = err.response;\n    if (err.response && err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n}",
+        "func": "const logClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Logs; // Common step\n//Client Function\nconst addLog = logClient.registerLogApiV1LogsRegisterPost;\n\nconst ERROR_MSG = \"Failed to register new Evaluation Log\";\n\nconst config_id = msg.payload.config_id;\nconst log_entries = msg.payload.log_entries;\n\nlet response = null;\n\ntry {\n    response = await addLog(log_entries, config_id);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    msg.error_response = err.response;\n    if (err.response && err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -2110,7 +2180,7 @@
         "type": "function",
         "z": "ee62c2e2054b032c",
         "name": "Trigger Evaluation Process",
-        "func": "const evalClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Evaluation; // Common step\n//Client Function\nconst triggerEval = evalClient.evaluateConfigEvaluateConfigurationIdPost;\n\nconst ERROR_MSG = \"Failed to trigger Evaluation log\";\n\nlet response = null;\n\ntry {\n    response = await triggerEval(msg.payload.configId);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
+        "func": "const evalClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Evaluation; // Common step\n//Client Function\nconst triggerEval = evalClient.evaluateConfigApiV1EvaluateConfigurationIdPost;\n\nconst ERROR_MSG = \"Failed to trigger Evaluation log\";\n\nlet response = null;\n\ntry {\n    response = await triggerEval(msg.payload.configId);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -2185,7 +2255,7 @@
         "type": "function",
         "z": "e260c7f298a6dd52",
         "name": "Access Evaluation Results for Config ID",
-        "func": "const resultsClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Results; // Common step\n//Client Function\nconst getResults = resultsClient.getEvaluationResultsResultsConfigurationIdGet;\n\nconst ERROR_MSG = \"Failed to get results for config ID\";\n\nlet response = null;\n\ntry {\n    response = await getResults(msg.payload.configId);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
+        "func": "const resultsClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Results; // Common step\n//Client Function\nconst getResults = resultsClient.getEvaluationResultsApiV1ResultsConfigurationIdGet;\n\nconst ERROR_MSG = \"Failed to get results for config ID\";\n\nlet response = null;\n\ntry {\n    response = await getResults(msg.payload.configId);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -2222,7 +2292,7 @@
         "type": "function",
         "z": "e260c7f298a6dd52",
         "name": "Access Specific Evaluation Result",
-        "func": "const resultsClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Results; // Common step\n//Client Function\nconst getResult = resultsClient.getEvaluationResultResultsConfigurationIdResultIdGet;\n\nconst ERROR_MSG = \"Failed to get results for config ID\";\n\nlet response = null;\n\ntry {\n    response = await getResult(msg.payload.configId, msg.payload.resultId);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
+        "func": "const resultsClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Results; // Common step\n//Client Function\nconst getResult = resultsClient.getEvaluationResultApiV1ResultsConfigurationIdResultIdGet;\n\nconst ERROR_MSG = \"Failed to get results for config ID\";\n\nlet response = null;\n\ntry {\n    response = await getResult(msg.payload.configId, msg.payload.resultId);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -2246,7 +2316,7 @@
         "type": "function",
         "z": "e260c7f298a6dd52",
         "name": "Access Evaluation Results for Config ID",
-        "func": "const resultsClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Results; // Common step\n//Client Function\nconst getResultsGroup = resultsClient.getEvaluationResultsByGroupResultsConfigurationIdGroupGroupNameGet;\n\nconst ERROR_MSG = \"Failed to get specific evaluation results group\";\n\nlet response = null;\n\ntry {\n    response = await getResultsGroup(msg.payload.configId, msg.payload.groupName);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
+        "func": "const resultsClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Results; // Common step\n//Client Function\nconst getResultsGroup = resultsClient.getEvaluationResultsByGroupApiV1ResultsConfigurationIdGroupGroupNameGet;\n\nconst ERROR_MSG = \"Failed to get specific evaluation results group\";\n\nlet response = null;\n\ntry {\n    response = await getResultsGroup(msg.payload.configId, msg.payload.groupName);\n    // TODO: Handle all kinds of responses\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}`;\n    return [null, msg];\n}",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -2411,6 +2481,50 @@
             [
                 "94cb54ca2c86be7b"
             ]
+        ]
+    },
+    {
+        "id": "b1100822be5dff24",
+        "type": "function",
+        "z": "ae4aa52ccf644143",
+        "name": "Get settings for all environments",
+        "func": "const envCatalogClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).EnvironmentCatalog; //Common step\nconst getEnvironmentSettings = envCatalogClient.getEnvApiV1EnvsEnvIdGet;\n\nconst environmentsList = msg.payload.responseData;\n\nconst environmentsObj = {};\nfor (const environmentObject of environmentsList) {\n    environmentsObj[environmentObject.id] = environmentObject;\n    try{\n        let response = await getEnvironmentSettings(environmentObject.id);\n        environmentsObj[environmentObject.id].environmentSettings = response.responseData;\n    } catch (err) {\n        environmentsObj[environmentObject.id].error_response = err.response;\n        if (err.response.data) {\n            environmentsObj[environmentObject.id].error_data = err.response.data;\n        }\n        environmentsObj[environmentObject.id].status = err.response.status;\n    }\n\n}\nmsg.payload = environmentsObj;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b4732a42ba36a51a",
+        "type": "function",
+        "z": "ae4aa52ccf644143",
+        "name": "Get list of environments and set the options up",
+        "func": "const envCatalogClient = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).EnvironmentCatalog; //Common step\n//Constants\nconst getAvailableEnvs = envCatalogClient.listEnvsApiV1EnvsGet;\nconst ERROR_MSG = \"Failed to get configured HAIC Environments!\";\n\nlet response = null;\n\ntry {\n    response = await getAvailableEnvs();\n    msg.payload = response;\n    return [msg, null];\n} catch (err) {\n    msg.error = `${ERROR_MSG}: ${err}.`;\n    msg.error_response = err.response;\n    if (err.response.data) {\n        msg.payload = err.response.data;\n    }\n    msg.payload.status = err.response.status;\n    return [null, msg];\n}",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
+        "x": 420,
+        "y": 40,
+        "wires": [
+            [
+                "b1100822be5dff24"
+            ],
+            []
         ]
     },
     {
@@ -2635,21 +2749,27 @@
         "name": "",
         "env": [
             {
-                "name": "IP Address",
-                "value": "backend",
+                "name": "Use HTTPS",
+                "value": "true",
+                "type": "bool"
+            },
+            {
+                "name": "Host",
+                "value": "benchmark.humaine-horizon.eu",
                 "type": "str"
             },
             {
                 "name": "Port",
-                "value": "8001",
+                "value": "443",
                 "type": "num"
             }
         ],
-        "x": 330,
-        "y": 420,
+        "x": 370,
+        "y": 440,
         "wires": [
             [
-                "2d000ff74d5823c1"
+                "2d000ff74d5823c1",
+                "8f27d79a374af28c"
             ],
             [
                 "3f9e2fd9de8af5ad"
@@ -2779,7 +2899,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 500,
-        "y": 400,
+        "y": 380,
         "wires": [
             [
                 "1b2c3fb326eacf7a"
@@ -2943,7 +3063,7 @@
         "z": "9db4af518e108976",
         "g": "825a94b5cf333ad6",
         "name": "Aggreement Interaction",
-        "func": "const startTime = msg.payload[0].timestamp;\nconst endTime = msg.payload[1].timestamp;\n\nconst random_boolean = Math.random() < 0.5;\n\nconst common_data = {\n    \"session_id\": \"dss_doctor-e5392b4b-0932-4e9c-a1ea-2a2e342btest\",\n    \"user_id\": \"dss_doctor-d7d0614f-c964-434b-b81d-fbed40datest\",\n    \"app_version\": \"1.0.2\",\n    \"ai_model_version\": \"2.1.1\",\n};\n\nmsg.payload = {\n    \"config_id\": flow.get(\"configId\"),\n    \"log_entries\": [],\n};\n\nmsg.payload.log_entries.push({\n    ...common_data,\n    \"start_time\": startTime,\n    \"end_time\": endTime,\n    \"interaction_data\": {\n        \"human_decision\": random_boolean,\n        \"ai_suggestion\": random_boolean,\n    },\n});\n\nreturn msg;",
+        "func": "const startTime = msg.payload[0].timestamp;\nconst endTime = msg.payload[1].timestamp;\n\nconst random_boolean = Math.random() < 0.5;\n\nconst common_data = {\n    \"session_id\": \"dss_doctor-e5392b4b-0932-4e9c-a1ea-2a2e342btest\",  // Think of it as an ID for a TASK of the app. It may be just a step for a task. Depends on the app, HAIC is not aware\n    \"user_id\": \"dss_doctor-d7d0614f-c964-434b-b81d-fbed40datest\",\n    \"app_version\": \"1.0.2\",\n    \"ai_model_version\": \"2.1.1\", // Currently the model versions are evaluated to show the evolution.\n};\n\nmsg.payload = {\n    \"config_id\": flow.get(\"configId\"),\n    \"log_entries\": [],\n};\n\n// TODO: These will belong to an object, with key \"step ID\", if step exists. If not, remains as is (for compatibility)\n// NOTE: Wait for HAIC API TO ACCEPT IT LIKE THIS\nmsg.payload.log_entries.push({\n    ...common_data,\n    \"start_time\": startTime,\n    \"end_time\": endTime,\n    \"interaction_data\": {\n        \"human_decision\": random_boolean,\n        \"ai_suggestion\": random_boolean,\n    },\n});\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -3193,18 +3313,44 @@
         "wires": []
     },
     {
+        "id": "8f27d79a374af28c",
+        "type": "debug",
+        "z": "9db4af518e108976",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 300,
+        "wires": []
+    },
+    {
         "id": "457db4028a714336",
         "type": "subflow:6d5f83638870930c",
         "z": "3f025920437f7905",
         "name": "",
         "env": [
             {
-                "name": "IP Address",
-                "value": "backend",
+                "name": "Use HTTPS",
+                "value": "true",
+                "type": "bool"
+            },
+            {
+                "name": "Host",
+                "value": "benchmark.humaine-horizon.eu",
                 "type": "str"
+            },
+            {
+                "name": "Port",
+                "value": "443",
+                "type": "num"
             }
         ],
-        "x": 330,
+        "x": 310,
         "y": 40,
         "wires": [
             [
@@ -3240,7 +3386,7 @@
         "server": "4e6412a56bb04544",
         "client": "",
         "x": 110,
-        "y": 320,
+        "y": 460,
         "wires": [
             [
                 "a32e3be57ce24c24"
@@ -3269,7 +3415,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 110,
-        "y": 180,
+        "y": 320,
         "wires": [
             [
                 "427d9cbd4d8bf008"
@@ -3289,7 +3435,7 @@
         "finalize": "",
         "libs": [],
         "x": 310,
-        "y": 180,
+        "y": 320,
         "wires": [
             [
                 "d8b8d134790fcc86"
@@ -3302,7 +3448,7 @@
         "z": "3f025920437f7905",
         "name": "",
         "x": 550,
-        "y": 180,
+        "y": 320,
         "wires": [
             [
                 "79861fc8ba4d35a0",
@@ -3327,7 +3473,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 800,
-        "y": 140,
+        "y": 280,
         "wires": []
     },
     {
@@ -3344,7 +3490,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 720,
-        "y": 240,
+        "y": 380,
         "wires": []
     },
     {
@@ -3360,7 +3506,7 @@
         "finalize": "",
         "libs": [],
         "x": 820,
-        "y": 180,
+        "y": 320,
         "wires": [
             []
         ]
@@ -3378,7 +3524,7 @@
         "finalize": "",
         "libs": [],
         "x": 320,
-        "y": 320,
+        "y": 460,
         "wires": [
             [
                 "177c20dc63803101"
@@ -3391,7 +3537,7 @@
         "z": "3f025920437f7905",
         "name": "",
         "x": 550,
-        "y": 320,
+        "y": 460,
         "wires": [
             [
                 "cdb477a98e9f7dc5"
@@ -3423,7 +3569,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 110,
-        "y": 500,
+        "y": 640,
         "wires": [
             [
                 "fd7faa26aa52eb78"
@@ -3443,7 +3589,7 @@
         "finalize": "",
         "libs": [],
         "x": 280,
-        "y": 500,
+        "y": 640,
         "wires": [
             [
                 "bb8d8e3c93033918"
@@ -3456,7 +3602,7 @@
         "z": "3f025920437f7905",
         "name": "",
         "x": 510,
-        "y": 500,
+        "y": 640,
         "wires": [
             [
                 "e5d5871e033a236e"
@@ -3479,7 +3625,7 @@
         "finalize": "",
         "libs": [],
         "x": 850,
-        "y": 520,
+        "y": 660,
         "wires": [
             [
                 "4b58f8cefa56a306"
@@ -3500,7 +3646,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 540,
-        "y": 560,
+        "y": 700,
         "wires": []
     },
     {
@@ -3513,7 +3659,7 @@
         "upload": false,
         "swaggerDoc": "",
         "x": 110,
-        "y": 420,
+        "y": 560,
         "wires": [
             [
                 "b6375845c5da5c22"
@@ -3528,7 +3674,7 @@
         "statusCode": "",
         "headers": {},
         "x": 960,
-        "y": 420,
+        "y": 560,
         "wires": []
     },
     {
@@ -3537,7 +3683,7 @@
         "z": "3f025920437f7905",
         "name": "",
         "x": 520,
-        "y": 420,
+        "y": 560,
         "wires": [
             [
                 "538c98c93dc4ec4e"
@@ -3560,7 +3706,7 @@
         "finalize": "",
         "libs": [],
         "x": 300,
-        "y": 420,
+        "y": 560,
         "wires": [
             [
                 "de0960e0207b8c65"
@@ -3580,7 +3726,7 @@
         "finalize": "",
         "libs": [],
         "x": 750,
-        "y": 420,
+        "y": 560,
         "wires": [
             [
                 "4ac61f62232da56d"
@@ -3601,7 +3747,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 740,
-        "y": 340,
+        "y": 480,
         "wires": []
     },
     {
@@ -3618,7 +3764,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 740,
-        "y": 460,
+        "y": 600,
         "wires": []
     },
     {
@@ -3635,7 +3781,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 750,
-        "y": 300,
+        "y": 440,
         "wires": []
     },
     {
@@ -3644,7 +3790,7 @@
         "z": "3f025920437f7905",
         "name": "",
         "x": 210,
-        "y": 680,
+        "y": 820,
         "wires": [
             [
                 "72822ea23e2002d7"
@@ -3668,7 +3814,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 440,
-        "y": 700,
+        "y": 840,
         "wires": []
     },
     {
@@ -3684,7 +3830,7 @@
         "finalize": "",
         "libs": [],
         "x": 470,
-        "y": 660,
+        "y": 800,
         "wires": [
             [
                 "e736dc111c27129f"
@@ -3705,7 +3851,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 710,
-        "y": 660,
+        "y": 800,
         "wires": []
     },
     {
@@ -3724,6 +3870,307 @@
         "x": 560,
         "y": 60,
         "wires": []
+    },
+    {
+        "id": "fcfedd353c48319a",
+        "type": "inject",
+        "z": "3f025920437f7905",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 1620,
+        "y": 80,
+        "wires": [
+            [
+                "5c4efabccdde1edd"
+            ]
+        ]
+    },
+    {
+        "id": "5c4efabccdde1edd",
+        "type": "function",
+        "z": "3f025920437f7905",
+        "name": "Debug HAIC API client",
+        "func": "msg.payload =  humanAiBenchmarkSuite;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
+        "x": 1820,
+        "y": 80,
+        "wires": [
+            [
+                "ccaa969376b9b60b",
+                "a38d6273dbda4ef2"
+            ]
+        ]
+    },
+    {
+        "id": "ccaa969376b9b60b",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2020,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "a38d6273dbda4ef2",
+        "type": "function",
+        "z": "3f025920437f7905",
+        "name": "HAIC entries iteration",
+        "func": "// Import all client classes\nconst {\n    CollaborationMetricsApi,\n    ConfigurationApi,\n    EnvironmentBuilderApi,\n    EnvironmentCatalogApi,\n    EvaluationApi,\n    FairnessApi,\n    LogGeneratorApi,\n    LogsApi,\n    MetaApi,\n    ResultsApi,\n    SimulatorApi,\n    SurveyApi,\n    SurveySchemasApi,\n} = humanAiBenchmarkSuite;\nconst haicClasses = {\n    CollaborationMetricsApi,\n    ConfigurationApi,\n    EnvironmentBuilderApi,\n    EnvironmentCatalogApi,\n    EvaluationApi,\n    FairnessApi,\n    LogGeneratorApi,\n    LogsApi,\n    MetaApi,\n    ResultsApi,\n    SimulatorApi,\n    SurveyApi,\n    SurveySchemasApi,\n}\n\nmsg.payload = {};\n\n// ALL CLIENTS AND THE FUNCTIONS SET UP HERE\nconst httpMethods = ['Get', 'Put', 'Post', 'Delete'];\n// Mapping: API Section -> Operation -> Function that does it\nconst haicApiClients = {};\n\nfor (const [originalClassName, ClassConstructor] of Object.entries(haicClasses)) {\n    const className = originalClassName.endsWith('Api')\n        ? originalClassName.slice(0, -3)\n        : originalClassName;\n\n    msg.payload[className] = ClassConstructor\n\n\n}\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
+        "x": 1700,
+        "y": 180,
+        "wires": [
+            [
+                "8f42ebeb9ac5e5d9"
+            ]
+        ]
+    },
+    {
+        "id": "8f42ebeb9ac5e5d9",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1920,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "cad8464db00cf33b",
+        "type": "typescript",
+        "z": "3f025920437f7905",
+        "name": "typescript 1",
+        "func": "const { ConfigurationApi } = humanAiBenchmarkSuite;\n// const configClient  = global.get(\"globalUtilFunctions\").getHaicFunctions(flow, global, node).Configuration; // Common step\n\nmsg.payload = [\n    // typeof configClient,\n    typeof ConfigurationApi,\n\n];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "useVm": false,
+        "updated": "1764002072410",
+        "declare": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "humanAiBenchmarkSuite",
+                "module": "human_ai_benchmark_suite"
+            }
+        ],
+        "x": 1770,
+        "y": 240,
+        "wires": [
+            [
+                "f7128ba9097651e6"
+            ]
+        ]
+    },
+    {
+        "id": "7a58de17dad77e3f",
+        "type": "inject",
+        "z": "3f025920437f7905",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 1620,
+        "y": 240,
+        "wires": [
+            [
+                "cad8464db00cf33b"
+            ]
+        ]
+    },
+    {
+        "id": "f7128ba9097651e6",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1920,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "68b60da97bf78e2d",
+        "type": "comment",
+        "z": "3f025920437f7905",
+        "name": "The following are just tests",
+        "info": "",
+        "x": 1790,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "2d36e29ded19d7d5",
+        "type": "inject",
+        "z": "3f025920437f7905",
+        "name": "trigger",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 90,
+        "y": 180,
+        "wires": [
+            [
+                "d5ba21061fbab4f5"
+            ]
+        ]
+    },
+    {
+        "id": "d5ba21061fbab4f5",
+        "type": "subflow:ae4aa52ccf644143",
+        "z": "3f025920437f7905",
+        "name": "",
+        "x": 310,
+        "y": 180,
+        "wires": [
+            [
+                "1ea64d3250214f3d"
+            ],
+            [
+                "ab5620281338c9d2"
+            ]
+        ]
+    },
+    {
+        "id": "1ea64d3250214f3d",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "ENVS",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 510,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "ab5620281338c9d2",
+        "type": "debug",
+        "z": "3f025920437f7905",
+        "name": "Error handling",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 540,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "b2d6d748be934985",
+        "type": "inject",
+        "z": "529d431d13d83865",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 140,
+        "wires": [
+            []
+        ]
     },
     {
         "id": "1599caf449da9654",
@@ -4903,18 +5350,7 @@
         "type": "subflow:6d5f83638870930c",
         "z": "e3fd273272a37452",
         "name": "",
-        "env": [
-            {
-                "name": "IP Address",
-                "value": "backend",
-                "type": "str"
-            },
-            {
-                "name": "Port",
-                "value": "8001",
-                "type": "num"
-            }
-        ],
+        "env": [],
         "x": 290,
         "y": 40,
         "wires": [
@@ -5360,18 +5796,7 @@
         "z": "68962323fb8f5a64",
         "g": "bef08cda5cd6e15a",
         "name": "",
-        "env": [
-            {
-                "name": "IP Address",
-                "value": "backend",
-                "type": "str"
-            },
-            {
-                "name": "Port",
-                "value": "8001",
-                "type": "num"
-            }
-        ],
+        "env": [],
         "x": 130,
         "y": 60,
         "wires": [
