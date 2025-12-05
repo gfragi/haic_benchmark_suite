@@ -1,286 +1,303 @@
-# Human-AI Benchmark Suite
+# HAIC Benchmark Suite
 
-An application to evaluate Human-AI collaboration by logging interactions, configurations, and evaluations. This suite includes both a backend, built with FastAPI, and a frontend, built with Vue 3 and Vuetify.
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
 
-## Table of Contents
+A comprehensive platform for evaluating Human-AI Collaboration (HAIC) systems through simulation, metrics computation, and interactive benchmarking.
 
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Backend Setup](#backend-setup)
-- [Frontend Setup](#frontend-setup)
-- [Running the Application](#running-the-application)
-- [API Endpoints](#api-endpoints)
-- [Frontend Components](#frontend-components)
-- [Usage](#usage)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [License](#license)
+## 🎯 What is HAIC Benchmark Suite?
 
-## Project Structure
+The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarking Human-AI collaborative systems. It combines realistic simulation environments, comprehensive metrics computation, and interactive evaluation tools to help researchers and practitioners assess the effectiveness of AI systems working alongside humans.
 
-```bash
-human-ai-benchmark-suite/
-├── backend/
-│ ├── alembic/
-│ ├── app/
-│ ├── assets/
-│ ├── docker-compose.yml
-│ ├── docs/
-│ ├── minio-data/
-│ ├── pg-data/
-│ ├── README.md
-│ ├── requirements.txt
-│ ├── templates/
-│ └── tests/
-└── frontend/
-├── node_modules/
-├── public/
-├── src/
-├── .browserslistrc
-├── .eslintrc.js
-├── babel.config.js
-├── jest.config.js
-├── jsconfig.json
-├── package.json
-├── README.md
-├── vue.config.js
+### Key Features
+
+- **🤖 Realistic Simulations**: 6 complete pilot implementations across healthcare, manufacturing, energy, transportation, and urban planning domains
+- **📊 Comprehensive Metrics**: HAIC-specific metrics (Fluency, Delegation, Human-Centered Learning, Trust, Autonomy, Surprise, Efficiency) plus traditional ML metrics
+- **🔬 Scientific Evaluation**: Research-grade benchmarking with statistical analysis and visualization
+- **🌐 Web Interface**: Interactive dashboard for configuring, running, and analyzing evaluations
+- **⚡ Real-time Processing**: Background evaluation with progress tracking and notifications
+- **📈 Extensible Framework**: Plugin architecture for adding new domains and metrics
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Simulations   │    │    Metrics      │    │    Backend      │
+│  (haic_sim_mvp) │───▶│ (metrics_core)  │───▶│   (FastAPI)     │
+│                 │    │                 │    │                 │
+│ • 6 Pilot Impl. │    │ • HAIC Metrics  │    │ • REST API      │
+│ • Decision Logs │    │ • ML Metrics    │    │ • DB Storage    │
+│ • Scenario Gen  │    │ • Real-time Comp│    │ • User Mgmt     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                                         │
+                                                         ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   Results       │    │   Analysis      │
+│   (Vue.js)      │    │   (MinIO)       │    │   (Charts)      │
+│                 │    │                 │    │                 │
+│ • Config UI     │    │ • Log Storage   │    │ • Metrics Viz   │
+│ • Results Dash  │    │ • Export/Import │    │ • Comparisons   │
+│ • Real-time Mon │    │ • Versioning    │    │ • Reports       │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## Installation
+## 🎭 Pilot Implementations
+
+### 1. **Healthcare - CT Scan Diagnosis**
+**Scenario**: AI-assisted radiology diagnosis with human expert review
+- **Agents**: Radiologist Assistant (AI), Voice Support Bot (AI), Human Radiologist
+- **Tasks**: Image viewing, window leveling, marking findings, final reporting
+- **Metrics Focus**: Diagnostic accuracy, human-AI agreement, intervention rates
+
+### 2. **Healthcare - Oncology (Neuro-Symbolic)**
+**Scenario**: NS model-based cancer diagnosis with multi-stage human review
+- **Agents**: NS AI Model, Explainability Tool (XAI), ML Engineer, Clinical Expert
+- **Tasks**: Training, inference, explainability generation, human review
+- **Metrics Focus**: Trust calibration, explainability effectiveness, review efficiency
+
+### 3. **Manufacturing - Quality Control**
+**Scenario**: AI vision systems for defect detection with human verification
+- **Agents**: Quality Inspector (AI), Human Reviewer, System Orchestrator
+- **Tasks**: Part inspection, defect classification, acceptance/rejection
+- **Metrics Focus**: False positive reduction, human effort savings, throughput
+
+### 4. **Smart Energy - Grid Management**
+**Scenario**: AI-powered fault detection in electrical grids
+- **Agents**: Digital Twin (AI), Human Operator, Alert System
+- **Tasks**: Load balancing, fault prediction, emergency response
+- **Metrics Focus**: Response time, safety incidents, predictive accuracy
+
+### 5. **Smart Cities - Traffic Optimization**
+**Scenario**: AI traffic management with human oversight
+- **Agents**: Traffic Optimizer (AI), City Controller (Human), Sensor Network
+- **Tasks**: Signal timing, congestion prediction, incident response
+- **Metrics Focus**: Traffic flow efficiency, emergency response, user satisfaction
+
+### 6. **Smart Ticketing - Public Transport**
+**Scenario**: AI demand prediction for transport optimization
+- **Agents**: Route Optimizer (AI), Dispatch Controller (Human), Passenger Interface
+- **Tasks**: Demand forecasting, route planning, real-time adjustments
+- **Metrics Focus**: On-time performance, passenger satisfaction, resource utilization
+
+## 📊 HAIC Metrics Framework
+
+### Core HAIC Metrics (F, D, HCL, Tr, A, S, EL)
+
+| Metric | Name | Description | Scale | Direction |
+|--------|------|-------------|-------|-----------|
+| **F** | Fluency | Interactions per minute | 0-∞ | Higher better |
+| **D** | Delegation | Average human decision time | 0-∞ seconds | Lower better |
+| **HCL** | Human-Centered Learning | Efficiency within time constraints | 0-1 | Higher better |
+| **Tr** | Trust | System reliability and appropriate autonomy | 0-1 | Higher better |
+| **A** | Autonomy | Appropriate AI decision-making | 0-1 | Balanced |
+| **S** | Surprise | Unexpected system behavior | 0-1 | Lower better |
+| **EL** | Efficiency/Latency | End-to-end response times | 0-∞ seconds | Lower better |
+
+### Additional Metrics
+- **Traditional ML**: Accuracy, Precision, Recall, F1-Score
+- **Interaction Quality**: Human-AI Agreement, Intervention Rates, Override Patterns
+- **User Experience**: Satisfaction Scores, Cognitive Load, Trust Levels
+- **System Performance**: Throughput, Resource Utilization, Error Rates
+
+## 🚀 Quick Start
 
 ### Prerequisites
+- Python 3.8+
+- Node.js 16+
+- Docker & Docker Compose
+- PostgreSQL & MinIO (via Docker)
 
-- **Backend**: Python 3.9+, Docker, and Docker Compose
-- **Frontend**: Node.js 14+, npm or yarn
+### 1. Clone and Setup
+```bash
+git clone https://github.com/your-org/haic_benchmark_suite.git
+cd haic_benchmark_suite
+```
 
-## Backend Setup
+### 2. Start Infrastructure
+```bash
+docker-compose up -d
+```
 
-1. **Clone the Repository**
+### 3. Install Dependencies
+```bash
+# Backend
+pip install -r backend/requirements.txt
 
-    ```bash
-    git clone https://github.com/gfragi/haic_benchmark_suite.git
-    cd haic_benchmark_suite/backend
-    ```
+# Frontend
+cd frontend && npm install
 
-2. **Create a Virtual Environment**
+# Metrics Core
+pip install -e packages/metrics_core
+```
 
-    ```bash
-    python3 -m venv bench-env
-    source bench-env/bin/activate  # On Windows use `bench-env\Scripts\activate`
-    ```
+### 4. Run Simulations
+```bash
+# Generate sample evaluation data
+cd haic_sim_mvp
+python tools/run_dataset_experiment.py --config configs/ct_demo.json
 
-3. **Install Dependencies**
+# Compute metrics from simulation logs
+python tools/run_metrics.py --log results/ct_demo_*.json
+```
 
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4. **Run Migrations**
-
-    ```bash
-    alembic upgrade head
-    ```
-
-5. **Start the Backend Server**
-
-    ```bash
-    uvicorn app.main:app --reload
-    ```
-
-    The backend server will be available at `http://localhost:8000`.
-
-## Frontend Setup
-
-1. **Navigate to the Frontend Directory**
-
-    ```bash
-    cd ../frontend
-    ```
-
-2. **Install Dependencies**
-
-    ```bash
-    npm install
-    ```
-
-3. **Run the Frontend Development Server**
-
-    ```bash
-    npm run serve
-    ```
-
-    The frontend server will be available at `http://localhost:8080`.
-
-## Running the Application
-
-- **Backend**: Runs on `http://localhost:8000`
-- **Frontend**: Runs on `http://localhost:8080`
-
-Ensure both the backend and frontend are running simultaneously to fully use the application.
-
-## API Endpoints
-
-### Evaluation Config
-
-- **GET /evaluation/config** - Get all evaluation configs
-- **POST /evaluation/config** - Create a new evaluation config
-- **GET /evaluation/config/{configuration_id}** - Get an evaluation config by ID
-
-### Logs
-
-- **POST /logs/** - Ingest a new log entry
-
-### Evaluation Result
-
-- **POST /results/** - Create a new evaluation result
-- **GET /results/{result_id}** - Get an evaluation result by ID
-- **GET /results/list** - Get all evaluation results
-
-### Reporting
-
-- **GET /reporting/aggregate-by-date** - Get aggregated results by date
-- **GET /reporting/time-series-data** - Get time-series data for evaluations
-- **GET /reporting/generate-report** - Generate a PDF report
-
-## Frontend Components
-
-### Components
-
-- **HeaderComponent.vue** - The header for all pages, includes a toggle for the sidebar.
-- **FooterComponent.vue** - The footer for all pages.
-- **AppSidebar.vue** - The sidebar containing navigation links.
-- **ConfigForm.vue** - Form for creating/editing evaluation configurations.
-- **ConfigList.vue** - Displays a list of evaluation configurations.
-- **LogIngestionForm.vue** - Form to ingest logs.
-
-### Views
-
-- **HomeView.vue** - The home page, providing an overview and navigation.
-- **EvaluationConfigList.vue** - View for listing and managing evaluation configurations.
-- **EvaluationReports.vue** - View for generating and viewing reports.
-- **EvaluationResults.vue** - View for viewing evaluation results.
-- **LogIngestion.vue** - View for ingesting log data.
-
-## Usage
-
-1. **Create an Evaluation Config**: Use the frontend to navigate to the "New Configuration" page, fill out the form, and save the configuration.
-2. **Ingest Logs**: Use the "Log Ingestion" page to upload log data that will be associated with an evaluation config.
-3. **Run Evaluations**: Automatically triggered upon log ingestion, generating evaluation results based on predefined metrics.
-4. **View Results**: Navigate to the "Evaluation Results" page to view historical data.
-5. **Generate Reports**: Use the "Reports" page to aggregate data and generate PDF reports.
-
-## Testing
-
-### Backend
-
-Run backend tests using `pytest`:
-
+### 5. Start Backend
 ```bash
 cd backend
-pytest
+python main.py
+# API available at http://localhost:8000/api/docs
 ```
 
-### Frontend
-
-Run frontend tests using jest:
-
+### 6. Start Frontend
 ```bash
 cd frontend
-npm run test:unit
+npm run serve
+# UI available at http://localhost:8080
 ```
 
-## New Features
+## 📋 Usage Scenarios
 
-### Evaluation Configuration Wizard
+### Scenario 1: Research Evaluation
+**Goal**: Compare different AI models in a healthcare setting
+1. Configure CT diagnosis pilot with different AI models
+2. Run simulations with varying human expertise levels
+3. Compare HAIC metrics across model configurations
+4. Generate research reports with statistical analysis
 
-- **Workflow Introduction**: The Human-AI Benchmark Suite now includes a guided wizard that assists users in creating new evaluation configurations and uploading log files seamlessly.
-- **Steps Involved**:
-  1. **Create Configuration**: Users start by creating a new evaluation configuration where they can specify the model type, metrics, and other details.
-  2. **Upload Log Files**: Upon saving the configuration, users are immediately prompted to upload log files associated with the configuration. This ensures a smooth transition and maintains the context of the operation.
+### Scenario 2: System Optimization
+**Goal**: Optimize human-AI team performance
+1. Set up manufacturing quality control scenario
+2. Adjust AI confidence thresholds and human review policies
+3. Measure impact on throughput and error rates
+4. Find optimal balance between automation and human oversight
 
-### Enhanced Log Management
+### Scenario 3: Training and Education
+**Goal**: Train practitioners on AI collaboration patterns
+1. Use interactive scenarios with real-time feedback
+2. Show how different intervention strategies affect outcomes
+3. Provide personalized recommendations for human-AI collaboration
 
-- **Dynamic Log Processing**: The application now supports dynamic processing of logs based on the configuration set in the previous steps. This allows for real-time evaluation and feedback.
-- **Log Validation**: Logs are validated using a schema to ensure they meet the expected format, enhancing the reliability of data processing.
+### Scenario 4: Compliance and Safety
+**Goal**: Ensure AI systems meet safety and regulatory requirements
+1. Test edge cases and failure modes in simulation
+2. Validate human oversight procedures
+3. Generate audit trails and compliance reports
 
-### Log Generation Tool
+### Scenario 5: Product Development
+**Goal**: Design better human-AI interfaces
+1. A/B test different UI designs and interaction patterns
+2. Measure user satisfaction and cognitive load
+3. Optimize workflows for specific domains
 
-The HAIC Evaluation Platform includes a Log Generation Tool designed to create synthetic log data tailored to the specific needs of different application types. This tool is essential for generating realistic interaction data to test and evaluate the performance of various AI models within the platform.
+## 🔧 API Reference
 
-Features of the Log Generation Tool
+### Core Endpoints
 
-- **Application Type Selection**: Users can select from predefined application types such as "smart_cities," each with its unique set of parameters and interaction models.
+#### Configurations
+- `POST /api/v1/configuration/new` - Create evaluation configuration
+- `GET /api/v1/configuration/{id}` - Get configuration details
+- `GET /api/v1/configuration/list` - List all configurations
 
-- **Date Range**: Users can specify the start and end dates for the log entries, allowing the generation of logs over a defined period.
+#### Logs
+- `POST /api/v1/logs/upload` - Upload evaluation logs
+- `POST /api/v1/logs/register` - Register individual log entry
+- `GET /api/v1/logs/{config_id}` - List logs for configuration
+- `DELETE /api/v1/logs/{config_id}/{log_name}` - Delete log
 
-- **Number of Logs**: The tool allows users to specify the number of log entries to generate, facilitating large-scale testing or demonstrations.
+#### Evaluation
+- `POST /api/v1/evaluate/{config_id}` - Start evaluation
+- `GET /api/v1/results/list` - Get evaluation results
+- `GET /api/v1/results/{result_id}` - Get detailed results
 
-- **Model Version Range**: Users can input a range of model versions to simulate logs with different AI model behaviors and characteristics.
+### Simulation API
 
-### Quick Start Guide
+```python
+from haic_sim_mvp.engine.run_sim import run_from_config
 
-- **Running the Application**:
+# Run a simulation
+config = {
+    "environment": {"env_id": "CT_Diagnosis"},
+    "agents": [{"entity_id": "AI_Radiologist", "model": "ai"}],
+    "script": [
+        {"t": 1, "agent": "AI_Radiologist", "object": "scan_001", "action": "classify"}
+    ]
+}
 
-  ```bash
-  # Starting the backend
-  uvicorn app.main:app --reload
+log_path = run_from_config(config)
+```
 
-  # Starting the frontend
-  npm run serve
-    ```
+### Metrics API
 
-- **Accessing the Application**:
-  - Backend: `http://localhost:8000`
-  - Frontend: `http://localhost:8080`
+```python
+from packages.metrics_core.interaction_metrics import compute_metrics
 
-## Modular HAIC Environment Builder (haic_env_builder)
+# Compute HAIC metrics
+decisions = [
+    {"agent": "ai", "action": "classify", "latency_ms": 150, "correct": True},
+    {"agent": "human", "action": "review", "latency_ms": 3000, "correct": True}
+]
 
-A new internal module `haic_env_builder` has been integrated to allow users to define modular Human-AI Collaboration environments and simulate them.
+metrics = compute_metrics(decisions, rt_max=5.0)
+# Returns: {"F": 1.2, "D": 3.0, "HCL": 0.4, ...}
+```
 
-Key Concepts
+## 📈 Results and Visualization
 
-- Task, Agent, Profile classes allow composable scenario definitions.
+### Interactive Dashboard
+- Real-time evaluation progress
+- Comparative metric visualizations
+- Scenario configuration builder
+- Historical results analysis
 
-- YAML Config Generation via `/env/generate_config`
+### Export Formats
+- JSON metrics data
+- CSV decision logs
+- PDF reports with charts
+- Raw simulation data
 
-- Simulation API `/simulator/simulate?name=...` executes predefined environments and returns metrics + logs.
+### Analysis Tools
+- Statistical significance testing
+- Correlation analysis
+- Trend identification
+- Anomaly detection
 
-- Metrics Logging saved under metrics/ folder (e.g. collaboration, efficiency)
+## 🤝 Contributing
 
-## Simulator UI (Experimental)
+### Adding New Pilots
+1. Create pilot specification in `haic_sim_mvp/_pilots/`
+2. Implement environment config in `haic_sim_mvp/configs/`
+3. Build agent logic in `haic_sim_mvp/user_plugins/`
+4. Add test scenarios and sample data
 
-You can now simulate a YAML environment from the web UI:
+### Extending Metrics
+1. Add metric functions to `packages/metrics_core/`
+2. Update metric schemas and validation
+3. Add visualization components to frontend
+4. Update API documentation
 
-- Route: `/simulate`
-- Select a YAML config from dropdown
+### Improving Simulations
+1. Enhance agent decision-making logic
+2. Add more realistic timing distributions
+3. Implement complex interaction patterns
+4. Validate against real-world data
 
-- View:
-  - Simulation logs
-  - Metrics
-  - Decision log: Agent-step-wise simulated actions
+## 📄 License
 
-- Download output as .json
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Planned Next Steps
+## 🙏 Acknowledgments
 
-- Sidebar wizard for environment design (like a Streamlit block-based flow)
+- Built on [FastAPI](https://fastapi.tiangolo.com/) for the backend API
+- Uses [Vue.js](https://vuejs.org/) for the frontend interface
+- Metrics computation powered by custom HAIC metrics framework
+- Simulation engine inspired by multi-agent systems research
 
-- Configurable pipeline validation with real or synthetic profiles
+## 📞 Support
 
-- Progressive integration into main evaluation pipeline (logs/results)
+- **Documentation**: [Full API Docs](docs/)
+- **Issues**: [GitHub Issues](https://github.com/your-org/haic_benchmark_suite/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-org/haic_benchmark_suite/discussions)
 
-## Contributing
+---
 
-Contributions are welcome! Please follow these steps to contribute:
-
-1. Fork the repository.
-2. Create a feature branch (git checkout -b feature/your-feature).
-3. Commit your changes (git commit -am 'Add some feature').
-4. Push to the branch (git push origin feature/your-feature).
-5. Create a new Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-PYTHONPATH=backend uvicorn app.main:app --reload
+**HAIC Benchmark Suite** - Advancing Human-AI Collaboration through rigorous evaluation and benchmarking.
