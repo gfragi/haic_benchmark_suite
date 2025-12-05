@@ -1,0 +1,34 @@
+# Development overrides for docker-compose
+# This file is automatically loaded when running docker-compose
+# It overrides settings for local development
+
+version: '3.8'
+
+# Override environment files to use development settings
+services:
+  backend:
+    env_file:
+      - .env.development
+    volumes:
+      # Mount source code for hot reloading during development
+      - ./backend:/app
+      - /app/__pycache__
+
+  frontend:
+    env_file:
+      - .env.development
+    volumes:
+      # Mount source code for hot reloading
+      - ./frontend:/app
+      - /app/node_modules
+
+  # Optional: Add development tools
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@haic.local
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #   ports:
+  #     - "5050:80"
+  #   depends_on:
+  #     - db
