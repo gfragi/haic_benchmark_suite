@@ -31,6 +31,7 @@
 
 <script>
 import { ref, computed, onMounted } from "vue";
+import { useStore } from "vuex";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 import AppSidebar from "@/components/AppSidebar.vue";
@@ -43,27 +44,32 @@ export default {
     AppSidebar,
   },
   setup() {
-    const isDarkTheme = ref(false);
+    const store = useStore();
 
-    const currentTheme = computed(() => (isDarkTheme.value ? "dark" : "light"));
+    // Use Vuex store for theme management
+    const isDarkTheme = computed(() => store.getters['ui/isDarkTheme']);
+    const currentTheme = computed(() => store.state.ui.theme);
+    const drawer = computed(() => store.state.ui.drawer);
 
     const toggleTheme = () => {
-      isDarkTheme.value = !isDarkTheme.value;
-      localStorage.setItem("isDarkTheme", isDarkTheme.value);
+      store.dispatch('ui/toggleTheme');
     };
 
+    const toggleDrawer = () => {
+      store.dispatch('ui/toggleDrawer');
+    };
+
+    // Initialize theme on component mount
     onMounted(() => {
-      const savedTheme = localStorage.getItem("isDarkTheme");
-      if (savedTheme !== null) {
-        isDarkTheme.value = savedTheme === "true";
-      }
+      store.dispatch('ui/initializeTheme');
     });
 
     return {
-      drawer: ref(true),
+      drawer,
       isDarkTheme,
       currentTheme,
       toggleTheme,
+      toggleDrawer,
     };
   },
 };
