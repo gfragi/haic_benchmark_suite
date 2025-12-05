@@ -1,8 +1,11 @@
 <template>
   <v-app :theme="currentTheme">
+    <!-- Global Notifications -->
+    <GlobalNotifications />
+
     <!-- Header Component -->
     <HeaderComponent
-      @toggleSidebar="drawer = !drawer"
+      @toggleSidebar="toggleDrawer"
       @toggleTheme="toggleTheme"
       :isDarkTheme="isDarkTheme"
     />
@@ -35,6 +38,7 @@ import { useStore } from "vuex";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 import AppSidebar from "@/components/AppSidebar.vue";
+import GlobalNotifications from "@/components/GlobalNotifications.vue";
 
 export default {
   name: "BaseLayout",
@@ -42,6 +46,7 @@ export default {
     HeaderComponent,
     FooterComponent,
     AppSidebar,
+    GlobalNotifications,
   },
   setup() {
     const store = useStore();

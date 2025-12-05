@@ -3,9 +3,7 @@
     <v-container class="ml-auto">
       <v-card class="mx-auto my-12" max-width="600">
         <v-card-title>
-          <h2 class="text-h5">
-            {{ mode === "edit" ? "Edit" : "Create" }} Evaluation Configuration
-          </h2>
+          <h2 class="text-h5">{{ formTitle }}</h2>
         </v-card-title>
         <v-card-text>
           <v-form @submit.prevent="submitForm">
@@ -13,24 +11,21 @@
               v-model="config.application_name"
               label="Application Name"
               required
-            ></v-text-field>
+              :rules="[v => !!v || 'Application name is required']"
+            />
             <v-text-field
               v-model="config.ai_model_name"
               label="AI Model Name"
               required
-            ></v-text-field>
+              :rules="[v => !!v || 'AI model name is required']"
+            />
             <v-select
               v-model="config.ai_model_type"
               :items="availableModelTypes"
               label="AI Model Type"
               required
-            ></v-select>
-            <!-- <v-select #TODO: Add this field
-              v-model="config.config_type"
-              :items="availableConfigTypes"
-              label="Configuration Type"
-              required
-            ></v-select> -->
+              :rules="[v => !!v || 'AI model type is required']"
+            />
             <v-select
               v-model="config.metrics"
               :items="availableMetrics"
@@ -39,25 +34,28 @@
               label="Select Metrics Group"
               multiple
               required
-            ></v-select>
+              :rules="[v => v.length > 0 || 'At least one metric group is required']"
+            />
             <v-textarea
               v-model="config.description"
               label="Description"
-            ></v-textarea>
+              placeholder="Optional description of this configuration"
+            />
             <v-btn
               color="success"
-              :disabled="isSubmitting"
+              :disabled="isSubmitting || !isFormValid"
               @click="submitForm"
               class="justify-end"
+              type="submit"
             >
-              {{ mode === "edit" ? "Update" : "Next" }} Step
+              {{ submitButtonText }} Step
               <v-progress-circular
                 v-if="isSubmitting"
                 indeterminate
                 color="white"
                 size="20"
                 class="ml-2"
-              ></v-progress-circular>
+              />
             </v-btn>
           </v-form>
         </v-card-text>
@@ -67,9 +65,17 @@
 </template>
 
 <script>
-import configurationService from "@/services/configurationService";
-import metricsList from "@/services/evaluationService";
+/**
+ * ConfigurationForm Component
+ *
+ * A form component for creating and editing evaluation configurations.
+ * Uses Vuex store for state management and a composable for form logic.
+ *
+ * @props {String} mode - 'create' or 'edit'
+ * @props {Number} configId - Configuration ID for edit mode
+ */
 import BaseLayout from "@/components/BaseLayout.vue";
+import { useConfigurationForm } from "@/composables/useConfigurationForm";
 
 export default {
   name: "ConfigurationForm",
@@ -79,89 +85,26 @@ export default {
   props: {
     mode: {
       type: String,
-      default: "create", // Can be 'create' or 'edit'
+      default: "create",
+      validator: (value) => ["create", "edit"].includes(value),
     },
     configId: {
       type: Number,
       default: null,
     },
   },
-  data() {
-    return {
-      config: {
-        application_name: "",
-        ai_model_name: "",
-        ai_model_type: "",
-        metrics: [],
-        description: "",
-        config_type: "",
-        evaluation_status: "pending",
-        evaluation_date: new Date().toISOString(),
-      },
-      availableMetrics: [],
-      availableModelTypes: [
-        "Classification",
-        "Regression",
-        "Clustering",
-        "XAI",
-        "Swarm Learning",
-        "Active Learning",
-        "Other",
-      ],
-      availableConfigTypes: ["specific", "generic"],
-      isSubmitting: false,
-    };
-  },
-  mounted() {
-    this.fetchMetrics();
-    if (this.mode === "edit" && this.configId) {
-      this.loadConfig();
-    }
-  },
-  methods: {
-    fetchMetrics() {
-      metricsList
-        .getMetrics()
-        .then((response) => {
-          const metricGroups = Object.keys(response.data);
-          this.availableMetrics = metricGroups.map((group) => ({
-            group_name: group,
-            metrics: response.data[group].metrics,
-          }));
-        })
-        .catch((error) => {
-          console.error("Error fetching metrics:", error);
-        });
-    },
-    loadConfig() {
-      configurationService
-        .getConfigById(this.configId)
-        .then((response) => {
-          this.config = { ...response.data };
-        })
-        .catch((error) => {
-          console.error("Error loading configuration:", error);
-        });
-    },
-    submitForm() {
-      this.isSubmitting = true;
-      const serviceCall =
-        this.mode === "edit"
-          ? configurationService.updateConfig(this.configId, this.config)
-          : configurationService.createConfig(this.config);
-
-      serviceCall
-        .then((response) => {
-          const configId = response.data.id;
-          this.$router.push({ path: "/logs/upload", query: { configId } });
-        })
-        .catch((error) => {
-          console.error("Error while submitting form:", error);
-        })
-        .finally(() => {
-          this.isSubmitting = false;
-        });
-    },
+  setup(props) {
+    return useConfigurationForm(props);
   },
 };
 </script>
+
+<style scoped>
+.v-card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.v-btn {
+  min-width: 120px;
+}
+</style>
