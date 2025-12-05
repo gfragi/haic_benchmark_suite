@@ -18,6 +18,12 @@ The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarki
 - **🌐 Web Interface**: Interactive dashboard for configuring, running, and analyzing evaluations
 - **⚡ Real-time Processing**: Background evaluation with progress tracking and notifications
 - **📈 Extensible Framework**: Plugin architecture for adding new domains and metrics
+- **🎯 Fairness Analysis**: Built-in bias detection and fairness evaluation tools
+- **📝 Survey System**: SUS and ethics surveys with automatic aggregation and analysis
+- **🏗️ Environment Builder**: Custom scenario generation and environment management
+- **🔄 Simulator Integration**: Direct simulation run management and result processing
+- **📊 Advanced Reporting**: Time-series analytics, comparative analysis, and automated reporting
+- **👥 Collaboration Metrics**: Multi-user interaction analysis and team performance metrics
 
 ## 🏗️ Architecture
 
@@ -195,8 +201,10 @@ npm run serve
 
 #### Configurations
 - `POST /api/v1/configuration/new` - Create evaluation configuration
+- `GET /api/v1/configuration` - List all configurations
 - `GET /api/v1/configuration/{id}` - Get configuration details
-- `GET /api/v1/configuration/list` - List all configurations
+- `PUT /api/v1/configuration/update/{id}` - Update configuration
+- `DELETE /api/v1/configuration/delete/{id}` - Delete configuration
 
 #### Logs
 - `POST /api/v1/logs/upload` - Upload evaluation logs
@@ -206,8 +214,56 @@ npm run serve
 
 #### Evaluation
 - `POST /api/v1/evaluate/{config_id}` - Start evaluation
-- `GET /api/v1/results/list` - Get evaluation results
-- `GET /api/v1/results/{result_id}` - Get detailed results
+- `GET /api/v1/evaluate/metrics` - Get available metrics
+
+#### Results
+- `GET /api/v1/results/{config_id}` - Get results for configuration
+- `GET /api/v1/results/{config_id}/group/{group_name}` - Get grouped results
+
+### Advanced Features
+
+#### Fairness Analysis
+- `POST /api/v1/fairness/evaluate/` - Evaluate fairness metrics for predictions
+
+#### Survey System
+- `POST /api/v1/survey` - Submit survey response
+- `GET /api/v1/survey/aggregate` - Get aggregated survey metrics
+- `GET /api/v1/survey/versions` - List app versions with surveys
+- `GET /api/v1/survey/summary` - Get survey summary for version
+- `GET /api/v1/survey/compare` - Compare survey results between versions
+- `GET /api/v1/survey/question-averages` - Get question-level averages
+
+#### Environment Management
+- `GET /api/v1/envs` - List all available environments
+- `GET /api/v1/envs/{env_id}` - Get environment details
+- `GET /api/v1/envs/{env_id}/blocks` - Get environment blocks
+- `POST /api/v1/env/generate_config` - Generate custom environment config
+- `GET /api/v1/env/list_configs` - List environment configurations
+- `GET /api/v1/env/load_config` - Load environment configuration
+
+#### Simulation Management
+- `GET /api/v1/simulator/runs` - List simulation runs
+- `GET /api/v1/simulator/runs/{file}` - Get specific simulation run
+- `GET /api/v1/simulator/runs_by_task` - Get runs filtered by task/prefix
+
+#### Reporting & Analytics
+- `GET /api/v1/reporting/time-series-data` - Get time series analytics
+- `GET /api/v1/reporting/aggregate-by-date` - Get date-based aggregations
+- `POST /api/v1/reporting/generate-report` - Generate comprehensive report
+
+#### Collaboration Metrics
+- `POST /api/v1/collab-metrics/collab/compute` - Compute collaboration metrics
+- `GET /api/v1/collab-metrics/collab/from-run/{run_id}` - Get metrics for run
+- `GET /api/v1/collab-metrics/collab/from-artifact` - Get metrics from artifact
+
+#### Log Generator
+- `GET /api/v1/log-generator/download` - Download generated logs
+- `POST /api/v1/log-generator/generate` - Generate synthetic logs
+
+### Meta & System Endpoints
+- `GET /meta/health` - System health check
+- `GET /meta/version` - Version information
+- `POST /meta/seed/core-metrics` - Seed core metrics definitions
 
 ### Simulation API
 

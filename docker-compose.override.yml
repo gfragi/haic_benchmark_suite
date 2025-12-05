@@ -11,7 +11,10 @@ services:
       - .env.development
     volumes:
       # Mount source code for hot reloading during development
-      - ./backend:/app
+      # Mount specific directories to avoid overwriting entrypoint.sh
+      - ./backend/app:/app/app
+      - ./backend/alembic:/app/alembic
+      - ./backend/alembic.ini:/app/alembic.ini
       - /app/__pycache__
 
   frontend:
