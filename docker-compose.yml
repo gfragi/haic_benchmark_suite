@@ -1,54 +1,43 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:15
     container_name: haic-postgres
-    env_file: .env
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_HOST: ${DB_HOST}
-      POSTGRES_PORT: ${DB_PORT}
+      POSTGRES_DB: haic_benchmark
+      POSTGRES_USER: haic_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme123}
     ports:
       - "5432:5432"
     volumes:
-      - ./docker/db-init/00_init.sql:/docker-entrypoint-initdb.d/init.sql
-      # - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/db-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U haic_user -d haic_benchmark"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
-  # minio:
-  #   image: minio/minio
-  #   container_name: haic-minio
-  #   env_file: .env
-  #   environment:
-  #     MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-  #     MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-  #     MINIO_BUCKET: ${MINIO_BUCKET}
-  #     MINIO_REGION: ${MINIO_REGION}
-  #     DB_HOST: ${DB_HOST}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_PASSWORD: ${DB_PASSWORD}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USER: ${DB_USER}
-  #     LOG_LEVEL: ${LOG_LEVEL}
-  #   ports:
-  #     - "9000:9000"
-  #     - "9001:9001"
-  #   volumes:
-  #     - minio_data:/data
-  #     # - ./docker/minio-init/data:/data
-  #   entrypoint: sh
-  #   command: >
-  #     -c '
-  #       mkdir -p /data/humaine &&
-  #       /usr/bin/minio server /data --console-address ":9001"
-  #     '
-  # migrations:
-  #   build:
-  #     context: .
-  #     dockerfile: ./docker/Dockerfile.backend
-  #   command: alembic upgrade head
-  #   depends_on:
-  #     - db
+  minio:
+    image: minio/minio:latest
+    container_name: haic-minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-haicadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-haicpass123}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
 
   backend:
     build:
@@ -59,8 +48,16 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      # - minio
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/meta/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
 
   frontend:
     build:
@@ -69,8 +66,9 @@ services:
     container_name: haic-frontend
     ports:
       - "8080:8080"
-    # depends_on:
-      # - backend
+    depends_on:
+      - backend
+    restart: unless-stopped
 
 volumes:
   postgres_data:
