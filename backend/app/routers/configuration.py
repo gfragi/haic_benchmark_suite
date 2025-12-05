@@ -48,6 +48,11 @@ def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(g
     return new_config
 
 
+# GET endpoint to list all evaluation configurations
+@router.get("/list/", response_model=List[EvaluationConfigSchema])
+def get_all_configurations(db: Session = Depends(get_db)):
+    return db.query(EvaluationConfig).all()
+
 # GET endpoint to retrieve an evaluation configuration by ID
 @router.get("/{configuration_id}", response_model=EvaluationConfigSchema)
 def get_configuration(configuration_id: int, db: Session = Depends(get_db)):
@@ -55,12 +60,6 @@ def get_configuration(configuration_id: int, db: Session = Depends(get_db)):
     if not config:
         raise HTTPException(status_code=404, detail="Evaluation configuration not found")
     return config
-
-
-# GET endpoint to list all evaluation configurations
-@router.get("/list/", response_model=List[EvaluationConfigSchema])
-def get_all_configurations(db: Session = Depends(get_db)):
-    return db.query(EvaluationConfig).all()
 
 
 
