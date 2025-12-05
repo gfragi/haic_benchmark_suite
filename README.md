@@ -106,13 +106,37 @@ The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarki
 - **User Experience**: Satisfaction Scores, Cognitive Load, Trust Levels
 - **System Performance**: Throughput, Resource Utilization, Error Rates
 
+## 🧪 Testing & Quality Assurance
+
+### Comprehensive Testing Guide
+For detailed testing instructions covering both development and production environments, see:
+- **[TESTING_README.md](TESTING_README.md)** - Complete testing guide
+- **[frontend/TESTING_README.md](frontend/TESTING_README.md)** - Frontend-specific testing
+- **[frontend/PERFORMANCE_GUIDE.md](frontend/PERFORMANCE_GUIDE.md)** - Performance monitoring
+
+### Quick Test Commands
+```bash
+# Development environment testing
+make dev && make health && cd frontend && npm run test:all
+
+# Production smoke tests
+make test-smoke
+
+# Backend integration tests
+make test-backend
+
+# Frontend performance analysis
+cd frontend && npm run build -- --analyze
+```
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Python 3.8+
-- Node.js 16+
+- Node.js 18+ (for frontend testing)
 - Docker & Docker Compose
 - PostgreSQL & MinIO (via Docker)
+- Keycloak (for authentication)
 
 ### 1. Clone and Setup
 ```bash

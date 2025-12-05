@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
@@ -52,21 +52,21 @@ export default {
     const store = useStore();
 
     // Use Vuex store for theme management
-    const isDarkTheme = computed(() => store.getters['ui/isDarkTheme']);
+    const isDarkTheme = computed(() => store.getters["ui/isDarkTheme"]);
     const currentTheme = computed(() => store.state.ui.theme);
     const drawer = computed(() => store.state.ui.drawer);
 
     const toggleTheme = () => {
-      store.dispatch('ui/toggleTheme');
+      store.dispatch("ui/toggleTheme");
     };
 
     const toggleDrawer = () => {
-      store.dispatch('ui/toggleDrawer');
+      store.dispatch("ui/toggleDrawer");
     };
 
     // Initialize theme on component mount
     onMounted(() => {
-      store.dispatch('ui/initializeTheme');
+      store.dispatch("ui/initializeTheme");
     });
 
     return {

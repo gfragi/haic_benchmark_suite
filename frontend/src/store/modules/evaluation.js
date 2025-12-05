@@ -21,10 +21,12 @@ export default {
     isLoading: (state) => state.loading,
     hasError: (state) => state.error,
     evaluationById: (state) => (id) => {
-      return state.evaluations.find(evaluation => evaluation.id === id);
+      return state.evaluations.find((evaluation) => evaluation.id === id);
     },
     resultByConfigId: (state) => (configId) => {
-      return state.results.filter(result => result.configuration_id === configId);
+      return state.results.filter(
+        (result) => result.configuration_id === configId
+      );
     },
   },
 
@@ -38,9 +40,14 @@ export default {
     },
 
     UPDATE_EVALUATION(state, { id, evaluation }) {
-      const index = state.evaluations.findIndex(evaluation => evaluation.id === id);
+      const index = state.evaluations.findIndex(
+        (evaluation) => evaluation.id === id
+      );
       if (index !== -1) {
-        state.evaluations.splice(index, 1, { ...state.evaluations[index], ...evaluation });
+        state.evaluations.splice(index, 1, {
+          ...state.evaluations[index],
+          ...evaluation,
+        });
       }
     },
 
@@ -79,100 +86,100 @@ export default {
 
   actions: {
     async fetchEvaluations({ commit }) {
-      commit('SET_LOADING', true);
-      commit('CLEAR_ERROR');
+      commit("SET_LOADING", true);
+      commit("CLEAR_ERROR");
 
       try {
         // Note: This endpoint might not exist yet, adjust as needed
-        const response = await fetch('/api/v1/evaluations');
-        if (!response.ok) throw new Error('Failed to fetch evaluations');
+        const response = await fetch("/api/v1/evaluations");
+        if (!response.ok) throw new Error("Failed to fetch evaluations");
 
         const evaluations = await response.json();
-        commit('SET_EVALUATIONS', evaluations);
+        commit("SET_EVALUATIONS", evaluations);
       } catch (error) {
-        commit('SET_ERROR', error.message);
-        console.error('Error fetching evaluations:', error);
+        commit("SET_ERROR", error.message);
+        console.error("Error fetching evaluations:", error);
       } finally {
-        commit('SET_LOADING', false);
+        commit("SET_LOADING", false);
       }
     },
 
     async startEvaluation({ commit }, configId) {
-      commit('SET_LOADING', true);
-      commit('CLEAR_ERROR');
+      commit("SET_LOADING", true);
+      commit("CLEAR_ERROR");
 
       try {
         const response = await fetch(`/api/v1/evaluate/${configId}`, {
-          method: 'POST',
+          method: "POST",
         });
 
-        if (!response.ok) throw new Error('Failed to start evaluation');
+        if (!response.ok) throw new Error("Failed to start evaluation");
 
         const evaluation = await response.json();
-        commit('ADD_EVALUATION', evaluation);
-        commit('SET_CURRENT_EVALUATION', evaluation);
+        commit("ADD_EVALUATION", evaluation);
+        commit("SET_CURRENT_EVALUATION", evaluation);
 
         return evaluation;
       } catch (error) {
-        commit('SET_ERROR', error.message);
-        console.error('Error starting evaluation:', error);
+        commit("SET_ERROR", error.message);
+        console.error("Error starting evaluation:", error);
         throw error;
       } finally {
-        commit('SET_LOADING', false);
+        commit("SET_LOADING", false);
       }
     },
 
     async fetchResults({ commit }, configId) {
-      commit('SET_LOADING', true);
-      commit('CLEAR_ERROR');
+      commit("SET_LOADING", true);
+      commit("CLEAR_ERROR");
 
       try {
         const response = await fetch(`/api/v1/results/${configId}`);
-        if (!response.ok) throw new Error('Failed to fetch results');
+        if (!response.ok) throw new Error("Failed to fetch results");
 
         const result = await response.json();
-        commit('SET_CURRENT_RESULT', result);
+        commit("SET_CURRENT_RESULT", result);
 
         return result;
       } catch (error) {
-        commit('SET_ERROR', error.message);
-        console.error('Error fetching results:', error);
+        commit("SET_ERROR", error.message);
+        console.error("Error fetching results:", error);
         throw error;
       } finally {
-        commit('SET_LOADING', false);
+        commit("SET_LOADING", false);
       }
     },
 
     async fetchMetrics({ commit }) {
-      commit('SET_LOADING', true);
-      commit('CLEAR_ERROR');
+      commit("SET_LOADING", true);
+      commit("CLEAR_ERROR");
 
       try {
-        const response = await fetch('/api/v1/evaluate/metrics');
-        if (!response.ok) throw new Error('Failed to fetch metrics');
+        const response = await fetch("/api/v1/evaluate/metrics");
+        if (!response.ok) throw new Error("Failed to fetch metrics");
 
         const metrics = await response.json();
-        commit('SET_METRICS', metrics);
+        commit("SET_METRICS", metrics);
 
         return metrics;
       } catch (error) {
-        commit('SET_ERROR', error.message);
-        console.error('Error fetching metrics:', error);
+        commit("SET_ERROR", error.message);
+        console.error("Error fetching metrics:", error);
       } finally {
-        commit('SET_LOADING', false);
+        commit("SET_LOADING", false);
       }
     },
 
     clearCurrentEvaluation({ commit }) {
-      commit('SET_CURRENT_EVALUATION', null);
+      commit("SET_CURRENT_EVALUATION", null);
     },
 
     clearCurrentResult({ commit }) {
-      commit('SET_CURRENT_RESULT', null);
+      commit("SET_CURRENT_RESULT", null);
     },
 
     clearError({ commit }) {
-      commit('CLEAR_ERROR');
+      commit("CLEAR_ERROR");
     },
   },
 };
