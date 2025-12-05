@@ -12,6 +12,9 @@
     "^.+\\.vue$": "@vue/vue3-jest",
     "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { "presets": ["@babel/preset-env"] }]
   },
+  "transformIgnorePatterns": [
+    "node_modules/(?!(@vue|vuetify)/)"
+  ],
   "moduleFileExtensions": ["vue", "js", "json", "jsx", "ts", "tsx", "node"],
   "collectCoverageFrom": [
     "src/**/*.{js,vue}",
@@ -19,5 +22,6 @@
     "!**/node_modules/**"
   ],
   "coverageDirectory": "tests/coverage",
-  "coverageReporters": ["html", "text-summary", "lcov"]
+  "coverageReporters": ["html", "text-summary", "lcov"],
+  "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"]
 }
