@@ -1,5 +1,5 @@
-import { describe, it, expect } from "jest";
-import { useMetrics } from "@/composables/useMetrics";
+const { describe, it, expect } = require("jest");
+const { useMetrics } = require("../../src/composables/useMetrics");
 
 describe("useMetrics Composable", () => {
   let metricsComposable;

@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from "jest";
-import { createApp } from "vue";
-import { createStore } from "vuex";
-import { useConfigurationForm } from "@/composables/useConfigurationForm";
+const { describe, it, expect, beforeEach, vi } = require("jest");
+const { createApp } = require("vue");
+const { createStore } = require("vuex");
+const { useConfigurationForm } = require("../../src/composables/useConfigurationForm");
 
 // Mock the store modules
 const mockConfigurationModule = {
