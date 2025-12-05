@@ -26,7 +26,5 @@ def get_db():
     finally:
         db.close()
 
-# Ensure all models are imported
+# Ensure all models are imported for Alembic
 from app.models import *
-
-Base.metadata.create_all(bind=engine)

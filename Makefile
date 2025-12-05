@@ -118,7 +118,7 @@ status: ## Show service status
 
 health: ## Check service health
 	@echo "Checking service health..."
-	@curl -s http://localhost:8000/api/v1/meta/health | jq . || echo "Backend: DOWN"
+	@curl -s http://localhost:8000/meta/health | jq . || echo "Backend: DOWN"
 	@curl -s http://localhost:8080 | grep -q "html" && echo "Frontend: UP" || echo "Frontend: DOWN"
 	@docker-compose exec -T minio curl -s http://localhost:9000/minio/health/live > /dev/null && echo "MinIO: UP" || echo "MinIO: DOWN"
 

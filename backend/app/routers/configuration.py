@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models.configuration import EvaluationConfig
 from app.schemas.configuration import EvaluationConfigSchema
-from metrics_core.outcome_metrics import Metrics
+# Temporarily comment out metrics_core import
+# from metrics_core.outcome_metrics import Metrics
 
 
 router = APIRouter()
@@ -20,17 +21,21 @@ def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(g
     selected_groups = config.metrics
 
     # Expand the groups into individual metrics
-    available_metrics = Metrics.get_available_metrics()
-    selected_metrics = []
+    # Temporarily disabled until metrics_core is fixed
+    # available_metrics = Metrics.get_available_metrics()
+    # selected_metrics = []
 
-    for group in selected_groups:
-        if group in available_metrics:
-            selected_metrics.extend(available_metrics[group])
-        else:
-            raise HTTPException(status_code=400, detail=f"Group {group} not found in available metrics.")
+    # for group in selected_groups:
+    #     if group in available_metrics:
+    #         selected_metrics.extend(available_metrics[group])
+    #     else:
+    #         raise HTTPException(status_code=400, detail=f"Group {group} not found in available metrics.")
 
-    # Remove duplicates if any (optional, depends on your needs)
-    selected_metrics = list(set(selected_metrics))
+    # # Remove duplicates if any (optional, depends on your needs)
+    # selected_metrics = list(set(selected_metrics))
+
+    # For now, just use the selected_groups directly
+    selected_metrics = selected_groups
 
     new_config = EvaluationConfig(
         application_name=config.application_name,
@@ -49,7 +54,7 @@ def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(g
 
 
 # GET endpoint to list all evaluation configurations
-@router.get("/list/", response_model=List[EvaluationConfigSchema])
+@router.get("", response_model=List[EvaluationConfigSchema])
 def get_all_configurations(db: Session = Depends(get_db)):
     return db.query(EvaluationConfig).all()
 

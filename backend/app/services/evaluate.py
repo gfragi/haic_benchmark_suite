@@ -5,7 +5,8 @@ import os
 import uuid
 from dotenv import load_dotenv
 from sqlmodel import Session
-from metrics_core.outcome_metrics import Metrics
+# Temporarily comment out metrics_core import
+# from metrics_core.outcome_metrics import Metrics
 from app.models import EvaluationConfig, LogEntry
 from app.models.results import EvaluationResult, MetricGroup
 from app.utils.database import SessionLocal

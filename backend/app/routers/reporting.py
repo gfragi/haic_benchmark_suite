@@ -18,9 +18,10 @@ def get_aggregated_results(db: Session = Depends(get_db)):
 def get_time_series_data(db: Session = Depends(get_db)):
     data = aggregate_evaluation_results_by_date(db)
     time_series = {
-        "dates": [result.evaluation_date for result in data],
-        "avg_accuracy": [result.avg_accuracy for result in data],
-        "avg_response_time": [result.avg_response_time for result in data],
+        "dates": [result.get("date") for result in data],
+        "counts": [result.get("count") for result in data],
+        "avg_accuracy": [result.get("avg_accuracy") for result in data],
+        "avg_response_time": [result.get("avg_response_time") for result in data],
     }
     return time_series
 
