@@ -95,6 +95,132 @@ def _mean_map(dicts: list[dict]) -> dict:
     return out
 
 
+def _load_logs_from_minio(bucket: str, minio_path: str) -> list:
+    """Load and parse logs from MinIO."""
+    try:
+        obj = minio_client.get_object(bucket, minio_path)
+    except Exception as e:
+        raise RuntimeError(f"Failed to get object from MinIO (bucket='{bucket}', path='{minio_path}'): {e}")
+
+    try:
+        raw_bytes = obj.read()
+    finally:
+        try:
+            obj.close()
+            obj.release_conn()
+        except Exception:
+            pass
+
+    try:
+        text = raw_bytes.decode("utf-8")
+    except Exception as e:
+        raise ValueError(f"Object at '{minio_path}' is not valid UTF-8: {e}")
+
+    try:
+        logs_data = json.loads(text)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Object at '{minio_path}' is not valid JSON: {e.msg}")
+
+    return _normalize_logs_data(logs_data)
+
+def _normalize_logs_data(logs_data):
+    """Normalize logs data to a list of session entries."""
+    # Unwrap common wrappers
+    if isinstance(logs_data, dict):
+        for key in ("logs", "sessions", "entries"):
+            if isinstance(logs_data.get(key), list):
+                logs_data = logs_data[key]
+                break
+
+    # Normalize to a list of objects
+    if isinstance(logs_data, dict):
+        logs_data = [logs_data]
+    if not isinstance(logs_data, list):
+        raise ValueError("Uploaded log must be a JSON object or a list/array of objects")
+
+    # Flatten / validate entries
+    entries = _iter_entries(logs_data)
+    if not entries:
+        raise ValueError("Uploaded log contains no valid session entries.")
+
+    return entries
+
+def _compute_derived_metrics(logs: list) -> list:
+    """Compute derived metrics for a list of logs."""
+    derived_list = []
+    for entry in logs:
+        try:
+            derived = compute_from_log(entry)
+        except Exception as e:
+            print(f"[evaluate] compute_from_log failed for entry: {repr(e)}")
+            derived = {"by_metric": {}, "by_pillar": {}, "interaction": {}}
+        derived_list.append(derived)
+    return derived_list
+
+def _aggregate_metrics(derived_list: list) -> tuple:
+    """Aggregate metrics across sessions."""
+    agg_by_metric = _mean_map([d.get("by_metric", {}) for d in derived_list])
+    agg_by_pillar = _mean_map([d.get("by_pillar", {}) for d in derived_list])
+    agg_interaction = _mean_map([d.get("interaction", {}) for d in derived_list])
+    return agg_by_metric, agg_by_pillar, agg_interaction
+
+def _group_metrics_by_category(agg_by_metric: dict) -> dict:
+    """Group metrics by category for UI compatibility."""
+    return {
+        "Effectiveness": {
+            k: v for k, v in agg_by_metric.items()
+            if k in ("Prediction Accuracy","Precision","Recall","Overall System Accuracy","Model Improvement Rate")
+        },
+        "Efficiency": {
+            k: v for k, v in agg_by_metric.items()
+            if k in ("Response Time","Task Completion Time","Error Reduction Rate","Resource Utilization",
+                     "Teaching Efficiency","Correction Efficiency","Knowledge Retention")
+        },
+        "Adaptability and Learning": {
+            k: v for k, v in agg_by_metric.items()
+            if k in ("Feedback Impact","Adaptability Score","Impact of Corrections","Learning Efficiency",
+                     "Objective Fulfillment Rate")
+        },
+        "Collaboration and Interaction": {
+            k: v for k, v in agg_by_metric.items()
+            if k in ("AI Assistance Rate","Human-AI Agreement Rate","Decision Effectiveness","Time to Resolution",
+                     "Human Effort Saved")
+        },
+        "Trust and Safety": {
+            k: v for k, v in agg_by_metric.items()
+            if k in ("Trust Score","Confidence","Safety Incidents","System Reliability")
+        },
+        "Robustness and Generalization": {
+            k: v for k, v in agg_by_metric.items()
+            if k in ("Adversarial Robustness","Domain Generalization")
+        },
+    }
+
+def _save_result_to_minio(bucket: str, config_id: int, result_data: dict) -> str:
+    """Save evaluation result to MinIO and return the path."""
+    result_file_path = f"{config_id}/results/{uuid.uuid4()}.json"
+    encoded = json.dumps(result_data, ensure_ascii=False, indent=2).encode("utf-8")
+    minio_client.put_object(
+        bucket_name=bucket,
+        object_name=result_file_path,
+        data=io.BytesIO(encoded),
+        length=len(encoded),
+        content_type="application/json",
+    )
+    return result_file_path
+
+def _save_result_to_db(session, config_id: int, result_file_path: str, app_version_str: str, ai_model_version: str):
+    """Save evaluation result to database."""
+    db_result = EvaluationResult(
+        configuration_id=config_id,
+        evaluation_date=datetime.now(timezone.utc),
+        result_minio_path=result_file_path,
+        app_version=app_version_str,
+        ai_model_version=ai_model_version,
+    )
+    session.add(db_result)
+    session.commit()
+
 def run_evaluation(config_id: int):
     new_session = SessionLocal()
     bucket = os.getenv("MINIO_BUCKET")
@@ -113,54 +239,11 @@ def run_evaluation(config_id: int):
                 f"Upload or register a log first."
             )
 
-        # Read the uploaded logs JSON from MinIO
-        try:
-            obj = minio_client.get_object(bucket, config.minio_path)
-        except Exception as e:
-            raise RuntimeError(
-                f"Failed to get object from MinIO (bucket='{bucket}', path='{config.minio_path}'): {e}"
-            )
-
-        try:
-            raw_bytes = obj.read()
-        finally:
-            # ensure connection is always released
-            try:
-                obj.close()
-                obj.release_conn()
-            except Exception:
-                pass
-        try:
-            text = raw_bytes.decode("utf-8")
-        except Exception as e:
-            raise ValueError(f"Object at '{config.minio_path}' is not valid UTF-8: {e}")
-
-        try:
-            logs_data = json.loads(text)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Object at '{config.minio_path}' is not valid JSON: {e.msg}")
-
-        # --- unwrap common wrappers AFTER successful parse ---
-        # Supports: {logs:[...]}, {sessions:[...]}, {entries:[...]}
-        if isinstance(logs_data, dict):
-            for key in ("logs", "sessions", "entries"):
-                if isinstance(logs_data.get(key), list):
-                    logs_data = logs_data[key]
-                    break
-
-        # --- normalize to a list of objects ---
-        if isinstance(logs_data, dict):
-            logs_data = [logs_data]
-        if not isinstance(logs_data, list):
-            raise ValueError("Uploaded log must be a JSON object or a list/array of objects")
-
-        # Flatten / validate entries
-        entries = _iter_entries(logs_data)
-        if not entries:
-            raise ValueError("Uploaded log contains no valid session entries.")
+        # Load and normalize logs
+        entries = _load_logs_from_minio(bucket, config.minio_path)
 
         # Group by AI model version
-        logs_by_ai_version = split_logs_by_ai_model_version(entries )
+        logs_by_ai_version = split_logs_by_ai_model_version(entries)
 
         wrote_any_result = False
 
@@ -168,57 +251,16 @@ def run_evaluation(config_id: int):
             if not logs:
                 continue
 
-            # Collect app versions for this subset (nice to store in DB row)
+            # Collect app versions
             app_versions = sorted({_app_version(e) for e in logs})
             app_version_str = ",".join(app_versions)
 
-            # Compute derived metrics per session (adapter is forgiving to missing fields)
-            derived_list = []
-            for entry in logs:
-                try:
-                    derived = compute_from_log(entry)  # -> {"by_metric","by_pillar","interaction"}
-                except Exception as e:
-                    print(f"[evaluate] compute_from_log failed for entry: {repr(e)}")
-                    derived = {"by_metric": {}, "by_pillar": {}, "interaction": {}}
-                derived_list.append(derived)
+            # Compute and aggregate metrics
+            derived_list = _compute_derived_metrics(logs)
+            agg_by_metric, agg_by_pillar, agg_interaction = _aggregate_metrics(derived_list)
+            results_by_group = _group_metrics_by_category(agg_by_metric)
 
-            # Aggregate across sessions for this AI model version
-            agg_by_metric   = _mean_map([d.get("by_metric", {})   for d in derived_list])
-            agg_by_pillar   = _mean_map([d.get("by_pillar", {})   for d in derived_list])
-            agg_interaction = _mean_map([d.get("interaction", {}) for d in derived_list])
-
-            # Transform by-metric into your grouped layout (keeps compatibility with your UI)
-            results_by_group = {
-                "Effectiveness": {
-                    k: v for k, v in agg_by_metric.items()
-                    if k in ("Prediction Accuracy","Precision","Recall","Overall System Accuracy","Model Improvement Rate")
-                },
-                "Efficiency": {
-                    k: v for k, v in agg_by_metric.items()
-                    if k in ("Response Time","Task Completion Time","Error Reduction Rate","Resource Utilization",
-                             "Teaching Efficiency","Correction Efficiency","Knowledge Retention")
-                },
-                "Adaptability and Learning": {
-                    k: v for k, v in agg_by_metric.items()
-                    if k in ("Feedback Impact","Adaptability Score","Impact of Corrections","Learning Efficiency",
-                             "Objective Fulfillment Rate")
-                },
-                "Collaboration and Interaction": {
-                    k: v for k, v in agg_by_metric.items()
-                    if k in ("AI Assistance Rate","Human-AI Agreement Rate","Decision Effectiveness","Time to Resolution",
-                             "Human Effort Saved")
-                },
-                "Trust and Safety": {
-                    k: v for k, v in agg_by_metric.items()
-                    if k in ("Trust Score","Confidence","Safety Incidents","System Reliability")
-                },
-                "Robustness and Generalization": {
-                    k: v for k, v in agg_by_metric.items()
-                    if k in ("Adversarial Robustness","Domain Generalization")
-                },
-            }
-
-            # Compose the result payload we store to MinIO
+            # Compose result data
             result_data = {
                 "configuration_id": config.id,
                 "ai_model_version": ai_model_version,
@@ -233,27 +275,9 @@ def run_evaluation(config_id: int):
                 },
             }
 
-            # Persist results JSON to MinIO
-            result_file_path = f"{config.id}/results/{uuid.uuid4()}.json"
-            encoded = json.dumps(result_data, ensure_ascii=False, indent=2).encode("utf-8")
-            minio_client.put_object(
-                bucket_name=bucket,
-                object_name=result_file_path,
-                data=io.BytesIO(encoded),
-                length=len(encoded),
-                content_type="application/json",
-            )
-
-            # Save EvaluationResult row
-            db_result = EvaluationResult(
-                configuration_id = config.id,
-                evaluation_date  = datetime.now(timezone.utc),
-                result_minio_path= result_file_path,
-                app_version      = app_version_str,
-                ai_model_version = ai_model_version,
-            )
-            new_session.add(db_result)
-            new_session.commit()
+            # Save to MinIO and DB
+            result_file_path = _save_result_to_minio(bucket, config.id, result_data)
+            _save_result_to_db(new_session, config.id, result_file_path, app_version_str, ai_model_version)
 
             wrote_any_result = True
 
@@ -263,7 +287,6 @@ def run_evaluation(config_id: int):
         )
 
     except Exception as e:
-        # rich error reporting
         print(f"[evaluate] Error during evaluation: {repr(e)}")
         print(traceback.format_exc())
         if 'config' in locals() and config:
