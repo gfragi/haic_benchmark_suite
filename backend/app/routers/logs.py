@@ -43,6 +43,25 @@ async def upload_log(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Processing failed: {e}")
 
+@router.post("/register", response_model=dict)
+def register_log(
+    log: LogSchema,
+    configuration_id: int = Query(..., description="Evaluation configuration id"),
+    db: Session = Depends(get_db),
+):
+    """
+    External services send one session log here.
+    We store raw + derived in MinIO and create a Log entry linked to the config.
+    """
+    try:
+        payload = log.model_dump()
+        result = log_service.register_log(payload, configuration_id, db)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Registration failed: {e}")
+
 
 @router.get("/{config_id}")
 def get_logs(config_id: int):
@@ -68,21 +87,3 @@ def remove_log(config_id: int, log_name: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/register", response_model=dict)
-def register_log(
-    log: LogSchema,
-    configuration_id: int = Query(..., description="Evaluation configuration id"),
-    db: Session = Depends(get_db),
-):
-    """
-    External services send one session log here.
-    We store raw + derived in MinIO and create a Log entry linked to the config.
-    """
-    try:
-        payload = log.model_dump()
-        result = log_service.register_log(payload, configuration_id, db)
-        return result
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Registration failed: {e}")
