@@ -170,13 +170,18 @@ def register_log(
     db: Session = Depends(get_db),
 ):
     """
-    Accepts JSON directly (no file), computes derived KPIs, stores both JSON and *.derived.json in MinIO,
-    updates EvaluationConfig.minio_path, and returns the derived block.
+    External services send one session log here.
+    We store raw + derived in MinIO and create a Log entry linked to the config.
     """
+    # 0) Ensure configuration exists
+    config = db.get(EvaluationConfig, configuration_id)
+    if not config:
+        raise HTTPException(status_code=404, detail="Evaluation configuration not found.")
+
     payload = log.model_dump()
 
-    # 1) Compute derived
-    derived = compute_from_log(payload)
+    # 1) Per-session derived metrics (optional but nice)
+    derived = compute_from_log(payload, config)  # if it needs config
 
     # 2) Build deterministic names
     session_part = payload.get("session_id") or "log"
@@ -184,25 +189,38 @@ def register_log(
     original_name = f"uploads/{session_part}.{ts}.json"
     derived_name  = f"uploads/{session_part}.{ts}.derived.json"
 
+    raw_path     = f"{configuration_id}/{original_name}"
+    derived_path = f"{configuration_id}/{derived_name}"
+
     # 3) Store original + derived in MinIO
     put_json(configuration_id, original_name, payload)
     put_json(configuration_id, derived_name, derived)
 
-    # 4) Update config.minio_path to point to the original JSON
-    config = db.query(EvaluationConfig).get(configuration_id)
-    if not config:
-        raise HTTPException(status_code=404, detail="Evaluation configuration not found.")
-    config.minio_path = f"{configuration_id}/{original_name}"
-    db.add(config)
+    # 4) Create a Log row linked to this config
+    log_row = Log(
+        configuration_id=configuration_id,
+        session_id=session_part,
+        raw_minio_path=raw_path,
+        derived_minio_path=derived_path,
+        status="ingested",
+        created_at=datetime.now(timezone.utc),
+    )
+    db.add(log_row)
     db.commit()
-    db.refresh(config)
+    db.refresh(log_row)
 
-    # 5) Response
+    # (optional) You can still use config.minio_path as "root prefix" if you want:
+    # config.minio_path = f"{configuration_id}/uploads/"
+    # db.add(config); db.commit()
+
+    # 5) Response back to Node-RED / external service
     return {
         "detail": "Registered log.",
+        "configuration_id": configuration_id,
+        "log_id": log_row.id,
         "minio_paths": {
-            "original": f"{configuration_id}/{original_name}",
-            "derived":  f"{configuration_id}/{derived_name}",
+            "original": raw_path,
+            "derived":  derived_path,
         },
         "derived": derived,
     }
