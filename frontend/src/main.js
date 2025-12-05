@@ -5,6 +5,7 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import { loadFonts } from "./plugins/webfontloader";
 import keycloak from "./services/keycloak";
+import { PerformancePlugin } from "./utils/performanceMonitor";
 
 loadFonts();
 
@@ -46,6 +47,7 @@ keycloak
     app.use(router);
     app.use(store);
     app.use(vuetify);
+    app.use(PerformancePlugin);
 
     // Wait for first route resolution (helps after SSO redirects)
     await router.isReady();

@@ -11,20 +11,20 @@
               v-model="config.application_name"
               label="Application Name"
               required
-              :rules="[v => !!v || 'Application name is required']"
+              :rules="[(v) => !!v || 'Application name is required']"
             />
             <v-text-field
               v-model="config.ai_model_name"
               label="AI Model Name"
               required
-              :rules="[v => !!v || 'AI model name is required']"
+              :rules="[(v) => !!v || 'AI model name is required']"
             />
             <v-select
               v-model="config.ai_model_type"
               :items="availableModelTypes"
               label="AI Model Type"
               required
-              :rules="[v => !!v || 'AI model type is required']"
+              :rules="[(v) => !!v || 'AI model type is required']"
             />
             <v-select
               v-model="config.metrics"
@@ -34,7 +34,9 @@
               label="Select Metrics Group"
               multiple
               required
-              :rules="[v => v.length > 0 || 'At least one metric group is required']"
+              :rules="[
+                (v) => v.length > 0 || 'At least one metric group is required',
+              ]"
             />
             <v-textarea
               v-model="config.description"

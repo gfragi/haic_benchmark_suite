@@ -10,7 +10,10 @@
       multi-line
     >
       <div class="d-flex align-center">
-        <v-icon :color="getNotificationIconColor(notification.type)" class="mr-2">
+        <v-icon
+          :color="getNotificationIconColor(notification.type)"
+          class="mr-2"
+        >
           {{ getNotificationIcon(notification.type) }}
         </v-icon>
         <div class="flex-grow-1">
@@ -58,61 +61,61 @@
  * Displays global notifications from the Vuex UI store.
  * Supports different notification types with appropriate styling and actions.
  */
-import { computed } from 'vue'
-import { useStore } from 'vuex'
+import { computed } from "vue";
+import { useStore } from "vuex";
 
 export default {
-  name: 'GlobalNotifications',
+  name: "GlobalNotifications",
 
   setup() {
-    const store = useStore()
+    const store = useStore();
 
     const notifications = computed(() => {
-      return store.getters['ui/allNotifications'].map(notification => ({
+      return store.getters["ui/allNotifications"].map((notification) => ({
         ...notification,
         visible: true, // Control visibility for each notification
-      }))
-    })
+      }));
+    });
 
     const getNotificationColor = (type) => {
       const colors = {
-        success: 'success',
-        error: 'error',
-        warning: 'warning',
-        info: 'info',
-      }
-      return colors[type] || 'info'
-    }
+        success: "success",
+        error: "error",
+        warning: "warning",
+        info: "info",
+      };
+      return colors[type] || "info";
+    };
 
     const getNotificationIcon = (type) => {
       const icons = {
-        success: 'mdi-check-circle',
-        error: 'mdi-alert-circle',
-        warning: 'mdi-alert',
-        info: 'mdi-information',
-      }
-      return icons[type] || 'mdi-information'
-    }
+        success: "mdi-check-circle",
+        error: "mdi-alert-circle",
+        warning: "mdi-alert",
+        info: "mdi-information",
+      };
+      return icons[type] || "mdi-information";
+    };
 
     const getNotificationIconColor = (type) => {
       const colors = {
-        success: 'white',
-        error: 'white',
-        warning: 'white',
-        info: 'white',
-      }
-      return colors[type] || 'white'
-    }
+        success: "white",
+        error: "white",
+        warning: "white",
+        info: "white",
+      };
+      return colors[type] || "white";
+    };
 
     const dismissNotification = (id) => {
-      store.dispatch('ui/removeNotification', id)
-    }
+      store.dispatch("ui/removeNotification", id);
+    };
 
     const handleAction = (action) => {
       if (action.handler) {
-        action.handler()
+        action.handler();
       }
-    }
+    };
 
     return {
       notifications,
@@ -121,9 +124,9 @@ export default {
       getNotificationIconColor,
       dismissNotification,
       handleAction,
-    }
+    };
   },
-}
+};
 </script>
 
 <style scoped>

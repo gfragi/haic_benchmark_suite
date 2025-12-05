@@ -47,7 +47,7 @@ prod: ## Start production-like environment
 # Testing commands
 test: ## Run all tests
 	@echo "Running tests..."
-	docker-compose exec backend python -m pytest backend/tests/ -v
+	docker-compose exec backend python -W ignore::DeprecationWarning -W ignore::PendingDeprecationWarning -W ignore::MovedIn20Warning -W ignore::UserWarning -m pytest tests/ -v --disable-warnings
 
 test-backend: ## Test only backend
 	@echo "Testing backend..."
@@ -71,6 +71,8 @@ docker-up: ## Start all services
 docker-down: ## Stop all services
 	@echo "Stopping services..."
 	docker-compose down
+
+stop: docker-down ## Stop all services (alias for docker-down)
 
 docker-logs: ## View service logs
 	docker-compose logs -f
