@@ -29,7 +29,7 @@
           <v-col cols="12" md="3">
             <v-card variant="outlined" class="pa-3 text-center">
               <div class="text-h4 text-warning mb-1">
-                {{ result.simulation_result.objects.length }}
+                {{ Object.keys(result.simulation_result.objects).length }}
               </div>
               <div class="text-caption text-medium-emphasis">Objects</div>
             </v-card>
@@ -116,7 +116,7 @@
     <v-card class="mb-4" variant="outlined">
       <v-card-title>
         <v-icon class="mr-2">mdi-package-variant</v-icon>
-        Objects ({{ result.simulation_result.objects.length }})
+        Objects ({{ Object.keys(result.simulation_result.objects).length }})
       </v-card-title>
       <v-card-text>
         <v-simple-table>
@@ -129,11 +129,14 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="obj in result.simulation_result.objects" :key="obj.id">
-              <td>{{ obj.id }}</td>
-              <td>{{ obj.class }}</td>
-              <td>{{ obj.attributes.kind || "N/A" }}</td>
-              <td>{{ obj.affordances.join(", ") }}</td>
+            <tr
+              v-for="(obj, objId) in result.simulation_result.objects"
+              :key="objId"
+            >
+              <td>{{ objId }}</td>
+              <td>{{ obj.class || "N/A" }}</td>
+              <td>{{ obj.attributes?.kind || "N/A" }}</td>
+              <td>{{ obj.affordances?.join(", ") || "N/A" }}</td>
             </tr>
           </tbody>
         </v-simple-table>

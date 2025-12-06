@@ -26,15 +26,20 @@ COPY packages/metrics_core ./packages/metrics_core
 COPY haic_sim_mvp ./haic_sim_mvp
 COPY backend/app ./app
 
-RUN pip install --no-cache-dir -r requirements.txt
-
 # ---- alembic config & migrations ----
 COPY backend/alembic.ini ./alembic.ini
 COPY backend/alembic ./alembic
 
 # Entrypoint to run migrations, then start API
 COPY docker/entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+
+# Create non-root user and set proper permissions
+RUN useradd --create-home --shell /bin/bash app \
+ && chown -R app:app /app \
+ && chmod +x /app/entrypoint.sh
+USER app
+
+RUN pip install --no-cache-dir -r requirements.txt
 
 ENV PYTHONPATH=/app
 EXPOSE 8000

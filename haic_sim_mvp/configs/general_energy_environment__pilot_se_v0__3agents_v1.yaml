@@ -1,0 +1,32 @@
+task:
+  name: Energy Environment (pilot_se_v0)
+  description: Environment version v1
+  parameters:
+    environment: ct_scan
+    env_params: {}
+    dt: 0.1
+    rt_max: 5.0
+    domain: general
+    metrics:
+      rt_max: 5
+      baseline_s: null
+agents:
+- name: OP
+  modality: policy
+  capabilities: []
+  runtime_params: {}
+  type: human
+  profile: Agent
+- name: FAI
+  modality: policy
+  capabilities: []
+  runtime_params: {}
+  type: ai
+  profile: Agent
+- name: SAI
+  modality: policy
+  capabilities: []
+  runtime_params: {}
+  type: ai
+  profile: Agent
+profiles: []

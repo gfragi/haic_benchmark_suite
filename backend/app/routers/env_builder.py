@@ -31,9 +31,10 @@ def _find_project_root() -> Path:
 
 PROJECT_ROOT = _find_project_root()
 HAIC_DIR = PROJECT_ROOT / "haic_env_builder" / "configs"
+HAIC_SIM_DIR = PROJECT_ROOT / "haic_sim_mvp" / "configs"
 LEGACY_DIR = PROJECT_ROOT / "configs"
-CONFIG_DIRS = [HAIC_DIR, LEGACY_DIR]
-DEFAULT_WRITE_DIR = HAIC_DIR
+CONFIG_DIRS = [HAIC_DIR, HAIC_SIM_DIR, LEGACY_DIR]
+DEFAULT_WRITE_DIR = HAIC_SIM_DIR
 for d in CONFIG_DIRS:
     d.mkdir(parents=True, exist_ok=True)
 
@@ -215,6 +216,148 @@ def list_haic_configs():
     return {
         "configs": sorted(configs, key=lambda x: x["name"]),
         "examples": []  # Keep empty for backward compatibility
+    }
+
+@router.get("/haic_pilot_configs", summary="List available HAIC Sim MVP pilot configurations for Environment Builder")
+def list_haic_pilot_configs():
+    pilots = []
+
+    if HAIC_CONFIGS_DIR.exists():
+        for f in HAIC_CONFIGS_DIR.glob("*.json"):
+            if f.name != "MANIFEST.in":  # Skip non-config files
+                try:
+                    with open(f, "r") as file:
+                        config = json.load(file)
+                        domain = config.get("environment", {}).get("attributes", {}).get("domain", "general")
+                        task = config.get("environment", {}).get("attributes", {}).get("task", "task")
+
+                        pilots.append({
+                            "name": f.name.replace(".json", ""),
+                            "display_name": f"{domain.title()} {task.replace('_', ' ').title()}",
+                            "domain": domain,
+                            "task": task,
+                            "sim_id": config.get("sim_id", ""),
+                            "filename": f.name
+                        })
+                except Exception as e:
+                    print(f"Warning: Could not parse {f.name}: {e}")
+
+    return {"pilots": sorted(pilots, key=lambda x: x["name"])}
+
+@router.get("/haic_pilot_config", summary="Load and convert a HAIC Sim MVP pilot config to Environment Builder format")
+def load_haic_pilot_config(name: str = Query(..., description="Config filename (without .json extension)")):
+    # Search in configs directory
+    if HAIC_CONFIGS_DIR.exists():
+        config_file = HAIC_CONFIGS_DIR / f"{name}.json"
+        if config_file.exists():
+            try:
+                with open(config_file, "r") as f:
+                    haic_config = json.load(f)
+
+                # Convert HAIC config to Environment Builder format
+                env_builder_config = convert_haic_to_env_builder(haic_config)
+
+                return {"config": env_builder_config, "original_haic_config": haic_config}
+            except Exception as e:
+                http_error(400, "CONVERSION_ERROR", f"Failed to convert HAIC config: {e}", {"name": name})
+
+    http_error(404, "NOT_FOUND", "HAIC pilot config not found", {"name": name})
+
+def convert_haic_to_env_builder(haic_config):
+    """Convert HAIC Sim MVP config to Environment Builder format"""
+
+    # Extract environment info
+    env_info = haic_config.get("environment", {})
+    domain = env_info.get("attributes", {}).get("domain", "general")
+    task = env_info.get("attributes", {}).get("task", "task")
+
+    # Convert agents
+    agents = []
+    for agent in haic_config.get("agents", []):
+        agent_type = "ai" if agent.get("model") == "ai" else "human"
+        # Get affordances from the agent
+        affordances = agent.get("affordances", [])
+        if isinstance(affordances, list):
+            affordances_str = ",".join(affordances)
+        else:
+            affordances_str = str(affordances)
+
+        agents.append({
+            "id": agent["id"],
+            "type": agent_type,
+            "profile": agent.get("class", "default").split(".")[-1],
+            "affordances": affordances_str
+        })
+
+    # Convert objects
+    objects = []
+    for obj in haic_config.get("objects", []):
+        # Get affordances from the object
+        affordances = obj.get("affordances", [])
+        if isinstance(affordances, list):
+            affordances_str = ",".join(affordances)
+        else:
+            affordances_str = str(affordances)
+
+        objects.append({
+            "id": obj["id"],
+            "class": obj.get("class", "base.Object"),
+            "kind": obj.get("attributes", {}).get("kind", obj.get("kind", "resource")),
+            "affordances": affordances_str
+        })
+
+    # Convert script to Environment Builder format
+    script = []
+    for i, step in enumerate(haic_config.get("script", [])):
+        script_step = {
+            "t": step.get("t", i + 1),
+            "agent": step.get("agent", ""),
+            "action": step.get("action", ""),
+            "object": step.get("object", ""),
+            "effect_json": json.dumps(step.get("effect", {"result": "value"})) if isinstance(step.get("effect"), dict) else step.get("effect_json", '{"result":"value"}'),
+            "latency_ms": step.get("latency_ms", 1000),
+            "correct": step.get("correct", True)
+        }
+        script.append(script_step)
+
+    # Group script actions into tasks (simplified approach)
+    tasks = []
+
+    # Create a single task from the script sequence
+    actions = []
+    for i, step in enumerate(haic_config.get("script", [])):
+        action = {
+            "id": f"action_{i}",
+            "name": step.get("action", f"Action {i+1}"),
+            "actor": step.get("agent", ""),
+            "duration_s": step.get("duration_s", 1.0),
+            "latency_ms": step.get("latency_ms"),
+            "correct": step.get("correct", True)
+        }
+        actions.append(action)
+
+    if actions:
+        tasks.append({
+            "id": f"{domain}_task",
+            "name": f"{domain.title()} {task.title()} Task",
+            "actions": actions
+        })
+
+    # Set appropriate metrics based on domain
+    metrics = { "rt_max": 5.0, "baseline_s": None }
+    if domain == "manufacturing":
+        metrics = { "rt_max": 3.0, "baseline_s": 1.5 }
+    elif domain == "medical":
+        metrics = { "rt_max": 5.0, "baseline_s": 2.0 }
+
+    return {
+        "name": f"{domain.title()} Environment ({haic_config.get('sim_id', 'converted')})",
+        "version": "v1",
+        "metrics": metrics,
+        "agents": agents,
+        "objects": objects,
+        "tasks": tasks,
+        "script": script
     }
 
 @router.get("/haic_config", summary="Load a HAIC Sim MVP config by name")

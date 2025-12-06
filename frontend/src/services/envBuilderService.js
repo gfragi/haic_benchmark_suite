@@ -58,8 +58,20 @@ export async function runDatasetExperiment(datasetPath, mode = "baseline") {
 
 // HAIC Sim MVP resource functions
 export async function getHAICConfigs() {
-  const { data } = await api.get("/v1/env/haic_configs");
-  return data;
+  const response = await api.get("/v1/env/haic_configs");
+  return response.data;
+}
+
+export async function getHAICPilotConfigs() {
+  const response = await api.get("/v1/env/haic_pilot_configs");
+  return response.data;
+}
+
+export async function loadHAICPilotConfig(name) {
+  const response = await api.get("/v1/env/haic_pilot_config", {
+    params: { name },
+  });
+  return response.data;
 }
 
 export async function loadHAICConfig(name) {

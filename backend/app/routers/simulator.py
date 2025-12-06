@@ -10,6 +10,7 @@ from app.models.api import SimulationEnvelope, ErrorEnvelope
 # HAIC Sim MVP imports
 try:
     from haic_sim_mvp.engine.run_sim import run_from_config
+    from haic_sim_mvp.engine.metrics_bridge import haic_metrics_for_log, haic_metrics_by_agent_for_log
     HAIC_SIM_AVAILABLE = True
 except ImportError:
     HAIC_SIM_AVAILABLE = False
@@ -128,7 +129,7 @@ def list_runs_by_task(prefix: str = Query(..., description="Task name/prefix (ca
 @router.post(
     "/simulate_haic",
     summary="Run a HAIC Sim MVP simulation directly from JSON config",
-    description="Executes a HAIC Sim MVP simulation using the provided JSON configuration."
+    description="Executes a HAIC Sim MVP simulation using the provided JSON configuration and returns results with HAIC metrics."
 )
 def simulate_haic(
     config: dict,
@@ -145,11 +146,24 @@ def simulate_haic(
         results_dir = str(PROJECT_ROOT / "haic_sim_mvp" / "results")
         output_path = run_from_config(config, results_dir=results_dir)
 
-        # Load and return the results
+        # Load the simulation results
         with open(output_path, "r") as f:
             result = json.load(f)
 
-        return {"simulation_result": result}
+        # Calculate HAIC metrics
+        try:
+            metrics = haic_metrics_for_log(result)
+            metrics_by_agent = haic_metrics_by_agent_for_log(result)
+        except Exception as metrics_error:
+            print(f"Warning: Could not calculate HAIC metrics: {metrics_error}")
+            metrics = {}
+            metrics_by_agent = {}
+
+        return {
+            "simulation_result": result,
+            "haic_metrics": metrics,
+            "metrics_by_agent": metrics_by_agent
+        }
     except Exception as e:
         raise HTTPException(
             status_code=500,
