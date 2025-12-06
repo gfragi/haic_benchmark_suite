@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 from pathlib import Path
 import re
 import yaml
+import json
 
 from app.models.api import ConfigList, MessageWithPath, ErrorEnvelope
 from app.utils.errors import http_error
@@ -16,6 +17,12 @@ router = APIRouter()
 # ---------- project root detection ----------
 def _find_project_root() -> Path:
     here = Path(__file__).resolve()
+    # First check for Docker container structure: /app with haic_env_builder and haic_sim_mvp
+    app_root = Path("/app")
+    if app_root.exists() and (app_root / "haic_env_builder").is_dir() and (app_root / "haic_sim_mvp").is_dir():
+        return app_root
+
+    # Fallback to original logic for local development
     for cand in [*here.parents]:
         if (cand / "backend").is_dir() and (cand / "haic_env_builder").is_dir():
             return cand
@@ -184,3 +191,70 @@ def load_config(name: str = Query(..., description="YAML filename, repo-relative
     except Exception as e:
         http_error(400, "MALFORMED_YAML", "Unable to parse YAML", {"detail": str(e), "name": name})
     return {"config": data}
+
+# ---------- HAIC Sim MVP routes ----------
+HAIC_SIM_MVP_DIR = PROJECT_ROOT / "haic_sim_mvp"
+HAIC_CONFIGS_DIR = HAIC_SIM_MVP_DIR / "configs"
+HAIC_EXAMPLES_DIR = HAIC_SIM_MVP_DIR / "examples"
+HAIC_ADAPTERS_DIR = PROJECT_ROOT / "haic_env_builder" / "adapters"
+HAIC_PLUGINS_DIR = HAIC_SIM_MVP_DIR / "user_plugins"
+
+@router.get("/haic_configs", summary="List available HAIC Sim MVP configuration files")
+def list_haic_configs():
+    configs = []
+
+    # Only return configs, not examples
+    if HAIC_CONFIGS_DIR.exists():
+        for f in HAIC_CONFIGS_DIR.glob("*.json"):
+            configs.append({
+                "name": f.name,
+                "path": str(f.relative_to(PROJECT_ROOT)),
+                "type": "config"
+            })
+
+    return {
+        "configs": sorted(configs, key=lambda x: x["name"]),
+        "examples": []  # Keep empty for backward compatibility
+    }
+
+@router.get("/haic_config", summary="Load a HAIC Sim MVP config by name")
+def load_haic_config(name: str = Query(..., description="Config filename (without .json extension)")):
+    # Search in configs first, then examples
+    search_dirs = [HAIC_CONFIGS_DIR, HAIC_EXAMPLES_DIR]
+
+    for base_dir in search_dirs:
+        if base_dir.exists():
+            config_file = base_dir / f"{name}.json"
+            if config_file.exists():
+                try:
+                    with open(config_file, "r") as f:
+                        data = json.load(f)
+                    return {"config": data, "path": str(config_file.relative_to(PROJECT_ROOT))}
+                except Exception as e:
+                    http_error(400, "MALFORMED_JSON", f"Unable to parse JSON: {e}", {"name": name})
+
+    http_error(404, "NOT_FOUND", "HAIC config not found", {"name": name})
+
+@router.get("/haic_adapters", summary="List available HAIC adapters")
+def list_haic_adapters():
+    adapters = []
+    if HAIC_ADAPTERS_DIR.exists():
+        for f in HAIC_ADAPTERS_DIR.glob("*.py"):
+            if not f.name.startswith("__"):
+                adapters.append({
+                    "name": f.stem,
+                    "path": str(f.relative_to(PROJECT_ROOT))
+                })
+    return {"adapters": sorted(adapters, key=lambda x: x["name"])}
+
+@router.get("/haic_plugins", summary="List available HAIC user plugins")
+def list_haic_plugins():
+    plugins = []
+    if HAIC_PLUGINS_DIR.exists():
+        for f in HAIC_PLUGINS_DIR.glob("*.py"):
+            if not f.name.startswith("__"):
+                plugins.append({
+                    "name": f.stem,
+                    "path": str(f.relative_to(PROJECT_ROOT))
+                })
+    return {"plugins": sorted(plugins, key=lambda x: x["name"])}

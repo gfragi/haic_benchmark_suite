@@ -1,0 +1,57 @@
+{
+  "sim_id": "pilot_mfg_v0",
+  "environment": {
+    "id": "MFG_ENV",
+    "class": "base.Environment",
+    "attributes": {
+      "task": "module_assignment",
+      "domain": "manufacturing"
+    }
+  },
+  "agents": [
+    {
+      "id": "SRL",
+      "class": "base.Agent",
+      "model": "ai",
+      "affordances": [
+        "propose_assignment",
+        "compute_confidence"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "Job",
+      "class": "base.Object",
+      "attributes": {
+        "kind": "production_job"
+      },
+      "affordances": [
+        "assign",
+        "dispatch",
+        "process"
+      ]
+    }
+  ],
+  "script": [
+    {
+      "t": 0,
+      "agent": "SRL",
+      "action": "propose_assignment",
+      "object": "Job",
+      "effect": {
+        "job_id": "JB901",
+        "module_candidates": [
+          "W17",
+          "W21"
+        ],
+        "ai_prob": 0.62,
+        "thresholds": {
+          "low": 0.55,
+          "high": 0.8
+        }
+      },
+      "latency_ms": 95
+    }
+  ]
+}

@@ -7,6 +7,13 @@ import re
 from haic_env_builder.utils.simulation_runner import simulate_environment
 from app.models.api import SimulationEnvelope, ErrorEnvelope
 
+# HAIC Sim MVP imports
+try:
+    from haic_sim_mvp.engine.run_sim import run_from_config
+    HAIC_SIM_AVAILABLE = True
+except ImportError:
+    HAIC_SIM_AVAILABLE = False
+
 router = APIRouter()
 
 # ---------- project root detection ----------
@@ -117,3 +124,34 @@ def list_runs_by_task(prefix: str = Query(..., description="Task name/prefix (ca
     slug = re.sub(r"\s+", "_", prefix.strip()).lower()
     files = [f.name for f in RUNS_DIR.glob("*.json") if f.name.lower().startswith(slug)]
     return {"files": sorted(files)}
+
+@router.post(
+    "/simulate_haic",
+    summary="Run a HAIC Sim MVP simulation directly from JSON config",
+    description="Executes a HAIC Sim MVP simulation using the provided JSON configuration."
+)
+def simulate_haic(
+    config: dict,
+    seed: int | None = Query(None, description="Optional seed for reproducibility"),
+):
+    if not HAIC_SIM_AVAILABLE:
+        raise HTTPException(
+            status_code=503,
+            detail="HAIC Sim MVP not available. Please check installation."
+        )
+
+    # Run the HAIC simulation
+    try:
+        results_dir = str(PROJECT_ROOT / "haic_sim_mvp" / "results")
+        output_path = run_from_config(config, results_dir=results_dir)
+
+        # Load and return the results
+        with open(output_path, "r") as f:
+            result = json.load(f)
+
+        return {"simulation_result": result}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"HAIC simulation failed: {str(e)}"
+        )

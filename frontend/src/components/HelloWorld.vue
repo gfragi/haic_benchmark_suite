@@ -6,10 +6,10 @@
 
 <script>
 const component = {
-  name: 'HelloWorld',
+  name: "HelloWorld",
   props: {
-    msg: String
-  }
+    msg: String,
+  },
 };
 
 module.exports = component;

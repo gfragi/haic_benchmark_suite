@@ -13,6 +13,7 @@ import RunDetail from "@/views/RunDetail.vue";
 import Visualization from "@/views/VisualizationPage.vue";
 import FairnessEvaluation from "@/views/FairnessEvaluation.vue";
 import SurveyDashboard from "@/views/SurveyDashboard.vue";
+import EnvBuilderPage from "@/views/EnvBuilderPage.vue";
 import SimulatorPage from "@/views/SimulatorPage.vue";
 import SurveyCompare from "@/views/SurveyCompare.vue";
 // import keycloak from "@/services/keycloak";
@@ -84,6 +85,11 @@ const routes = [
     path: "/survey-dashboard",
     name: "SurveyDashboard",
     component: SurveyDashboard,
+  },
+  {
+    path: "/env-builder",
+    name: "EnvBuilder",
+    component: EnvBuilderPage,
   },
   {
     path: "/simulate",

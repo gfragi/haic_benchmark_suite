@@ -46,6 +46,11 @@ export default {
           route: "/metrics",
         },
         {
+          title: "Environment Builder",
+          icon: "mdi-tools",
+          route: "/env-builder",
+        },
+        {
           title: "Simulator",
           icon: "mdi-flask",
           route: "/simulate",

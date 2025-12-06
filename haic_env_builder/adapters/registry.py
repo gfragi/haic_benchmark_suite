@@ -14,6 +14,8 @@ _ADAPTERS: Dict[str, Union[str, Type]] = {
     "overcooked": "haic_env_builder.adapters.overcooked_adapter:OvercookedAdapter",
     # Scripted
     "scripted": "haic_env_builder.adapters.scripted_adapter:ScriptedAdapter",
+    # HAIC Sim MVP
+    "haic_sim_mvp": "haic_env_builder.adapters.haic_sim_mvp_adapter:HAICSimMVPAdapter",
 }
 
 def register_adapter(name: str, target: Union[str, Type]) -> None:
