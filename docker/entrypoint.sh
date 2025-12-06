@@ -11,6 +11,7 @@ fi
 
 # Run migrations (requires alembic.ini to use ${DATABASE_URL})
 echo "Running Alembic migrations..."
+export PATH="$PATH:/home/app/.local/bin"
 alembic upgrade head
 
 echo "Starting FastAPI..."

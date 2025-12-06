@@ -195,6 +195,10 @@ def _group_metrics_by_category(agg_by_metric: dict) -> dict:
             k: v for k, v in agg_by_metric.items()
             if k in ("Adversarial Robustness","Domain Generalization")
         },
+        "HAIC Core Metrics": {
+            k: v for k, v in agg_by_metric.items()
+            if k in ("Frequency","Duration","Human-Centered Learning","Trust","Adaptability","Similarity","Effort Loss")
+        },
     }
 
 def _save_result_to_minio(bucket: str, config_id: int, result_data: dict) -> str:

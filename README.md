@@ -6,6 +6,24 @@
 
 A comprehensive platform for evaluating Human-AI Collaboration (HAIC) systems through simulation, metrics computation, and interactive benchmarking.
 
+## 🚦 Getting Started
+
+### Runtime & tooling
+- Python 3.8+ with `pip`
+- Node.js 18+ with `npm`
+- Docker & Docker Compose
+
+### Environment variables
+- `KEYCLOAK_SERVER_URL`, `KEYCLOAK_REALM_NAME`, `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_CLIENT_SECRET` 
+- `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` 
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` 
+
+### Run it
+1. `cp backend/app/env.example .env`
+2. `docker-compose up --build`
+
+
+
 ## 🎯 What is HAIC Benchmark Suite?
 
 The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarking Human-AI collaborative systems. It combines realistic simulation environments, comprehensive metrics computation, and interactive evaluation tools to help researchers and practitioners assess the effectiveness of AI systems working alongside humans.
@@ -92,13 +110,13 @@ The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarki
 
 | Metric | Name | Description | Scale | Direction |
 |--------|------|-------------|-------|-----------|
-| **F** | Fluency | Interactions per minute | 0-∞ | Higher better |
+| **F** | Frequency | Interactions per minute | 0-∞ | Higher better |
 | **D** | Delegation | Average human decision time | 0-∞ seconds | Lower better |
 | **HCL** | Human-Centered Learning | Efficiency within time constraints | 0-1 | Higher better |
 | **Tr** | Trust | System reliability and appropriate autonomy | 0-1 | Higher better |
-| **A** | Autonomy | Appropriate AI decision-making | 0-1 | Balanced |
-| **S** | Surprise | Unexpected system behavior | 0-1 | Lower better |
-| **EL** | Efficiency/Latency | End-to-end response times | 0-∞ seconds | Lower better |
+| **A** | Adaptability | Appropriate AI decision-making | 0-1 | Balanced |
+| **S** | Similarity | Unexpected system behavior | 0-1 | Lower better |
+| **EL** | Effort Loss | End-to-end response times | 0-∞ seconds | Lower better |
 
 ### Additional Metrics
 - **Traditional ML**: Accuracy, Precision, Recall, F1-Score
@@ -110,7 +128,8 @@ The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarki
 
 ### Comprehensive Testing Guide
 For detailed testing instructions covering both development and production environments, see:
-- **[TESTING_README.md](TESTING_README.md)** - Complete testing guide
+- **[docs/TESTING_README.md](docs/TESTING_README.md)** - Complete testing guide
+- **[backend/BE_TESTING_GUIDE.md](backend/BE_TESTING_GUIDE.md)** - Backend-specific testing
 - **[frontend/TESTING_README.md](frontend/TESTING_README.md)** - Frontend-specific testing
 - **[frontend/PERFORMANCE_GUIDE.md](frontend/PERFORMANCE_GUIDE.md)** - Performance monitoring
 
