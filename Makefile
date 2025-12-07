@@ -38,6 +38,12 @@ dev: ## Start development environment
 	@echo "  make test         - Run tests"
 	@echo "  make stop         - Stop services"
 
+backend-dev: ## Start only backend service for development
+	@echo "Starting backend service..."
+	cp .env.development .env
+	docker-compose up -d backend db minio
+	@echo "✅ Backend service starting..."
+
 prod: ## Start production-like environment
 	@echo "Starting production environment..."
 	cp .env.production .env
