@@ -2,8 +2,6 @@
 # This file is automatically loaded when running docker-compose
 # It overrides settings for local development
 
-version: '3.8'
-
 # Override environment files to use development settings
 services:
   backend:
