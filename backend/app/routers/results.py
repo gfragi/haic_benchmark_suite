@@ -77,9 +77,10 @@ async def get_evaluation_results_by_group(configuration_id: int, group_name: str
             result_object = minio_client.get_object(os.getenv("MINIO_BUCKET"), result.result_minio_path)
             result_data = json.load(io.BytesIO(result_object.read()))
 
-            # Extract only the results for the specified group
-            if group_name in result_data['metrics']:
-                group_results[result.id] = result_data['metrics'][group_name]
+            aggregates = result_data.get("aggregates") or {}
+            by_group = aggregates.get("by_group") or {}
+            if group_name in by_group:
+                group_results[result.id] = by_group[group_name]
 
         except AttributeError:
             # Handle AttributeError if result_minio_path is invalid
@@ -93,4 +94,3 @@ async def get_evaluation_results_by_group(configuration_id: int, group_name: str
         raise HTTPException(status_code=404, detail="No results found for the specified group")
 
     return group_results
-

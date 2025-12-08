@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from sqlmodel import Session
 # Temporarily comment out metrics_core import
 # from metrics_core.outcome_metrics import Metrics
-from app.models import EvaluationConfig, LogEntry
+from app.models import EvaluationConfig
 from app.models.results import EvaluationResult, MetricGroup
 from app.utils.database import SessionLocal
 from app.utils.minio_utils import get_minio_client
