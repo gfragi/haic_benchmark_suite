@@ -48,6 +48,50 @@ The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarki
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
+## 🧪 Testing & Validation
+
+### Quick Backend Verification
+
+The project includes automated testing tools to ensure everything is working correctly:
+
+```bash
+# Run the backend verification script
+./test_backend.sh
+
+# Expected output:
+# ✅ Project structure looks good
+# ✅ Virtual environment activated
+# ✅ haic_env_builder package available
+# ✅ Unit tests passed
+# 🎉 Backend is ready for development!
+```
+
+### Test Categories
+
+#### Unit Tests (No External Dependencies)
+Perfect for development and CI/CD:
+```bash
+cd backend && PYTHONPATH=. pytest tests/test_data_evaluation.py -v
+```
+
+#### Integration Tests (Full Stack)
+Requires Docker infrastructure:
+```bash
+make dev    # Start all services
+make test   # Run comprehensive tests
+```
+
+#### Manual Testing
+```bash
+make test-backend  # Test simulation integration
+make test-smoke    # Quick health checks
+```
+
+### Testing Documentation
+- **[Backend Testing Guide](backend/TESTING_README.md)** - Complete testing instructions
+- **[Frontend Testing](frontend/TESTING_README.md)** - Frontend-specific tests
+- **[Performance Guide](frontend/PERFORMANCE_GUIDE.md)** - Performance monitoring
+
 ## 🎭 Pilot Implementations
 
 ### 1. **Healthcare - CT Scan Diagnosis**

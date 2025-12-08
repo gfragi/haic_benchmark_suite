@@ -18,8 +18,9 @@ class LogEntry(Base):
     performance_logs = Column(JSON)
     ai_model_data = Column(JSON)
 
+    # link to MinIO objects (relative to config_id/)
+    raw_filename = Column(String, nullable=True)      # e.g. "uploads/session...json"
+    derived_filename = Column(String, nullable=True)  # e.g. "uploads/session...derived.json"
+
     configuration_id = Column(Integer, ForeignKey('configurations.id'))
     configuration = relationship("EvaluationConfig", back_populates="logs")
-
-    # Adding the relationship to EvaluationResult
-    #results = relationship("EvaluationResult", back_populates="log")

@@ -21,6 +21,34 @@ load_dotenv()
 
 minio_client = get_minio_client()
 
+def calculate_prediction_accuracy(interaction_data: list[dict]) -> float:
+    """Calculate prediction accuracy from interaction data."""
+    if not interaction_data:
+        return 0.0
+
+    correct_count = 0
+    total_count = 0
+
+    for interaction in interaction_data:
+        result = interaction.get("result")
+        if result in ["true_positive", "true_negative"]:
+            correct_count += 1
+            total_count += 1
+        elif result in ["false_positive", "false_negative"]:
+            total_count += 1
+
+    return correct_count / total_count if total_count > 0 else 0.0
+
+def calculate_response_time(interaction_data: list[dict]) -> float:
+    """Calculate average response time from interaction data."""
+    response_times = []
+    for interaction in interaction_data:
+        rt = interaction.get("response_time")
+        if isinstance(rt, (int, float)):
+            response_times.append(rt)
+
+    return sum(response_times) / len(response_times) if response_times else 0.0
+
 def _get(d: dict, path: Iterable[str], default=None):
     cur = d
     for p in path:

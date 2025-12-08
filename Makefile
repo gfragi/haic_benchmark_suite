@@ -47,7 +47,7 @@ backend-dev: ## Start only backend service for development
 prod: ## Start production-like environment
 	@echo "Starting production environment..."
 	cp .env.production .env
-	docker compose -f docke compose.yml up -d
+	docker compose -f docker compose.yml up -d
 	@echo "✅ Production environment starting..."
 
 # Testing commands

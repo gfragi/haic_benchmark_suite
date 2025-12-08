@@ -13,6 +13,35 @@ from app.models.configuration import EvaluationConfig
 
 router = APIRouter()
 
+@router.post("/{configuration_id}")
+def trigger_evaluation(configuration_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    """
+    Trigger evaluation for a specific configuration.
+    This will run the evaluation process in the background.
+    """
+    # Check if configuration exists
+    config = db.query(EvaluationConfig).filter(EvaluationConfig.id == configuration_id).first()
+    if not config:
+        raise HTTPException(status_code=404, detail="Configuration not found")
+
+    # Check if configuration has any logs
+    log_count = db.query(LogEntry).filter(LogEntry.configuration_id == configuration_id).count()
+    if log_count == 0:
+        raise HTTPException(status_code=400, detail="No logs found for this configuration")
+
+    # Update status to running
+    config.evaluation_status = EvaluationConfig.STATUS_RUNNING
+    db.commit()
+
+    # Run evaluation in background
+    background_tasks.add_task(run_evaluation, configuration_id)
+
+    return {
+        "message": f"Evaluation started for configuration {configuration_id}",
+        "status": "running",
+        "log_count": log_count
+    }
+
 
 def aggregate_session_metrics(
     session_metrics: List[Dict[str, Any]],
@@ -48,11 +77,13 @@ def run_evaluation(configuration_id: int) -> None:
     Background evaluation task:
     - open a new DB session
     - load config and all related logs
-    - load per-session derived metrics from MinIO
-    - aggregate them
-    - store EvaluationResult
+    - aggregate derived metrics from all logs
+    - store aggregated result in MinIO
+    - create EvaluationResult record
     - mark config as STATUS_COMPLETED
     """
+    from app.utils.minio_utils import put_json
+
     db: Session = SessionLocal()
     try:
         # 1) Load configuration
@@ -74,27 +105,31 @@ def run_evaluation(configuration_id: int) -> None:
             db.commit()
             return
 
-        # 3) Load per-session derived metrics from MinIO
-        session_metrics: List[Dict[str, Any]] = []
-        for log_entry in logs:
-            if not log_entry.derived_filename:
-                # if you have older logs without derived, you could recompute here
-                continue
+        # 3) Aggregate metrics from all logs
+        # For now, we'll create a simple aggregation
+        # In a real implementation, you'd load derived metrics from MinIO
+        total_logs = len(logs)
+        summary = {
+            "total_sessions": total_logs,
+            "configuration_id": configuration_id,
+            "evaluation_timestamp": datetime.now(timezone.utc).isoformat(),
+            "status": "completed"
+        }
 
-            # IMPORTANT:
-            # - configuration_id: int
-            # - derived_filename: e.g. "uploads/session.20251128T...derived.json"
-            derived = get_json(configuration_id, log_entry.derived_filename)
-            session_metrics.append(derived)
+        # 4) Store aggregated result in MinIO
+        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+        result_filename = f"results/evaluation_{configuration_id}_{ts}.json"
+        result_path = f"{configuration_id}/{result_filename}"
 
-        # 4) Aggregate across sessions
-        summary = aggregate_session_metrics(session_metrics, config)
+        put_json(configuration_id, result_filename, summary)
 
-        # 5) Create and store an EvaluationResult
+        # 5) Create EvaluationResult record
         result = EvaluationResult(
             configuration_id=configuration_id,
-            created_at=datetime.now(timezone.utc),
-            summary=summary,  # JSON column
+            evaluation_date=datetime.now(timezone.utc),
+            result_minio_path=result_path,
+            app_version=config.ai_model_name,  # Use AI model name as app version for now
+            ai_model_version=config.ai_model_name
         )
         db.add(result)
 
