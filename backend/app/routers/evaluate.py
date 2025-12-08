@@ -36,10 +36,12 @@ def trigger_evaluation(configuration_id: int, background_tasks: BackgroundTasks,
     # Run evaluation in background
     background_tasks.add_task(run_evaluation, configuration_id)
 
+    message = f"Evaluation started for configuration {configuration_id}"
     return {
-        "message": f"Evaluation started for configuration {configuration_id}",
+        "detail": message,
+        "message": message,  # backward compatibility for older clients
         "status": "running",
-        "log_count": log_count
+        "log_count": log_count,
     }
 
 
