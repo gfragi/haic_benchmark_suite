@@ -29,7 +29,8 @@ services:
       - "9001:9001"
     volumes:
       - minio_data:/data
-    command: server /data --console-address ":9001"
+      - ./docker/minio-init:/minio-init
+    command: sh -c "/minio-init/init-bucket.sh && minio server /data --console-address ':9001'"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
