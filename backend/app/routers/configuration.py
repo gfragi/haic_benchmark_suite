@@ -15,24 +15,34 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 # POST endpoint to create a new evaluation configuration
-@router.post("/new", response_model=EvaluationConfigSchema)
+@router.post("", response_model=EvaluationConfigSchema)
 def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(get_db)):
     # Retrieve the selected groups
     selected_groups = config.metrics
 
-    # Expand the groups into individual metrics
-    # Temporarily disabled until metrics_core is fixed
-    # available_metrics = Metrics.get_available_metrics()
-    # selected_metrics = []
+    # For now, just use the selected_groups directly
+    selected_metrics = selected_groups
 
-    # for group in selected_groups:
-    #     if group in available_metrics:
-    #         selected_metrics.extend(available_metrics[group])
-    #     else:
-    #         raise HTTPException(status_code=400, detail=f"Group {group} not found in available metrics.")
+    new_config = EvaluationConfig(
+        application_name=config.application_name,
+        ai_model_name=config.ai_model_name,
+        ai_model_type=config.ai_model_type,
+        description=config.description,
+        metrics=selected_metrics,  # Save the expanded list of metrics
+        evaluation_date=datetime.now(timezone.utc),
+        config_type=config.config_type,
+        evaluation_status=config.evaluation_status
+    )
+    db.add(new_config)
+    db.commit()
+    db.refresh(new_config)
+    return new_config
 
-    # # Remove duplicates if any (optional, depends on your needs)
-    # selected_metrics = list(set(selected_metrics))
+# POST endpoint to create a new evaluation configuration (legacy /new endpoint)
+@router.post("/new", response_model=EvaluationConfigSchema)
+def create_configuration_legacy(config: EvaluationConfigSchema, db: Session = Depends(get_db)):
+    # Retrieve the selected groups
+    selected_groups = config.metrics
 
     # For now, just use the selected_groups directly
     selected_metrics = selected_groups

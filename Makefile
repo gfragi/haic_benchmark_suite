@@ -24,7 +24,7 @@ setup-prod: ## Setup for production
 dev: ## Start development environment
 	@echo "Starting development environment..."
 	cp .env.development .env
-	docker-compose up -d
+	docker compose up -d
 	@echo "✅ Development environment starting..."
 	@echo "📊 Services:"
 	@echo "  - Backend API:    http://localhost:8000"
@@ -41,24 +41,24 @@ dev: ## Start development environment
 backend-dev: ## Start only backend service for development
 	@echo "Starting backend service..."
 	cp .env.development .env
-	docker-compose up -d backend db minio
+	docker compose up -d backend db minio
 	@echo "✅ Backend service starting..."
 
 prod: ## Start production-like environment
 	@echo "Starting production environment..."
 	cp .env.production .env
-	docker-compose -f docker-compose.yml up -d
+	docker compose -f docke compose.yml up -d
 	@echo "✅ Production environment starting..."
 
 # Testing commands
 test: ## Run all tests
 	@echo "Running tests..."
-	docker-compose exec backend python -W ignore::DeprecationWarning -W ignore::PendingDeprecationWarning -W ignore::MovedIn20Warning -W ignore::UserWarning -m pytest tests/ -v --disable-warnings
+	docker compose exec backend python -W ignore::DeprecationWarning -W ignore::PendingDeprecationWarning -W ignore::MovedIn20Warning -W ignore::UserWarning -m pytest tests/ -v --disable-warnings
 
 test-backend: ## Test only backend
 	@echo "Testing backend..."
-	docker-compose exec backend python backend/test_refactored_flow.py
-	docker-compose exec backend python backend/test_integration_with_sim_mvp.py
+	docker compose exec backend python backend/test_refactored_flow.py
+	docker compose exec backend python backend/test_integration_with_sim_mvp.py
 
 test-smoke: ## Quick smoke test
 	@echo "Running smoke tests..."
@@ -68,28 +68,28 @@ test-smoke: ## Quick smoke test
 # Docker commands
 docker-build: ## Build all Docker images
 	@echo "Building Docker images..."
-	docker-compose build --no-cache
+	docker compose build --no-cache
 
 docker-up: ## Start all services
 	@echo "Starting services..."
-	docker-compose up -d
+	docker compose up -d
 
 docker-down: ## Stop all services
 	@echo "Stopping services..."
-	docker-compose down
+	docker compose down
 
 stop: docker-down ## Stop all services (alias for docker-down)
 
 docker-logs: ## View service logs
-	docker-compose logs -f
+	docker compose logs -f
 
 docker-shell: ## Access backend container shell
-	docker-compose exec backend bash
+	docker compose exec backend bash
 
 # Database commands
 db-migrate: ## Run database migrations
 	@echo "Running database migrations..."
-	docker-compose exec backend alembic upgrade head
+	docker compose exec backend alembic upgrade head
 
 db-seed: ## Seed database with core metrics
 	@echo "Seeding core metrics..."
@@ -98,49 +98,49 @@ db-seed: ## Seed database with core metrics
 # Cleanup commands
 clean: ## Clean up containers and volumes
 	@echo "Cleaning up..."
-	docker-compose down -v
+	docker compose down -v
 	docker system prune -f
 
 clean-all: ## Deep clean including images
 	@echo "Deep cleaning..."
-	docker-compose down -v --rmi all
+	docker compose down -v --rmi all
 	docker system prune -f -a
 
 # Utility commands
 logs: ## View all service logs
-	docker-compose logs -f
+	docker compose logs -f
 
 logs-backend: ## View backend logs only
-	docker-compose logs -f backend
+	docker compose logs -f backend
 
 shell: ## Access backend shell
-	docker-compose exec backend bash
+	docker compose exec backend bash
 
 shell-db: ## Access database shell
-	docker-compose exec db psql -U haic_user -d haic_benchmark
+	docke compose exec db psql -U haic_user -d haic_benchmark
 
 # Status commands
 status: ## Show service status
 	@echo "Service Status:"
-	@docker-compose ps
+	@docke compose ps
 
 health: ## Check service health
 	@echo "Checking service health..."
 	@curl -s http://localhost:8000/meta/health | jq . || echo "Backend: DOWN"
 	@curl -s http://localhost:8080 | grep -q "html" && echo "Frontend: UP" || echo "Frontend: DOWN"
-	@docker-compose exec -T minio curl -s http://localhost:9000/minio/health/live > /dev/null && echo "MinIO: UP" || echo "MinIO: DOWN"
-	@docker-compose exec -T db pg_isready -U haic_user -d haic_benchmark > /dev/null && echo "Database: UP" || echo "Database: DOWN"
+	@docker compose exec -T minio curl -s http://localhost:9000/minio/health/live > /dev/null && echo "MinIO: UP" || echo "MinIO: DOWN"
+	@docker compose exec -T db pg_isready -U haic_user -d haic_benchmark > /dev/null && echo "Database: UP" || echo "Database: DOWN"
 
 # CI/CD commands
 lint: ## Run linting
 	@echo "Running linting..."
-	docker-compose exec backend flake8 backend/app/
-	docker-compose exec backend black --check backend/app/
+	docker compose exec backend flake8 backend/app/
+	docker compose exec backend black --check backend/app/
 
 format: ## Format code
 	@echo "Formatting code..."
-	docker-compose exec backend black backend/app/
-	docker-compose exec backend isort backend/app/
+	docker compose exec backend black backend/app/
+	docker compose exec backend isort backend/app/
 
 # Documentation
 docs: ## Generate documentation
@@ -151,7 +151,7 @@ docs: ## Generate documentation
 # Simulation commands
 sim-demo: ## Run CT demo simulation
 	@echo "Running CT demo simulation..."
-	docker-compose exec backend python -c "
+	docker compose exec backend python -c "
 	import sys
 	sys.path.append('/haic_sim_mvp')
 	from tools.run_metrics import *

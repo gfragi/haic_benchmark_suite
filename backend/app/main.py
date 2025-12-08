@@ -35,7 +35,7 @@ app.add_middleware(
 api = APIRouter(prefix="/api/v1", )
 
 api.include_router(logs.router,           prefix="/logs",          tags=["Logs"])
-api.include_router(configuration.router,  prefix="/configuration", tags=["Configuration"])
+api.include_router(configuration.router,  prefix="/configurations", tags=["Configuration"])
 api.include_router(evaluate.router,       prefix="/evaluate",      tags=["Evaluation"])
 api.include_router(results.router,        prefix="/results",       tags=["Results"])
 api.include_router(reporting.router,      prefix="/reporting",     tags=["Reporting"])

@@ -65,16 +65,16 @@ class PerformanceInfrastructure(BaseModel):
 
 
 class PerformanceLogs(BaseModel):
-    processing_time_seconds: Optional[Dict[str, int]] = None
-    resource_utilization: Optional[Dict[str, int]] = None
-    human_effort_seconds: Optional[Dict[str, int]] = None
+    processing_time_seconds: Optional[Dict[str, Union[int, float]]] = None
+    resource_utilization: Optional[Dict[str, Union[int, float]]] = None
+    human_effort_seconds: Optional[Dict[str, Union[int, float]]] = None
 
 
 class AIModelData(BaseModel):
     ai_model_name: Optional[str] = None
     training_data: Optional[str] = None
     ai_model_size: Optional[str] = None
-    inference_time_seconds: Optional[int] = None
+    inference_time_seconds: Optional[Union[int, float]] = None
     deployment_details: Optional[str] = None
 
 
