@@ -1,17 +1,23 @@
-import apiClient from "./axios";
+import api from "./axios";
 
 export default {
-  getLogsByConfigId(configId) {
-    return apiClient.get(`/v1/logs/${configId}`);
+  getLogs(configId, page, itemsPerPage) {
+    return api.get(`/logs/${configId}`, {
+      params: { page, items_per_page: itemsPerPage },
+    });
   },
-  downloadLog(logName) {
-    return apiClient.get(`/v1/logs/download/${logName}`);
+  downloadLog(configId, logName) {
+    return api.get(
+      `/logs/download/${configId}/${encodeURIComponent(logName)}`
+    );
   },
-  deleteLog(logName) {
-    return apiClient.delete(`/v1/logs/${logName}`);
+  deleteLog(configId, logName) {
+    return api.delete(
+      `/logs/${configId}/${encodeURIComponent(logName)}`
+    );
   },
   uploadLog(formData, configId) {
-    return apiClient.post(
+    return api.post(   // keep same axios instance here as well
       `/v1/logs/upload?configuration_id=${configId}`,
       formData,
       {
