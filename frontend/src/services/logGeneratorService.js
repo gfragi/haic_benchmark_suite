@@ -1,9 +1,9 @@
-import apiClient from "./axios";
+import api from "./axios";
 
 export default {
   async generateLogs(params) {
     try {
-      const response = await apiClient.get(`/v1/log-generator/generate`, {
+      const response = await api.get(`/v1/log-generator/generate`, {
         params: {
           app_type: params.app_type,
           count: params.count,

@@ -1,7 +1,9 @@
 const { describe, it, expect, beforeEach, vi } = require("jest");
 const { createApp } = require("vue");
 const { createStore } = require("vuex");
-const { useConfigurationForm } = require("../../src/composables/useConfigurationForm");
+const {
+  useConfigurationForm,
+} = require("../../src/composables/useConfigurationForm");
 
 // Mock the store modules
 const mockConfigurationModule = {

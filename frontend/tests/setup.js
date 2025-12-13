@@ -1,5 +1,5 @@
 // Jest setup file for Vue 3 tests
-import { config } from '@vue/test-utils';
+import { config } from "@vue/test-utils";
 
 // Configure Vue Test Utils globally
 config.global.mocks = {
@@ -7,9 +7,9 @@ config.global.mocks = {
 };
 
 // Mock window.matchMedia for Vuetify
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
