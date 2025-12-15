@@ -2,64 +2,83 @@
 import axios from "axios";
 import keycloak from "@/services/keycloak";
 
-function resolveApiBase() {
-  let base =
-    (typeof import.meta !== "undefined" &&
-      import.meta.env &&
-      import.meta.env.VUE_APP_API_BASE_URL) ||
-    process.env.VUE_APP_API_BASE_URL ||
-    "/api/v1";
-
-  base = String(base).trim().replace(/\/+$/, "");
-  const isHttpsPage = window.location.protocol === "https:";
-
-  // Always use the same host as the current page
-  const currentOrigin = window.location.origin;
-
-  // If base starts with /, just prepend current origin
-  if (base.startsWith("/")) {
-    return currentOrigin + base;
-  }
-
-  // If base is a full URL
-  if (/^https?:\/\//i.test(base)) {
-    // Force HTTPS if the page is HTTPS
-    if (isHttpsPage && base.startsWith("http://")) {
-      console.warn("Mixed-content API base detected, upgrading to HTTPS");
-      return base.replace(/^http:\/\//i, "https://");
-    }
-    return base;
-  }
-
-  // If it's a domain without protocol
-  if (base.includes("://")) {
-    const scheme = isHttpsPage ? "https://" : "http://";
-    // Check if it already has a hostname
-    try {
-      const url = new URL(scheme + base);
-      return url.toString();
-    } catch {
-      // If parsing fails, fall back to current origin
-      return currentOrigin + "/" + base.replace(/^\/+/, "");
-    }
-  }
-
-  // Default fallback
-  return currentOrigin + "/" + base.replace(/^\/+/, "");
-}
-
+// Hardcode the production URL directly
 const api = axios.create({
-  baseURL: resolveApiBase(),
-  // withCredentials: true, // if need cookies
+  baseURL: "https://benchmark.humaine-horizon.eu/api/v1",
 });
 
-// Attach bearer token if logged in
+console.log("🚀 Axios configured with baseURL:", api.defaults.baseURL);
+
+// Request interceptor for auth and debugging
 api.interceptors.request.use((config) => {
+  // Log request for debugging
+  console.log("📡 Axios Request:", {
+    method: config.method?.toUpperCase(),
+    url: config.baseURL + (config.url || ""),
+    endpoint: config.url,
+  });
+
+  // Fix duplicate /v1 if present
+  if (config.url && config.url.startsWith("/v1/")) {
+    const originalUrl = config.url;
+    config.url = config.url.substring(3); // Remove leading /v1
+    console.log("🔄 Fixed duplicate /v1:", originalUrl, "→", config.url);
+  }
+
+  // Ensure no double slashes
+  if (config.url && config.url.includes("//")) {
+    config.url = config.url.replace(/\/+/g, "/");
+  }
+
+  // Add auth token
   if (keycloak?.authenticated && keycloak?.token) {
     config.headers = config.headers || {};
     config.headers.Authorization = `Bearer ${keycloak.token}`;
+    console.log("🔐 Added Authorization header");
   }
+
   return config;
 });
+
+// Response interceptor for error handling
+api.interceptors.response.use(
+  (response) => {
+    console.log("✅ Axios Response Success:", {
+      status: response.status,
+      url: response.config.url,
+    });
+    return response;
+  },
+  (error) => {
+    console.error("❌ Axios Error:", {
+      url: error.config?.url,
+      fullUrl: error.config?.baseURL + (error.config?.url || ""),
+      status: error.response?.status,
+      message: error.message,
+      code: error.code,
+    });
+
+    // Provide helpful suggestions for network errors
+    if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
+      console.error("🔍 Network Error - Possible causes:");
+      console.error("  1. Backend server is not running");
+      console.error("  2. CORS issue - check backend CORS configuration");
+      console.error("  3. Mixed content - ensure all URLs use HTTPS");
+      console.error("  4. Firewall or network issue");
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+// Export debug info
+export const DEBUG_INFO = {
+  pageProtocol: window.location.protocol,
+  pageOrigin: window.location.origin,
+  baseURL: api.defaults.baseURL,
+  timestamp: new Date().toISOString(),
+};
+
+console.log("📊 Debug Info:", DEBUG_INFO);
 
 export default api;

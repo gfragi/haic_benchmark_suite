@@ -2,7 +2,7 @@ import api from "./axios";
 
 export default {
   getAllConfigs() {
-    return api.get("/v1/configuration/list/");
+    return api.get("/v1/configuration/list");
   },
   getConfigById(configuration_id) {
     return api.get(`/v1/configuration/${configuration_id}`);
