@@ -14,15 +14,10 @@ export default {
   },
 
   uploadLog(formData, configId) {
-    return api.post(
-      // keep same axios instance here as well
-      `/v1/logs/upload?configuration_id=${configId}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    return api.post(`/logs/upload?configuration_id=${configId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
 };

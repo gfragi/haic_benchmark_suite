@@ -122,9 +122,11 @@ export default {
 
       this.loading = true;
       logService
-        .getLogsByConfigId(this.selectedConfig)
+        .getLogs(this.selectedConfig)
         .then((response) => {
-          this.logs = map(response.data.logs, (log) => ({ log_name: log }));
+          this.logs = map(response.data.logs, (log) => ({
+            log_name: log.split("/").pop(), // keep only filename}));
+          }));
         })
         .catch((error) => {
           this.showSnackbar("Error fetching logs.");
