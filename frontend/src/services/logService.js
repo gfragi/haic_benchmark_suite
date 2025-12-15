@@ -6,8 +6,10 @@ export default {
       params: { page, items_per_page: itemsPerPage },
     });
   },
-  downloadLog(configId, logName) {
-    return api.get(`/logs/download/${configId}/${encodeURIComponent(logName)}`);
+  downloadLog(configId, objectKey) {
+    return api.get(`/logs/download/${configId}`, {
+      params: { object_key: objectKey },
+    });
   },
   deleteLog(configId, logName) {
     return api.delete(`/logs/${configId}/${encodeURIComponent(logName)}`);

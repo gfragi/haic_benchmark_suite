@@ -168,19 +168,30 @@ def register_log(
 
 
 @router.get("/{config_id}")
-def get_logs(config_id: int):
-    try:
-        return {"logs": list_files(config_id)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+def list_logs(config_id: int):
+    client = get_minio_client()
+    prefix = f"{config_id}/"
+    objs = client.list_objects(MINIO_BUCKET, prefix=prefix, recursive=True)
+
+    keys = [o.object_name for o in objs if o.object_name.endswith(".json")]
+    return {"logs": keys}
 
 
-@router.get("/download/{config_id}/{log_name}")
-def get_download_url(config_id: int, log_name: str):
+@router.get("/download/{config_id}")
+def get_download_url(config_id: int, object_key: str = Query(...)):
+    # Safety check: user can only download within their config prefix
+    if not object_key.startswith(f"{config_id}/"):
+        raise HTTPException(status_code=400, detail="Invalid object_key for configuration")
+
     try:
-        return {"download_url": download_file(config_id, log_name)}
+        client = get_minio_client()
+        # Optional: check existence to return 404 early
+        client.stat_object(MINIO_BUCKET, object_key)
+
+        url = client.presigned_get_object(MINIO_BUCKET, object_key)
+        return {"download_url": url}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.delete("/{config_id}/{log_name}")
