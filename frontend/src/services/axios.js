@@ -53,7 +53,33 @@ const api = axios.create({
   // withCredentials: true, // if need cookies
 });
 
-// Attach bearer token if logged in
+// Interceptor to fix duplicate /v1 in endpoint URLs
+api.interceptors.request.use((config) => {
+  // Log request details for debugging
+  console.log("API Request:", {
+    baseURL: config.baseURL,
+    url: config.url,
+    fullURL: config.baseURL + config.url,
+  });
+
+  // Fix duplicate /v1 in endpoint paths
+  // This happens when baseURL already includes /v1 and endpoint also starts with /v1
+  if (config.url && config.url.startsWith("/v1/")) {
+    const originalUrl = config.url;
+    // Remove the leading /v1
+    config.url = config.url.substring(3);
+    console.warn(`Fixed duplicate /v1: ${originalUrl} → ${config.url}`);
+  }
+
+  // Also handle case where endpoint might have double slashes
+  if (config.url && config.url.includes("//")) {
+    config.url = config.url.replace(/\/+/g, "/");
+  }
+
+  return config;
+});
+
+// Attach bearer token if logged in (added after the URL fix)
 api.interceptors.request.use((config) => {
   if (keycloak?.authenticated && keycloak?.token) {
     config.headers = config.headers || {};
@@ -61,5 +87,26 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Response interceptor for debugging
+api.interceptors.response.use(
+  (response) => {
+    console.log("API Response:", {
+      url: response.config.url,
+      status: response.status,
+      data: response.data,
+    });
+    return response;
+  },
+  (error) => {
+    console.error("API Error:", {
+      url: error.config?.url,
+      status: error.response?.status,
+      message: error.message,
+      fullURL: error.config?.baseURL + error.config?.url,
+    });
+    return Promise.reject(error);
+  }
+);
 
 export default api;
