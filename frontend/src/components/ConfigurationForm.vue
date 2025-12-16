@@ -35,7 +35,12 @@
               multiple
               required
               :rules="[
-                (v) => v.length > 0 || 'At least one metric group is required',
+                (v) =>
+                  (!!v &&
+                    (Array.isArray(v)
+                      ? v.length > 0
+                      : String(v).trim().length > 0)) ||
+                  'At least one metric group is required',
               ]"
             />
             <v-textarea

@@ -10,8 +10,8 @@ function useConfigurationForm() {
       },
     },
     isEditMode: { value: false },
-    formTitle: { value: "Create Evaluation Configuration" },
-    submitButtonText: { value: "Next" },
+    formTitle: "Create Evaluation Configuration",
+    submitButtonText: "Next",
     isFormValid: { value: false },
     availableModelTypes: [
       "Classification",
