@@ -1,24 +1,25 @@
-import apiClient from "./axios";
+import api from "./axios";
 
 export default {
-  getLogsByConfigId(configId) {
-    return apiClient.get(`/v1/logs/${configId}`);
+  getLogs(configId, page, itemsPerPage) {
+    return api.get(`v1/logs/${configId}`, {
+      params: { page, items_per_page: itemsPerPage },
+    });
   },
-  downloadLog(logName) {
-    return apiClient.get(`/v1/logs/download/${logName}`);
+  downloadLog(configId, objectKey) {
+    return api.get(`v1/logs/download/${configId}`, {
+      params: { object_key: objectKey },
+    });
   },
-  deleteLog(logName) {
-    return apiClient.delete(`/v1/logs/${logName}`);
+  deleteLog(configId, logName) {
+    return api.delete(`v1/logs/${configId}/${encodeURIComponent(logName)}`);
   },
+
   uploadLog(formData, configId) {
-    return apiClient.post(
-      `/v1/logs/upload?configuration_id=${configId}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    return api.post(`/logs/upload?configuration_id=${configId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
 };
