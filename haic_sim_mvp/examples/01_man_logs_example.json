@@ -1,0 +1,41 @@
+{
+  "logs": [{
+    "sim_id": "pilot_mfg_v1",
+    "session_id": "shift_2025-12-12_A",
+    "pilot_tag": "manufacturing",
+    "app_version": "mfg_v1.0.0",
+    "ai_model_version": "srl-2025-12",
+    "decisions": [
+      { "interaction_id":"JB901", "t":0.0,  "actor_type":"ai",     "action":"ai_proposal",
+        "payload":{"module_id":"W17","ai_prob":0.62}, "latency_ms":95 },
+
+      { "interaction_id":"JB901", "t":1.0,  "actor_type":"system", "action":"xr_panel_started",
+        "payload":{} },
+
+      { "interaction_id":"JB901", "t":1.3,  "actor_type":"human",  "action":"change_objectives",
+        "payload":{"throughput_weight":0.5,"energy_weight":0.2,"tardiness_weight":0.3} },
+
+      { "interaction_id":"JB901", "t":2.4,  "actor_type":"system", "action":"propose_assignment",
+        "payload":{"job_id":"JB901","module_candidates":["W21"]}, "latency_ms":1.1 },
+
+      { "interaction_id":"JB901", "t":2.5,  "actor_type":"human",  "action":"bids_selected",
+        "payload":{"bids":true}, "duration_s":2.0 },
+
+      { "interaction_id":"JB901", "t":2.6,  "actor_type":"human",  "action":"phase_selected",
+        "payload":{"phase":2}, "duration_s":1.2 },
+
+      { "interaction_id":"JB901", "t":2.8,  "actor_type":"system", "action":"dispatch_job",
+        "payload":{"job_id":"JB901","module_id":"W21"} },
+
+      { "interaction_id":"JB901", "t":3.0,  "actor_type":"system", "action":"process_start",
+        "payload":{"module_id":"W21"} },
+
+      { "interaction_id":"JB901", "t":23.5, "actor_type":"system", "action":"process_end",
+        "payload":{"proc_time_s":20.5,"energy_wh":112.0,"module_id":"W21"} },
+
+      { "interaction_id":"JB901", "t":50.5, "actor_type":"system", "action":"xr_evaluation_completed",
+        "payload":{"phase":2,"bids":true,"decision_count":7,
+                   "final_obj":{"throughput_weight":0.5,"energy_weight":0.2,"tardiness_weight":0.3}},
+        "duration_s":780.5 }
+    ]
+  }]}

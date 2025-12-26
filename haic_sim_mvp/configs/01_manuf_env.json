@@ -1,44 +1,67 @@
 {
-    "sim_id": "pilot_mfg_v0",
-    "environment": {
-        "id": "MFG_ENV",
-        "class": "base.Environment",
-        "attributes": { "task": "module_assignment", "domain": "manufacturing" }
-    },
-"agents": [
-{ "id": "SRL", "class": "base.Agent", "model": "ai",
-"affordances": ["propose_assignment","compute_confidence"] },
-{ "id": "PM", "class": "base.Agent", "model": "human",
-"affordances": ["verify","approve","override","annotate"] },
-{ "id": "WC", "class": "base.Agent", "model": "system",
-"affordances": ["dispatch_job","process_start","process_end"] },
-{ "id": "QC", "class": "base.Agent", "model": "system",
-"affordances": ["label","record_outcome"] }
-],
-"objects": [
-{ "id": "Job", "class": "base.Object",
-"attributes": {"kind":"production_job"},
-"affordances": ["assign","dispatch","process"] },
-{ "id": "Mod", "class": "base.Object",
-"attributes": {"kind":"workcell_module"},
-"affordances": ["receive","execute"] }
-],
+  "sim_id": "pilot_mfg_v1",
+  "environment": {
+    "id": "MFG_ENV",
+    "class": "base.Environment",
+    "attributes": { "task": "module_assignment", "domain": "manufacturing" }
+  },
+  "agents": [
+    { "id": "SRL", "class": "base.Agent", "model": "ai",
+      "affordances": ["ai_proposal"] },                          // was: compute_confidence
+    { "id": "PM", "class": "base.Agent", "model": "human",
+      "affordances": ["change_objectives", "bids_selected", "phase_selected"] },
+    { "id": "WC", "class": "base.Agent", "model": "system",
+      "affordances": ["process_start","process_end"] },
+    { "id": "AH", "class": "base.Agent", "model": "system",
+      "affordances": ["dispatch_job", "propose_assignment"] },
+    { "id": "HMI", "class": "base.Agent", "model": "system",
+      "affordances": ["xr_panel_started", "xr_evaluation_completed"] }
+  ],
+  "objects": [
+    { "id": "Job", "class": "base.Object",
+      "attributes": {"kind":"production_job"},
+      "affordances": ["assign","dispatch","process"] },
+    { "id": "Mod", "class": "base.Object",
+      "attributes": {"kind":"workcell_module"},
+      "affordances": ["receive","execute"] },
+    { "id": "Obj", "class": "base.Object",
+      "attributes": {"kind":"optimization_objective"},
+      "affordances": ["increase","decrease"] },
+    { "id": "App", "class": "base.Object",
+      "attributes": {"kind":"xr_application"},
+      "affordances": ["start","stop","select"] }
+  ],
+  "script": [
+    { "t": 0.0,  "agent": "SRL", "action": "ai_proposal", "object": "Job",
+      "effect": {"job_id":"JB901","module_id":"W17","ai_prob":0.62}, "latency_ms": 95 },
 
-"script": [
-{ "t": 0.0, "agent": "SRL", "action": "propose_assignment", "object": "Job",
-"effect": {"job_id":"JB901","module_candidates":["W17","W21"],"ai_prob":0.62,
-"thresholds":{"low":0.55,"high":0.8}},
-"latency_ms": 95 },
-{ "t": 1.3, "agent": "PM", "action": "verify", "object": "Job",
-"effect": {"decision":"override","selected_module":"W21","reason":"tool wear alarm"},
-"duration_s": 1.1 },
-{ "t": 2.6, "agent": "WC", "action": "dispatch_job", "object": "Mod",
-"effect": {"job_id":"JB901","module_id":"W21"} },
-{ "t": 3.0, "agent": "WC", "action": "process_start", "object": "Mod",
-"effect": {"module_id":"W21"} },
-{ "t": 23.5, "agent": "WC", "action": "process_end", "object": "Mod",
-"effect": {"proc_time_s":20.5,"energy_wh":112.0,"scrap":false,"rework":false} },
-{ "t": 24.0, "agent": "QC", "action": "label", "object": "Job",
-"effect": {"meets_objective":true,"defect_class":null}, "correct": true }
-]
+    { "t": 1.0,  "agent": "HMI", "action": "xr_panel_started", "object": "App",
+      "effect": {} },
+
+    { "t": 1.3,  "agent": "PM",  "action": "change_objectives", "object": "Obj",
+      "effect": {"throughput_weight":0.5,"energy_weight":0.2,"tardiness_weight":0.3} },
+
+    { "t": 2.4,  "agent": "AH",  "action": "propose_assignment", "object": "Mod",
+      "effect": {"job_id":"JB901","module_candidates":["W21"]}, "latency_ms": 1.1, "gap": 0.2 },
+
+    { "t": 2.5,  "agent": "PM",  "action": "bids_selected", "object": "App",
+      "effect": {"bids": true} },
+
+    { "t": 2.6,  "agent": "PM",  "action": "phase_selected", "object": "App",
+      "effect": {"phase": 2} },
+
+    { "t": 2.8,  "agent": "AH",  "action": "dispatch_job", "object": "Mod",
+      "effect": {"job_id":"JB901","module_id":"W21"} },
+
+    { "t": 3.0,  "agent": "WC",  "action": "process_start", "object": "Mod",
+      "effect": {"module_id":"W21"} },
+
+    { "t": 23.5, "agent": "WC",  "action": "process_end", "object": "Mod",
+      "effect": {"proc_time_s":20.5,"energy_wh":112.0,"module_id":"W21"} },
+
+    { "t": 50.5, "agent": "HMI", "action": "xr_evaluation_completed", "object": "App",
+      "effect": {"phase":2,"bids":true,"decision_count":7,
+                 "final_obj":{"throughput_weight":0.5,"energy_weight":0.2,"tardiness_weight":0.3}},
+      "duration_s": 780.5 }                                     // was: duration
+  ]
 }
