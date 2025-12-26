@@ -5,9 +5,9 @@ from sqlalchemy.orm import sessionmaker
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "5432")
-DB_USER = os.getenv("DB_USER", "haic_user")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "changeme123")
-DB_NAME = os.getenv("DB_NAME", "haic_benchmark")
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "CHANGEME123")
+DB_NAME = os.getenv("DB_NAME", "test_bench")
 
 DATABASE_URL = os.getenv("DATABASE_URL", f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
