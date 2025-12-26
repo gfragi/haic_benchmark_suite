@@ -6,23 +6,20 @@ export default {
       params: { page, items_per_page: itemsPerPage },
     });
   },
-  downloadLog(configId, logName) {
-    return api.get(`/logs/download/${configId}/${encodeURIComponent(logName)}`);
+  downloadLog(configId, objectKey) {
+    return api.get(`/logs/download/${configId}`, {
+      params: { object_key: objectKey },
+    });
   },
   deleteLog(configId, logName) {
     return api.delete(`/logs/${configId}/${encodeURIComponent(logName)}`);
   },
 
   uploadLog(formData, configId) {
-    return api.post(
-      // keep same axios instance here as well
-      `/v1/logs/upload?configuration_id=${configId}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    return api.post(`/logs/upload?configuration_id=${configId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
 };

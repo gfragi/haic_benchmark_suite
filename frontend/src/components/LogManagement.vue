@@ -59,7 +59,7 @@
 import logService from "@/services/logService";
 import configurationService from "@/services/configurationService";
 import BaseLayout from "@/components/BaseLayout";
-import { map } from "lodash";
+// import { map } from "lodash";
 
 export default {
   name: "LogManagement",
@@ -77,6 +77,7 @@ export default {
       snackbarText: "",
       headers: [
         { text: "Log File Name", value: "log_name" },
+        { text: "Type", value: "folder" },
         { text: "Actions", value: "actions", sortable: false, align: "center" },
       ],
     };
@@ -122,9 +123,16 @@ export default {
 
       this.loading = true;
       logService
-        .getLogsByConfigId(this.selectedConfig)
+        .getLogs(this.selectedConfig)
         .then((response) => {
-          this.logs = map(response.data.logs, (log) => ({ log_name: log }));
+          this.logs = response.data.logs.map((key) => {
+            const parts = key.split("/");
+            return {
+              object_key: key,
+              log_name: parts[parts.length - 1],
+              folder: parts[1] ? parts[1].toUpperCase() : "UNKNOWN",
+            };
+          });
         })
         .catch((error) => {
           this.showSnackbar("Error fetching logs.");
@@ -136,7 +144,7 @@ export default {
     },
     downloadLog(log) {
       logService
-        .downloadLog(this.selectedConfig, log.log_name)
+        .downloadLog(this.selectedConfig, log.object_key)
         .then((response) => {
           window.open(response.data.download_url, "_blank");
         })
@@ -146,9 +154,11 @@ export default {
         });
     },
     deleteLog(log) {
-      if (confirm(`Are you sure you want to delete the log ${log.log_name}?`)) {
+      if (
+        confirm(`Are you sure you want to delete the log ${log.object_key}?`)
+      ) {
         logService
-          .deleteLog(this.selectedConfig, log.log_name)
+          .deleteLog(this.selectedConfig, log.object_key)
           .then(() => {
             this.showSnackbar("Log deleted successfully.");
             this.fetchLogs(); // Refresh the log list after deletion
