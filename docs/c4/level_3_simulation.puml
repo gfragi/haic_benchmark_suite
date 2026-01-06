@@ -1,0 +1,37 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+title Simulation Engine (Python) - Component Diagram (Level 3)
+
+Container_Boundary(simBoundary, "Simulation Engine - Python") {
+
+  Component(runSim, "run_sim.py", "Runner", "Main simulation execution logic")
+  Component(baseCore, "base.py", "Core", "Base classes: Environment, Agent, Object")
+  Component(policies, "policies.py", "Strategy", "Decision policies and strategies")
+  Component(plugins, "plugins.py", "Plugin System", "Plugin loading/management (agents/environments)")
+  Component(datasets, "datasets.py", "Data", "Dataset utilities")
+  Component(decisions, "Decision records", "Model", "Decision logging schema/events")
+  Component(state, "State management", "Core", "Environment/agent lifecycle + state transitions")
+  Component(events, "Event recorder", "Core", "Event/timestamp recording + trace output")
+
+  Component(pilots, "_pilots/*", "Domain Implementations", "Healthcare, manufacturing, smart energy/cities/ticketing, etc.")
+  Component(userPlugins, "user_plugins/*", "Custom Agents", "User-provided agent implementations")
+  Component(configs, "configs/*", "Configs", "Environment/scenario configs (YAML/JSON)")
+}
+
+System_Ext(minio, "MinIO", "Object Storage")
+Container_Ext(metrics, "metrics_core", "Python package", "Metrics computation consumes produced logs")
+Container_Ext(envBuilder, "Environment Builder", "Python package", "Generates/validates configs")
+
+Rel(runSim, baseCore, "Uses")
+Rel(runSim, plugins, "Loads")
+Rel(plugins, pilots, "Loads pilot modules")
+Rel(plugins, userPlugins, "Loads user agent plugins")
+Rel(runSim, policies, "Applies")
+Rel(runSim, state, "Advances")
+Rel(state, events, "Emits")
+Rel(events, decisions, "Writes structured traces")
+Rel(events, minio, "Persists artifacts/logs", "S3 API")
+Rel(configs, envBuilder, "Produced/validated by", "YAML/JSON")
+Rel(metrics, minio, "Reads logs/artifacts", "S3 API")
+
+@enduml

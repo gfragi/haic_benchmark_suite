@@ -1,0 +1,60 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+title Backend API (FastAPI) - Component Diagram (Level 3)
+
+Container_Boundary(apiBoundary, "Backend API - FastAPI") {
+
+  Component(routerConfig, "configuration router", "FastAPI router", "CRUD for EvaluationConfig")
+  Component(routerLogs, "logs router", "FastAPI router", "Upload/download and log management")
+  Component(routerEval, "evaluate router", "FastAPI router", "Evaluation job orchestration")
+  Component(routerResults, "results router", "FastAPI router", "Results retrieval/aggregation")
+  Component(routerReporting, "reporting router", "FastAPI router", "Report generation and export")
+  Component(routerFairness, "fairness router", "FastAPI router", "Fairness analysis endpoints")
+  Component(routerEnv, "env_builder router", "FastAPI router", "Environment configuration APIs")
+  Component(routerSim, "simulator router", "FastAPI router", "Simulation management APIs")
+  Component(routerCollab, "collab router", "FastAPI router", "Collaboration/HAIC metrics computation endpoints")
+  Component(routerSurvey, "survey routers", "FastAPI router(s)", "Survey ingestion and analytics endpoints")
+
+  Component(svcEvaluate, "evaluate service", "Service", "Core evaluation orchestration")
+  Component(svcLog, "log_service", "Service", "Log processing + validation")
+  Component(svcMetricsAdapter, "metrics_adapter", "Service", "Integration layer to metrics_core")
+  Component(svcReporting, "reporting service", "Service", "Report composition/export")
+  Component(svcSurvey, "survey_service", "Service", "Survey aggregation + scoring")
+  Component(utilAgg, "agg_metrics utils", "Utility", "Aggregation helpers")
+  Component(utilDB, "db utils", "Utility", "Session/engine management, migrations integration")
+  Component(utilAuth, "auth utils", "Utility", "Auth/session helpers (if enabled)")
+  Component(jobQueue, "background tasks", "Worker/Queue", "Async evaluation jobs (in-process or external queue)")
+  
+  Component(dbModels, "SQLAlchemy models", "Data Layer", "DB entities")
+  Component(pydSchemas, "Pydantic schemas", "Data Layer", "Request/response validation")
+}
+
+System_Ext(pg, "PostgreSQL", "Database")
+System_Ext(minio, "MinIO", "Object Storage")
+Container_Ext(metrics, "metrics_core", "Python package", "Metrics computation")
+Container_Ext(simEngine, "Simulation Engine", "Python", "Simulation runner")
+Container_Ext(envBuilder, "Environment Builder", "Python package", "Config generation/validation")
+
+Rel(routerConfig, svcEvaluate, "Uses", "Python call")
+Rel(routerEval, svcEvaluate, "Uses", "Python call")
+Rel(routerLogs, svcLog, "Uses", "Python call")
+Rel(routerResults, utilAgg, "Uses", "Python call")
+Rel(routerReporting, svcReporting, "Uses", "Python call")
+Rel(routerSurvey, svcSurvey, "Uses", "Python call")
+Rel(routerFairness, svcMetricsAdapter, "Uses", "Python call")
+Rel(routerCollab, svcMetricsAdapter, "Uses", "Python call")
+Rel(routerEnv, envBuilder, "Calls", "Python call")
+Rel(routerSim, simEngine, "Triggers", "Job / subprocess / queue")
+
+Rel(svcEvaluate, jobQueue, "Enqueues", "Task")
+Rel(jobQueue, simEngine, "Runs simulations", "Job")
+Rel(jobQueue, metrics, "Computes metrics", "Job")
+
+Rel(svcLog, minio, "Stores/loads logs", "S3 API")
+Rel(svcReporting, minio, "Stores reports/exports", "S3 API")
+Rel(svcEvaluate, pg, "Reads/Writes", "SQL")
+Rel(svcSurvey, pg, "Reads/Writes", "SQL")
+Rel(dbModels, utilDB, "Uses")
+Rel(pydSchemas, routerEval, "Validates I/O for")
+
+@enduml

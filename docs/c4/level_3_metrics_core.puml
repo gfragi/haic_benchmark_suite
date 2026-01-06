@@ -1,0 +1,33 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+title Metrics Computation (metrics_core) - Component Diagram (Level 3)
+
+Container_Boundary(metricsBoundary, "metrics_core - Python package") {
+
+  Component(interaction, "interaction_metrics.py", "Algorithms", "HAIC interaction metrics: F, D, HCL, Tr, A, S, EL (and related computations)")
+  Component(outcome, "outcome_metrics.py", "Algorithms", "Traditional ML/task outcome metrics")
+  Component(schema, "schema.py", "Data Structures", "Metrics data structures, input/output schemas")
+  Component(ts, "time-series analytics", "Analysis", "Time-series processing, session slicing, trend analysis")
+  Component(agg, "aggregation", "Analysis", "Aggregation/summarization across runs/configs")
+  Component(compare, "comparative analysis", "Analysis", "Compare models/configs side-by-side")
+  Component(fairness, "FairnessAnalyzer", "Analysis", "Bias detection + fairness evaluation")
+  Component(surveys, "survey analytics", "Analysis", "SUS/ethics survey scoring + aggregation")
+}
+
+System_Ext(pg, "PostgreSQL", "Database")
+System_Ext(minio, "MinIO", "Object Storage")
+Container_Ext(api, "Backend API", "FastAPI", "Invokes metrics computations and stores results")
+
+Rel(api, interaction, "Calls")
+Rel(api, outcome, "Calls")
+Rel(interaction, schema, "Uses")
+Rel(outcome, schema, "Uses")
+Rel(interaction, ts, "Feeds")
+Rel(ts, agg, "Feeds")
+Rel(agg, compare, "Feeds")
+Rel(api, fairness, "Calls")
+Rel(api, surveys, "Calls")
+Rel(api, minio, "Loads inputs/logs", "S3 API")
+Rel(api, pg, "Stores metric outputs", "SQL")
+
+@enduml
