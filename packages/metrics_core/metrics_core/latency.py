@@ -1,4 +1,3 @@
-# metrics_core/adapters/latency.py
 from __future__ import annotations
 from typing import Dict, List, Any, Iterable, Tuple
 import math
