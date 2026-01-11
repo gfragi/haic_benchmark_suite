@@ -8,6 +8,8 @@ import urllib3
 from minio import Minio
 from dotenv import load_dotenv
 import json
+from datetime import datetime, timezone
+from uuid import uuid4
 
 load_dotenv()
 
@@ -93,14 +95,12 @@ def get_minio_client() -> Minio:
 
 async def upload_file(file_data: bytes, config_id: int) -> str:
     client = get_minio_client()
-    filename = f"config_{config_id}.json"
-    object_name = os.path.join(str(config_id), filename)
-
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    object_name = f"{config_id}/uploads/events.{ts}.{uuid4().hex[:8]}.json"
     client.put_object(
-        MINIO_BUCKET,
-        object_name,
-        io.BytesIO(file_data),
-        len(file_data),
+        MINIO_BUCKET, object_name,
+        io.BytesIO(file_data), len(file_data),
+        content_type="application/json"
     )
     return object_name
 
