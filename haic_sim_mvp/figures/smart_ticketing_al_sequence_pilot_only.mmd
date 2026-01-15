@@ -1,0 +1,47 @@
+sequenceDiagram
+autonumber
+%% Smart Ticketing (Active Learning) — Pilot-side interactions only (with local logging + export)
+actor LAB as Labeler (Human)
+participant ORCH as ORCH (Orchestrator)
+participant AL as AL (Active Learner)
+participant POOL as Pool (Unlabeled)
+participant SEL as Sel (Selection Batch)
+participant MOD as MOD (Model/Trainer)
+participant DEP as DEP (Deployer)
+participant LOG as Log Buffer (Pilot)
+
+note over ORCH,LOG: session_id minted at run start; interaction_id = ticket_id
+
+ORCH->>POOL: start_run(pool_size, class_proxy)
+ORCH-->>LOG: record pool_snapshot
+
+AL->>POOL: sample_query(strategy, k, budget_left)
+AL-->>ORCH: select_batch(ids[], utilities[])
+AL-->>LOG: record al_query_issued (latency_ms)
+AL-->>LOG: record al_candidates(batch_id, ids[], utilities[])
+
+ORCH->>LAB: notify labelers (batch_id)
+par For each ticket in batch
+    ORCH->>LAB: label_request_sent(ticket_id)
+    ORCH-->>LOG: record label_request_sent [interaction_id=ticket_id]
+    LAB-->>ORCH: label_received(label, confidence) [duration_s]
+    ORCH-->>LOG: record label_received [interaction_id=ticket_id]
+end
+
+AL->>MOD: model_update_started(dataset_id, added_labels)
+AL-->>LOG: record model_update_started
+MOD-->>AL: model_update_finished(metrics) [latency_ms]
+AL-->>LOG: record model_update_finished
+
+ORCH->>DEP: deployment_promoted(model_id, version, promote=true)
+ORCH-->>LOG: record deployment_promoted
+
+alt Abstain or low confidence
+    LAB-->>ORCH: label_received(decision=abstain)
+    ORCH-->>LOG: record label_received(abstain=true)
+else Correction phase (optional)
+    LAB-->>ORCH: correct(ticket_id, new_label)
+    ORCH-->>LOG: record label_corrected
+end
+
+note over LOG: End of session → build JSON bundle for later upload (outside this diagram).
