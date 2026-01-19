@@ -2,13 +2,19 @@ from __future__ import annotations
 import json
 import streamlit as st
 
-from affordance_library import get_default_affordances, affordance_to_dict, Affordance
+from affordance_library import affordance_to_dict, Affordance
 from templates import make_pilot_contract, make_sample_log_template, FIELD_HELP
 from validators import extract_actions_from_logs, validate_logs_against_contract
 from exporters import export_onboarding_zip
+import streamlit.components.v1 as components
+from pathlib import Path
 
+def render_svg(svg_path: str, height: int = 1000):
+    svg = Path(svg_path).read_text()
+    components.html(svg, height=height, scrolling=False)
 
-st.set_page_config(page_title="Pilot Onboarding Wizard", layout="wide")
+st.set_page_config(page_title="Pilot Onboarding Wizard")
+
 
 # ---------- Helpers ----------
 def _init_state():
@@ -23,7 +29,7 @@ def _init_state():
     })
     ss.setdefault("actors", [])
     ss.setdefault("objects", [])
-    ss.setdefault("selected_affordances", [])  # list of dicts with key/label/timing
+    ss.setdefault("selected_affordances", [])  # list of dicts with key/label/timing/actor_types
     ss.setdefault("action_map", {})
     ss.setdefault("sample_logs_blob", None)
     ss.setdefault("derive_correct_rules_text", "[]")
@@ -33,24 +39,116 @@ def _init_state():
 def _safe_json_load(txt: str):
     try:
         return json.loads(txt)
-    except Exception as e:
+    except Exception:
         return None
+
+
+def _sync_actor_affordances_from_selected():
+    """
+    Auto-assign actor affordances based on actor.type and affordance.actor_types.
+    - Keeps only affordances that still exist in selected_affordances
+    - Assigns all applicable selected affordances to each actor
+    """
+    ss = st.session_state
+    selected = ss.get("selected_affordances") or []
+    actors = ss.get("actors") or []
+
+    if not selected or not actors:
+        # still normalize structure a bit
+        for a in actors:
+            a.setdefault("affordances", [])
+        ss["actors"] = actors
+        return
+
+    # key -> affordance dict
+    by_key = {a.get("key"): a for a in selected if isinstance(a, dict) and a.get("key")}
+
+    for actor in actors:
+        actor_type = str(actor.get("type") or "")
+        applicable_keys = []
+        for k, aff in by_key.items():
+            actor_types = aff.get("actor_types") or []
+            if actor_type in actor_types:
+                applicable_keys.append(k)
+
+        # stable ordering for UI (optional)
+        applicable_keys = sorted(set(applicable_keys))
+        actor["affordances"] = applicable_keys
+
+    ss["actors"] = actors
+
+
+def _actors_table_view():
+    """
+    Make the actors table more readable: show counts + preview.
+    """
+    out = []
+    for a in st.session_state["actors"]:
+        affs = a.get("affordances") or []
+        preview = ", ".join(affs[:3]) + (f" (+{len(affs)-3})" if len(affs) > 3 else "")
+        out.append({
+            "id": a.get("id"),
+            "type": a.get("type"),
+            "role": a.get("role"),
+            "affordances_count": len(affs),
+            "affordances_preview": preview,
+        })
+    return out
+
+def render_svg(svg_path: str, height: int = 1050):
+    """
+    Render an SVG file inline in Streamlit with responsive scaling.
+    """
+    try:
+        svg = Path(svg_path).read_text(encoding="utf-8")
+    except Exception as e:
+        st.error(f"Could not load SVG: {e}")
+        return
+
+    html = f"""
+    <style>
+      svg {{ width: 100%; height: auto; }}
+    </style>
+    <div style="display:flex; justify-content:center;">
+      <div style="width:100%; max-width:820px;">
+        {svg}
+      </div>
+    </div>
+    """
+    components.html(html, height=height, scrolling=False)
+
 
 
 _init_state()
 
-st.title("Pilot Onboarding Wizard")
+st.title("Pilot Onboarding Wizard v0.2")
 st.caption("Build a pilot environment contract + map log actions to affordances + validate + export package.")
 
 # Sidebar steps
 step = st.sidebar.radio(
     "Steps",
-    ["1) Pilot Info", "2) Actors", "3) Objects", "4) Affordances", "5) Upload Logs", "6) Action Mapping", "7) Rules (optional)", "8) Validate & Export"],
+    ["📘 How logs become metrics", "1) Pilot Info", "2) Actors", "3) Objects", "4) Affordances", "5) Upload Logs", "6) Action Mapping", "7) Rules (optional)", "8) Validate & Export"],
     index=0
 )
 
+if step == "📘 How logs become metrics":
+    st.subheader("How your pilot logs become dashboard metrics")
+    st.caption("This diagram explains how your workflow, logs, and metrics connect.")
+
+    render_svg(
+        "./pilot_onboarding/haic_env_logs_metrics_diagram.svg",
+        height=850
+    )
+
+    st.info(
+        "This mapping is the foundation of comparability across pilots. "
+        "If actors, actions, and timing are present, evaluation works — "
+        "payload details remain fully pilot-owned."
+    )
+    
 # ---------- Step 1 ----------
-if step == "1) Pilot Info":
+
+elif step == "1) Pilot Info":
     st.subheader("Pilot metadata")
     info = st.session_state["pilot_info"]
 
@@ -63,8 +161,12 @@ if step == "1) Pilot Info":
     with c2:
         info["app_version"] = st.text_input("app_version (optional)", info.get("app_version", ""), help=FIELD_HELP["app_version"])
         info["ai_model_version"] = st.text_input("ai_model_version (optional)", info.get("ai_model_version", ""), help=FIELD_HELP["ai_model_version"])
-        st.session_state["rt_limits"]["rt_max_ai_ms"] = st.number_input("rt_max_ai_ms", value=int(st.session_state["rt_limits"]["rt_max_ai_ms"]), step=1000)
-        st.session_state["rt_limits"]["rt_max_human_s"] = st.number_input("rt_max_human_s", value=int(st.session_state["rt_limits"]["rt_max_human_s"]), step=1)
+        st.session_state["rt_limits"]["rt_max_ai_ms"] = st.number_input(
+            "rt_max_ai_ms", value=int(st.session_state["rt_limits"]["rt_max_ai_ms"]), step=1000, help=FIELD_HELP["rt_max_ai_ms"]
+        )
+        st.session_state["rt_limits"]["rt_max_human_s"] = st.number_input(
+            "rt_max_human_s", value=int(st.session_state["rt_limits"]["rt_max_human_s"]), step=1, help=FIELD_HELP["rt_max_human_s"]
+        )
 
     st.info("Tip: pilot_tag + sim_id are used as stable identifiers. app_version / ai_model_version help comparisons.")
 
@@ -76,12 +178,11 @@ elif step == "2) Actors":
     with st.form("add_actor"):
         colA, colB, colC = st.columns(3)
         with colA:
-            actor_id = st.text_input("actor id", value="OP")
+            actor_id = st.text_input("actor id", value="OP", help=FIELD_HELP["actor_id"])
         with colB:
             actor_type = st.selectbox("type", ["human", "ai", "system"], help=FIELD_HELP["actor_type"], index=0)
         with colC:
-            role = st.text_input("role", value="operator")
-
+            role = st.text_input("role", value="operator", help=FIELD_HELP["role"])
         submitted = st.form_submit_button("Add actor")
         if submitted:
             st.session_state["actors"].append({
@@ -90,11 +191,16 @@ elif step == "2) Actors":
                 "role": role.strip(),
                 "affordances": []
             })
+            _sync_actor_affordances_from_selected()
             st.success(f"Added actor {actor_id}")
 
     if st.session_state["actors"]:
         st.write("Current actors:")
-        st.dataframe(st.session_state["actors"], use_container_width=True)
+        st.dataframe(_actors_table_view(), use_container_width=True)
+        if st.session_state["selected_affordances"]:
+            st.caption("Affordances are auto-assigned based on actor type and selected affordances.")
+        else:
+            st.caption("Select affordances in Step 4 to auto-populate actor affordances.")
     else:
         st.warning("No actors yet.")
 
@@ -106,9 +212,9 @@ elif step == "3) Objects":
     with st.form("add_object"):
         colA, colB = st.columns(2)
         with colA:
-            obj_id = st.text_input("object id", value="APP", )
+            obj_id = st.text_input("object id", value="APP", help=FIELD_HELP["object_id"])
         with colB:
-            kind = st.text_input("kind", value="application")
+            kind = st.text_input("kind", value="application", help=FIELD_HELP["object_kind"])
 
         submitted = st.form_submit_button("Add object")
         if submitted:
@@ -133,7 +239,6 @@ elif step == "4) Affordances":
     from affordance_library import get_affordances_merged, add_custom_affordance, reset_custom_affordances
     lib = get_affordances_merged()
 
-    # show library and pick
     picked = []
     st.write("Select affordances from the library:")
     for group, items in lib.items():
@@ -147,7 +252,7 @@ elif step == "4) Affordances":
     # custom add
     st.divider()
     st.write("Add a custom affordance (optional):")
-    colR1, colR2 = st.columns([1,4])
+    colR1, colR2 = st.columns([1, 4])
     with colR1:
         if st.button("Reset custom library"):
             reset_custom_affordances()
@@ -165,15 +270,6 @@ elif step == "4) Affordances":
         c_desc = st.text_input("description", value="")
         ok = st.form_submit_button("Add custom affordance")
         if ok:
-            picked.append({
-                "key": c_key.strip(),
-                "label": c_label.strip(),
-                "actor_types": c_actor,
-                "timing": c_timing,
-                "description": c_desc.strip()
-            })
-        
-        if ok:
             new_aff = {
                 "key": c_key.strip(),
                 "label": c_label.strip(),
@@ -183,21 +279,24 @@ elif step == "4) Affordances":
                 "group": "Custom"
             }
             picked.append(new_aff)
-
-            # persist so it shows next time
             add_custom_affordance(Affordance(**new_aff))
             st.success("Saved custom affordance to library (local).")
 
-    # merge picked with existing selected
-    # keep unique by key
-    existing = {a["key"]: a for a in st.session_state["selected_affordances"]}
+    # merge picked with existing selected (unique by key)
+    existing = {a["key"]: a for a in st.session_state["selected_affordances"] if isinstance(a, dict) and a.get("key")}
     for a in picked:
-        existing[a["key"]] = a
+        if isinstance(a, dict) and a.get("key"):
+            existing[a["key"]] = a
     st.session_state["selected_affordances"] = list(existing.values())
+
+    # IMPORTANT: sync actor affordances whenever selected affordances change
+    _sync_actor_affordances_from_selected()
 
     st.write("Selected affordances:")
     if st.session_state["selected_affordances"]:
         st.dataframe(st.session_state["selected_affordances"], use_container_width=True)
+        if st.session_state["actors"]:
+            st.caption("Actors have been updated automatically based on the selected affordances.")
     else:
         st.warning("No affordances selected yet.")
 
@@ -205,6 +304,25 @@ elif step == "4) Affordances":
 elif step == "5) Upload Logs":
     st.subheader("Upload or paste sample logs")
     st.caption("Upload one representative JSON log. We will extract discovered actions from it.")
+    # with st.expander("Visual guide: How your pilot maps to metrics", expanded=True):
+    #     st.write(
+    #         "This diagram explains how your pilot workflow, environment definition, "
+    #         "and logs are interpreted to compute metrics. "
+    #         "You do NOT need to change your business logic — only describe it once."
+    #     )
+
+    #     render_svg(
+    #         str(Path(__file__).resolve().parent / "haic_env_logs_metrics_diagram.svg")
+    #     )
+
+
+    st.markdown("""
+    **Minimum checklist before uploading logs:**
+    - Each event has: `actor_type`, `action`, `timestamp`, `interaction_id`
+    - AI actions include `latency_ms` (when applicable)
+    - Human actions include `duration_s` (when applicable)
+    - Actions either match affordances or are mapped in Step 6
+    """)
 
     up = st.file_uploader("Upload JSON log file", type=["json"])
     if up is not None:
@@ -252,7 +370,6 @@ elif step == "6) Action Mapping":
                 index=(affordance_keys.index(current) + 1) if current in affordance_keys else 0
             )
             if choice == "(direct match / none)":
-                # remove mapping (means action must equal affordance key)
                 if act in st.session_state["action_map"]:
                     st.session_state["action_map"].pop(act, None)
             else:
@@ -289,10 +406,12 @@ elif step == "8) Validate & Export":
 
     info = st.session_state["pilot_info"]
 
-    # Build contract
     derive_rules = _safe_json_load(st.session_state["derive_correct_rules_text"])
     if derive_rules is None:
         derive_rules = None
+
+    # ensure actor affordances are synced before building contract
+    _sync_actor_affordances_from_selected()
 
     contract = make_pilot_contract(
         sim_id=info["sim_id"],
@@ -310,7 +429,6 @@ elif step == "8) Validate & Export":
     st.write("Pilot environment contract (preview):")
     st.json(contract)
 
-    # Validation
     if st.session_state["sample_logs_blob"] is None:
         st.warning("No sample logs loaded. Validation will be limited.")
         validation_report = {"error": "No sample logs provided."}
@@ -325,7 +443,6 @@ elif step == "8) Validate & Export":
     st.subheader("Validation report")
     st.json(validation_report)
 
-    # sample log template
     sample_template = make_sample_log_template(
         sim_id=info["sim_id"],
         pilot_tag=info["pilot_tag"],
@@ -338,7 +455,6 @@ elif step == "8) Validate & Export":
     st.subheader("Generated sample log template")
     st.json(sample_template)
 
-    # Export zip
     zip_bytes = export_onboarding_zip(
         contract=contract,
         action_map=st.session_state["action_map"],
@@ -353,3 +469,4 @@ elif step == "8) Validate & Export":
         file_name=f"pilot_onboarding_{info['pilot_tag']}.zip",
         mime="application/zip"
     )
+

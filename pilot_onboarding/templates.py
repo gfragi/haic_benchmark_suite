@@ -111,5 +111,13 @@ FIELD_HELP = {
     "session_id": "ID for the overall work session/batch/run. Can be a day, a shift, or a batch identifier.",
     "payload": "Pilot-owned domain fields. Stored and passed-through; not required for core metrics.",
     "action_map": "Mapping from pilot action strings to canonical affordance keys.",
-    "derive_correct_rules": "Optional rules for deriving agreement (correct) from AI and human decisions."
+    "derive_correct_rules": "Optional rules for deriving agreement (correct) from AI and human decisions.",
+    "app_version": "Version of the application producing the logs.",
+    "ai_model_version": "Version of the AI model used in the pilot.",
+    "rt_max_ai_ms": "Maximum allowed AI response time (milliseconds) for real-time constraints.",
+    "rt_max_human_s": "Maximum allowed human response time (seconds) for real-time constraints.",
+    "actor_id": "Unique identifier for the human or AI actor.",
+    "role": "Role of the actor in the process (e.g., reviewer, approver).",
+    "object_id": "Unique identifier for the object being acted upon (e.g., application ID).",
+    "object_kind": "Type or category of the object (e.g., loan_application, image).",
 }
