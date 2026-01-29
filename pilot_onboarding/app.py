@@ -131,12 +131,15 @@ step = st.sidebar.radio(
     index=0
 )
 
+with st.sidebar.expander('Show mapping diagram', expanded=False):
+    render_svg('haic_env_logs_metrics_diagram.svg', height=1020)
+
 if step == "📘 How logs become metrics":
     st.subheader("How your pilot logs become dashboard metrics")
     st.caption("This diagram explains how your workflow, logs, and metrics connect.")
 
     render_svg(
-        "./pilot_onboarding/haic_env_logs_metrics_diagram.svg",
+        "haic_env_logs_metrics_diagram.svg",
         height=850
     )
 

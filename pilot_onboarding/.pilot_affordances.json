@@ -1,0 +1,12 @@
+[
+  {
+    "key": "custom_action",
+    "label": "Custom Action",
+    "actor_types": [
+      "system"
+    ],
+    "timing": "none",
+    "description": "",
+    "group": "Custom"
+  }
+]
