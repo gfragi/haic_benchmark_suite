@@ -9,8 +9,10 @@ from exporters import export_onboarding_zip
 import streamlit.components.v1 as components
 from pathlib import Path
 
+APP_DIR = Path(__file__).resolve().parent
+
 def render_svg(svg_path: str, height: int = 1000):
-    svg = Path(svg_path).read_text()
+    svg = (APP_DIR / svg_path).read_text(encoding="utf-8")
     components.html(svg, height=height, scrolling=False)
 
 st.set_page_config(page_title="Pilot Onboarding Wizard")
