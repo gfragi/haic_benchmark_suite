@@ -10,13 +10,11 @@ A comprehensive platform for evaluating Human-AI Collaboration (HAIC) systems th
 
 The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarking Human-AI collaborative systems. It combines realistic simulation environments, comprehensive metrics computation, and interactive evaluation tools to help researchers and practitioners assess the effectiveness of AI systems working alongside humans.
 
-### Key Features
-
-- **🤖 Realistic Simulations**: 6 complete pilot implementations across healthcare, manufacturing, energy, transportation, and urban planning domains
-- **📊 Comprehensive Metrics**: HAIC-specific metrics (Fluency, Delegation, Human-Centered Learning, Trust, Autonomy, Surprise, Efficiency) plus traditional ML metrics
-- **🔬 Scientific Evaluation**: Research-grade benchmarking with statistical analysis and visualization
+- **🤖 Pilot reference environments**: example pilot scenarios (healthcare, manufacturing, energy, smart cities, smart ticketing) plus log-driven evaluation support
+- **📊 Comprehensive Metrics**: core HAIC interaction metrics (F, D, HCL, Tr, A, S, EL, EfficiencyScore) plus extensible outcome metrics
+- **🔬 Evaluation workflow**: reproducible benchmarking runs + exports for analysis/visualization
 - **🌐 Web Interface**: Interactive dashboard for configuring, running, and analyzing evaluations
-- **⚡ Real-time Processing**: Background evaluation with progress tracking and notifications
+- **⚡ Background evaluation**: async runs with progress tracking (when enabled)
 - **📈 Extensible Framework**: Plugin architecture for adding new domains and metrics
 - **🎯 Fairness Analysis**: Built-in bias detection and fairness evaluation tools
 - **📝 Survey System**: SUS and ethics surveys with automatic aggregation and analysis
@@ -29,12 +27,12 @@ The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarki
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Simulations   │    │    Metrics      │    │    Backend      │
-│  (haic_sim_mvp) │───▶│ (metrics_core)  │───▶│   (FastAPI)     │
+│ Pilot Data/Sim  │    │    Metrics      │    │    Backend      │
+│ (logs + sims)   │───▶│ (metrics_core)  │───▶│   (FastAPI)     │
 │                 │    │                 │    │                 │
-│ • 6 Pilot Impl. │    │ • HAIC Metrics  │    │ • REST API      │
-│ • Decision Logs │    │ • ML Metrics    │    │ • DB Storage    │
-│ • Scenario Gen  │    │ • Real-time Comp│    │ • User Mgmt     │
+│ • Pilot logs    │    │ • Core HAIC     │    │ • REST API      │
+│ • Optional sims │    │ • Optional ext. │    │ • DB + MinIO    │
+│ • JSON export   │    │ • Aggregations  │    │ • Auth (opt.)   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                                          │
                                                          ▼
@@ -52,18 +50,9 @@ The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarki
 
 ### Quick Backend Verification
 
-The project includes automated testing tools to ensure everything is working correctly:
-
 ```bash
-# Run the backend verification script
-./test_backend.sh
-
-# Expected output:
-# ✅ Project structure looks good
-# ✅ Virtual environment activated
-# ✅ haic_env_builder package available
-# ✅ Unit tests passed
-# 🎉 Backend is ready for development!
+cd backend
+PYTHONPATH=. pytest -q
 ```
 
 ### Test Categories
@@ -95,83 +84,70 @@ make test-smoke    # Quick health checks
 ## 🎭 Pilot Implementations
 
 ### 1. **Healthcare - CT Scan Diagnosis**
+
 **Scenario**: AI-assisted radiology diagnosis with human expert review
 - **Agents**: Radiologist Assistant (AI), Voice Support Bot (AI), Human Radiologist
 - **Tasks**: Image viewing, window leveling, marking findings, final reporting
 - **Metrics Focus**: Diagnostic accuracy, human-AI agreement, intervention rates
 
 ### 2. **Healthcare - Oncology (Neuro-Symbolic)**
+
 **Scenario**: NS model-based cancer diagnosis with multi-stage human review
 - **Agents**: NS AI Model, Explainability Tool (XAI), ML Engineer, Clinical Expert
 - **Tasks**: Training, inference, explainability generation, human review
 - **Metrics Focus**: Trust calibration, explainability effectiveness, review efficiency
 
 ### 3. **Manufacturing - Quality Control**
+
 **Scenario**: AI vision systems for defect detection with human verification
 - **Agents**: Quality Inspector (AI), Human Reviewer, System Orchestrator
 - **Tasks**: Part inspection, defect classification, acceptance/rejection
 - **Metrics Focus**: False positive reduction, human effort savings, throughput
 
 ### 4. **Smart Energy - Grid Management**
+
 **Scenario**: AI-powered fault detection in electrical grids
 - **Agents**: Digital Twin (AI), Human Operator, Alert System
 - **Tasks**: Load balancing, fault prediction, emergency response
 - **Metrics Focus**: Response time, safety incidents, predictive accuracy
 
-### 5. **Smart Cities - Traffic Optimization**
-**Scenario**: AI traffic management with human oversight
-- **Agents**: Traffic Optimizer (AI), City Controller (Human), Sensor Network
-- **Tasks**: Signal timing, congestion prediction, incident response
-- **Metrics Focus**: Traffic flow efficiency, emergency response, user satisfaction
+### 5. **Smart Cities - Administrative Workflow (Applications)**
 
-### 6. **Smart Ticketing - Public Transport**
-**Scenario**: AI demand prediction for transport optimization
-- **Agents**: Route Optimizer (AI), Dispatch Controller (Human), Passenger Interface
-- **Tasks**: Demand forecasting, route planning, real-time adjustments
-- **Metrics Focus**: On-time performance, passenger satisfaction, resource utilization
+**Scenario**: AI-assisted administrative workflows with optional human verification (e.g., applications review)
+- **Actors**: Citizen/User, AI Evaluator, Human Operator, Municipal Workflow System
+- **Tasks**: Submission → AI evaluation → optional operator verification/correction → final decision
+- **Metrics Focus**: AI latency (`latency_ms`), human effort (`duration_s`), agreement via derived `correct`, and breakdowns by model/app version
+
+
+### 6. **Smart Ticketing - AIOps Ticket Solver (Active Learning)**
+
+**Scenario**: Automated ticket dispatching/resolution with Active Learning + Human-in-the-loop labeling
+- **Actors**: End User (ticket submitter), AI Triage/Resolver (AL + HC-XAI), Human Expert (label/verify), Ticketing System (workflow)
+- **Tasks**: Ticket intake → AI proposal/triage → human labeling/verification (when needed) → model update
+- **Metrics Focus**: AI latency (`latency_ms`), human effort (`duration_s`), interaction frequency (F), trust/quality via derived `correct` (Tr), and longitudinal improvements (A)
 
 ## 📊 HAIC Metrics Framework
 
-### Core HAIC Metrics (F, D, HCL, Tr, A, S, EL)
+### Core HAIC Interaction Metrics (computed from logs)
 
-| Metric | Name | Description | Scale | Direction |
-|--------|------|-------------|-------|-----------|
-| **F** | Fluency | Interactions per minute | 0-∞ | Higher better |
-| **D** | Delegation | Average human decision time | 0-∞ seconds | Lower better |
-| **HCL** | Human-Centered Learning | Efficiency within time constraints | 0-1 | Higher better |
-| **Tr** | Trust | System reliability and appropriate autonomy | 0-1 | Higher better |
-| **A** | Autonomy | Appropriate AI decision-making | 0-1 | Balanced |
-| **S** | Surprise | Unexpected system behavior | 0-1 | Lower better |
-| **EL** | Efficiency/Latency | End-to-end response times | 0-∞ seconds | Lower better |
+| Metric | Name | What it measures (log-derived) | Scale | Direction |
+|--------|------|---------------------------------|-------|-----------|
+| **F** | Interaction Frequency | Agent actions per minute within the session window. | 0–∞ | Higher (within comparable runs) |
+| **D** | Mean Action Duration | Mean per-action time using `duration_s` (human) or `latency_ms/1000` (AI) when available. | 0–∞ seconds | Lower better |
+| **HCL** | Human Cognitive Load (proxy) | Normalized human response-time proxy: `1 − min(mean_human_rt / rt_max_human_s, 1)`. Higher means faster responses (lower inferred load). | 0–1 | Higher better |
+| **Tr** | Trust / Reliability (proxy) | Error-adjusted reliability from labeled outcomes: `1 − (errors / labeled)` using `correct=false` and/or explicit `event_type=error`. | 0–1 | Higher better |
+| **A** | Adaptability | Normalized change in labeled correctness over the session (early vs late), bounded (e.g., `tanh`). | -1 to 1 | Higher better (positive = improving) |
+| **S** | Similarity (Human–Surrogate) | Similarity between observed and surrogate behavior (KL-based similarity or action-match fallback). | 0–1 | Higher better |
+| **EL** | Efficiency Loss | Relative time loss vs baseline: `(T − baseline_s) / baseline_s` (when baseline is provided). | 0–∞ | Lower better |
+| **EfficiencyScore** | Composite Efficiency | Smoothed efficiency score derived from `EL` with optional penalties/bonuses (e.g., off-role actions, progress events). | 0–1 | Higher better |
 
-### Additional Metrics
-- **Traditional ML**: Accuracy, Precision, Recall, F1-Score
-- **Interaction Quality**: Human-AI Agreement, Intervention Rates, Override Patterns
-- **User Experience**: Satisfaction Scores, Cognitive Load, Trust Levels
-- **System Performance**: Throughput, Resource Utilization, Error Rates
 
-## 🧪 Testing & Quality Assurance
+### Additional Metrics (optional / pilot-specific)
 
-### Comprehensive Testing Guide
-For detailed testing instructions covering both development and production environments, see:
-- **[TESTING_README.md](TESTING_README.md)** - Complete testing guide
-- **[frontend/TESTING_README.md](frontend/TESTING_README.md)** - Frontend-specific testing
-- **[frontend/PERFORMANCE_GUIDE.md](frontend/PERFORMANCE_GUIDE.md)** - Performance monitoring
+- **Outcome/ML metrics**: Accuracy/Precision/Recall, when ground truth or audit labels exist
+- **Interaction diagnostics**: acceptance/override rates, disagreement patterns (requires `correct` or explicit labels)
+- **System performance**: throughput, resource utilization, error events (requires relevant telemetry fields)
 
-### Quick Test Commands
-```bash
-# Development environment testing
-make dev && make health && cd frontend && npm run test:all
-
-# Production smoke tests
-make test-smoke
-
-# Backend integration tests
-make test-backend
-
-# Frontend performance analysis
-cd frontend && npm run build -- --analyze
-```
 
 ## 🚀 Quick Start
 
@@ -180,7 +156,7 @@ cd frontend && npm run build -- --analyze
 - Node.js 18+ (for frontend testing)
 - Docker & Docker Compose
 - PostgreSQL & MinIO (via Docker)
-- Keycloak (for authentication)
+- Keycloak (for authentication, if enabled in your deployment)
 
 ### 1. Clone and Setup
 ```bash
@@ -205,14 +181,11 @@ cd frontend && npm install
 pip install -e packages/metrics_core
 ```
 
-### 4. Run Simulations
+### 4. (Optional) Run simulations / generate sample data
 ```bash
-# Generate sample evaluation data
+# Optional: generate sample evaluation logs (if you use the included sim tools)
 cd haic_sim_mvp
 python tools/run_dataset_experiment.py --config configs/ct_demo.json
-
-# Compute metrics from simulation logs
-python tools/run_metrics.py --log results/ct_demo_*.json
 ```
 
 ### 5. Start Backend
@@ -361,8 +334,9 @@ decisions = [
     {"agent": "human", "action": "review", "latency_ms": 3000, "correct": True}
 ]
 
-metrics = compute_metrics(decisions, rt_max=5.0)
-# Returns: {"F": 1.2, "D": 3.0, "HCL": 0.4, ...}
+metrics = compute_metrics(decisions=decisions, rt_max=5.0)  # rt_max is a normalization bound (seconds)
+# For pilot-specific bounds, use values like rt_max_human_s / rt_max_ai_ms in your evaluation config, and pass the relevant bound here.
+# Returns: {"F": ..., "D": ..., "HCL": ..., "Tr": ..., "A": ..., "S": ..., "EL": ..., "EfficiencyScore": ...}
 ```
 
 ## 📈 Results and Visualization
