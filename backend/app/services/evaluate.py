@@ -12,9 +12,11 @@ from app.models.results import EvaluationResult, MetricGroup
 from app.utils.database import SessionLocal
 from app.utils.minio_utils import get_minio_client
 from app.services.metrics_adapter import compute_from_log
-import traceback
+import logging
 from typing import Iterable, List, Dict, Any
 from collections import defaultdict
+
+logger = logging.getLogger(__name__)
 
 
 load_dotenv()
@@ -150,29 +152,20 @@ def _load_logs_from_minio(bucket: str, minio_path: str) -> list:
     except json.JSONDecodeError as e:
         raise ValueError(f"Object at '{minio_path}' is not valid JSON: {e.msg}")
 
-    return _normalize_logs_data(logs_data)
+    from app.services.schema_bridge import normalize_log_payload
+    sessions, warnings = normalize_log_payload(logs_data)
+    if warnings:
+        logger.warning("Schema warnings loading %s: %s", minio_path, warnings)
+    # Convert back to dicts for compatibility with _compute_derived_metrics()
+    return [s.model_dump(mode="json") for s in sessions]
+
 
 def _normalize_logs_data(logs_data):
-    """Normalize logs data to a list of session entries."""
-    # Unwrap common wrappers
-    if isinstance(logs_data, dict):
-        for key in ("logs", "sessions", "entries"):
-            if isinstance(logs_data.get(key), list):
-                logs_data = logs_data[key]
-                break
-
-    # Normalize to a list of objects
-    if isinstance(logs_data, dict):
-        logs_data = [logs_data]
-    if not isinstance(logs_data, list):
-        raise ValueError("Uploaded log must be a JSON object or a list/array of objects")
-
-    # Flatten / validate entries
-    entries = _iter_entries(logs_data)
-    if not entries:
-        raise ValueError("Uploaded log contains no valid session entries.")
-
-    return entries
+    # Deprecated: use normalize_log_payload() from schema_bridge directly.
+    # Kept for log_service.py import compatibility.
+    from app.services.schema_bridge import normalize_log_payload
+    sessions, _ = normalize_log_payload(logs_data)
+    return [s.model_dump(mode="json") for s in sessions]
 
 def _compute_derived_metrics(logs: list) -> list:
     """Compute derived metrics for a list of logs."""
@@ -289,6 +282,10 @@ def run_evaluation(config_id: int):
             agg_by_metric, agg_by_pillar, agg_interaction = _aggregate_metrics(derived_list)
             results_by_group = _group_metrics_by_category(agg_by_metric)
 
+            all_warnings = []
+            for d in derived_list:
+                all_warnings.extend(d.get("warnings", []))
+
             # Compose result data
             result_data = {
                 "configuration_id": config.id,
@@ -296,6 +293,7 @@ def run_evaluation(config_id: int):
                 "app_versions": app_versions,
                 "generated_at": datetime.now(timezone.utc).isoformat(),
                 "source_log_path": config.minio_path,
+                "warnings": all_warnings,
                 "aggregates": {
                     "by_metric": agg_by_metric,
                     "by_pillar": agg_by_pillar,
@@ -316,8 +314,10 @@ def run_evaluation(config_id: int):
         )
 
     except Exception as e:
-        print(f"[evaluate] Error during evaluation: {repr(e)}")
-        print(traceback.format_exc())
+        logger.error(
+            "Evaluation failed for config %s: %s",
+            config_id, repr(e), exc_info=True,
+        )
         if 'config' in locals() and config:
             config.evaluation_status = EvaluationConfig.STATUS_FAILED
     finally:
