@@ -1,3 +1,6 @@
+from metrics_core.schema import MetricResult
+
+
 class Metrics:
     """
     Flexible outcome metrics with alias-aware field access and robust TP/FP/FN/TN derivation.
@@ -89,6 +92,33 @@ class Metrics:
         except Exception:
             return default
 
+    @staticmethod
+    def _to_metric_result(
+        metric_name: str,
+        value: float | None,
+        n: int,
+        zero_means_missing: bool = False,
+    ) -> MetricResult:
+        """
+        Wrap a computed float (or None) in a MetricResult.
+
+        value=None            → MetricResult(value=None, warning="required fields absent")
+        zero_means_missing    → also returns None when value==0.0 AND n==0,
+                                i.e. when the denominator was absent (not genuinely zero).
+        Otherwise             → MetricResult(value=value, n_events=n)
+        """
+        if value is None:
+            return MetricResult(
+                metric=metric_name, value=None, n_events=n,
+                warning="required fields absent",
+            )
+        if zero_means_missing and value == 0.0 and n == 0:
+            return MetricResult(
+                metric=metric_name, value=None, n_events=0,
+                warning="no contributing events",
+            )
+        return MetricResult(metric=metric_name, value=value, n_events=n)
+
     @classmethod
     def _response_seconds(cls, item):
         """Prefer seconds fields; fall back to latency_ms converted to seconds."""
@@ -160,13 +190,9 @@ class Metrics:
         pred = cls._get(item, "prediction")
         gt   = cls._get(item, "ground_truth")
         c = cls._derive_confusion_from_pair(pred, gt)
-        if c: return c
-
-        # Some logs only have ai_decision/op_decision under the same aliases
-        ai_dec = cls._get(item, "prediction")
-        op_dec = cls._get(item, "ground_truth")
-        c = cls._derive_confusion_from_pair(ai_dec, op_dec)
-        return c or {"tp":0,"fp":0,"tn":0,"fn":0}
+        if c:
+            return c
+        return {"tp": 0, "fp": 0, "tn": 0, "fn": 0}
 
     @classmethod
     def _bool_correct(cls, item):
@@ -186,31 +212,38 @@ class Metrics:
     # ---------- Effectiveness ----------
     class Effectiveness:
         @staticmethod
-        def calculate_prediction_accuracy(interaction_data):
+        def calculate_prediction_accuracy(interaction_data) -> MetricResult:
             # accuracy = (TP + TN) / N
-            tp = tn = 0
-            n = 0
+            tp = tn = n = 0
             for it in interaction_data:
                 conf = Metrics._derive_confusion(it)
-                tp += conf.get("tp", 0); tn += conf.get("tn", 0)
+                tp += conf.get("tp", 0)
+                tn += conf.get("tn", 0)
                 n += sum(conf.values()) or 1  # assume 1 when not explicit
-            return (tp + tn) / n if n > 0 else 0.0
+            value = (tp + tn) / n if n > 0 else None
+            return Metrics._to_metric_result("prediction_accuracy", value, n)
 
         @staticmethod
-        def calculate_precision(interaction_data):
+        def calculate_precision(interaction_data) -> MetricResult:
             tp = fp = 0
             for it in interaction_data:
                 conf = Metrics._derive_confusion(it)
-                tp += conf.get("tp", 0); fp += conf.get("fp", 0)
-            return tp / (tp + fp) if (tp + fp) > 0 else 0.0
+                tp += conf.get("tp", 0)
+                fp += conf.get("fp", 0)
+            denom = tp + fp
+            value = tp / denom if denom > 0 else None
+            return Metrics._to_metric_result("precision", value, denom)
 
         @staticmethod
-        def calculate_recall(interaction_data):
+        def calculate_recall(interaction_data) -> MetricResult:
             tp = fn = 0
             for it in interaction_data:
                 conf = Metrics._derive_confusion(it)
-                tp += conf.get("tp", 0); fn += conf.get("fn", 0)
-            return tp / (tp + fn) if (tp + fn) > 0 else 0.0
+                tp += conf.get("tp", 0)
+                fn += conf.get("fn", 0)
+            denom = tp + fn
+            value = tp / denom if denom > 0 else None
+            return Metrics._to_metric_result("recall", value, denom)
 
         @staticmethod
         def calculate_overall_system_accuracy(interaction_data):
@@ -274,10 +307,16 @@ class Metrics:
             return ((before - after) / before) * 100.0 if before > 0 else 0.0
 
         @staticmethod
-        def calculate_knowledge_retention(interaction_data):
+        def calculate_knowledge_retention(interaction_data) -> MetricResult:
             pre  = sum(Metrics._to_float(Metrics._get(it, "pre_retention_performance"), 0.0) for it in interaction_data)
             post = sum(Metrics._to_float(Metrics._get(it, "post_retention_performance"), 0.0) for it in interaction_data)
-            return (post / pre) * 100.0 if pre > 0 else 0.0
+            n = sum(
+                1 for it in interaction_data
+                if Metrics._get(it, "pre_retention_performance") is not None
+                or Metrics._get(it, "post_retention_performance") is not None
+            )
+            value = (post / pre) * 100.0 if pre > 0 else None
+            return Metrics._to_metric_result("knowledge_retention", value, n)
 
     # ---------- Adaptability & Learning ----------
     class AdaptabilityAndLearning:
@@ -357,10 +396,12 @@ class Metrics:
             return (len(good) / len(high)) * 100.0 if high else 0.0
 
         @staticmethod
-        def calculate_trust_score(interaction_data):
+        def calculate_trust_score(interaction_data) -> MetricResult:
             ratings = sum(Metrics._to_float(Metrics._get(it, "trust_rating"), 0.0) for it in interaction_data)
             scale   = sum(Metrics._to_float(Metrics._get(it, "trust_scale_maximum"), 0.0) for it in interaction_data)
-            return (ratings / scale) * 100.0 if scale > 0 else 0.0
+            n = sum(1 for it in interaction_data if Metrics._get(it, "trust_rating") is not None)
+            value = (ratings / scale) * 100.0 if scale > 0 else None
+            return Metrics._to_metric_result("trust_score", value, n)
 
         @staticmethod
         def calculate_safety_incidents(interaction_data):
@@ -375,16 +416,20 @@ class Metrics:
     # ---------- Robustness & Generalization ----------
     class RobustnessAndGeneralization:
         @staticmethod
-        def calculate_adversarial_robustness(interaction_data):
+        def calculate_adversarial_robustness(interaction_data) -> MetricResult:
             adv = sum(Metrics._to_float(Metrics._get(it, "performance_adversarial"), 0.0) for it in interaction_data)
             nor = sum(Metrics._to_float(Metrics._get(it, "performance_normal"), 0.0) for it in interaction_data)
-            return adv / nor if nor > 0 else 0.0
+            n = sum(1 for it in interaction_data if Metrics._get(it, "performance_adversarial") is not None)
+            value = adv / nor if nor > 0 else None
+            return Metrics._to_metric_result("adversarial_robustness", value, n)
 
         @staticmethod
-        def calculate_domain_generalization(interaction_data):
+        def calculate_domain_generalization(interaction_data) -> MetricResult:
             diff = sum(Metrics._to_float(Metrics._get(it, "performance_across_domains"), 0.0) for it in interaction_data)
             base = sum(Metrics._to_float(Metrics._get(it, "baseline_performance"), 0.0) for it in interaction_data)
-            return diff / base if base > 0 else 0.0
+            n = sum(1 for it in interaction_data if Metrics._get(it, "performance_across_domains") is not None)
+            value = diff / base if base > 0 else None
+            return Metrics._to_metric_result("domain_generalization", value, n)
 
     @staticmethod
     def get_available_metrics():
