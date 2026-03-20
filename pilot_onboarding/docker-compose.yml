@@ -1,0 +1,7 @@
+services:
+  pilot-onboarding:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./runs:/app/runs‰
