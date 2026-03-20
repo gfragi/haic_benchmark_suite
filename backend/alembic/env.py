@@ -1,4 +1,5 @@
 from logging.config import fileConfig
+import os
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -36,6 +37,12 @@ if config.config_file_name is not None:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 print(f"Loaded models: {target_metadata.tables.keys()}")
+
+# Allow DATABASE_URL env var to override the URL baked into alembic.ini
+# (useful for local dev vs Docker vs k8s without editing alembic.ini)
+_db_url = os.getenv("DATABASE_URL")
+if _db_url:
+    config.set_main_option("sqlalchemy.url", _db_url)
 
 
 def run_migrations_offline() -> None:
