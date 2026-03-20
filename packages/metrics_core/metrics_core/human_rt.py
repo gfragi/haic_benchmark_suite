@@ -32,9 +32,15 @@ def human_response_percentiles_by(
     logs = logs_root.get("logs", [])
     by_group: Dict[str, List[float]] = {}
 
-    # Read SLA cap if present
+    # Read configured SLA cap — do NOT default to 30; None means unconfigured.
     rt_caps = (logs_root.get("extras", {}) or {}).get("rt_limits", {})
-    sla_human_s = float(rt_caps.get("rt_max_human_s", 30))
+    configured_sla = rt_caps.get("rt_max_human_s")
+    try:
+        sla_human_s: float | None = float(configured_sla) if configured_sla is not None else None
+        sla_source = "configured" if sla_human_s is not None else None
+    except (TypeError, ValueError):
+        sla_human_s = None
+        sla_source = None
 
     for sess in logs:
         group = str(sess.get(group_key, "unknown"))
@@ -43,6 +49,13 @@ def human_response_percentiles_by(
                 val = _rt_seconds_from_decision(d)
                 if val is not None:
                     by_group.setdefault(group, []).append(val)
+
+    # Infer SLA from P95 of all collected human RTs when not configured.
+    if sla_human_s is None:
+        all_human_rts = [v for vals in by_group.values() for v in vals]
+        inferred = _pctl(all_human_rts, 0.95) if all_human_rts else None
+        sla_human_s = inferred
+        sla_source = "inferred_p95" if inferred is not None else "unavailable"
 
     labels = sorted(by_group.keys())
     qs = list(quantiles)
@@ -56,8 +69,10 @@ def human_response_percentiles_by(
     return {
         "labels": labels,
         "series": [f"p{int(q*100)}" for q in qs],
-        "data": matrix,                   # series-major
+        "data": matrix,                        # series-major
         "counts": {g: len(xs) for g, xs in by_group.items()},
-        "sla_s": sla_human_s,            # seconds
+        "sla_s": sla_human_s,                  # seconds; None when unavailable
+        "sla_source": sla_source,              # "configured" | "inferred_p95" | "unavailable"
+        "sla_s_inferred": sla_source != "configured",
         "group_key": group_key,
     }
