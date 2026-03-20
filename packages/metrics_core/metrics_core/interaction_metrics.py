@@ -1,284 +1,304 @@
+"""
+interaction_metrics — collab-session metric computation.
+
+Responsibility split:
+  Adapters      → field mapping  (pilot aliases → canonical names)
+  This module   → t derivation, math, aggregation
+
+_normalize_decisions() no longer does alias resolution.  It only:
+  1. Converts DecisionEvent objects to dicts via model_dump().
+  2. Parses raw timestamp strings/ints to datetime (dict-path compat).
+  3. Derives the numeric `t` field from timestamps or a monotonic counter.
+
+compute_metrics() and compute_metrics_by_agent() accept either
+List[DecisionEvent] (adapter output) or List[dict] (backward-compat).
+"""
 from __future__ import annotations
-from typing import List, Dict, Any, Optional, Callable
+
 import math
 import datetime as dt
+from typing import Any, Callable, Dict, List, Optional, Union
 
-DEFAULT_RT_MAX = 5.0   # seconds
-DEFAULT_BASELINE_S = None
+from metrics_core.models import DecisionEvent, _parse_ts, _safe_float
+
+DEFAULT_RT_MAX: float = 5.0   # seconds
+DEFAULT_BASELINE_S: Optional[float] = None
 
 # Soft weights for composite EfficiencyScore shaping
-_OFFROLE_PENALTY_WEIGHT = 0.35   # 0..1 penalty multiplier
-_PROGRESS_BONUS_WEIGHT = 0.10    # 0..1 bonus multiplier
+_OFFROLE_PENALTY_WEIGHT: float = 0.35
+_PROGRESS_BONUS_WEIGHT: float = 0.10
 
-# -------------------- NEW: schema flexibility helpers --------------------
-_ALIASES = {
-    "agent":        ["agent", "actor_type", "actor", "role"],
-    "timestamp":    ["timestamp", "time", "created_at", "event_time", "date"],
-    "t":            ["t"],
-    "action":       ["action", "event_type", "type", "name"],
-    "interaction":  ["interaction_id", "case_id", "ticket_id", "job_id", "image_id"],
-    "duration_s":   ["duration_s", "human_duration_s", "duration"],
-    "latency_ms":   ["latency_ms", "inference_ms", "latency"],
-    "correct":      ["correct", "agreement", "is_correct"],
-}
+# Type alias accepted by the public API
+_DecisionInput = Union[Dict[str, Any], DecisionEvent]
 
-_AGENT_MAP = {"human": "HUMAN", "ai": "AI", "system": "SYS"}
 
-def _get(d: Dict[str, Any], keys) -> Any:
-    for k in keys:
-        if k in d and d[k] not in (None, "", [], {}):
-            return d[k]
-    return None
-
-def _canon_str(x: Optional[str]) -> Optional[str]:
-    if x is None:
-        return None
-    s = str(x).strip().lower().replace("&", "and")
-    while "  " in s:
-        s = s.replace("  ", " ")
-    return s
-
-def _parse_ts(ts: Any) -> Optional[dt.datetime]:
-    if ts is None:
-        return None
-    if isinstance(ts, (int, float)):
-        # guess ms vs s
-        if ts > 1e12:
-            ts = ts / 1000.0
-        try:
-            return dt.datetime.fromtimestamp(ts, tz=dt.timezone.utc)
-        except Exception:
-            return None
-    try:
-        s = str(ts).replace("Z", "+00:00")
-        return dt.datetime.fromisoformat(s)
-    except Exception:
-        return None
+# ---------------------------------------------------------------------------
+# Internal helpers
+# ---------------------------------------------------------------------------
 
 def _sec(a: dt.datetime, b: dt.datetime) -> float:
+    """Signed elapsed seconds from a to b."""
     return (b - a).total_seconds()
 
-def _normalize_decisions(decisions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+
+def _normalize_decisions(
+    decisions: List[_DecisionInput],
+) -> List[Dict[str, Any]]:
     """
-    Make keys consistent:
-      - ensure 'agent' exists (copied/mapped from actor_type/actor/role when needed)
-      - ensure numeric 't' exists (derived from timestamps or sequence order)
-      - keep existing duration_s / latency_ms; accept alias names
+    Accepts DecisionEvent objects or plain dicts with canonical field names.
+
+    For DecisionEvent inputs: model_dump() → dict with typed fields.
+    For dict inputs: shallow-copy, parse timestamp string → datetime if needed.
+
+    In both cases: derive numeric `t` from `timestamp` when absent,
+    falling back to a monotonic counter (1-second increments).
+
+    Alias resolution is NOT done here — that is the adapter's responsibility.
     """
     if not decisions:
         return []
 
-    # First pass: copy and harvest timestamps
     norm_rows: List[Dict[str, Any]] = []
     all_ts: List[dt.datetime] = []
 
     for e in decisions:
-        if not isinstance(e, dict):
+        if isinstance(e, DecisionEvent):
+            row = e.model_dump()
+        elif isinstance(e, dict):
+            row = dict(e)
+        else:
             continue
-        row = dict(e)  # shallow copy
 
-        # Agent
-        if "agent" not in row:
-            raw_agent = _get(row, _ALIASES["agent"])
-            can = _canon_str(raw_agent)
-            mapped = _AGENT_MAP.get(can, raw_agent)
-            if mapped is not None:
-                row["agent"] = mapped
-            # also mirror actor_type to keep existing HCL logic working
-            if "actor_type" not in row and raw_agent is not None:
-                row["actor_type"] = str(raw_agent).lower()
+        # Ensure timestamp is a tz-aware datetime object (or None)
+        ts_raw = row.get("timestamp")
+        if isinstance(ts_raw, dt.datetime):
+            ts_dt: Optional[dt.datetime] = (
+                ts_raw if ts_raw.tzinfo else ts_raw.replace(tzinfo=dt.timezone.utc)
+            )
+        else:
+            ts_dt = _parse_ts(ts_raw)
 
-        # Timestamp
-        ts = _get(row, _ALIASES["timestamp"])
-        ts_dt = _parse_ts(ts)
         if ts_dt is not None:
             all_ts.append(ts_dt)
-            row.setdefault("_timestamp_dt", ts_dt)  # internal helper
+            row["timestamp"] = ts_dt  # normalise: always datetime after this point
 
-        # t (seconds)
         if "t" not in row or row["t"] is None:
-            row["t"] = None  # will fill later
-
-        # duration_s
-        if "duration_s" not in row or row["duration_s"] is None:
-            dur = _get(row, _ALIASES["duration_s"])
-            if dur is not None:
-                try:
-                    row["duration_s"] = float(dur)
-                except Exception:
-                    pass
-
-        # latency_ms
-        if "latency_ms" not in row or row["latency_ms"] is None:
-            lat = _get(row, _ALIASES["latency_ms"])
-            if lat is not None:
-                try:
-                    row["latency_ms"] = float(lat)
-                except Exception:
-                    pass
+            row["t"] = None  # filled in the second pass below
 
         norm_rows.append(row)
 
-    # Derive t from timestamps (or from order) if missing
+    # Derive t from timestamps (or monotonic counter when timestamps absent)
     s_start = min(all_ts) if all_ts else None
     monotonic = 0.0
     for r in norm_rows:
         if r.get("t") is None:
-            if s_start and r.get("_timestamp_dt") is not None:
-                r["t"] = max(0.0, _sec(s_start, r["_timestamp_dt"]))
+            ts_dt = r.get("timestamp")
+            if s_start is not None and isinstance(ts_dt, dt.datetime):
+                r["t"] = max(0.0, _sec(s_start, ts_dt))
             else:
                 r["t"] = monotonic
                 monotonic += 1.0
 
     return norm_rows
 
-# -------------------- existing helpers (some made more flexible) --------------------
+
 def _only_agent_rows(decisions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Filter to rows that represent agent actions."""
+    """Filter to rows that carry an agent identity."""
     return [
         e for e in decisions
-        if isinstance(e, dict) and ("agent" in e or "actor_type" in e)
+        if isinstance(e, dict)
+        and (e.get("agent") is not None or "actor_type" in e)
     ]
 
-def _total_time(decisions: List[Dict[str, Any]], explicit_T: Optional[float]) -> float:
+
+def _total_time(
+    decisions: List[Dict[str, Any]],
+    explicit_t: Optional[float],
+) -> float:
     """
-    Prefer explicit_T; else use t-range; else fallback to timestamp range (if present).
+    Prefer explicit_t; else use t-range; else fallback to timestamp span.
     """
-    if explicit_T is not None:
-        return float(explicit_T)
+    if explicit_t is not None:
+        return float(explicit_t)
     if not decisions:
         return 0.0
-    # Try t-range
+    # t-range (always present after normalization)
     try:
-        t0 = float(min(e.get("t", 0.0) for e in decisions))
-        tN = float(max(e.get("t", 0.0) for e in decisions))
-        span = max(0.0, tN - t0)
+        t_vals = [float(e.get("t") or 0.0) for e in decisions]
+        span = max(0.0, max(t_vals) - min(t_vals))
         if span > 0:
             return span
-    except Exception:
+    except (TypeError, ValueError):
         pass
-    # Fallback: timestamp range (if normalization left _timestamp_dt)
-    ts_vals = [e.get("_timestamp_dt") for e in decisions if e.get("_timestamp_dt") is not None]
+    # Fallback: timestamp span
+    ts_vals = [
+        e["timestamp"] for e in decisions
+        if isinstance(e.get("timestamp"), dt.datetime)
+    ]
     if ts_vals:
         return max(0.0, _sec(min(ts_vals), max(ts_vals)))
     return 0.0
 
+
 def _durations(decisions: List[Dict[str, Any]]) -> List[float]:
-    # Prefer explicit duration_s, fallback to latency_ms (sec)
+    """Prefer duration_s; fallback to latency_ms converted to seconds."""
     durs: List[float] = []
     for e in decisions:
         if e.get("duration_s") is not None:
             try:
                 durs.append(max(0.0, float(e["duration_s"])))
-            except Exception:
+            except (TypeError, ValueError):
                 durs.append(0.0)
         elif e.get("latency_ms") is not None:
             try:
                 durs.append(max(0.0, float(e["latency_ms"]) / 1000.0))
-            except Exception:
+            except (TypeError, ValueError):
                 durs.append(0.0)
     return durs
 
+
 def _mean(xs: List[float]) -> float:
+    """Arithmetic mean; returns 0.0 for empty input."""
     return sum(xs) / len(xs) if xs else 0.0
 
+
 def _clip01(x: float) -> float:
+    """Clamp to [0, 1]."""
     return max(0.0, min(1.0, x))
 
+
 def _safe_prob_dist(p: Dict[str, float]) -> Dict[str, float]:
+    """Clamp negatives and re-normalise a probability dict."""
     total = sum(max(0.0, float(v)) for v in p.values())
     if total <= 0:
-        return {k: 0.0 for k in p.keys()}
+        return {k: 0.0 for k in p}
     return {k: max(0.0, float(v)) / total for k, v in p.items()}
 
-def _aggregate_probs(decisions: List[Dict[str, Any]], key: str) -> Dict[str, float]:
+
+def _aggregate_probs(
+    decisions: List[Dict[str, Any]],
+    key: str,
+) -> Dict[str, float]:
     """
-    Average probability vectors over all decisions that have `key` (e.g., 'probs' or 'surrogate_probs'),
-    then re-normalize. This yields P_human or P_surrogate for S.
+    Average probability vectors over all decisions that have `key`
+    (e.g., 'probs' or 'surrogate_probs'), then re-normalise.
     """
     accum: Dict[str, float] = {}
     count = 0
     for e in decisions:
-        if key in e and isinstance(e[key], dict) and e[key]:
-            dist = _safe_prob_dist(e[key])
+        val = e.get(key)
+        if isinstance(val, dict) and val:
+            dist = _safe_prob_dist(val)
             for a, p in dist.items():
                 accum[a] = accum.get(a, 0.0) + p
             count += 1
     if count == 0 or not accum:
         return {}
-    # average and renormalize
     avg = {k: v / count for k, v in accum.items()}
     return _safe_prob_dist(avg)
 
-def _kl_divergence(p: Dict[str, float], q: Dict[str, float], eps: float = 1e-12) -> float:
-    """
-    KL(P||Q) over the union of keys. Both are probabilities over actions.
-    """
-    keys = set(p.keys()) | set(q.keys())
+
+def _kl_divergence(
+    p: Dict[str, float],
+    q: Dict[str, float],
+    eps: float = 1e-12,
+) -> float:
+    """KL(P ‖ Q) over the union of keys."""
     kl = 0.0
-    for k in keys:
+    for k in set(p) | set(q):
         pk = max(eps, p.get(k, 0.0))
         qk = max(eps, q.get(k, 0.0))
         kl += pk * math.log(pk / qk)
     return kl
 
-def _count(decisions: List[Dict[str, Any]], pred: Callable[[Dict[str, Any]], bool]) -> int:
+
+def _count(
+    decisions: List[Dict[str, Any]],
+    pred: Callable[[Dict[str, Any]], bool],
+) -> int:
+    """Count decisions matching predicate."""
     return sum(1 for e in decisions if pred(e))
 
-# -------------------- main API (with normalization step) --------------------
+
+def _safe_rt_s(e: Dict[str, Any]) -> Optional[float]:
+    """
+    Extract a non-negative response time in seconds from a decision dict.
+
+    Tries duration_s first, then latency_ms/1000.
+    Returns None when neither field is present or convertible.
+    """
+    d = _safe_float(e.get("duration_s"))
+    if d is not None:
+        return max(0.0, d)
+    ms = _safe_float(e.get("latency_ms"))
+    if ms is not None:
+        return max(0.0, ms / 1000.0)
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
 def compute_metrics(
     *,
-    decisions: List[Dict[str, Any]],
+    decisions: List[_DecisionInput],
     T: Optional[float] = None,
     baseline_s: Optional[float] = DEFAULT_BASELINE_S,
     rt_max: float = DEFAULT_RT_MAX,
 ) -> Dict[str, float]:
     """
-    Returns dict with keys: F, D, HCL, Tr, A, S, EL, EfficiencyScore
-    Assumes decisions are sorted by 't' ascending.
-    Now robust to alias keys and missing 't' via normalization.
+    Compute collab-session metrics from a list of decision records.
+
+    Returns a dict with keys: F, D, HCL, Tr, A, S, EL, EfficiencyScore.
+
+    Accepts DecisionEvent objects (from an adapter) or plain dicts with
+    canonical field names.  Alias resolution must be done upstream.
     """
-    # NEW: normalize decisions to tolerate aliases/missing fields
     decisions = _normalize_decisions(decisions)
-
-    # keep original ordering intent: sort by t (now guaranteed numeric)
-    decisions = sorted(decisions, key=lambda e: float(e.get("t", float("inf"))))
+    decisions = sorted(decisions, key=lambda e: float(e.get("t") or 0.0))
     agent_rows = _only_agent_rows(decisions)
-    N_agents = len(agent_rows)
+    n_agents = len(agent_rows)
 
-    # --- Time window over agent rows only (now uses t or timestamp fallback) ---
-    total_time = _total_time(agent_rows, T)
+    total_time = _total_time(agent_rows, T)  # T is the public param name
 
-    # 1) F: interactions per minute (agent-only)
-    F = (N_agents / (total_time / 60.0)) if total_time > 0 else 0.0
+    # 1) F — interactions per minute (agent-only rows)
+    f_score = (n_agents / (total_time / 60.0)) if total_time > 0 else 0.0
 
-    # 2) D: mean atomic action duration (agent-only)
+    # 2) D — mean atomic action duration (agent-only rows)
     durs = _durations(agent_rows)
-    D = _mean(durs)
+    d_score = _mean(durs)
 
-    # 3) HCL: prefer human agent rows; fallback to agent rows
-    human_rts = [
-        (float(e["duration_s"]) if e.get("duration_s") is not None
-         else float(e.get("latency_ms", 0.0)) / 1000.0)
+    # 3) HCL — human cognitive load proxy
+    #    Use human-labelled rows; fall back through durs → latencies → rt_max.
+    human_rt_vals: List[float] = [
+        rt
         for e in agent_rows
-        if str(e.get("actor_type", "")).lower() == "human" or str(e.get("agent", "")).upper().startswith("H")
+        if (
+            str(e.get("actor_type", "")).lower() == "human"
+            or str(e.get("agent", "")).upper().startswith("H")
+        )
+        for rt in [_safe_rt_s(e)]
+        if rt is not None
     ]
-    latencies_s = [
-        float(e.get("latency_ms", 0.0)) / 1000.0
+    latencies_s: List[float] = [
+        v / 1000.0
         for e in agent_rows
-        if e.get("latency_ms") is not None
+        for v in [_safe_float(e.get("latency_ms"))]
+        if v is not None
     ]
-    if human_rts:
-        mean_rt = _mean(human_rts)
+    if human_rt_vals:
+        mean_rt = _mean(human_rt_vals)
     elif durs:
         mean_rt = _mean(durs)
     elif latencies_s:
         mean_rt = _mean(latencies_s)
     else:
         mean_rt = rt_max if rt_max > 0 else 1.0
-    HCL = _clip01(1.0 - (mean_rt / rt_max if rt_max > 0 else 1.0))
+    hcl = _clip01(1.0 - (mean_rt / rt_max if rt_max > 0 else 1.0))
 
-    # 4) Tr: only score rows that are explicitly labeled OR explicit error events
+    # 4) Tr — trust / reliability
+    #    Score only rows that are explicitly labelled OR error events.
     labeled = 0
     errors = 0
     for e in agent_rows:
@@ -290,84 +310,94 @@ def compute_metrics(
         if str(e.get("event_type", "")).lower() == "error":
             labeled += 1
             errors += 1
-    Tr = _clip01(1.0 - (errors / labeled if labeled > 0 else 0.0))
+    tr_score = _clip01(1.0 - (errors / labeled if labeled > 0 else 0.0))
 
-    # 5) A: adaptability on agent rows; clamp to [-1, 1] via tanh
-    if N_agents > 0:
-        k = max(1, int(0.2 * N_agents))
+    # 5) A — adaptability; bounded [-1, 1] via tanh
+    if n_agents > 0:
+        k = max(1, int(0.2 * n_agents))
         early = agent_rows[:k]
         late = agent_rows[-k:]
 
-        def acc(arr):
+        def _acc(arr: List[Dict[str, Any]]) -> float:
             have = [e for e in arr if e.get("correct") is not None]
             if not have:
-                return 1.0  # neutral if unlabeled
+                return 1.0  # neutral when unlabelled
             return sum(1 for e in have if e.get("correct") is True) / len(have)
 
-        acc_early = acc(early)
-        acc_late = acc(late)
-        denom = max(1e-9, acc_early)
-        raw_A = (acc_late - acc_early) / denom
-        A = math.tanh(raw_A)  # bounded [-1, 1]
+        acc_early = _acc(early)
+        acc_late = _acc(late)
+        raw_a = (acc_late - acc_early) / max(1e-9, acc_early)
+        a_score: float = math.tanh(raw_a)
     else:
-        A = 0.0
+        a_score = 0.0
 
-    # 6) S: surrogate similarity (use agent rows)
-    P_h = _aggregate_probs(agent_rows, "probs")
-    P_s = _aggregate_probs(agent_rows, "surrogate_probs")
-    if P_h and P_s:
-        D_kl = _kl_divergence(P_h, P_s)
-        S = math.exp(-D_kl)
+    # 6) S — surrogate similarity (agent rows only)
+    p_h = _aggregate_probs(agent_rows, "probs")
+    p_s = _aggregate_probs(agent_rows, "surrogate_probs")
+    if p_h and p_s:
+        s_score: float = math.exp(-_kl_divergence(p_h, p_s))
     else:
-        matches, compared = 0, 0
+        matches = compared = 0
         for e in agent_rows:
-            if "surrogate_action" in e:
+            sa = e.get("surrogate_action")
+            if sa is not None:
                 compared += 1
-                if e.get("action") == e.get("surrogate_action"):
+                if e.get("action") == sa:
                     matches += 1
-        S = (matches / compared) if compared > 0 else 0.0
-    S = _clip01(S)
+        s_score = (matches / compared) if compared > 0 else 0.0
+    s_score = _clip01(s_score)
 
-    # 7) EL: effort/efficiency loss vs baseline (use agent-window time)
+    # 7) EL — effort loss vs baseline
     if baseline_s is not None and baseline_s > 0 and total_time > 0:
-        EL = max(0.0, (total_time - baseline_s) / baseline_s)
+        el_score = max(0.0, (total_time - baseline_s) / baseline_s)
     else:
-        EL = 0.0
+        el_score = 0.0
 
-    # Base efficiency from EL only
-    EfficiencyScore = 1.0 / (1.0 + float(EL)) if EL >= 0 else 1.0
+    efficiency = 1.0 / (1.0 + el_score)  # el_score >= 0 always
 
-    # ---- Gentle shaping with off-role and progress signals (if present) ----
-    def _count_pred(rows: List[Dict[str, Any]], pred: Callable[[Dict[str, Any]], bool]) -> int:
-        return sum(1 for e in rows if pred(e))
+    # ---- Gentle shaping: off-role penalty + progress bonus ----
+    offrole_count = sum(1 for e in agent_rows if bool(e.get("off_role_action")))
+    offrole_rate = (offrole_count / n_agents) if n_agents > 0 else 0.0
 
-    offrole_count = _count_pred(agent_rows, lambda e: bool(e.get("off_role_action")))
-    offrole_rate = (offrole_count / N_agents) if N_agents > 0 else 0.0
+    progress_count = _count(
+        decisions,
+        lambda e: str(e.get("event_type", "")).lower()
+        in {"checklist_progress", "progress"},
+    )
+    progress_rate = (progress_count / max(1.0, total_time)) if total_time > 0 else 0.0
 
-    progress_count = _count(decisions, lambda e: str(e.get("event_type", "")).lower() in {"checklist_progress", "progress"})
-    progress_rate = (progress_count / max(1.0, total_time)) if total_time > 0 else 0.0  # events/sec
-
-    EfficiencyScore *= (1.0 - _OFFROLE_PENALTY_WEIGHT * _clip01(offrole_rate))
-    EfficiencyScore *= (1.0 + _PROGRESS_BONUS_WEIGHT * _clip01(progress_rate))
-    EfficiencyScore = _clip01(EfficiencyScore)
+    efficiency *= 1.0 - _OFFROLE_PENALTY_WEIGHT * _clip01(offrole_rate)
+    efficiency *= 1.0 + _PROGRESS_BONUS_WEIGHT * _clip01(progress_rate)
+    efficiency = _clip01(efficiency)
 
     return {
-        "F": float(F),
-        "D": float(D),
-        "HCL": float(HCL),
-        "Tr": float(Tr),
-        "A": float(A),
-        "S": float(S),
-        "EL": float(EL),
-        "EfficiencyScore": float(EfficiencyScore),
+        "F":               float(f_score),
+        "D":               float(d_score),
+        "HCL":             float(hcl),
+        "Tr":              float(tr_score),
+        "A":               float(a_score),
+        "S":               float(s_score),
+        "EL":              float(el_score),
+        "EfficiencyScore": float(efficiency),
     }
 
-def compute_metrics_by_agent(decisions: List[Dict[str, Any]], **kw) -> Dict[str, Dict[str, float]]:
+
+def compute_metrics_by_agent(
+    decisions: List[_DecisionInput],
+    **kw: Any,
+) -> Dict[str, Dict[str, float]]:
+    """
+    Run compute_metrics() separately for each agent found in decisions.
+
+    Returns {agent_id: metrics_dict}.  Rows with no agent identity are
+    grouped under the key "unknown" rather than silently dropped.
+    """
     out: Dict[str, Dict[str, float]] = {}
-    decs = _normalize_decisions(decisions)  # NEW: normalize before bucketing
+    decs = _normalize_decisions(decisions)
     by_agent: Dict[str, List[Dict[str, Any]]] = {}
     for d in decs:
-        by_agent.setdefault(str(d.get("agent")), []).append(d)
+        agent_key = str(d.get("agent") or "unknown")
+        by_agent.setdefault(agent_key, []).append(d)
     for agent, arr in by_agent.items():
         out[agent] = compute_metrics(decisions=arr, **kw)
     return out
