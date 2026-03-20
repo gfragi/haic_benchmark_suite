@@ -5,6 +5,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.schemas.log import LogSchema
+from app.schemas.responses import LogIngestResponse, UploadResponse
 from app.utils.database import get_db
 from app.utils.minio_utils import get_minio_client, list_files, download_file, delete_file, put_json
 from app.services.log_service import LogService
@@ -22,7 +23,7 @@ MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 minio_client = get_minio_client()
 
 
-@router.post("/upload")
+@router.post("/upload", response_model=UploadResponse)
 async def upload_log(
     configuration_id: int = Query(..., description="Evaluation configuration id"),
     file: UploadFile = File(...),
@@ -53,7 +54,7 @@ async def upload_log(
 
 
 
-@router.post("/register", response_model=dict)
+@router.post("/register", response_model=LogIngestResponse)
 def register_log(
     log: LogSchema,
     configuration_id: int = Query(..., description="Evaluation configuration id"),
@@ -79,8 +80,12 @@ def register_log(
     try:
         derived = compute_from_log(payload)
     except Exception as e:
-        print(f"[logs/register] compute_from_log failed: {repr(e)}")
+        logger.warning(
+            "compute_from_log failed for configuration %s: %s",
+            configuration_id, repr(e), exc_info=True,
+        )
         derived = {"by_metric": {}, "by_pillar": {}, "interaction": {}}
+        derived["_warning"] = f"Metric computation failed: {type(e).__name__}"
 
     # 2) Load existing aggregated logs from MinIO (if any)
     aggregated_entries: list[dict]
@@ -158,13 +163,17 @@ def register_log(
     db.refresh(log_entry)
 
     # 5) Response
-    return {
-        "detail": "Registered log.",
-        "configuration_id": configuration_id,
-        "log_id": log_entry.id,
-        "minio_path": object_name,     # this is exactly what run_evaluation will use
-        "derived": derived,            # per-session KPIs, if compute_from_log is used
-    }
+    event_count = len(payload.get("decisions") or [])
+    validation_warnings = derived.get("warnings") or []
+    return LogIngestResponse(
+        detail="Registered log.",
+        configuration_id=configuration_id,
+        log_id=log_entry.id,
+        minio_path=object_name,
+        event_count=event_count,
+        validation_warnings=validation_warnings,
+        derived=derived,
+    )
 
 
 @router.get("/{config_id}")

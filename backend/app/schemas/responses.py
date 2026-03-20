@@ -28,6 +28,11 @@ class LogIngestResponse(BaseModel):
     derived: dict[str, Any] = {}
 
 
+class UploadResponse(BaseModel):
+    detail: str
+    minio_paths: list[str]
+
+
 class MetricWarning(BaseModel):
     metric: str
     warning: str
