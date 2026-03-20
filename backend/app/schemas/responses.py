@@ -18,24 +18,24 @@ class EvaluationStartedResponse(BaseModel):
     configuration_id: int
 
 
+class MetricWarning(BaseModel):
+    metric: str
+    warning: str
+
+
 class LogIngestResponse(BaseModel):
     detail: str
     configuration_id: int
     log_id: int
     minio_path: str
-    event_count: int             # number of decisions in the registered log
-    validation_warnings: list[str]   # from MetricResult.warning fields
+    event_count: int                      # number of decisions in the registered log
+    validation_warnings: list[MetricWarning] = []  # from MetricResult.warning fields
     derived: dict[str, Any] = {}
 
 
 class UploadResponse(BaseModel):
     detail: str
     minio_paths: list[str]
-
-
-class MetricWarning(BaseModel):
-    metric: str
-    warning: str
 
 
 class EvaluationResultResponse(BaseModel):
