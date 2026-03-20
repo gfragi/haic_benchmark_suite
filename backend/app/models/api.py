@@ -1,20 +1,21 @@
 from pydantic import BaseModel, Field
 from typing import Any, Dict, List, Optional
 
+from app.utils.errors import ErrorDetail, ErrorEnvelope  # canonical home; re-exported for existing imports
+
+__all__ = [
+    "ErrorDetail", "ErrorEnvelope",
+    "MessageWithPath", "ConfigList",
+    "SimulationResult", "SimulationEnvelope",
+    "MetricsList", "MetricsEnvelope", "MetricsLoadResponse",
+]
+
 class MessageWithPath(BaseModel):
     message: str
     path: str
 
 class ConfigList(BaseModel):
     available_configs: List[str]
-
-class ErrorDetail(BaseModel):
-    code: str
-    message: str
-    details: Dict[str, Any] = Field(default_factory=dict)
-
-class ErrorEnvelope(BaseModel):
-    error: ErrorDetail
 
 class SimulationResult(BaseModel):
     task: str

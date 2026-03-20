@@ -1,7 +1,27 @@
+from pydantic import BaseModel
 from fastapi import HTTPException
+from typing import Any
 
-def http_error(status: int, code: str, message: str, details: dict | None=None):
+
+class ErrorDetail(BaseModel):
+    code: str
+    message: str
+    details: dict[str, Any] = {}
+
+
+class ErrorEnvelope(BaseModel):
+    error: ErrorDetail
+
+
+def http_error(status: int, code: str, message: str,
+               details: dict | None = None) -> None:
     raise HTTPException(
         status_code=status,
-        detail={"error": {"code": code, "message": message, "details": details or {}}}
+        detail=ErrorEnvelope(
+            error=ErrorDetail(
+                code=code,
+                message=message,
+                details=details or {}
+            )
+        ).model_dump()
     )
