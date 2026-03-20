@@ -55,6 +55,17 @@ class LogService:
 
         results = {"original": orig_name, "derived_by_version": {}}
 
+        from app.services.schema_bridge import normalize_log_payload
+
+        # Validate before compute — collect warnings, don't reject
+        try:
+            validated_sessions, schema_warnings = normalize_log_payload(payload)
+        except ValueError as e:
+            raise ValueError(f"Log structure invalid: {e}")
+
+        # Use validated sessions for compute (convert back to dicts)
+        validated_payload = [s.model_dump(mode="json") for s in validated_sessions]
+
         def _write_derived(ver: str, derived: dict):
             derived_name = f"{configuration_id}/uploads/{stem}.{ts}.v{ver}.derived.json"
             enc = json.dumps(derived, ensure_ascii=False, indent=2).encode("utf-8")
@@ -66,34 +77,26 @@ class LogService:
             return derived_name
 
         try:
-            if isinstance(payload, dict):
-                # Single session
-                ver = self._sanitize(payload.get("ai_model_version") or "Unknown")
-                derived = compute_from_log(payload)
+            # validated_payload is always list[dict] after normalize_log_payload
+            groups = defaultdict(list)
+            for p in validated_payload:
+                ver = self._sanitize(p.get("ai_model_version") or "Unknown")
+                groups[ver].append(p)
+
+            for ver, logs in groups.items():
+                derived_list = [compute_from_log(p) for p in logs]
+                derived = {
+                    "by_metric": self._mean_map(derived_list, "by_metric"),
+                    "by_pillar": self._mean_map(derived_list, "by_pillar"),
+                    "interaction": self._mean_map(derived_list, "interaction"),
+                    "count": len(logs),
+                    "ai_model_version": ver,
+                }
                 _write_derived(ver, derived)
-
-            elif isinstance(payload, list):
-                # Group by ai_model_version
-                groups = defaultdict(list)
-                for p in payload:
-                    if isinstance(p, dict):
-                        ver = self._sanitize(p.get("ai_model_version") or "Unknown")
-                        groups[ver].append(p)
-
-                for ver, logs in groups.items():
-                    derived_list = [compute_from_log(p) for p in logs]
-                    derived = {
-                        "by_metric": self._mean_map(derived_list, "by_metric"),
-                        "by_pillar": self._mean_map(derived_list, "by_pillar"),
-                        "interaction": self._mean_map(derived_list, "interaction"),
-                        "count": len(logs),
-                        "ai_model_version": ver,
-                    }
-                    _write_derived(ver, derived)
-            else:
-                raise ValueError("JSON must be an object or an array of objects")
         except Exception as e:
             raise Exception(f"Processing failed: {e}")
+
+        results["schema_warnings"] = schema_warnings
 
         # Update the config to point at the original upload (evaluation reads this)
         config = db.query(EvaluationConfig).get(configuration_id)
