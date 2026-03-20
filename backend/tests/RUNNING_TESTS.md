@@ -34,7 +34,7 @@ pytest
 pytest tests/test_hardening_piece2.py
 ```
 
-### What each test covers
+### Piece-2 test coverage
 
 | Test | What it checks |
 |---|---|
@@ -56,6 +56,26 @@ pytest tests/test_hardening_piece2.py::test_global_handler_returns_error_envelop
 
 ---
 
+## Run only the Piece-3 schema tests
+
+```bash
+pytest tests/test_piece3_schema.py
+```
+
+### Piece-3 test coverage
+
+| Test | What it checks |
+|---|---|
+| `test_log_schema_to_session_log_basic` | `start_time/end_time` → `session_started_at/session_ended_at`; `pilot_tag` falls back to `app_version` |
+| `test_nanosecond_timestamp_in_decision_survives_bridge` | 9-digit fractional-second timestamps parse without warnings |
+| `test_invalid_decision_collected_as_warning_not_exception` | Invalid `actor_type` → warning collected; valid sibling decision kept in session |
+| `test_normalize_log_payload_unwraps_logs_key` | `{"logs": [...]}` envelope is unwrapped to a list of `SessionLog` objects |
+| `test_compute_from_log_warnings_key_present` | `compute_from_log()` return always has `"warnings"` key; Tr warning fires when no `correct` field |
+| `test_validation_warnings_reach_log_ingest_response` | MetricResult warnings (Tr/HCL/A/EL) surface in `LogIngestResponse.validation_warnings` |
+| `test_evaluate_stores_warnings_in_result_data` | `run_evaluation()` writes `"warnings"` into the MinIO result JSON |
+
+---
+
 ## Other test files
 
 | File | Dependencies | Notes |
@@ -69,5 +89,5 @@ pytest tests/test_hardening_piece2.py::test_global_handler_returns_error_envelop
 Run only the tests that are safe to run without infrastructure:
 
 ```bash
-pytest tests/test_data_evaluation.py tests/test_hardening_piece2.py
+pytest tests/test_data_evaluation.py tests/test_hardening_piece2.py tests/test_piece3_schema.py
 ```
