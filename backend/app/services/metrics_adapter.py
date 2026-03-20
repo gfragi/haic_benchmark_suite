@@ -3,7 +3,8 @@
 from __future__ import annotations
 from typing import Any, Dict, Iterable, List, Optional
 
-from metrics_core import interaction_metrics
+from metrics_core.interaction_metrics import compute_metrics_with_results
+from metrics_core.schema import MetricResult
 from metrics_core.outcome_metrics import Metrics as M
 
 Number = float | int
@@ -40,6 +41,7 @@ def compute_from_log(
     *,
     rt_max: float = 5.0,          # cap for efficiency normalization
     baseline_s: Optional[float] = None,  # reserved (e.g., Human Effort Saved)
+    all_session_times: list[float] | None = None,
 ) -> Dict[str, Any]:
     """
     Returns:
@@ -151,14 +153,27 @@ def compute_from_log(
     by_metric["Domain Generalization"]       = None
 
     # ----------------- Core HAIC (F, D, HCL, Tr, A, S, EL) -----------------
-    interaction = {}
+    interaction_results: dict[str, MetricResult] = {}
     if all_decisions:
         try:
-            interaction = interaction_metrics.compute_metrics(
-                decisions=all_decisions, rt_max=rt_max, baseline_s=baseline_s
+            interaction_results = compute_metrics_with_results(
+                decisions=all_decisions,
+                rt_max=rt_max,
+                baseline_s=baseline_s,
+                all_session_times=all_session_times,
             )
         except Exception:
-            interaction = {}
+            interaction_results = {}
+
+    # Flatten for backward compat
+    interaction = {k: v.value for k, v in interaction_results.items()}
+
+    # Collect interaction warnings
+    interaction_warnings = [
+        {"metric": k, "warning": v.warning}
+        for k, v in interaction_results.items()
+        if v.warning is not None
+    ]
 
     # ----------------- by_pillar (normalized, higher-is-better) -------------
     # Normalization helpers for pillar scores:
@@ -214,7 +229,8 @@ def compute_from_log(
         by_pillar[pillar] = _mean([s for s in scores if isinstance(s, (int, float))])
 
     return {
-        "by_metric": by_metric,     # raw values; UI should show N/A for None
-        "by_pillar": by_pillar,     # normalized, higher-is-better (currently uses rt_score + effectiveness)
-        "interaction": interaction, # core HAIC minimal set
+        "by_metric": by_metric,          # raw values; UI should show N/A for None
+        "by_pillar": by_pillar,          # normalized, higher-is-better (currently uses rt_score + effectiveness)
+        "interaction": interaction,      # core HAIC minimal set
+        "warnings": interaction_warnings,  # list[{metric, warning}]
     }
