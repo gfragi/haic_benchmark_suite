@@ -1,0 +1,39 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+title HAIC Benchmark Suite - Container Diagram (Level 2)
+
+Person(researcher, "HAIC Evaluator", "Researcher / practitioner / organization user")
+
+System_Boundary(haicBoundary, "HAIC Benchmark Suite") {
+
+  Container(frontend, "Frontend Web App", "Vue.js 2 + JavaScript", "UI for configuration, running evaluations, dashboards, visualizations, exports")
+  Container(api, "Backend API", "Python FastAPI", "REST API, orchestration, DB access, background tasks, integration with storage/simulation/metrics")
+  Container(simEngine, "Simulation Engine", "Python", "Multi-agent simulation execution, environment state management, decision logging")
+  Container(envBuilder, "Environment Builder", "Python package", "Scenario generation, component registry/validation, configuration templates/builders")
+  Container(metrics, "Metrics Computation (metrics_core)", "Python package", "HAIC metrics + ML metrics + aggregation + fairness + survey analytics")
+  Container(gridSim, "Smart Grid Simulation (AgentBeats)", "Python", "Smart grid multi-agent simulation, faults, energy modeling, benchmarking")
+}
+
+System_Ext(pg, "PostgreSQL", "Database", "Configs, results, metrics, surveys, metadata")
+System_Ext(minio, "MinIO", "Object Storage", "Logs, artifacts, reports, datasets")
+System_Ext(k8s, "Docker/Kubernetes", "Compute", "Runs services and batch simulation/evaluation jobs")
+System_Ext(simExt, "External Simulation Engines", "Varies", "Optional domain simulators / pilot-specific tools")
+
+Rel(researcher, frontend, "Uses", "HTTPS")
+Rel(frontend, api, "Calls", "REST / JSON")
+Rel(api, pg, "Reads/Writes", "SQL")
+Rel(api, minio, "Stores/loads artifacts", "S3 API")
+Rel(api, metrics, "Invokes", "Python module / service call")
+Rel(api, simEngine, "Triggers runs / manages", "Jobs / subprocess / queue")
+Rel(simEngine, minio, "Writes logs/artifacts", "S3 API")
+Rel(simEngine, metrics, "Produces inputs for", "Logs / traces")
+Rel(api, envBuilder, "Uses to build/validate configs", "Python module / service call")
+Rel(simEngine, envBuilder, "Consumes generated configs", "YAML/JSON")
+Rel(api, gridSim, "Triggers smart-grid scenarios (pilot)", "Jobs / subprocess")
+Rel(gridSim, minio, "Writes artifacts", "S3 API")
+Rel(api, k8s, "Schedules / runs on")
+Rel(simEngine, k8s, "Runs on")
+Rel(gridSim, k8s, "Runs on")
+Rel(simEngine, simExt, "Optional integration", "Adapters / plugins")
+
+@enduml

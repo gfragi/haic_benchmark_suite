@@ -1,0 +1,19 @@
+@startuml
+!include lib/C4_Context.puml
+title HAIC Benchmark Suite - System Context (Level 1)
+
+Person(researcher, "HAIC Evaluator", "Researcher / practitioner / organization user")
+System(haic, "HAIC Benchmark Suite", "End-to-end platform to evaluate Human-AI collaborative systems via simulation, metrics computation, and benchmarking UI.")
+
+System_Ext(simLogs, "Data Sources", "Simulation logs, evaluation results, survey responses")
+System_Ext(k8s, "Compute Infrastructure", "Docker / Kubernetes runtime for services and simulations")
+System_Ext(pg, "PostgreSQL", "Structured persistence for configs, results, surveys, metadata")
+System_Ext(minio, "MinIO Object Storage", "Artifacts: logs, reports, datasets, exports")
+
+Rel(researcher, haic, "Configures, runs evaluations, explores results")
+Rel(haic, simLogs, "Ingests/produces", "JSON / files")
+Rel(haic, k8s, "Runs on / triggers jobs on")
+Rel(haic, pg, "Reads/Writes", "SQL")
+Rel(haic, minio, "Stores/loads artifacts", "S3 API")
+
+@enduml

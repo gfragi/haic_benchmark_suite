@@ -1,0 +1,44 @@
+# Development overrides for docker-compose
+# This file is automatically loaded when running docker-compose
+# It overrides settings for local development
+
+# Override environment files to use development settings
+services:
+  backend:
+    env_file:
+      - .env.development
+    volumes:
+      # Mount source code for hot reloading during development
+      # Mount specific directories to avoid overwriting entrypoint.sh
+      - ./backend/app:/app/app
+      - ./backend/alembic:/app/alembic
+      - ./backend/alembic.ini:/app/alembic.ini
+      - ./backend/tests:/app/tests
+      - ./backend/pytest.ini:/app/pytest.ini
+      - /app/__pycache__
+
+  frontend:
+    env_file:
+      - .env.development
+    # Override the production Dockerfile with development setup
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount source code for hot reloading
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run serve
+
+  # Optional: Add development tools
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@haic.local
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #   ports:
+  #     - "5050:80"
+  #   depends_on:
+  #     - db

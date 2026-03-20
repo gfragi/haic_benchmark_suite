@@ -5,7 +5,6 @@ from app.routers import logs, configuration, evaluate, log_generator, meta
 from app.routers import fairness, env_builder, simulator, results, survey, survey_schema, env_catalog, analytics
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.seed_core_metrics import seed_core_definitions
-from app.routers import collab
 
 
 app = FastAPI(
@@ -34,11 +33,11 @@ app.add_middleware(
 
 api = APIRouter(prefix="/api/v1", )
 
-api.include_router(logs.router,           prefix="/logs",          tags=["Logs"])
-api.include_router(configuration.router,  prefix="/configuration", tags=["Configuration"])
-api.include_router(evaluate.router,       prefix="/evaluate",      tags=["Evaluation"])
-api.include_router(results.router,        prefix="/results",       tags=["Results"])
-# api.include_router(reporting.router,      prefix="/reporting",     tags=["Reporting"])
+api.include_router(logs.router,           prefix="/logs",           tags=["Logs"])
+api.include_router(configuration.router,  prefix="/configuration",  tags=["Configuration"])
+api.include_router(evaluate.router,       prefix="/evaluate",       tags=["Evaluation"])
+api.include_router(results.router,        prefix="/results",        tags=["Results"])
+api.include_router(reporting.router,      prefix="/reporting",      tags=["Reporting"])
 # api.include_router(core_metrics.router,   prefix="/core-metrics",  tags=["Core Metrics"])
 api.include_router(analytics.router,     prefix="/analytics",    tags=["Analytics"])
 api.include_router(log_generator.router,  prefix="/log-generator", tags=["Log Generator"])

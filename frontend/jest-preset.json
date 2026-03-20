@@ -1,0 +1,27 @@
+{
+  "testEnvironment": "jsdom",
+  "testMatch": [
+    "**/tests/**/*.spec.js",
+    "**/tests/**/*.test.js",
+    "**/__tests__/**/*.js"
+  ],
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/src/$1"
+  },
+  "transform": {
+    "^.+\\.vue$": "@vue/vue3-jest",
+    "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { "presets": ["@babel/preset-env"] }]
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!(@vue|vuetify)/)"
+  ],
+  "moduleFileExtensions": ["vue", "js", "json", "jsx", "ts", "tsx", "node"],
+  "collectCoverageFrom": [
+    "src/**/*.{js,vue}",
+    "!src/main.js",
+    "!**/node_modules/**"
+  ],
+  "coverageDirectory": "tests/coverage",
+  "coverageReporters": ["html", "text-summary", "lcov"],
+  "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"]
+}

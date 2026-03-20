@@ -34,7 +34,7 @@ class MetricResponse(BaseModel):
 class MetricGroupResponse(BaseModel):
     group_description: Optional[str] = "No description"
     metrics: List[MetricResponse]
-    
+
     # app_version: Optional[str]
     # ai_model_version: Optional[str]
     class Config:
@@ -46,7 +46,6 @@ class EvaluationResult(Base):
     id = Column(Integer, primary_key=True, index=True)
     configuration_id = Column(Integer, ForeignKey('configurations.id', ondelete='CASCADE'), nullable=False)
 
-    # Date of the evaluation
     evaluation_date = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
 
     # Path to the JSON result file stored in MinIO or other storage
@@ -55,5 +54,4 @@ class EvaluationResult(Base):
     app_version = Column(String, nullable=True)
     ai_model_version = Column(String, nullable=True)
 
-    # Relationships
     configuration = relationship("EvaluationConfig", back_populates="results")

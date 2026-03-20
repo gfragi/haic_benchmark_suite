@@ -1,64 +1,42 @@
-import datetime
-from typing import Dict, List
-from fastapi import APIRouter, HTTPException, Depends
+# app/routers/evaluate.py
+
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
-from app.utils.database import get_db
-from app.models import EvaluationResult, LogEntry
-from metrics_core.outcome_metrics import Metrics
-from app.utils.generic_functions import get_config_by_id
-from fastapi import BackgroundTasks
 
+from app.models import LogEntry
 from app.models.configuration import EvaluationConfig
-from app.services.evaluate import run_evaluation
-from app.utils.generic_functions import get_config_by_id
-from app.models.results import Metric, MetricGroup, MetricGroupResponse
-
+from app.services.evaluate import run_evaluation as execute_evaluation
+from app.utils.database import get_db
 
 router = APIRouter()
 
-# Trigger Evaluation Endpoint
 @router.post("/{configuration_id}")
-async def evaluate_config(configuration_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    # Fetch the configuration by ID
-    config = get_config_by_id(configuration_id, db)
+def trigger_evaluation(configuration_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    """
+    Trigger evaluation for a specific configuration.
+    This will run the evaluation process in the background.
+    """
+    # Check if configuration exists
+    config = db.query(EvaluationConfig).filter(EvaluationConfig.id == configuration_id).first()
     if not config:
         raise HTTPException(status_code=404, detail="Configuration not found")
 
-    # Update the status to running
+    # Check if configuration has any logs
+    log_count = db.query(LogEntry).filter(LogEntry.configuration_id == configuration_id).count()
+    if log_count == 0:
+        raise HTTPException(status_code=400, detail="No logs found for this configuration")
+
+    # Update status to running
     config.evaluation_status = EvaluationConfig.STATUS_RUNNING
     db.commit()
 
-    # Run the evaluation in the background, passing the config ID
-    background_tasks.add_task(run_evaluation, configuration_id)
+    # Run evaluation in background using the full evaluation pipeline
+    background_tasks.add_task(execute_evaluation, configuration_id)
 
-    return {"detail": "Evaluation started successfully"}
-
-# Endpoint to fetch all metrics, grouped by MetricGroup name, with group descriptions
-@router.get("/metrics", response_model=Dict[str, MetricGroupResponse])
-def get_metrics(db: Session = Depends(get_db)):
-    # Query all metric groups and their associated metrics
-    metric_groups = db.query(MetricGroup).join(Metric).all()
-
-    # Dictionary to hold grouped metrics
-    grouped_metrics = {}
-
-    # Loop through each metric group and their metrics
-    for group in metric_groups:
-        group_name = group.name  # Get the group name
-        group_description = group.description  # Get the group description
-
-        # Initialize the group if it's not in the dictionary
-        if group_name not in grouped_metrics:
-            grouped_metrics[group_name] = {
-                "group_description": group_description if group_description else "No description",
-                "metrics": []
-            }
-
-        # Add metrics belonging to this group
-        for metric in group.metrics:
-            grouped_metrics[group_name]["metrics"].append({
-                "name": metric.name,
-                "description": metric.description if metric.description else "No description"
-            })
-
-    return grouped_metrics
+    message = f"Evaluation started for configuration {configuration_id}"
+    return {
+        "detail": message,
+        "message": message,  # backward compatibility for older clients
+        "status": "running",
+        "log_count": log_count,
+    }

@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models.configuration import EvaluationConfig
 from app.schemas.configuration import EvaluationConfigSchema
-from metrics_core.outcome_metrics import Metrics
+# Temporarily comment out metrics_core import
+# from metrics_core.outcome_metrics import Metrics
 
 
 router = APIRouter()
@@ -19,18 +20,8 @@ def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(g
     # Retrieve the selected groups
     selected_groups = config.metrics
 
-    # Expand the groups into individual metrics
-    available_metrics = Metrics.get_available_metrics()
-    selected_metrics = []
-
-    for group in selected_groups:
-        if group in available_metrics:
-            selected_metrics.extend(available_metrics[group])
-        else:
-            raise HTTPException(status_code=400, detail=f"Group {group} not found in available metrics.")
-
-    # Remove duplicates if any (optional, depends on your needs)
-    selected_metrics = list(set(selected_metrics))
+    # For now, just use the selected_groups directly
+    selected_metrics = selected_groups
 
     new_config = EvaluationConfig(
         application_name=config.application_name,
@@ -47,6 +38,35 @@ def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(g
     db.refresh(new_config)
     return new_config
 
+# # POST endpoint to create a new evaluation configuration (legacy /new endpoint)
+# @router.post("/new", response_model=EvaluationConfigSchema)
+# def create_configuration_legacy(config: EvaluationConfigSchema, db: Session = Depends(get_db)):
+#     # Retrieve the selected groups
+#     selected_groups = config.metrics
+
+#     # For now, just use the selected_groups directly
+#     selected_metrics = selected_groups
+
+#     new_config = EvaluationConfig(
+#         application_name=config.application_name,
+#         ai_model_name=config.ai_model_name,
+#         ai_model_type=config.ai_model_type,
+#         description=config.description,
+#         metrics=selected_metrics,  # Save the expanded list of metrics
+#         evaluation_date=datetime.now(timezone.utc),
+#         config_type=config.config_type,
+#         evaluation_status=config.evaluation_status
+#     )
+#     db.add(new_config)
+#     db.commit()
+#     db.refresh(new_config)
+#     return new_config
+
+
+# GET endpoint to list all evaluation configurations
+@router.get("/list", response_model=List[EvaluationConfigSchema])
+def get_all_configurations(db: Session = Depends(get_db)):
+    return db.query(EvaluationConfig).all()
 
 # GET endpoint to retrieve an evaluation configuration by ID
 @router.get("/{configuration_id}", response_model=EvaluationConfigSchema)
@@ -55,12 +75,6 @@ def get_configuration(configuration_id: int, db: Session = Depends(get_db)):
     if not config:
         raise HTTPException(status_code=404, detail="Evaluation configuration not found")
     return config
-
-
-# GET endpoint to list all evaluation configurations
-@router.get("/list/", response_model=List[EvaluationConfigSchema])
-def get_all_configurations(db: Session = Depends(get_db)):
-    return db.query(EvaluationConfig).all()
 
 
 
