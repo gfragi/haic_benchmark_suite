@@ -20,6 +20,7 @@ import datetime as dt
 from typing import Any, Callable, Dict, List, Optional, Union
 
 from metrics_core.models import DecisionEvent, _parse_ts, _safe_float
+from metrics_core.schema import MetricResult
 
 DEFAULT_RT_MAX: float = 5.0   # seconds
 DEFAULT_BASELINE_S: Optional[float] = None
@@ -236,41 +237,84 @@ def _safe_rt_s(e: Dict[str, Any]) -> Optional[float]:
     return None
 
 
+def _pctl(xs: List[float], q: float) -> Optional[float]:
+    """
+    Linear-interpolation percentile over a *sorted* list.
+
+    Returns None for empty input so callers can distinguish
+    "no data" from "value is zero".
+    """
+    if not xs:
+        return None
+    xs = sorted(xs)
+    i = (len(xs) - 1) * q
+    lo = int(math.floor(i))
+    hi = int(math.ceil(i))
+    if lo == hi:
+        return xs[lo]
+    frac = i - lo
+    return xs[lo] * (1.0 - frac) + xs[hi] * frac
+
+
+def _infer_baseline_p95(all_session_times: List[float]) -> Optional[float]:
+    """
+    Returns the P95 of session durations as a baseline proxy.
+
+    Requires at least 2 sessions; returns None for a single session so
+    callers can surface MetricResult(value=None, warning=...) instead of
+    silently computing a meaningless EL against itself.
+    """
+    if len(all_session_times) < 2:
+        return None
+    return _pctl(sorted(all_session_times), 0.95)
+
+
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
-def compute_metrics(
+def compute_metrics_with_results(
     *,
     decisions: List[_DecisionInput],
     T: Optional[float] = None,
     baseline_s: Optional[float] = DEFAULT_BASELINE_S,
     rt_max: float = DEFAULT_RT_MAX,
-) -> Dict[str, float]:
+    all_session_times: Optional[List[float]] = None,
+) -> Dict[str, MetricResult]:
     """
-    Compute collab-session metrics from a list of decision records.
+    Compute collab-session metrics and return a MetricResult per metric.
 
-    Returns a dict with keys: F, D, HCL, Tr, A, S, EL, EfficiencyScore.
+    MetricResult.value is None (not zero) when there was insufficient data
+    to compute the metric — callers must check before plotting or alerting.
 
-    Accepts DecisionEvent objects (from an adapter) or plain dicts with
-    canonical field names.  Alias resolution must be done upstream.
+    all_session_times — list of total session durations (seconds) across
+    the full log, used to auto-derive a P95 baseline when baseline_s is
+    None.  Pass None (default) for single-session or per-agent calls;
+    EL will be MetricResult(value=None, warning=...) in that case.
     """
     decisions = _normalize_decisions(decisions)
     decisions = sorted(decisions, key=lambda e: float(e.get("t") or 0.0))
     agent_rows = _only_agent_rows(decisions)
     n_agents = len(agent_rows)
+    total_time = _total_time(agent_rows, T)
 
-    total_time = _total_time(agent_rows, T)  # T is the public param name
+    # ------------------------------------------------------------------
+    # F — interactions per minute
+    # ------------------------------------------------------------------
+    f_val = (n_agents / (total_time / 60.0)) if total_time > 0 else 0.0
+    f_mr = MetricResult(metric="F", value=f_val, n_events=n_agents)
 
-    # 1) F — interactions per minute (agent-only rows)
-    f_score = (n_agents / (total_time / 60.0)) if total_time > 0 else 0.0
-
-    # 2) D — mean atomic action duration (agent-only rows)
+    # ------------------------------------------------------------------
+    # D — mean atomic action duration (agent-only rows)
+    # ------------------------------------------------------------------
     durs = _durations(agent_rows)
-    d_score = _mean(durs)
+    d_mr = MetricResult(metric="D", value=_mean(durs), n_events=len(durs))
 
-    # 3) HCL — human cognitive load proxy
-    #    Use human-labelled rows; fall back through durs → latencies → rt_max.
+    # ------------------------------------------------------------------
+    # HCL — human cognitive load proxy (BUG 5)
+    # Fall back through human RTs → any duration → latencies.
+    # Return None when NO timing data is present at all.
+    # ------------------------------------------------------------------
     human_rt_vals: List[float] = [
         rt
         for e in agent_rows
@@ -287,18 +331,32 @@ def compute_metrics(
         for v in [_safe_float(e.get("latency_ms"))]
         if v is not None
     ]
-    if human_rt_vals:
-        mean_rt = _mean(human_rt_vals)
-    elif durs:
-        mean_rt = _mean(durs)
-    elif latencies_s:
-        mean_rt = _mean(latencies_s)
-    else:
-        mean_rt = rt_max if rt_max > 0 else 1.0
-    hcl = _clip01(1.0 - (mean_rt / rt_max if rt_max > 0 else 1.0))
 
-    # 4) Tr — trust / reliability
-    #    Score only rows that are explicitly labelled OR error events.
+    if not human_rt_vals and not durs and not latencies_s:
+        hcl_mr = MetricResult(
+            metric="HCL",
+            value=None,
+            n_events=0,
+            warning="no human reaction time data found in decisions",
+        )
+    else:
+        if human_rt_vals:
+            mean_rt = _mean(human_rt_vals)
+            hcl_n = len(human_rt_vals)
+        elif durs:
+            mean_rt = _mean(durs)
+            hcl_n = len(durs)
+        else:
+            mean_rt = _mean(latencies_s)
+            hcl_n = len(latencies_s)
+        hcl_val = _clip01(1.0 - (mean_rt / rt_max if rt_max > 0 else 1.0))
+        hcl_mr = MetricResult(metric="HCL", value=hcl_val, n_events=hcl_n)
+
+    # ------------------------------------------------------------------
+    # Tr — trust / reliability (BUG 3)
+    # Score only rows with an explicit 'correct' label OR error events.
+    # Return None (not 1.0) when no labeled events exist.
+    # ------------------------------------------------------------------
     labeled = 0
     errors = 0
     for e in agent_rows:
@@ -310,32 +368,77 @@ def compute_metrics(
         if str(e.get("event_type", "")).lower() == "error":
             labeled += 1
             errors += 1
-    tr_score = _clip01(1.0 - (errors / labeled if labeled > 0 else 0.0))
 
-    # 5) A — adaptability; bounded [-1, 1] via tanh
-    if n_agents > 0:
+    if labeled == 0:
+        tr_mr = MetricResult(
+            metric="Tr",
+            value=None,
+            n_events=0,
+            warning="no events with 'correct' field found",
+        )
+    else:
+        tr_mr = MetricResult(
+            metric="Tr",
+            value=_clip01(1.0 - errors / labeled),
+            n_events=labeled,
+        )
+
+    # ------------------------------------------------------------------
+    # A — adaptability; bounded [-1, 1] via tanh (BUG 4)
+    # Return None when labeled events are absent from either window.
+    # ------------------------------------------------------------------
+    if n_agents == 0:
+        a_mr = MetricResult(metric="A", value=0.0, n_events=0)
+    else:
         k = max(1, int(0.2 * n_agents))
         early = agent_rows[:k]
         late = agent_rows[-k:]
+        early_labeled = [e for e in early if e.get("correct") is not None]
+        late_labeled = [e for e in late if e.get("correct") is not None]
+        n_labeled = len(early_labeled) + len(late_labeled)
 
-        def _acc(arr: List[Dict[str, Any]]) -> float:
-            have = [e for e in arr if e.get("correct") is not None]
-            if not have:
-                return 1.0  # neutral when unlabelled
-            return sum(1 for e in have if e.get("correct") is True) / len(have)
+        if not early_labeled and not late_labeled:
+            a_mr = MetricResult(
+                metric="A",
+                value=None,
+                n_events=0,
+                warning="no labeled events for adaptability computation",
+            )
+        elif not early_labeled or not late_labeled:
+            missing = "early" if not early_labeled else "late"
+            a_mr = MetricResult(
+                metric="A",
+                value=None,
+                n_events=n_labeled,
+                warning=(
+                    f"adaptability requires labeled events in both windows "
+                    f"— {missing} window has none"
+                ),
+            )
+        else:
+            acc_early = (
+                sum(1 for e in early_labeled if e.get("correct") is True)
+                / len(early_labeled)
+            )
+            acc_late = (
+                sum(1 for e in late_labeled if e.get("correct") is True)
+                / len(late_labeled)
+            )
+            raw_a = (acc_late - acc_early) / max(1e-9, acc_early)
+            a_mr = MetricResult(
+                metric="A",
+                value=math.tanh(raw_a),
+                n_events=n_labeled,
+            )
 
-        acc_early = _acc(early)
-        acc_late = _acc(late)
-        raw_a = (acc_late - acc_early) / max(1e-9, acc_early)
-        a_score: float = math.tanh(raw_a)
-    else:
-        a_score = 0.0
-
-    # 6) S — surrogate similarity (agent rows only)
+    # ------------------------------------------------------------------
+    # S — surrogate similarity (agent rows only)
+    # ------------------------------------------------------------------
     p_h = _aggregate_probs(agent_rows, "probs")
     p_s = _aggregate_probs(agent_rows, "surrogate_probs")
     if p_h and p_s:
-        s_score: float = math.exp(-_kl_divergence(p_h, p_s))
+        s_val: float = math.exp(-_kl_divergence(p_h, p_s))
+        s_n = len(agent_rows)
     else:
         matches = compared = 0
         for e in agent_rows:
@@ -344,21 +447,53 @@ def compute_metrics(
                 compared += 1
                 if e.get("action") == sa:
                     matches += 1
-        s_score = (matches / compared) if compared > 0 else 0.0
-    s_score = _clip01(s_score)
+        s_val = (matches / compared) if compared > 0 else 0.0
+        s_n = compared
+    s_mr = MetricResult(metric="S", value=_clip01(s_val), n_events=s_n)
 
-    # 7) EL — effort loss vs baseline
-    if baseline_s is not None and baseline_s > 0 and total_time > 0:
-        el_score = max(0.0, (total_time - baseline_s) / baseline_s)
+    # ------------------------------------------------------------------
+    # EL — effort loss vs baseline (BUG 2)
+    # Auto-derive baseline from P95 of all_session_times when unconfigured.
+    # Return None (not 0.0) when baseline cannot be determined.
+    # ------------------------------------------------------------------
+    el_val: Optional[float] = None
+    el_inferred = False
+
+    if baseline_s is not None:
+        if baseline_s > 0 and total_time > 0:
+            el_val = max(0.0, (total_time - baseline_s) / baseline_s)
+        else:
+            el_val = 0.0
     else:
-        el_score = 0.0
+        auto_bl = _infer_baseline_p95(all_session_times or [])
+        if auto_bl is not None:
+            el_val = max(0.0, (total_time - auto_bl) / auto_bl) if total_time > 0 else 0.0
+            el_inferred = True
 
-    efficiency = 1.0 / (1.0 + el_score)  # el_score >= 0 always
+    if el_val is None:
+        el_mr = MetricResult(
+            metric="EL",
+            value=None,
+            n_events=0,
+            warning=(
+                "baseline_s not configured and cannot be inferred "
+                "from a single session"
+            ),
+        )
+    else:
+        el_mr = MetricResult(
+            metric="EL", value=el_val, n_events=n_agents, inferred=el_inferred
+        )
 
-    # ---- Gentle shaping: off-role penalty + progress bonus ----
+    # ------------------------------------------------------------------
+    # EfficiencyScore — composite (EL + off-role penalty + progress bonus)
+    # When EL is unknown use 0.0 so shaping signals still contribute.
+    # ------------------------------------------------------------------
+    el_for_eff = el_val if el_val is not None else 0.0
+    efficiency = 1.0 / (1.0 + el_for_eff)
+
     offrole_count = sum(1 for e in agent_rows if bool(e.get("off_role_action")))
     offrole_rate = (offrole_count / n_agents) if n_agents > 0 else 0.0
-
     progress_count = _count(
         decisions,
         lambda e: str(e.get("event_type", "")).lower()
@@ -368,17 +503,49 @@ def compute_metrics(
 
     efficiency *= 1.0 - _OFFROLE_PENALTY_WEIGHT * _clip01(offrole_rate)
     efficiency *= 1.0 + _PROGRESS_BONUS_WEIGHT * _clip01(progress_rate)
-    efficiency = _clip01(efficiency)
+    eff_mr = MetricResult(
+        metric="EfficiencyScore",
+        value=_clip01(efficiency),
+        n_events=n_agents,
+        inferred=el_inferred,
+    )
 
     return {
-        "F":               float(f_score),
-        "D":               float(d_score),
-        "HCL":             float(hcl),
-        "Tr":              float(tr_score),
-        "A":               float(a_score),
-        "S":               float(s_score),
-        "EL":              float(el_score),
-        "EfficiencyScore": float(efficiency),
+        "F":               f_mr,
+        "D":               d_mr,
+        "HCL":             hcl_mr,
+        "Tr":              tr_mr,
+        "A":               a_mr,
+        "S":               s_mr,
+        "EL":              el_mr,
+        "EfficiencyScore": eff_mr,
+    }
+
+
+def compute_metrics(
+    *,
+    decisions: List[_DecisionInput],
+    T: Optional[float] = None,
+    baseline_s: Optional[float] = DEFAULT_BASELINE_S,
+    rt_max: float = DEFAULT_RT_MAX,
+) -> Dict[str, Optional[float]]:
+    """
+    Compute collab-session metrics; return {metric: value | None}.
+
+    value is None (not zero) when there was insufficient data —
+    callers must check before using the value mathematically.
+
+    For richer output including n_events, warnings, and inferred flags,
+    call compute_metrics_with_results() directly.
+    """
+    return {
+        k: mr.value
+        for k, mr in compute_metrics_with_results(
+            decisions=decisions,
+            T=T,
+            baseline_s=baseline_s,
+            rt_max=rt_max,
+        ).items()
     }
 
 

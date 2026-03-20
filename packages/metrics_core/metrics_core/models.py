@@ -12,6 +12,7 @@ and interaction_metrics — define them here once.
 from __future__ import annotations
 
 import math
+import re
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
@@ -50,8 +51,11 @@ def _parse_ts(ts: Any) -> Optional[datetime]:
             return None
     try:
         s = str(ts).replace("Z", "+00:00")
-        dt = datetime.fromisoformat(s)
-        return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+        # Strip sub-microsecond digits: "2026-02-02T08:00:00.000000729+00:00"
+        # → "2026-02-02T08:00:00.000000+00:00" so fromisoformat() doesn't choke.
+        s = re.sub(r"(\.\d{6})\d+", r"\1", s)
+        parsed = datetime.fromisoformat(s)
+        return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
     except (ValueError, TypeError):
         return None
 
