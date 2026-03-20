@@ -12,16 +12,23 @@ def _pctl(xs: List[float], q: float) -> float | None:
     return xs[lo] * (1 - f) + xs[hi] * f
 
 def _latency_ms_from_decision(d: Dict[str, Any]) -> float | None:
-    # Primary: latency_ms already in ms
+    """
+    Extract AI latency in milliseconds from a decision dict.
+
+    Field priority:
+      latency_ms   — already in ms; use directly.
+      duration_s   — name says seconds; convert × 1000.
+      latency      — no unit in the field name; skip rather than guess.
+                     A 400 ms response would be misclassified as 400 s
+                     by any threshold heuristic, so we drop ambiguous fields.
+    """
     v = d.get("latency_ms")
-    if isinstance(v, (int, float)): return float(v)
-    # Fallbacks (try to be forgiving)
-    s = d.get("duration_s")
-    if isinstance(s, (int, float)): return 1000.0 * float(s)
-    v = d.get("latency")  # might be sec or ms; assume sec if small
     if isinstance(v, (int, float)):
-        v = float(v)
-        return v * 1000.0 if v < 500 else v
+        return float(v)
+    s = d.get("duration_s")
+    if isinstance(s, (int, float)):
+        return 1000.0 * float(s)
+    # bare "latency" field has no unit — do not guess
     return None
 
 def latency_percentiles_by(
@@ -44,10 +51,19 @@ def latency_percentiles_by(
     for sess in logs:
         group = str(sess.get(group_key, "unknown"))
         for d in sess.get("decisions", []) or []:
-            if str(d.get("action", "")).lower() in {"ai_evaluated", "classify", "forecast"}:
-                v = _latency_ms_from_decision(d)
-                if v is not None:
-                    by_group.setdefault(group, []).append(v)
+            actor = str(d.get("actor_type") or "").strip().lower()
+            action = str(d.get("action") or "").strip().lower()
+            # Primary: actor_type == "ai" (set by adapters).
+            # Fallback: hardcoded action names for logs that lack actor_type.
+            is_ai = (
+                actor == "ai"
+                or (not actor and action in {"ai_evaluated", "classify", "forecast"})
+            )
+            if not is_ai:
+                continue
+            v = _latency_ms_from_decision(d)
+            if v is not None:
+                by_group.setdefault(group, []).append(v)
 
     labels = sorted(by_group.keys())
     q_list = list(quantiles)
