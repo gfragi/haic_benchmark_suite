@@ -1,4 +1,7 @@
-FROM node:18-alpine
+FROM node:20-alpine
+
+# Build tools required by native modules (deasync → node-gyp)
+RUN apk add --no-cache python3 make g++
 
 # Set the working directory in the container
 WORKDIR /app

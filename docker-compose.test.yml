@@ -1,0 +1,33 @@
+# docker-compose.test.yml
+# Ephemeral test profile — no persistent data, no source mounts.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.test.yml up -d
+
+services:
+  db:
+    volumes:
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: haic_test
+      POSTGRES_USER: haic_user
+      POSTGRES_PASSWORD: testpass123
+
+  minio:
+    volumes:
+      - type: volume
+        target: /data
+        volume:
+          nocopy: true
+    environment:
+      MINIO_ROOT_USER: testadmin
+      MINIO_ROOT_PASSWORD: testpass123
+
+  backend:
+    environment:
+      DATABASE_URL: postgresql://haic_user:testpass123@db:5432/haic_test
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: testadmin
+      MINIO_SECRET_KEY: testpass123
+      MINIO_BUCKET: haic-test
+      TEST_ENV: "true"
+    # No volume mounts — test against built image

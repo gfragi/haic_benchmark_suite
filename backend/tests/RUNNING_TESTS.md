@@ -86,8 +86,29 @@ pytest tests/test_piece3_schema.py
 | `test_evaluation_result.py` | PostgreSQL + `haic_env_builder` package | Same as above |
 | `test_evaluate.py` | None | Stub test; uses incorrect `http.client` import |
 
-Run only the tests that are safe to run without infrastructure:
+## Run only the E2E smoke tests
 
 ```bash
-pytest tests/test_data_evaluation.py tests/test_hardening_piece2.py tests/test_piece3_schema.py
+pytest tests/test_e2e_smoke.py
+```
+
+### E2E test coverage
+
+| Test | What it checks |
+| --- | --- |
+| `test_e2e_register_then_evaluate_then_get_results` | Full register → evaluate → GET results round-trip; HAIC keys present; Tr=0.0 from `correct=False` |
+| `test_e2e_upload_file_then_evaluate` | `/upload` endpoint sets `config.minio_path`; evaluation runs on uploaded file |
+| `test_e2e_partial_session_produces_warnings` | AI-only session → Tr=None + Tr warning in result_data["warnings"] |
+| `test_e2e_nanosecond_timestamp_does_not_fail_pipeline` | Sub-microsecond timestamps don't crash the pipeline; status=completed |
+| `test_e2e_multi_session_log_evaluates_all` | Two registered sessions → F metric computes (not None); all 7 HAIC keys present |
+| `test_e2e_missing_config_returns_404_on_evaluate` | POST /evaluate/99999 → 404 |
+| `test_e2e_get_results_missing_config_returns_404` | GET /results/99999 → 404 |
+| `test_e2e_schema_bridge_warnings_in_register_response` | Invalid `actor_type="robot"` accepted (200); validation_warnings is non-empty list |
+
+---
+
+## Run only the tests that are safe to run without infrastructure
+
+```bash
+pytest tests/test_data_evaluation.py tests/test_hardening_piece2.py tests/test_piece3_schema.py tests/test_e2e_smoke.py
 ```
