@@ -1,10 +1,16 @@
 # main.py
 import os
-from fastapi import FastAPI, APIRouter
+import logging
+from fastapi import FastAPI, APIRouter, Request
+from fastapi.exceptions import HTTPException
+from fastapi.responses import JSONResponse
 from app.routers import logs, configuration, evaluate, log_generator, meta
 from app.routers import fairness, env_builder, simulator, results, survey, survey_schema, env_catalog, analytics
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.seed_core_metrics import seed_core_definitions
+from app.utils.errors import ErrorEnvelope, ErrorDetail
+
+logger = logging.getLogger(__name__)
 
 
 app = FastAPI(
@@ -52,3 +58,26 @@ api.include_router(env_catalog.router,   prefix="/envs", tags=["Environment Cata
 app.include_router(meta.router,           prefix="/meta", tags=["Meta"])
 
 app.include_router(api)
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(
+    request: Request, exc: Exception
+) -> JSONResponse:
+    if isinstance(exc, HTTPException):
+        raise exc
+    logger.error(
+        "Unhandled exception on %s %s: %s",
+        request.method, request.url.path,
+        repr(exc), exc_info=True,
+    )
+    return JSONResponse(
+        status_code=500,
+        content=ErrorEnvelope(
+            error=ErrorDetail(
+                code="INTERNAL_ERROR",
+                message="An unexpected error occurred.",
+                details={"exception_type": type(exc).__name__},
+            )
+        ).model_dump(),
+    )
