@@ -26,11 +26,22 @@
           </v-btn>
         </v-col>
       </v-row>
+      <!-- Error alert -->
+      <v-row v-if="fetchError">
+        <v-col cols="12">
+          <v-alert type="error" variant="tonal" class="mb-2">
+            <strong>Could not load configurations:</strong> {{ fetchError }}
+          </v-alert>
+        </v-col>
+      </v-row>
+
       <v-row>
         <v-col cols="12">
           <v-data-table
             :headers="headers"
             :items="filteredConfigs"
+            :loading="loading"
+            loading-text="Loading configurations…"
             class="elevation-1"
             :items-per-page="itemsPerPage"
             :footer-props="{
@@ -192,6 +203,8 @@ export default {
         { title: "Actions", key: "actions", sortable: false },
       ],
       configs: [], // This will be fetched from the API
+      loading: false, // Loading state for the table
+      fetchError: null, // Stores any fetch error message
       dialog: false, // For the delete confirmation dialog
       confirmDialog: false, // For the evaluation confirmation dialog
       configurationToDelete: null, // Temporarily store the configuration to delete
@@ -216,13 +229,47 @@ export default {
   },
   methods: {
     fetchConfigs() {
+      this.loading = true;
+      this.fetchError = null;
       configurationService
         .getAllConfigs()
         .then((response) => {
-          this.configs = response.data;
+          const raw = response.data;
+          // Normalize: handle plain array OR wrapped responses like
+          // { configurations: [] }, { items: [] }, { data: [] }, { results: [] }
+          if (Array.isArray(raw)) {
+            this.configs = raw;
+          } else if (raw && typeof raw === "object") {
+            this.configs =
+              raw.configurations || raw.items || raw.data || raw.results || [];
+          } else {
+            this.configs = [];
+          }
+          console.log(
+            `✅ Loaded ${this.configs.length} configuration(s)`,
+            this.configs
+          );
         })
         .catch((error) => {
           console.error("Error fetching configs:", error);
+          // FastAPI returns 422 validation errors as:
+          // { detail: [ { loc: [...], msg: "...", type: "..." }, ... ] }
+          const detail = error?.response?.data?.detail;
+          if (Array.isArray(detail)) {
+            // Summarise every missing/invalid field into one message
+            this.fetchError = detail
+              .map((d) => `[${d.loc?.join(" → ")}] ${d.msg}`)
+              .join(" | ");
+          } else if (typeof detail === "string") {
+            this.fetchError = detail;
+          } else {
+            this.fetchError =
+              error?.message || "Failed to load configurations.";
+          }
+          this.configs = [];
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
     editConfig(configuration) {

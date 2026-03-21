@@ -97,6 +97,13 @@ class LogService:
             raise Exception(f"Processing failed: {e}")
 
         results["schema_warnings"] = schema_warnings
+        
+        log_entry = LogEntry(
+            configuration_id=configuration_id,
+            session_id=f"upload-{stem}",
+        )
+        db.add(log_entry)
+        db.commit()
 
         # Update the config to point at the original upload (evaluation reads this)
         config = db.query(EvaluationConfig).get(configuration_id)
@@ -135,8 +142,6 @@ class LogService:
         log_row = LogEntry(
             configuration_id=configuration_id,
             session_id=session_part,
-            raw_filename=original_name,
-            derived_filename=derived_name,
         )
         db.add(log_row)
         db.commit()

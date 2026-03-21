@@ -57,6 +57,14 @@ api.interceptors.response.use(
       message: error.message,
       code: error.code,
     });
+    // Log the full response body — critical for FastAPI 422 errors which
+    // include a 'detail' array explaining exactly which field/param is missing.
+    if (error.response?.data) {
+      console.error(
+        "🔎 Response body:",
+        JSON.stringify(error.response.data, null, 2)
+      );
+    }
 
     // Provide helpful suggestions for network errors
     if (error.code === "ERR_NETWORK" || error.message === "Network Error") {

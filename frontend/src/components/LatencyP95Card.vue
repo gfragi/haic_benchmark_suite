@@ -8,8 +8,23 @@
 
 <script>
 import { onMounted, ref, watch } from "vue";
-import { Chart, BarController, BarElement, CategoryScale, LinearScale, Legend, Tooltip } from "chart.js";
-Chart.register(BarController, BarElement, CategoryScale, LinearScale, Legend, Tooltip);
+import {
+  Chart,
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Legend,
+  Tooltip,
+} from "chart.js";
+Chart.register(
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Legend,
+  Tooltip
+);
 
 export default {
   name: "LatencyP95Card",
@@ -35,15 +50,15 @@ export default {
           responsive: true,
           plugins: {
             legend: { position: "top" },
-            tooltip: { mode: "index", intersect: false }
+            tooltip: { mode: "index", intersect: false },
           },
           scales: {
             y: {
               title: { display: true, text: "Latency (ms)" },
-              beginAtZero: true
-            }
-          }
-        }
+              beginAtZero: true,
+            },
+          },
+        },
       });
 
       // draw SLA line
@@ -54,7 +69,10 @@ export default {
         ctx.save();
         ctx.strokeStyle = "#cc0000";
         ctx.setLineDash([6, 6]);
-        ctx.beginPath(); ctx.moveTo(yScale.left, y); ctx.lineTo(chart.scales.x.right, y); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(yScale.left, y);
+        ctx.lineTo(chart.scales.x.right, y);
+        ctx.stroke();
         ctx.restore();
       });
     };
@@ -62,11 +80,18 @@ export default {
     onMounted(draw);
     watch(() => props.payload, draw, { deep: true });
     return { canvas };
-  }
+  },
 };
 </script>
 
 <style scoped>
-.card { padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-.muted { font-size: 12px; opacity: .7; }
+.card {
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.muted {
+  font-size: 12px;
+  opacity: 0.7;
+}
 </style>

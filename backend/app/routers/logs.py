@@ -23,7 +23,7 @@ MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 minio_client = get_minio_client()
 
 
-@router.post("/upload", response_model=UploadResponse)
+@router.post("/upload")  # remove response_model=UploadResponse if it's there
 async def upload_log(
     configuration_id: int = Query(..., description="Evaluation configuration id"),
     file: UploadFile = File(...),
@@ -31,21 +31,23 @@ async def upload_log(
 ):
     raw = await file.read()
 
-    # Parse JSON
     try:
         payload = json.loads(raw.decode("utf-8"))
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=400, detail=f"Invalid JSON file: {e.msg}")
 
-    # Unwrap generator wrapper: {count, file_path, logs: [...]}
     if isinstance(payload, dict) and isinstance(payload.get("logs"), list):
         payload = payload["logs"]
 
     try:
-        results = log_service.process_uploaded_log(configuration_id, payload, file.filename, raw, db)
+        results = log_service.process_uploaded_log(
+            configuration_id, payload, file.filename, raw, db
+        )
         return {
             "detail": f"Uploaded and processed log(s) for configuration {configuration_id}.",
-            "minio_paths": results,
+            "original_path": results.get("original"),
+            "derived_by_version": results.get("derived_by_version", {}),
+            "schema_warnings": results.get("schema_warnings", []),
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

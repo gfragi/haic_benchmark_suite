@@ -35,7 +35,9 @@ class LogIngestResponse(BaseModel):
 
 class UploadResponse(BaseModel):
     detail: str
-    minio_paths: list[str]
+    original_path: str | None = None
+    derived_by_version: dict[str, Any] = {}
+    schema_warnings: list[str] = []
 
 
 class EvaluationResultResponse(BaseModel):

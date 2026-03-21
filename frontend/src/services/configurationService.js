@@ -1,8 +1,8 @@
 import api from "./axios";
 
 export default {
-  getAllConfigs() {
-    return api.get("/v1/configuration/list");
+  getAllConfigs(skip = 0, limit = 100) {
+    return api.get("/v1/configuration", { params: { skip, limit } });
   },
   getConfigById(configuration_id) {
     return api.get(`/v1/configuration/${configuration_id}`);
