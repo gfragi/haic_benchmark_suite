@@ -3,6 +3,8 @@ import json, os, io
 import logging
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
+import zipfile
+
 
 from app.schemas.log import LogSchema
 from app.schemas.responses import LogIngestResponse, UploadResponse
@@ -212,3 +214,76 @@ def remove_log(config_id: int, log_name: str):
         return {"detail": "Log deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.post("/upload-zip")
+async def upload_zip(
+    configuration_id: int = Query(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    """
+    Accepts a ZIP of individual session JSON files (one per application case).
+    Merges all logs[] arrays into one aggregated payload and processes normally.
+    This is how pilot partners deliver their data.
+    """
+    if not file.filename.endswith(".zip"):
+        raise HTTPException(status_code=400, detail="File must be a .zip archive")
+
+    raw = await file.read()
+
+    # Extract and merge all JSON files from the zip
+    merged_sessions = []
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as zf:
+            json_files = [n for n in zf.namelist()
+                         if n.endswith(".json") and not n.startswith("__")]
+            if not json_files:
+                raise HTTPException(status_code=400,
+                                   detail="ZIP contains no JSON files")
+
+            for name in sorted(json_files):
+                try:
+                    content = json.loads(zf.read(name).decode("utf-8"))
+                    # Each file is {"logs": [session]} — unwrap and merge
+                    if isinstance(content, dict) and "logs" in content:
+                        merged_sessions.extend(content["logs"])
+                    elif isinstance(content, dict):
+                        merged_sessions.append(content)
+                    elif isinstance(content, list):
+                        merged_sessions.extend(content)
+                except Exception as e:
+                    logger.warning("Skipping %s: %s", name, e)
+    except zipfile.BadZipFile:
+        raise HTTPException(status_code=400, detail="Invalid ZIP file")
+
+    if not merged_sessions:
+        raise HTTPException(status_code=400,
+                           detail="No valid session data found in ZIP")
+
+    # Repack as aggregated format and process normally
+    merged_payload = {"logs": merged_sessions}
+    merged_bytes = json.dumps(merged_payload, ensure_ascii=False).encode("utf-8")
+
+    try:
+        results = log_service.process_uploaded_log(
+            configuration_id,
+            merged_sessions,        # already a list
+            file.filename,
+            merged_bytes,
+            db,
+        )
+        return {
+            "detail": f"Merged {len(merged_sessions)} sessions from "
+                      f"{len(json_files)} files.",
+            "session_count": len(merged_sessions),
+            "file_count": len(json_files),
+            "original_path": results.get("original"),
+            "derived_by_version": results.get("derived_by_version", {}),
+            "schema_warnings": results.get("schema_warnings", []),
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Processing failed: {e}")
