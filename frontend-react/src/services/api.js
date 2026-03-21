@@ -104,5 +104,23 @@ export const api = {
   interpret: (body) =>
     request('/interpret', { method: 'POST', body: JSON.stringify(body) }),
 
+  adapters: {
+    // GET /meta/adapters — list all registered adapter tags
+    list: () => fetch('/meta/adapters').then((r) => r.json()),
+    // GET /api/v1/adapters/{tag} — fetch saved config for one adapter
+    getConfig: (tag) => request(`/adapters/${encodeURIComponent(tag)}`),
+    // POST /api/v1/adapters/register — save + activate a field-mapping config
+    register: (body) =>
+      request('/adapters/register', { method: 'POST', body: JSON.stringify(body) }),
+    // POST /api/v1/adapters/test — test mapping on a sample event dict
+    test: (body) =>
+      request('/adapters/test', { method: 'POST', body: JSON.stringify(body) }),
+  },
+
+  pilot: {
+    onboard: (body) =>
+      request('/pilot/onboard', { method: 'POST', body: JSON.stringify(body) }),
+  },
+
   health: () => fetch('/meta/health').then((r) => r.json()),
 }

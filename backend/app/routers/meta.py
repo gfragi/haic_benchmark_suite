@@ -51,3 +51,25 @@ def version():
 def seed_core_metrics():
     seed_core_definitions()
     return {"status": "ok"}
+
+
+@router.get("/adapters")
+def list_adapters():
+    """
+    Return all registered adapter tags plus which ones have a saved config file.
+    Used by the frontend to decide whether to show the Pilot Setup form.
+    """
+    from metrics_core.adapters.registry import AdapterRegistry
+    from metrics_core.adapters import config_adapter as ca
+    ca.load_all_configs()  # pick up any configs saved after startup
+    tags = AdapterRegistry.list_registered()
+    builtin = {"generic", "applications", "pilot_apps"}
+    return {
+        "adapters": [
+            {
+                "tag": t,
+                "source": "builtin" if t in builtin else "config",
+            }
+            for t in tags
+        ]
+    }

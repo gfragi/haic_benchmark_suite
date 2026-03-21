@@ -104,6 +104,12 @@ def normalize_log_payload(payload: Any) -> tuple[list[SessionLog], list[str]]:
     if not raw_sessions:
         raise ValueError("Log contains no valid session objects.")
 
+    from metrics_core.adapters.registry import AdapterRegistry
+    # Detect pilot_tag from first session
+    pilot_tag = raw_sessions[0].get("pilot_tag", "generic") if raw_sessions else "generic"
+    # Run pilot-specific adapter
+    raw_sessions = AdapterRegistry.adapt(pilot_tag, raw_sessions)
+
     sessions: list[SessionLog] = []
     for i, raw in enumerate(raw_sessions):
         session_log, warns = log_schema_to_session_log(raw)

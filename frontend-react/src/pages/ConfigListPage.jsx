@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
-import { ChevronRight, AlertCircle, Loader2, Plus, X } from 'lucide-react'
+import { useNavigate, Link } from 'react-router-dom'
+import { ChevronRight, AlertCircle, Loader2, Plus, X, HelpCircle } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 
@@ -52,6 +52,69 @@ const METRIC_GROUPS = [
   'Collaboration and Interaction', 'Trust and Safety', 'Robustness and Generalization',
 ]
 
+// ── Field Help Modal ──────────────────────────────────────────
+
+const FIELD_HELP = [
+  {
+    field: 'Application name',
+    plain: 'The name of the system or product you\'re evaluating. This is just a label for your records — it doesn\'t affect computation. Example: "Permit Review Portal" or "Radiology Assist v2".',
+  },
+  {
+    field: 'AI model name',
+    plain: 'The identifier of the specific AI model version under evaluation. Use something you\'ll recognise later when comparing results. Example: "GPT-4o", "Gemini 1.5 Pro", "internal-classifier-v3".',
+  },
+  {
+    field: 'AI model type',
+    plain: 'The broad algorithmic category of your AI. Choose the type that best describes what the model does: Classification (predicts a category), Regression (predicts a number), XAI (explainable output), Swarm/Active Learning (iterative), or Other.',
+  },
+  {
+    field: 'Config type',
+    plain: '"Specific" means this configuration is tied to one exact AI model version — useful when you want to track changes between releases. "Generic" means the configuration applies to the application overall, regardless of model version.',
+  },
+  {
+    field: 'Metric groups',
+    plain: 'Choose which outcome categories to measure. Each group covers a different aspect of Human-AI collaboration: Effectiveness (accuracy, correctness), Efficiency (time, effort), Adaptability (learning over time), Collaboration (interaction patterns), Trust & Safety (reliability), Robustness (performance across conditions). Select all six if unsure — unused groups simply show no data.',
+  },
+  {
+    field: 'Description',
+    plain: 'Optional free-text note about this configuration. Useful for recording context like the evaluation date, dataset used, or any deployment conditions that might affect results.',
+  },
+]
+
+function FieldHelpModal({ onClose }) {
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40"
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h3 className="text-sm font-semibold text-gray-900">Configuration fields explained</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <X size={16} />
+          </button>
+        </div>
+        <div className="px-6 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
+          {FIELD_HELP.map(({ field, plain }) => (
+            <div key={field}>
+              <p className="text-xs font-semibold text-gray-800 mb-0.5">{field}</p>
+              <p className="text-xs text-gray-500 leading-relaxed">{plain}</p>
+            </div>
+          ))}
+        </div>
+        <div className="px-6 py-3 border-t border-gray-100 bg-gray-50">
+          <button
+            onClick={onClose}
+            className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Field({ label, required, children }) {
   return (
     <div>
@@ -70,6 +133,7 @@ function NewConfigModal({ onClose, onCreated }) {
   const [form, setForm] = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
+  const [showHelp, setShowHelp] = useState(false)
 
   function set(key, val) {
     setForm(f => ({ ...f, [key]: val }))
@@ -116,12 +180,23 @@ function NewConfigModal({ onClose, onCreated }) {
       onClick={handleBackdrop}
     >
       <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 overflow-hidden">
+        {showHelp && <FieldHelpModal onClose={() => setShowHelp(false)} />}
+
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-900">New Configuration</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-            <X size={16} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowHelp(true)}
+              title="What do these fields mean?"
+              className="text-gray-300 hover:text-indigo-500 transition-colors"
+            >
+              <HelpCircle size={15} />
+            </button>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <X size={16} />
+            </button>
+          </div>
         </div>
 
         {/* Body */}
@@ -298,14 +373,23 @@ export default function ConfigListPage() {
       </div>
 
       {configs.length === 0 ? (
-        <div className="text-center py-20 text-gray-400 text-sm">
-          No configurations yet.{' '}
-          <button
-            onClick={() => setShowModal(true)}
-            className="text-indigo-500 hover:text-indigo-700 underline underline-offset-2"
-          >
-            Create one
-          </button>
+        <div className="text-center py-20 space-y-3">
+          <p className="text-gray-400 text-sm">No configurations yet.</p>
+          <div className="flex items-center justify-center gap-4 text-sm">
+            <button
+              onClick={() => setShowModal(true)}
+              className="text-indigo-600 hover:text-indigo-800 underline underline-offset-2 font-medium"
+            >
+              Create one
+            </button>
+            <span className="text-gray-300">·</span>
+            <Link
+              to="/getting-started"
+              className="text-gray-500 hover:text-indigo-600 underline underline-offset-2"
+            >
+              Need help? See the guide
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">

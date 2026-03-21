@@ -6,6 +6,8 @@ import ResultsDashboardPage from './pages/ResultsDashboardPage'
 import CompareVersionsPage from './pages/CompareVersionsPage'
 import LogWizardPage from './pages/LogWizardPage'
 import MetricsGlossaryPage from './pages/MetricsGlossaryPage'
+import PilotOnboardingPage from './pages/PilotOnboardingPage'
+import GettingStartedPage from './pages/GettingStartedPage'
 
 export default function App() {
   return (
@@ -17,6 +19,8 @@ export default function App() {
         <Route path="/compare" element={<CompareVersionsPage />} />
         <Route path="/ingest" element={<LogWizardPage />} />
         <Route path="/metrics" element={<MetricsGlossaryPage />} />
+        <Route path="/pilot/new" element={<PilotOnboardingPage />} />
+        <Route path="/getting-started" element={<GettingStartedPage />} />
       </Routes>
     </AppShell>
   )

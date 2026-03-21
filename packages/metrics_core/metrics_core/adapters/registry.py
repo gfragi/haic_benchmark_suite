@@ -30,3 +30,13 @@ class AdapterRegistry:
         if fn is None:
             return sessions  # bare pass-through
         return fn(sessions)
+
+    @classmethod
+    def has_adapter(cls, pilot_tag: str) -> bool:
+        """Return True if a non-generic adapter exists for *pilot_tag*."""
+        return pilot_tag.lower() in cls._adapters
+
+    @classmethod
+    def list_registered(cls) -> list[str]:
+        """Return all registered adapter tags (includes builtins)."""
+        return list(cls._adapters.keys())

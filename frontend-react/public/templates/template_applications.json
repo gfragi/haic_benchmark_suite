@@ -1,0 +1,78 @@
+[
+  {
+    "_note": "One object = one complete interaction session (e.g., one application review).",
+    "session_id": "session_001",
+    "_note_session_id": "Required. Any unique string you use to identify this session (e.g., case ID, ticket number, UUID).",
+    "baseline_s": 300,
+    "_note_baseline_s": "Optional but recommended. How long this task takes WITHOUT AI assistance, in seconds. Used to compute Effort Loss (EL). Example: 5 minutes = 300.",
+    "decisions": [
+      {
+        "_note": "AI event: the AI system evaluates the application.",
+        "interaction_id": "evt_001",
+        "_note_interaction_id": "Required. Unique ID for this specific event within the session.",
+        "timestamp": "2024-01-15T09:00:00Z",
+        "_note_timestamp": "Required. ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Used to compute timing metrics.",
+        "event_type": "ai_evaluated",
+        "_note_event_type": "Required. The action name. Must match the AI action names you defined in Pilot Setup.",
+        "actor_type": "ai",
+        "_note_actor_type": "Required. Either 'ai' or 'human'. Drives all actor-based metrics.",
+        "latency_ms": 850,
+        "_note_latency_ms": "AI events: how long the AI took to produce its output (milliseconds). Used for Interaction Duration (D) and Human Cognitive Load (HCL).",
+        "correct": true,
+        "_note_correct": "AI events: was the AI decision correct? (true or false). Required to compute Trust (Tr). The operator's subsequent action determines this."
+      },
+      {
+        "_note": "Human event: the operator reviews the AI decision.",
+        "interaction_id": "evt_002",
+        "_note_interaction_id": "Unique ID for this event.",
+        "timestamp": "2024-01-15T09:00:15Z",
+        "_note_timestamp": "ISO 8601 timestamp of when the human acted.",
+        "event_type": "operator_reviewed",
+        "_note_event_type": "The human action name. Must match the human action names from your Pilot Setup.",
+        "actor_type": "human",
+        "_note_actor_type": "'human' for operator/reviewer events.",
+        "duration_s": 14.5,
+        "_note_duration_s": "Human events: how long the human spent making their decision (seconds). Used for HCL and D metrics."
+      },
+      {
+        "_note": "Human event: the operator approves (confirms the AI decision).",
+        "interaction_id": "evt_003",
+        "timestamp": "2024-01-15T09:00:29Z",
+        "event_type": "application_approved",
+        "actor_type": "human",
+        "duration_s": 2.1
+      }
+    ]
+  },
+  {
+    "_note": "Second session example showing a case where the AI was wrong.",
+    "session_id": "session_002",
+    "baseline_s": 300,
+    "decisions": [
+      {
+        "interaction_id": "evt_004",
+        "timestamp": "2024-01-15T10:15:00Z",
+        "event_type": "ai_evaluated",
+        "actor_type": "ai",
+        "latency_ms": 1100,
+        "correct": false,
+        "_note_correct": "false: the operator disagreed with the AI and overrode the recommendation."
+      },
+      {
+        "interaction_id": "evt_005",
+        "timestamp": "2024-01-15T10:15:22Z",
+        "event_type": "operator_reviewed",
+        "actor_type": "human",
+        "duration_s": 22.0
+      },
+      {
+        "interaction_id": "evt_006",
+        "timestamp": "2024-01-15T10:15:44Z",
+        "event_type": "application_rejected",
+        "_note_event_type": "Operator overrode AI — hence correct: false on the AI event above.",
+        "actor_type": "human",
+        "duration_s": 3.8
+      }
+    ]
+  }
+]

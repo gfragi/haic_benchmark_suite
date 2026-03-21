@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import {
   Upload, Link2, ChevronRight, CheckCircle2,
-  AlertTriangle, Loader2, FileJson, X,
+  AlertTriangle, Loader2, FileJson, X, FlaskConical,
+  Settings2,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
@@ -11,7 +12,7 @@ import { api } from '../services/api'
 // ── Step indicators ───────────────────────────────────────────
 
 function StepDots({ current }) {
-  const steps = ['Select Config', 'Upload Logs', 'Evaluate']
+  const steps = ['Select Config', 'Pilot Setup', 'Upload Logs', 'Evaluate']
   return (
     <div className="flex items-center gap-0 mb-8">
       {steps.map((label, i) => {
@@ -55,6 +56,12 @@ function Step1({ onNext }) {
     queryFn: () => api.configs.list(),
   })
 
+  function handleNext() {
+    const id = Number(selectedId)
+    const cfg = configs?.find(c => c.id === id) ?? null
+    onNext(id, cfg)
+  }
+
   if (isLoading) return (
     <div className="flex items-center gap-2 text-gray-400 text-sm py-10">
       <Loader2 size={15} className="animate-spin" /> Loading configurations…
@@ -89,7 +96,7 @@ function Step1({ onNext }) {
       </div>
       <button
         disabled={!selectedId}
-        onClick={() => onNext(Number(selectedId))}
+        onClick={handleNext}
         className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium
                    bg-indigo-600 text-white hover:bg-indigo-700 transition-colors
                    disabled:opacity-40 disabled:cursor-not-allowed"
@@ -200,6 +207,519 @@ function ChecklistGate({ onConfirm, onBack, configId, config }) {
   )
 }
 
+// ── Step 1 (Pilot Setup) helpers ──────────────────────────────
+
+const DEFAULT_MAPPING = {
+  actor_type_field:  'actor_type',
+  human_value:       'human',
+  ai_value:          'ai',
+  latency_field:     'latency_ms',
+  latency_unit:      'ms',
+  duration_field:    'duration_s',
+  duration_unit:     's',
+  correct_field:     'correct',
+  correct_value:     'true',
+  incorrect_value:   'false',
+  ai_action_names:    ['ai_evaluated'],
+  human_action_names: ['application_created', 'operator_verified'],
+  package_format:    'single_json',
+}
+
+function UnitToggle({ value, onChange }) {
+  return (
+    <div className="flex items-center bg-gray-100 rounded p-0.5">
+      {['ms', 's'].map(u => (
+        <button
+          key={u}
+          type="button"
+          onClick={() => onChange(u)}
+          className={clsx(
+            'px-2 py-0.5 text-xs rounded font-medium transition-colors',
+            value === u
+              ? 'bg-white shadow-sm text-gray-800'
+              : 'text-gray-500 hover:text-gray-700',
+          )}
+        >
+          {u}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function ChipInput({ values, onChange, placeholder }) {
+  const [input, setInput] = useState('')
+
+  function add() {
+    const v = input.trim()
+    if (v && !values.includes(v)) onChange([...values, v])
+    setInput('')
+  }
+  function handleKey(e) {
+    if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add() }
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex flex-wrap gap-1.5">
+        {values.map(v => (
+          <span
+            key={v}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-full
+                       bg-indigo-100 text-indigo-700 text-xs font-mono"
+          >
+            {v}
+            <button
+              type="button"
+              onClick={() => onChange(values.filter(x => x !== v))}
+              className="hover:text-indigo-900"
+            >
+              <X size={10} />
+            </button>
+          </span>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={handleKey}
+          placeholder={placeholder}
+          className="flex-1 border border-gray-200 rounded-md px-3 py-1.5 text-xs font-mono
+                     text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+        />
+        <button
+          type="button"
+          onClick={add}
+          className="px-2.5 py-1.5 text-xs rounded-md border border-gray-200
+                     text-gray-600 hover:bg-gray-50 transition-colors"
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function FieldRow({ label, note, children }) {
+  return (
+    <div className="grid grid-cols-5 gap-3 items-start py-2.5 border-b border-gray-100 last:border-0">
+      <div className="col-span-2">
+        <p className="text-xs font-medium text-gray-700">{label}</p>
+        {note && <p className="text-xs text-gray-400 mt-0.5">{note}</p>}
+      </div>
+      <div className="col-span-3">{children}</div>
+    </div>
+  )
+}
+
+function TestMappingPanel({ pilotTag }) {
+  const [open, setOpen] = useState(false)
+  const [sampleJson, setSampleJson] = useState('')
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  async function runTest() {
+    setLoading(true); setError(null); setResult(null)
+    try {
+      const parsed = JSON.parse(sampleJson)
+      const res = await api.adapters.test({ pilot_tag: pilotTag, sample_event: parsed })
+      setResult(res)
+    } catch (e) {
+      setError(e instanceof SyntaxError ? `Invalid JSON — ${e.message}` : e.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-1.5 text-xs text-indigo-600
+                   hover:text-indigo-800 transition-colors"
+      >
+        <FlaskConical size={12} /> Test mapping with a sample event
+      </button>
+    )
+  }
+
+  return (
+    <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold text-gray-600 flex items-center gap-1.5">
+          <FlaskConical size={12} className="text-indigo-500" /> Test Field Mapping
+        </p>
+        <button
+          type="button"
+          onClick={() => { setOpen(false); setResult(null); setError(null) }}
+          className="text-gray-400 hover:text-gray-600"
+        >
+          <X size={13} />
+        </button>
+      </div>
+      <p className="text-xs text-gray-500">
+        Paste a single raw event dict. See how it maps to canonical
+        DecisionEvent fields with the current adapter config.
+      </p>
+      <textarea
+        value={sampleJson}
+        onChange={e => setSampleJson(e.target.value)}
+        placeholder={'{"event_type": "ai_evaluated", "latency_ms": 120, "actor_type": "ai", ...}'}
+        className="w-full font-mono text-xs border border-gray-200 rounded-md p-2
+                   focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-none bg-white"
+        rows={4}
+      />
+      <button
+        type="button"
+        disabled={!sampleJson.trim() || loading}
+        onClick={runTest}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium
+                   bg-indigo-600 text-white hover:bg-indigo-700 transition-colors
+                   disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        {loading
+          ? <><Loader2 size={11} className="animate-spin" /> Testing…</>
+          : 'Run Test'}
+      </button>
+      {error && <p className="text-xs text-red-600">{error}</p>}
+      {result && (
+        <div className="space-y-2">
+          {result.warning && (
+            <p className="text-xs text-amber-600">{result.warning}</p>
+          )}
+          <div>
+            <p className="text-xs font-medium text-gray-500 mb-1">DecisionEvent:</p>
+            <pre className="text-xs font-mono bg-white rounded border border-gray-200
+                            p-2 overflow-auto max-h-40 text-gray-700">
+              {JSON.stringify(result.decision_event ?? result.mapped, null, 2)}
+            </pre>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function MappingForm({ pilotTag, initial, onSubmit, onSkip, onBack, submitting, submitError }) {
+  const [form, setForm] = useState({ ...DEFAULT_MAPPING, ...initial })
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    onSubmit({ ...form, pilot_tag: pilotTag })
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Info banner */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700">
+        Map your log field names to the canonical fields the HAIC engine expects.
+        Defaults match the standard <span className="font-mono">applications</span> pilot —
+        most setups can click <strong>Register mapping</strong> unchanged.
+      </div>
+
+      {/* Fields table */}
+      <div className="bg-white rounded-lg border border-gray-200 px-4">
+
+        <FieldRow label="Actor type field" note="field that holds 'human' / 'ai' label">
+          <input
+            type="text" value={form.actor_type_field}
+            onChange={e => set('actor_type_field', e.target.value)}
+            className="w-full border border-gray-200 rounded px-2 py-1 text-xs font-mono
+                       focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+        </FieldRow>
+
+        <FieldRow label="Human value" note="value that means human actor">
+          <input
+            type="text" value={form.human_value}
+            onChange={e => set('human_value', e.target.value)}
+            className="w-full border border-gray-200 rounded px-2 py-1 text-xs font-mono
+                       focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+        </FieldRow>
+
+        <FieldRow label="AI value" note="value that means AI actor">
+          <input
+            type="text" value={form.ai_value}
+            onChange={e => set('ai_value', e.target.value)}
+            className="w-full border border-gray-200 rounded px-2 py-1 text-xs font-mono
+                       focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+        </FieldRow>
+
+        <FieldRow label="AI response latency" note="field + unit">
+          <div className="flex gap-2 items-center">
+            <input
+              type="text" value={form.latency_field}
+              onChange={e => set('latency_field', e.target.value)}
+              className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs font-mono
+                         focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            />
+            <UnitToggle value={form.latency_unit} onChange={v => set('latency_unit', v)} />
+          </div>
+        </FieldRow>
+
+        <FieldRow label="Human decision time" note="field + unit">
+          <div className="flex gap-2 items-center">
+            <input
+              type="text" value={form.duration_field}
+              onChange={e => set('duration_field', e.target.value)}
+              className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs font-mono
+                         focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            />
+            <UnitToggle value={form.duration_unit} onChange={v => set('duration_unit', v)} />
+          </div>
+        </FieldRow>
+
+        <FieldRow label="Correct/incorrect field" note="boolean or string outcome field">
+          <input
+            type="text" value={form.correct_field}
+            onChange={e => set('correct_field', e.target.value)}
+            className="w-full border border-gray-200 rounded px-2 py-1 text-xs font-mono
+                       focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+        </FieldRow>
+
+        <FieldRow label="Correct value" note='string meaning "correct"'>
+          <input
+            type="text" value={form.correct_value}
+            onChange={e => set('correct_value', e.target.value)}
+            className="w-full border border-gray-200 rounded px-2 py-1 text-xs font-mono
+                       focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+        </FieldRow>
+
+        <FieldRow label="Incorrect value" note='string meaning "incorrect"'>
+          <input
+            type="text" value={form.incorrect_value}
+            onChange={e => set('incorrect_value', e.target.value)}
+            className="w-full border border-gray-200 rounded px-2 py-1 text-xs font-mono
+                       focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+        </FieldRow>
+
+        <FieldRow label="AI action names" note="event_type values owned by AI">
+          <ChipInput
+            values={form.ai_action_names}
+            onChange={v => set('ai_action_names', v)}
+            placeholder="e.g. ai_evaluated"
+          />
+        </FieldRow>
+
+        <FieldRow label="Human action names" note="event_type values owned by human">
+          <ChipInput
+            values={form.human_action_names}
+            onChange={v => set('human_action_names', v)}
+            placeholder="e.g. operator_verified"
+          />
+        </FieldRow>
+
+        <FieldRow label="File packaging" note="how log files are submitted">
+          <div className="flex gap-4">
+            {[
+              ['single_json', 'Single JSON file'],
+              ['zip',         'ZIP of files'],
+              ['folder',      'Folder'],
+            ].map(([v, label]) => (
+              <label key={v} className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="radio" name="pkg_format" value={v}
+                  checked={form.package_format === v}
+                  onChange={() => set('package_format', v)}
+                  className="text-indigo-600 focus:ring-indigo-300"
+                />
+                <span className="text-xs text-gray-700">{label}</span>
+              </label>
+            ))}
+          </div>
+        </FieldRow>
+      </div>
+
+      {submitError && (
+        <div className="flex items-start gap-2 rounded-md bg-red-50 border border-red-200 p-3 text-xs text-red-700">
+          <AlertTriangle size={12} className="mt-0.5 flex-shrink-0" />
+          {submitError}
+        </div>
+      )}
+
+      <div className="flex items-center gap-3 flex-wrap">
+        <button
+          type="button" onClick={onBack}
+          className="px-4 py-2 rounded-md text-sm font-medium border border-gray-200
+                     text-gray-600 hover:bg-gray-50 transition-colors"
+        >
+          Back
+        </button>
+        <button
+          type="submit" disabled={submitting}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium
+                     bg-indigo-600 text-white hover:bg-indigo-700 transition-colors
+                     disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {submitting
+            ? <><Loader2 size={13} className="animate-spin" /> Registering…</>
+            : 'Register mapping'}
+        </button>
+        <button
+          type="button" onClick={onSkip}
+          className="text-xs text-gray-400 hover:text-gray-600 transition-colors ml-2"
+        >
+          Skip — use generic adapter
+        </button>
+      </div>
+
+      <TestMappingPanel pilotTag={pilotTag} />
+    </form>
+  )
+}
+
+function StepPilot({ configId, config, onNext, onBack }) {
+  const pilotTag = (config?.application_name ?? 'generic').toLowerCase()
+
+  const { data: adaptersData, isLoading: checking } = useQuery({
+    queryKey: ['adapters'],
+    queryFn: () => api.adapters.list(),
+    staleTime: 0,
+  })
+
+  const adapterExists = adaptersData?.adapters?.some(a => a.tag === pilotTag)
+
+  const [showForm, setShowForm] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState(null)
+  const [submitted, setSubmitted] = useState(false)
+
+  async function handleSubmit(cfg) {
+    setSubmitting(true); setSubmitError(null)
+    try {
+      await api.adapters.register(cfg)
+      setSubmitted(true)
+    } catch (e) {
+      setSubmitError(e.message)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (checking) {
+    return (
+      <div className="flex items-center gap-2 text-gray-400 text-sm py-10">
+        <Loader2 size={15} className="animate-spin" /> Checking pilot adapter…
+      </div>
+    )
+  }
+
+  // ── Adapter exists, form not open ──
+  if (adapterExists && !showForm && !submitted) {
+    return (
+      <div className="space-y-5 max-w-xl">
+        <PilotLabel pilotTag={pilotTag} config={config} />
+        <div className="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
+          <CheckCircle2 size={18} className="text-green-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-green-800">
+              ✓ {config?.application_name} — field mapping configured
+            </p>
+            <p className="text-xs text-green-600 mt-0.5">
+              Adapter registered for pilot tag <span className="font-mono">{pilotTag}</span>.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onBack}
+            className="px-4 py-2 rounded-md text-sm font-medium border border-gray-200
+                       text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            Back
+          </button>
+          <button
+            onClick={() => onNext({ skipped: false })}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium
+                       bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+          >
+            Continue <ChevronRight size={14} />
+          </button>
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 ml-2"
+          >
+            <Settings2 size={12} /> Reconfigure
+          </button>
+        </div>
+        <TestMappingPanel pilotTag={pilotTag} />
+      </div>
+    )
+  }
+
+  // ── Submitted successfully ──
+  if (submitted) {
+    return (
+      <div className="space-y-5 max-w-xl">
+        <PilotLabel pilotTag={pilotTag} config={config} />
+        <div className="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
+          <CheckCircle2 size={18} className="text-green-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-green-800">Adapter registered successfully</p>
+            <p className="text-xs text-green-600 mt-0.5">
+              Field mapping saved for pilot tag <span className="font-mono">{pilotTag}</span>.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onBack}
+            className="px-4 py-2 rounded-md text-sm font-medium border border-gray-200
+                       text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            Back
+          </button>
+          <button
+            onClick={() => onNext({ skipped: false })}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium
+                       bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+          >
+            Continue <ChevronRight size={14} />
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Show mapping form ──
+  return (
+    <div className="space-y-5 max-w-xl">
+      <PilotLabel pilotTag={pilotTag} config={config} />
+      <MappingForm
+        pilotTag={pilotTag}
+        initial={{}}
+        onSubmit={handleSubmit}
+        onSkip={() => onNext({ skipped: true })}
+        onBack={onBack}
+        submitting={submitting}
+        submitError={submitError}
+      />
+    </div>
+  )
+}
+
+function PilotLabel({ pilotTag, config }) {
+  return (
+    <p className="text-xs text-gray-400">
+      Pilot:{' '}
+      <span className="font-mono text-gray-600">{pilotTag}</span>
+      {config?.application_name && (
+        <span className="text-gray-400"> · {config.application_name}</span>
+      )}
+    </p>
+  )
+}
+
 // ── Drop zone ─────────────────────────────────────────────────
 
 function DropZone({ onFile, disabled }) {
@@ -246,7 +766,7 @@ function DropZone({ onFile, disabled }) {
 
 // ── Step 2: Upload / Register ─────────────────────────────────
 
-function Step2({ configId, onNext, onBack }) {
+function Step2({ configId, onNext, onBack, skippedSetup }) {
   const [checklistConfirmed, setChecklistConfirmed] = useState(false)
   const [tab, setTab] = useState('upload')   // 'upload' | 'endpoint'
   const [file, setFile] = useState(null)
@@ -313,6 +833,24 @@ function Step2({ configId, onNext, onBack }) {
           #{configId}{config?.application_name ? ` · ${config.application_name}` : ''}
         </span>
       </p>
+
+      {/* Generic-adapter warning */}
+      {skippedSetup && (
+        <div className="flex items-start gap-2 rounded-md bg-amber-50 border border-amber-200 p-3 text-xs text-amber-700">
+          <AlertTriangle size={13} className="mt-0.5 flex-shrink-0" />
+          <span>
+            Using generic field mapping — some metrics may not compute correctly.
+            {' '}
+            <button
+              onClick={onBack}
+              className="underline font-medium hover:text-amber-900"
+            >
+              Complete pilot setup
+            </button>
+            {' '}to improve results.
+          </span>
+        </div>
+      )}
 
       {/* Tab toggle */}
       <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-0.5 w-fit">
@@ -675,32 +1213,50 @@ function Step3({ configId, onBack }) {
 export default function LogWizardPage() {
   const [step, setStep] = useState(0)
   const [configId, setConfigId] = useState(null)
+  const [config, setConfig] = useState(null)
+  const [skippedSetup, setSkippedSetup] = useState(false)
 
   return (
     <div className="max-w-2xl space-y-2">
       <h1 className="text-base font-semibold text-gray-900">Log Ingest Wizard</h1>
       <p className="text-xs text-gray-400 mb-6">
-        Select a configuration, ingest your logs, then trigger the evaluation pipeline.
+        Select a configuration, set up field mapping, ingest your logs, then trigger evaluation.
       </p>
 
       <StepDots current={step} />
 
+      {/* Step 0 — select configuration */}
       {step === 0 && (
         <Step1
-          onNext={id => { setConfigId(id); setStep(1) }}
+          onNext={(id, cfg) => { setConfigId(id); setConfig(cfg ?? null); setStep(1) }}
         />
       )}
+
+      {/* Step 1 — pilot adapter setup */}
       {step === 1 && (
-        <Step2
+        <StepPilot
           configId={configId}
-          onNext={() => setStep(2)}
+          config={config}
+          onNext={({ skipped }) => { setSkippedSetup(skipped); setStep(2) }}
           onBack={() => setStep(0)}
         />
       )}
+
+      {/* Step 2 — upload / register logs */}
       {step === 2 && (
+        <Step2
+          configId={configId}
+          skippedSetup={skippedSetup}
+          onNext={() => setStep(3)}
+          onBack={() => setStep(1)}
+        />
+      )}
+
+      {/* Step 3 — trigger evaluation */}
+      {step === 3 && (
         <Step3
           configId={configId}
-          onBack={() => setStep(1)}
+          onBack={() => setStep(2)}
         />
       )}
     </div>

@@ -5,7 +5,7 @@ from fastapi import FastAPI, APIRouter, Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from app.routers import logs, configuration, evaluate, log_generator, meta
-from app.routers import fairness, env_builder, simulator, results, survey, survey_schema, env_catalog, analytics, reporting, collab, interpret
+from app.routers import fairness, env_builder, simulator, results, survey, survey_schema, env_catalog, analytics, reporting, collab, interpret, adapters, pilot
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.seed_core_metrics import seed_core_definitions
 from app.utils.errors import ErrorEnvelope, ErrorDetail
@@ -54,7 +54,9 @@ api.include_router(env_builder.router,    prefix="/env", tags=["Environment Buil
 api.include_router(simulator.router,      prefix="/simulator", tags=["Simulator"])
 api.include_router(collab.router,        prefix="/collab-metrics", tags=["Collaboration Metrics"])
 api.include_router(env_catalog.router,   prefix="/envs", tags=["Environment Catalog"])
-api.include_router(interpret.router,     prefix="",      tags=["Interpretation"])
+api.include_router(interpret.router,     prefix="",           tags=["Interpretation"])
+api.include_router(adapters.router,      prefix="/adapters",   tags=["Adapters"])
+api.include_router(pilot.router,         prefix="/pilot",       tags=["Pilot"])
 
 app.include_router(meta.router,           prefix="/meta", tags=["Meta"])
 

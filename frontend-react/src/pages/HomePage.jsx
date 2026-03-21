@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
   LayoutList, Upload, BarChart2, GitCompare,
-  BookOpen, ChevronRight, Loader2, ArrowRight,
+  BookOpen, ChevronRight, Loader2, ArrowRight, HelpCircle,
 } from 'lucide-react'
 import { api } from '../services/api'
 
@@ -34,9 +34,10 @@ const STEPS = [
 ]
 
 const QUICK_LINKS = [
-  { label: 'Compare Versions', href: '/compare', icon: GitCompare },
-  { label: 'Ingest Logs', href: '/ingest', icon: Upload },
-  { label: 'Metrics Reference', href: '/metrics', icon: BookOpen },
+  { label: 'Getting Started',  href: '/getting-started', icon: HelpCircle },
+  { label: 'Compare Versions', href: '/compare',         icon: GitCompare },
+  { label: 'Ingest Logs',      href: '/ingest',          icon: Upload     },
+  { label: 'Metrics Reference', href: '/metrics',        icon: BookOpen   },
 ]
 
 export default function HomePage() {
@@ -70,10 +71,10 @@ export default function HomePage() {
             Start Evaluation <ArrowRight size={14} />
           </Link>
           <Link
-            to="/metrics"
+            to="/getting-started"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 text-sm font-medium hover:border-indigo-300 hover:text-indigo-700 transition-colors"
           >
-            <BookOpen size={14} /> Metrics Reference
+            <HelpCircle size={14} /> Getting Started
           </Link>
         </div>
       </div>
