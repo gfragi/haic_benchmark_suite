@@ -70,6 +70,17 @@ services:
       - backend
     restart: unless-stopped
 
+  frontend-react:
+    build:
+      context: ./frontend-react
+      dockerfile: Dockerfile
+    container_name: haic-frontend-react
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   minio_data:

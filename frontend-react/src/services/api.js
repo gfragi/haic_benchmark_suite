@@ -7,7 +7,11 @@ async function request(path, options = {}) {
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }))
-    throw new Error(err.detail ?? `HTTP ${res.status}`)
+    const detail = err.detail
+    const msg = Array.isArray(detail)
+      ? detail.map(e => `${e.loc?.slice(-1)[0] ?? ''}: ${e.msg}`).join('; ')
+      : (detail ?? `HTTP ${res.status}`)
+    throw new Error(msg)
   }
   return res.json()
 }
@@ -96,6 +100,9 @@ export const api = {
       get: (schemaId) => request(`/survey/schemas/${schemaId}`),
     },
   },
+
+  interpret: (body) =>
+    request('/interpret', { method: 'POST', body: JSON.stringify(body) }),
 
   health: () => fetch('/meta/health').then((r) => r.json()),
 }

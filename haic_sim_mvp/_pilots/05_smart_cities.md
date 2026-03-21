@@ -33,67 +33,7 @@ This README specifies how the **Smart City Permit Screening** pilot plugs into t
 
 ---
 
-## 3. Data Model (JSON)
-
-All events share a common envelope:
-
-```json
-{
-  "schema_version": "1.0",
-  "event_id": "uuid",
-  "application_id": "APP-2025-000123",
-  "event_type": "SystemScanCompleted",
-  "occurred_at": "2025-11-10T09:42:11Z",
-  "actor": { "actor_id": "system-humai", "actor_type": "system" },
-  "source": "backend",
-  "payload": { /* type-specific */ }
-}
-```
-
-### 3.1 Event Types & Payloads
-
-**`ApplicationCreated`**
-
-```json
-{
-  "payload": {
-    "applicant": {"name":"Anna","surname":"Papadopoulou","father":"Giorgos"},
-    "ids": {"id":"AB123456","license_plate":"XYZ1234","vat":"EL123456789"},
-    "address":"Eratosthenous 15, Athens",
-    "power_supply":"residential-single-phase",
-    "state":"pending",
-    "created_on":"2025-11-10T09:40:00Z",
-    "random_audit_candidate": false
-  }
-}
-```
-
-**`SystemScanCompleted`**
-
-```json
-{
-  "payload": {
-    "system_processed_on": "2025-11-10T09:42:11Z",
-    "state_after": "approved",             
-    "system_findings": ["surname","vat"],
-    "system_comments": "Surname mismatch; VAT format issue",
-    "confidence": 0.84,
-    "rules_fired": ["R-012-surname-sim","R-101-vat-format"],
-    "random_audit_flag": true
-  }
-}
-```
-
-**`OperatorReviewCompleted`**
-
-```json
-{
-  "payload": {
-    "operator_id": 1042,
-    "process_begins": "2025-11-10T10:05:02Z",
-    "duration_s": 220,
-    "state_after": "approved",  
-    "operator_decision_code": "ACCEPT_MINOR_MISMATCH",
+ 
     "operator_reason_codes": ["SURNAME_TYPO"],
     "operator_comments": "Surname typo; VAT ok after re-entry",
     "disagreement_with_system": true,

@@ -175,3 +175,4 @@ watchfiles==0.23.0
 wcwidth==0.2.13
 Werkzeug==3.0.2
 yarl==1.9.4
+anthropic>=0.40.0
