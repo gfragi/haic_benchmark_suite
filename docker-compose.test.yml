@@ -7,10 +7,20 @@ services:
     volumes:
       - type: tmpfs
         target: /var/lib/postgresql/data
+      - type: bind
+        source: ./docker/db-init/empty
+        target: /docker-entrypoint-initdb.d
+        read_only: true
     environment:
       POSTGRES_DB: haic_test
       POSTGRES_USER: haic_user
       POSTGRES_PASSWORD: testpass123
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U haic_user -d haic_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   minio:
     volumes:
@@ -29,5 +39,6 @@ services:
       MINIO_ACCESS_KEY: testadmin
       MINIO_SECRET_KEY: testpass123
       MINIO_BUCKET: haic-test
+      AUTH_URL: ""
       TEST_ENV: "true"
     # No volume mounts — test against built image

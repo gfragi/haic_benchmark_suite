@@ -135,10 +135,8 @@ class LogService:
         log_row = LogEntry(
             configuration_id=configuration_id,
             session_id=session_part,
-            raw_minio_path=raw_path,
-            derived_minio_path=derived_path,
-            status="ingested",
-            created_at=datetime.now(timezone.utc),
+            raw_filename=original_name,
+            derived_filename=derived_name,
         )
         db.add(log_row)
         db.commit()

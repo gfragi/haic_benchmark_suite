@@ -19,6 +19,8 @@ MINIO_SECURE = os.getenv("MINIO_SECURE", "false").lower() == "true"
 MINIO_REGION = os.getenv("MINIO_REGION")
 MINIO_USERNAME = os.getenv("MINIO_USERNAME")
 MINIO_PASSWORD = os.getenv("MINIO_PASSWORD")
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "")
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "")
 MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 
 # cache for token
@@ -82,14 +84,22 @@ class TokenPoolManager(urllib3.PoolManager):
 
 
 def get_minio_client() -> Minio:
-    http_client = TokenPoolManager()
+    if AUTH_URL:
+        http_client = TokenPoolManager()
+        return Minio(
+            endpoint=MINIO_ENDPOINT,
+            access_key="",
+            secret_key="",
+            secure=MINIO_SECURE,
+            region=MINIO_REGION,
+            http_client=http_client,
+        )
     return Minio(
         endpoint=MINIO_ENDPOINT,
-        access_key="",
-        secret_key="",
+        access_key=MINIO_ACCESS_KEY,
+        secret_key=MINIO_SECRET_KEY,
         secure=MINIO_SECURE,
         region=MINIO_REGION,
-        http_client=http_client,
     )
 
 

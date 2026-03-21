@@ -12,10 +12,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/db-init:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U haic_user -d haic_benchmark"]
-      interval: 10s
+      test: ["CMD-SHELL", "PGPASSWORD=$$POSTGRES_PASSWORD psql -U $$POSTGRES_USER -d $$POSTGRES_DB -tAc \"SELECT 1 FROM pg_constraint WHERE conname='configurations_pkey'\" 2>/dev/null | grep -q 1"]
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 40
+      start_period: 10s
     restart: unless-stopped
 
   minio:
