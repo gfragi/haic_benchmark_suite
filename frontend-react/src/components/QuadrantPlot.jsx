@@ -87,9 +87,9 @@ export default function QuadrantPlot({ title, points, xLabel, yLabel, xRef, yRef
           <Tooltip content={(props) => <ScatterTooltip {...props} xLabel={xLabel} yLabel={yLabel} />} />
           <Legend iconSize={8} wrapperStyle={{ fontSize: 11, paddingTop: 4 }} />
 
-          {valid.map(point => (
+          {valid.map((point, i) => (
             <Scatter
-              key={point.version}
+              key={`${i}-${point.version}`}
               name={point.version}
               fill={point.color}
               data={[{ x: point.x, y: point.y, version: point.version }]}

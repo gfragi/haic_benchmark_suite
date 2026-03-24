@@ -5,7 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, Cell, CartesianGrid,
 } from 'recharts'
-import { ArrowLeft, Loader2, AlertCircle, Sparkles } from 'lucide-react'
+import { AlertCircle, ArrowLeft, Loader2, Sparkles } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 import QuadrantPlot, { PALETTE } from '../components/QuadrantPlot'
@@ -22,10 +22,55 @@ function deriveDomain(config) {
   return 'applications'
 }
 
+function _localNarrative(interaction, warnings) {
+  const fmt = (v, digits = 3) => (v == null ? 'N/A' : Number(v).toFixed(digits))
+
+  const F   = interaction.F   ?? null
+  const Tr  = interaction.Tr  ?? null
+  const HCL = interaction.HCL ?? null
+  const EL  = interaction.EL  ?? null
+  const A   = interaction.A   ?? null
+
+  const trustDesc = Tr == null  ? 'Trust data is unavailable (no correctness labels in log).'
+    : Tr >= 0.8  ? `Trust is high (${fmt(Tr)}) — operators accept most AI decisions.`
+    : Tr >= 0.5  ? `Trust is moderate (${fmt(Tr)}) — operators override AI decisions roughly half the time.`
+    : `Trust is low (${fmt(Tr)}) — operators frequently override AI decisions. Review model reliability.`
+
+  const hclDesc = HCL == null ? 'Cognitive load data is unavailable (no timing fields in log).'
+    : HCL >= 0.7 ? `Human cognitive load is low (${fmt(HCL)}) — operators are comfortable with the pace.`
+    : HCL >= 0.4 ? `Human cognitive load is moderate (${fmt(HCL)}) — response times approach acceptable limits.`
+    : `Human cognitive load is high (${fmt(HCL)}) — operators may be struggling to keep up. Consider reducing AI output rate.`
+
+  const freqDesc = F == null ? ''
+    : `Interaction frequency is ${fmt(F, 1)} events/min.`
+
+  const elDesc = EL == null ? 'Effort loss cannot be computed without a baseline (add baseline_s to session).'
+    : EL <= 0.2  ? `Effort loss is low (${fmt(EL)}) — the AI-assisted workflow is close to the baseline speed.`
+    : EL <= 0.5  ? `Effort loss is moderate (${fmt(EL)}) — the workflow is somewhat slower than baseline.`
+    : `Effort loss is high (${fmt(EL)}) — the workflow is significantly slower than baseline. Check for inefficiencies.`
+
+  const adaptDesc = A == null ? ''
+    : A > 0.1  ? `Adaptability is positive (${fmt(A)}) — collaboration improved over the session.`
+    : A < -0.1 ? `Adaptability is negative (${fmt(A)}) — collaboration degraded during the session.`
+    : `Adaptability is near-neutral (${fmt(A)}) — no clear trend in collaboration quality.`
+
+  const warnCount = warnings?.length ?? 0
+  const warnNote = warnCount > 0
+    ? `Note: ${warnCount} metric warning(s) were detected — some values may be less accurate due to missing log fields.`
+    : ''
+
+  return [
+    `Overall: ${freqDesc} ${trustDesc}`,
+    `Efficiency: ${hclDesc} ${elDesc}`,
+    [adaptDesc, warnNote].filter(Boolean).join(' '),
+  ].filter(s => s.trim()).join('\n\n')
+}
+
 function InterpretationPanel({ interaction, warnings, pilotTag }) {
   const [narrative, setNarrative] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [source, setSource] = useState(null)  // 'ai' | 'local'
 
   async function generate() {
     setLoading(true)
@@ -37,8 +82,11 @@ function InterpretationPanel({ interaction, warnings, pilotTag }) {
         warnings: warnings,
       })
       setNarrative(result.narrative)
+      setSource('ai')
     } catch (e) {
-      setError(e.message)
+      // Backend unavailable or API key not configured — generate locally.
+      setNarrative(_localNarrative(interaction, warnings))
+      setSource('local')
     } finally {
       setLoading(false)
     }
@@ -65,21 +113,21 @@ function InterpretationPanel({ interaction, warnings, pilotTag }) {
           </button>
         )}
         {narrative && (
-          <button
-            onClick={() => { setNarrative(null); setError(null) }}
-            className="text-xs text-gray-400 hover:text-gray-600"
-          >
-            Reset
-          </button>
+          <div className="flex items-center gap-2">
+            {source === 'local' && (
+              <span className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">
+                local summary
+              </span>
+            )}
+            <button
+              onClick={() => { setNarrative(null); setError(null); setSource(null) }}
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
+              Reset
+            </button>
+          </div>
         )}
       </div>
-
-      {error && (
-        <div className="flex items-start gap-2 rounded-md bg-red-50 border border-red-200 p-3 text-red-700 text-xs">
-          <AlertCircle size={12} className="mt-0.5 flex-shrink-0" />
-          {error}
-        </div>
-      )}
 
       {narrative && (
         <div className="text-sm text-gray-700 leading-relaxed space-y-3 whitespace-pre-line">
@@ -153,7 +201,7 @@ function VersionTabs({ versions, selectedIdx, onSelect }) {
       <span className="text-xs text-gray-400">Version:</span>
       {versions.map((v, i) => (
         <button
-          key={v}
+          key={`${i}-${v}`}
           onClick={() => onSelect(i)}
           className={clsx(
             'flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors',
@@ -278,6 +326,14 @@ export default function ResultsDashboardPage() {
   const results = resultQueries.map(q => q.data).filter(Boolean)
   const detailsLoading = (stubs?.length ?? 0) > 0 && !resultQueries.every(q => q.isFetched)
 
+  // Holistic summary (lazy — only fetched when tab is active)
+  const { data: holistic, isLoading: holisticLoading } = useQuery({
+    queryKey: ['holistic', configId],
+    queryFn: () => api.results.holistic(configId),
+    enabled: mode === 'holistic',
+    retry: false,
+  })
+
   const versions = results.map(r => r.ai_model_version)
   const safeIdx = results.length > 0 ? Math.min(selectedIdx, results.length - 1) : 0
 
@@ -354,7 +410,7 @@ export default function ResultsDashboardPage() {
       {/* Controls row */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <SegmentToggle
-          options={[['core', 'Core HAIC'], ['outcome', 'Outcome Metrics']]}
+          options={[['core', 'Core HAIC'], ['outcome', 'Outcome Metrics'], ['holistic', 'Holistic']]}
           value={mode}
           onChange={setMode}
         />
@@ -459,6 +515,150 @@ export default function ResultsDashboardPage() {
             <VersionTabs versions={versions} selectedIdx={safeIdx} onSelect={setSelectedIdx} />
           </div>
           <OutcomeView results={results} selectedIdx={safeIdx} />
+        </div>
+      )}
+
+      {/* ── Holistic mode ── */}
+      {mode === 'holistic' && (
+        <div className="space-y-5">
+          {holisticLoading && (
+            <div className="flex items-center justify-center h-40 gap-2 text-gray-400 text-sm">
+              <Loader2 size={16} className="animate-spin" /> Loading holistic summary…
+            </div>
+          )}
+
+          {!holisticLoading && !holistic && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 text-center text-sm text-amber-700">
+              No evaluation results yet.
+              <br />
+              <span className="text-amber-500 text-xs mt-1 block">
+                Upload logs and trigger an evaluation first.
+              </span>
+            </div>
+          )}
+
+          {holistic && (
+            <>
+              {/* HAIC compact summary */}
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">HAIC Metrics</h3>
+                <div className="grid grid-cols-4 gap-3">
+                  {['F', 'D', 'HCL', 'Tr', 'A', 'EL', 'S', 'EfficiencyScore'].map(k => {
+                    const v = holistic.haic?.[k]
+                    return (
+                      <div key={k} className="bg-gray-50 rounded-md px-3 py-2 text-center">
+                        <p className="text-xs font-semibold text-gray-500">{k}</p>
+                        <p className="text-lg font-mono font-semibold text-gray-800 mt-0.5">
+                          {v == null ? '—' : Number(v).toFixed(3)}
+                        </p>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Fairness section */}
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Fairness</h3>
+                {holistic.fairness ? (
+                  <div className="space-y-3">
+                    <p className="text-xs text-gray-500">
+                      Demographic Parity Difference:{' '}
+                      <span className="font-mono font-semibold text-gray-700">
+                        {Number(holistic.fairness.demographic_parity_difference).toFixed(3)}
+                      </span>
+                      <span className="ml-2 text-gray-400">(0 = perfect parity)</span>
+                    </p>
+                    <div className="space-y-1.5">
+                      {holistic.fairness.groups?.map(g => {
+                        const acc = holistic.fairness.by_group?.accuracy?.[g]
+                        const pct = acc != null ? Math.round(acc * 100) : null
+                        return (
+                          <div key={g} className="flex items-center gap-3">
+                            <span className="text-xs text-gray-600 w-28 truncate">{g}</span>
+                            <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+                              <div
+                                className="h-2 rounded-full bg-indigo-500"
+                                style={{ width: `${pct ?? 0}%` }}
+                              />
+                            </div>
+                            <span className="text-xs font-mono text-gray-600 w-10 text-right">
+                              {pct != null ? `${pct}%` : '—'}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {holistic.fairness.n_samples} samples across {holistic.fairness.groups?.length} groups
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-400 leading-relaxed">
+                    Fairness evaluation requires <code className="font-mono bg-gray-100 px-1 rounded">prediction</code> or{' '}
+                    <code className="font-mono bg-gray-100 px-1 rounded">ai_decision</code> +{' '}
+                    <code className="font-mono bg-gray-100 px-1 rounded">ground_truth</code> or{' '}
+                    <code className="font-mono bg-gray-100 px-1 rounded">op_decision</code> + a sensitive feature field
+                    (cohort, role, op_id, or user_group) in your log events.
+                  </p>
+                )}
+              </div>
+
+              {/* SUS section */}
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">User Experience (SUS)</h3>
+                {holistic.sus ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-6">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-indigo-600">
+                          {Number(holistic.sus.mean_sus).toFixed(1)}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">SUS score /100</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-teal-600">
+                          {Number(holistic.sus.mean_ethics).toFixed(1)}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">Ethics score /100</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-semibold text-gray-600">{holistic.sus.count}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">responses</p>
+                      </div>
+                    </div>
+                    <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
+                      <div
+                        className={clsx(
+                          'h-3 rounded-full transition-all',
+                          holistic.sus.mean_sus >= 70 ? 'bg-green-500'
+                            : holistic.sus.mean_sus >= 50 ? 'bg-amber-400'
+                            : 'bg-red-400',
+                        )}
+                        style={{ width: `${Math.min(holistic.sus.mean_sus, 100)}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {holistic.sus.mean_sus >= 70 ? 'Good usability (SUS ≥ 70)'
+                        : holistic.sus.mean_sus >= 50 ? 'Marginal usability (SUS 50–70)'
+                        : 'Poor usability (SUS < 50) — consider UX improvements'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-xs text-gray-400">
+                      No surveys collected for this configuration. Share the survey link with your users
+                      and include{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">
+                        "configuration_id": {configId}
+                      </code>{' '}
+                      in the submission to link responses here.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

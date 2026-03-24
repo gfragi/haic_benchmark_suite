@@ -1,0 +1,5388 @@
+[
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000000",
+        "timestamp": "2026-03-10T06:03:25Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 153.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000000",
+          "prob_secure": 0.823,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.177,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "line_loading_L014"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:03:25Z",
+    "session_ended_at": "2026-03-10T06:03:25Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000001",
+        "timestamp": "2026-03-10T06:06:35Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 165.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000001",
+          "prob_secure": 0.788,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.212,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "load_margin"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:06:35Z",
+    "session_ended_at": "2026-03-10T06:06:35Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000002",
+        "timestamp": "2026-03-10T06:10:13Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 117.3,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000002",
+          "prob_secure": 0.783,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.217,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:10:13Z",
+    "session_ended_at": "2026-03-10T06:10:13Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000003",
+        "timestamp": "2026-03-10T06:12:11Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 136.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000003",
+          "prob_secure": 0.489,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.611,
+          "region": "north",
+          "weather_regime": "storm",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000003",
+        "timestamp": "2026-03-10T06:13:16Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 65.63,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000003",
+          "ai_decision": "insecure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "storm"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:12:11Z",
+    "session_ended_at": "2026-03-10T06:13:16Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000004",
+        "timestamp": "2026-03-10T06:16:14Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 138.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000004",
+          "prob_secure": 0.967,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.033,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:16:14Z",
+    "session_ended_at": "2026-03-10T06:16:14Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000005",
+        "timestamp": "2026-03-10T06:17:06Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 153.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000005",
+          "prob_secure": 0.63,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.47,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000005",
+        "timestamp": "2026-03-10T06:17:49Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 42.58,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000005",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:17:06Z",
+    "session_ended_at": "2026-03-10T06:17:49Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000006",
+        "timestamp": "2026-03-10T06:19:03Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 118.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000006",
+          "prob_secure": 0.745,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.255,
+          "region": "islands",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000006",
+        "timestamp": "2026-03-10T06:20:06Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 62.2,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000006",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "islands",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:19:03Z",
+    "session_ended_at": "2026-03-10T06:20:06Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000007",
+        "timestamp": "2026-03-10T06:23:20Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 123.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000007",
+          "prob_secure": 0.533,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.567,
+          "region": "south",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000007",
+        "timestamp": "2026-03-10T06:24:24Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 63.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000007",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "peak_demand"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:23:20Z",
+    "session_ended_at": "2026-03-10T06:24:24Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000008",
+        "timestamp": "2026-03-10T06:27:37Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 122.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000008",
+          "prob_secure": 0.768,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.232,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "line_loading_L014"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:27:37Z",
+    "session_ended_at": "2026-03-10T06:27:37Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000009",
+        "timestamp": "2026-03-10T06:28:53Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 172.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000009",
+          "prob_secure": 0.763,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.237,
+          "region": "islands",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:28:53Z",
+    "session_ended_at": "2026-03-10T06:28:53Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000010",
+        "timestamp": "2026-03-10T06:32:57Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 203.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000010",
+          "prob_secure": 0.936,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.064,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:32:57Z",
+    "session_ended_at": "2026-03-10T06:32:57Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000011",
+        "timestamp": "2026-03-10T06:37:35Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 94.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000011",
+          "prob_secure": 0.459,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.641,
+          "region": "central",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "generation_imbalance"
+        }
+      },
+      {
+        "interaction_id": "SE_000011",
+        "timestamp": "2026-03-10T06:38:26Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 50.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000011",
+          "ai_decision": "insecure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "central",
+          "weather_regime": "peak_demand"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:37:35Z",
+    "session_ended_at": "2026-03-10T06:38:26Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000012",
+        "timestamp": "2026-03-10T06:40:45Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 166.7,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000012",
+          "prob_secure": 0.8,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.2,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:40:45Z",
+    "session_ended_at": "2026-03-10T06:40:45Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000013",
+        "timestamp": "2026-03-10T06:44:12Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 157.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000013",
+          "prob_secure": 0.684,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.416,
+          "region": "islands",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000013",
+        "timestamp": "2026-03-10T06:44:57Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 45.12,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000013",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "islands",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:44:12Z",
+    "session_ended_at": "2026-03-10T06:44:57Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000014",
+        "timestamp": "2026-03-10T06:47:55Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 180.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000014",
+          "prob_secure": 0.574,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.526,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000014",
+        "timestamp": "2026-03-10T06:49:11Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 76.85,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000014",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "central",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:47:55Z",
+    "session_ended_at": "2026-03-10T06:49:11Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000015",
+        "timestamp": "2026-03-10T06:53:10Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 148.3,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000015",
+          "prob_secure": 0.842,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.158,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:53:10Z",
+    "session_ended_at": "2026-03-10T06:53:10Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000016",
+        "timestamp": "2026-03-10T06:58:10Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 165.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000016",
+          "prob_secure": 0.619,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.481,
+          "region": "south",
+          "weather_regime": "low_generation",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000016",
+        "timestamp": "2026-03-10T06:58:58Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 47.36,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000016",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "low_generation"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T06:58:10Z",
+    "session_ended_at": "2026-03-10T06:58:58Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000017",
+        "timestamp": "2026-03-10T07:01:31Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 132.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000017",
+          "prob_secure": 0.727,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.273,
+          "region": "north",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000017",
+        "timestamp": "2026-03-10T07:02:27Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 55.43,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000017",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:01:31Z",
+    "session_ended_at": "2026-03-10T07:02:27Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000018",
+        "timestamp": "2026-03-10T07:07:05Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 109.9,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000018",
+          "prob_secure": 0.75,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.25,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:07:05Z",
+    "session_ended_at": "2026-03-10T07:07:05Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000019",
+        "timestamp": "2026-03-10T07:11:16Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 107.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000019",
+          "prob_secure": 0.762,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.238,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:11:16Z",
+    "session_ended_at": "2026-03-10T07:11:16Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000020",
+        "timestamp": "2026-03-10T07:12:43Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 162.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000020",
+          "prob_secure": 0.492,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.608,
+          "region": "north",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000020",
+        "timestamp": "2026-03-10T07:13:03Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 20.12,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000020",
+          "ai_decision": "insecure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "peak_demand"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:12:43Z",
+    "session_ended_at": "2026-03-10T07:13:03Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000021",
+        "timestamp": "2026-03-10T07:14:13Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 146.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000021",
+          "prob_secure": 0.872,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.128,
+          "region": "south",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:14:13Z",
+    "session_ended_at": "2026-03-10T07:14:13Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000022",
+        "timestamp": "2026-03-10T07:17:46Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 112.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000022",
+          "prob_secure": 0.548,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.552,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000022",
+        "timestamp": "2026-03-10T07:18:40Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 54.24,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000022",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "central",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:17:46Z",
+    "session_ended_at": "2026-03-10T07:18:40Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000023",
+        "timestamp": "2026-03-10T07:21:33Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 171.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000023",
+          "prob_secure": 0.818,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.182,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:21:33Z",
+    "session_ended_at": "2026-03-10T07:21:33Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000024",
+        "timestamp": "2026-03-10T07:24:41Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 135.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000024",
+          "prob_secure": 0.704,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.396,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000024",
+        "timestamp": "2026-03-10T07:25:57Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 75.13,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000024",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:24:41Z",
+    "session_ended_at": "2026-03-10T07:25:57Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000025",
+        "timestamp": "2026-03-10T07:30:18Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 146.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000025",
+          "prob_secure": 0.782,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.218,
+          "region": "north",
+          "weather_regime": "low_generation",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:30:18Z",
+    "session_ended_at": "2026-03-10T07:30:18Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000026",
+        "timestamp": "2026-03-10T07:33:55Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 116.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000026",
+          "prob_secure": 0.793,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.207,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:33:55Z",
+    "session_ended_at": "2026-03-10T07:33:55Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000027",
+        "timestamp": "2026-03-10T07:37:39Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 188.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000027",
+          "prob_secure": 0.644,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.456,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000027",
+        "timestamp": "2026-03-10T07:38:37Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 58.94,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000027",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "central",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:37:39Z",
+    "session_ended_at": "2026-03-10T07:38:37Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000028",
+        "timestamp": "2026-03-10T07:39:23Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 178.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000028",
+          "prob_secure": 0.765,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.235,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:39:23Z",
+    "session_ended_at": "2026-03-10T07:39:23Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000029",
+        "timestamp": "2026-03-10T07:45:05Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 165.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000029",
+          "prob_secure": 0.76,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.24,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:45:05Z",
+    "session_ended_at": "2026-03-10T07:45:05Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000030",
+        "timestamp": "2026-03-10T07:49:47Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 132.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000030",
+          "prob_secure": 0.712,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.388,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000030",
+        "timestamp": "2026-03-10T07:50:14Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 26.71,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000030",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "central",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:49:47Z",
+    "session_ended_at": "2026-03-10T07:50:14Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000031",
+        "timestamp": "2026-03-10T07:55:02Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 135.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000031",
+          "prob_secure": 0.702,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.398,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "generation_imbalance"
+        }
+      },
+      {
+        "interaction_id": "SE_000031",
+        "timestamp": "2026-03-10T07:55:45Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 42.53,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000031",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:55:02Z",
+    "session_ended_at": "2026-03-10T07:55:45Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000032",
+        "timestamp": "2026-03-10T07:59:43Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 116.5,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000032",
+          "prob_secure": 0.8,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.2,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T07:59:43Z",
+    "session_ended_at": "2026-03-10T07:59:43Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000033",
+        "timestamp": "2026-03-10T08:04:24Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 154.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000033",
+          "prob_secure": 0.576,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.524,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000033",
+        "timestamp": "2026-03-10T08:05:49Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 85.17,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000033",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T08:04:24Z",
+    "session_ended_at": "2026-03-10T08:05:49Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000034",
+        "timestamp": "2026-03-10T08:10:26Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 88.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000034",
+          "prob_secure": 0.443,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.657,
+          "region": "north",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000034",
+        "timestamp": "2026-03-10T08:11:14Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 48.09,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000034",
+          "ai_decision": "insecure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T08:10:26Z",
+    "session_ended_at": "2026-03-10T08:11:14Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000035",
+        "timestamp": "2026-03-10T08:14:59Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 141.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000035",
+          "prob_secure": 0.714,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.386,
+          "region": "north",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000035",
+        "timestamp": "2026-03-10T08:15:47Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 47.79,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000035",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T08:14:59Z",
+    "session_ended_at": "2026-03-10T08:15:47Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000036",
+        "timestamp": "2026-03-10T08:19:31Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 80.7,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000036",
+          "prob_secure": 0.757,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.243,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T08:19:31Z",
+    "session_ended_at": "2026-03-10T08:19:31Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000037",
+        "timestamp": "2026-03-10T08:22:30Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 156.3,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000037",
+          "prob_secure": 0.814,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.186,
+          "region": "islands",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T08:22:30Z",
+    "session_ended_at": "2026-03-10T08:22:30Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000038",
+        "timestamp": "2026-03-10T08:24:42Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 165.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000038",
+          "prob_secure": 0.777,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.223,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T08:24:42Z",
+    "session_ended_at": "2026-03-10T08:24:42Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_baseline_2026-03-10",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "baseline",
+    "decisions": [
+      {
+        "interaction_id": "SE_000039",
+        "timestamp": "2026-03-10T08:27:29Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 197.3,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000039",
+          "prob_secure": 0.456,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.644,
+          "region": "north",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000039",
+        "timestamp": "2026-03-10T08:28:11Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 42.21,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000039",
+          "ai_decision": "insecure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "peak_demand"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-10T08:27:29Z",
+    "session_ended_at": "2026-03-10T08:28:11Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000100",
+        "timestamp": "2026-03-11T06:03:25Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 112.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000100",
+          "prob_secure": 0.383,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.717,
+          "region": "islands",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000100",
+        "timestamp": "2026-03-11T06:04:40Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 74.44,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000100",
+          "ai_decision": "insecure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "islands",
+          "weather_regime": "normal"
+        }
+      },
+      {
+        "interaction_id": "SE_000100",
+        "timestamp": "2026-03-11T06:04:51Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 18.48,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000100",
+          "uncertainty_score": 0.766,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:03:25Z",
+    "session_ended_at": "2026-03-11T06:04:51Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000101",
+        "timestamp": "2026-03-11T06:07:49Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 123.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000101",
+          "prob_secure": 0.757,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.243,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:07:49Z",
+    "session_ended_at": "2026-03-11T06:07:49Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000102",
+        "timestamp": "2026-03-11T06:11:07Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 170.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000102",
+          "prob_secure": 0.796,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.204,
+          "region": "islands",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:11:07Z",
+    "session_ended_at": "2026-03-11T06:11:07Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000103",
+        "timestamp": "2026-03-11T06:13:42Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 116.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000103",
+          "prob_secure": 0.579,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.521,
+          "region": "north",
+          "weather_regime": "low_generation",
+          "xai_top_factor": "generation_imbalance"
+        }
+      },
+      {
+        "interaction_id": "SE_000103",
+        "timestamp": "2026-03-11T06:15:28Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 105.63,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000103",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "low_generation"
+        }
+      },
+      {
+        "interaction_id": "SE_000103",
+        "timestamp": "2026-03-11T06:15:44Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 16.96,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000103",
+          "uncertainty_score": 0.842,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:13:42Z",
+    "session_ended_at": "2026-03-11T06:15:44Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000104",
+        "timestamp": "2026-03-11T06:19:51Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 124.3,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000104",
+          "prob_secure": 0.686,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.414,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000104",
+        "timestamp": "2026-03-11T06:21:04Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 73.05,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000104",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "central",
+          "weather_regime": "high_wind"
+        }
+      },
+      {
+        "interaction_id": "SE_000104",
+        "timestamp": "2026-03-11T06:21:20Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 13.12,
+        "correct": false,
+        "payload": {
+          "instance_id": "GS_000104",
+          "uncertainty_score": 0.628,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:19:51Z",
+    "session_ended_at": "2026-03-11T06:21:20Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000105",
+        "timestamp": "2026-03-11T06:23:31Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 167.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000105",
+          "prob_secure": 0.771,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.229,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:23:31Z",
+    "session_ended_at": "2026-03-11T06:23:31Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000106",
+        "timestamp": "2026-03-11T06:26:12Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 197.3,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000106",
+          "prob_secure": 0.679,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.421,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000106",
+        "timestamp": "2026-03-11T06:27:18Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 66.45,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000106",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "central",
+          "weather_regime": "normal"
+        }
+      },
+      {
+        "interaction_id": "SE_000106",
+        "timestamp": "2026-03-11T06:27:26Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 19.84,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000106",
+          "uncertainty_score": 0.642,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:26:12Z",
+    "session_ended_at": "2026-03-11T06:27:26Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000107",
+        "timestamp": "2026-03-11T06:30:11Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 123.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000107",
+          "prob_secure": 0.559,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.541,
+          "region": "islands",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000107",
+        "timestamp": "2026-03-11T06:31:23Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 71.86,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000107",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "islands",
+          "weather_regime": "peak_demand"
+        }
+      },
+      {
+        "interaction_id": "SE_000107",
+        "timestamp": "2026-03-11T06:31:38Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 22.21,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000107",
+          "uncertainty_score": 0.882,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:30:11Z",
+    "session_ended_at": "2026-03-11T06:31:38Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000108",
+        "timestamp": "2026-03-11T06:34:45Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 163.8,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000108",
+          "prob_secure": 0.621,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.479,
+          "region": "south",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000108",
+        "timestamp": "2026-03-11T06:36:28Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 103.06,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000108",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "peak_demand"
+        }
+      },
+      {
+        "interaction_id": "SE_000108",
+        "timestamp": "2026-03-11T06:36:31Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 10.75,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000108",
+          "uncertainty_score": 0.758,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:34:45Z",
+    "session_ended_at": "2026-03-11T06:36:31Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000109",
+        "timestamp": "2026-03-11T06:41:54Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 185.8,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000109",
+          "prob_secure": 0.557,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.543,
+          "region": "south",
+          "weather_regime": "low_generation",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000109",
+        "timestamp": "2026-03-11T06:43:38Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 103.88,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000109",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "low_generation"
+        }
+      },
+      {
+        "interaction_id": "SE_000109",
+        "timestamp": "2026-03-11T06:43:53Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 11.12,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000109",
+          "uncertainty_score": 0.886,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:41:54Z",
+    "session_ended_at": "2026-03-11T06:43:53Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000110",
+        "timestamp": "2026-03-11T06:48:14Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 68.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000110",
+          "prob_secure": 0.786,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.214,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:48:14Z",
+    "session_ended_at": "2026-03-11T06:48:14Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000111",
+        "timestamp": "2026-03-11T06:51:10Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 144.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000111",
+          "prob_secure": 0.641,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.459,
+          "region": "north",
+          "weather_regime": "storm",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000111",
+        "timestamp": "2026-03-11T06:52:11Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 61.59,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000111",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "storm"
+        }
+      },
+      {
+        "interaction_id": "SE_000111",
+        "timestamp": "2026-03-11T06:52:16Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 9.82,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000111",
+          "uncertainty_score": 0.718,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:51:10Z",
+    "session_ended_at": "2026-03-11T06:52:16Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000112",
+        "timestamp": "2026-03-11T06:54:56Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 120.8,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000112",
+          "prob_secure": 0.719,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.381,
+          "region": "north",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000112",
+        "timestamp": "2026-03-11T06:55:55Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 59.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000112",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "north",
+          "weather_regime": "high_wind"
+        }
+      },
+      {
+        "interaction_id": "SE_000112",
+        "timestamp": "2026-03-11T06:56:05Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 8.3,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000112",
+          "uncertainty_score": 0.562,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:54:56Z",
+    "session_ended_at": "2026-03-11T06:56:05Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000113",
+        "timestamp": "2026-03-11T06:56:46Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 117.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000113",
+          "prob_secure": 0.568,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.532,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "generation_imbalance"
+        }
+      },
+      {
+        "interaction_id": "SE_000113",
+        "timestamp": "2026-03-11T06:57:53Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 67.44,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000113",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "central",
+          "weather_regime": "high_wind"
+        }
+      },
+      {
+        "interaction_id": "SE_000113",
+        "timestamp": "2026-03-11T06:58:05Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 10.83,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000113",
+          "uncertainty_score": 0.864,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T06:56:46Z",
+    "session_ended_at": "2026-03-11T06:58:05Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000114",
+        "timestamp": "2026-03-11T07:00:26Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 174.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000114",
+          "prob_secure": 0.903,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.097,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:00:26Z",
+    "session_ended_at": "2026-03-11T07:00:26Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000115",
+        "timestamp": "2026-03-11T07:03:04Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 114.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000115",
+          "prob_secure": 0.595,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.505,
+          "region": "central",
+          "weather_regime": "low_generation",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000115",
+        "timestamp": "2026-03-11T07:04:41Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 97.45,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000115",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "central",
+          "weather_regime": "low_generation"
+        }
+      },
+      {
+        "interaction_id": "SE_000115",
+        "timestamp": "2026-03-11T07:04:57Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 10.96,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000115",
+          "uncertainty_score": 0.81,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:03:04Z",
+    "session_ended_at": "2026-03-11T07:04:57Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000116",
+        "timestamp": "2026-03-11T07:09:18Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 146.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000116",
+          "prob_secure": 0.488,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.612,
+          "region": "south",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000116",
+        "timestamp": "2026-03-11T07:10:02Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 43.3,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000116",
+          "ai_decision": "insecure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "peak_demand"
+        }
+      },
+      {
+        "interaction_id": "SE_000116",
+        "timestamp": "2026-03-11T07:10:17Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 14.54,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000116",
+          "uncertainty_score": 0.976,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:09:18Z",
+    "session_ended_at": "2026-03-11T07:10:17Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000117",
+        "timestamp": "2026-03-11T07:15:09Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 187.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000117",
+          "prob_secure": 0.814,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.186,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:15:09Z",
+    "session_ended_at": "2026-03-11T07:15:09Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000118",
+        "timestamp": "2026-03-11T07:16:39Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 109.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000118",
+          "prob_secure": 0.581,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.519,
+          "region": "islands",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000118",
+        "timestamp": "2026-03-11T07:17:53Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 73.75,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000118",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "islands",
+          "weather_regime": "peak_demand"
+        }
+      },
+      {
+        "interaction_id": "SE_000118",
+        "timestamp": "2026-03-11T07:18:09Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 15.99,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000118",
+          "uncertainty_score": 0.838,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:16:39Z",
+    "session_ended_at": "2026-03-11T07:18:09Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000119",
+        "timestamp": "2026-03-11T07:19:54Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 109.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000119",
+          "prob_secure": 0.922,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.078,
+          "region": "south",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:19:54Z",
+    "session_ended_at": "2026-03-11T07:19:54Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000120",
+        "timestamp": "2026-03-11T07:21:32Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 143.7,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000120",
+          "prob_secure": 0.503,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.597,
+          "region": "south",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000120",
+        "timestamp": "2026-03-11T07:22:41Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 68.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000120",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "peak_demand"
+        }
+      },
+      {
+        "interaction_id": "SE_000120",
+        "timestamp": "2026-03-11T07:23:00Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 12.58,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000120",
+          "uncertainty_score": 0.994,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:21:32Z",
+    "session_ended_at": "2026-03-11T07:23:00Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000121",
+        "timestamp": "2026-03-11T07:26:06Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 110.0,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000121",
+          "prob_secure": 0.909,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.091,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:26:06Z",
+    "session_ended_at": "2026-03-11T07:26:06Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000122",
+        "timestamp": "2026-03-11T07:28:27Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 171.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000122",
+          "prob_secure": 0.609,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.491,
+          "region": "islands",
+          "weather_regime": "normal",
+          "xai_top_factor": "generation_imbalance"
+        }
+      },
+      {
+        "interaction_id": "SE_000122",
+        "timestamp": "2026-03-11T07:29:05Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 38.02,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000122",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "islands",
+          "weather_regime": "normal"
+        }
+      },
+      {
+        "interaction_id": "SE_000122",
+        "timestamp": "2026-03-11T07:29:12Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 15.29,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000122",
+          "uncertainty_score": 0.782,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:28:27Z",
+    "session_ended_at": "2026-03-11T07:29:12Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000123",
+        "timestamp": "2026-03-11T07:32:07Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 150.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000123",
+          "prob_secure": 0.742,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.258,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:32:07Z",
+    "session_ended_at": "2026-03-11T07:32:07Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000124",
+        "timestamp": "2026-03-11T07:36:16Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 136.3,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000124",
+          "prob_secure": 0.581,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.519,
+          "region": "islands",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000124",
+        "timestamp": "2026-03-11T07:36:51Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 35.72,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000124",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "islands",
+          "weather_regime": "high_wind"
+        }
+      },
+      {
+        "interaction_id": "SE_000124",
+        "timestamp": "2026-03-11T07:37:01Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 15.16,
+        "correct": false,
+        "payload": {
+          "instance_id": "GS_000124",
+          "uncertainty_score": 0.838,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:36:16Z",
+    "session_ended_at": "2026-03-11T07:37:01Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000125",
+        "timestamp": "2026-03-11T07:39:06Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 86.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000125",
+          "prob_secure": 0.896,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.104,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:39:06Z",
+    "session_ended_at": "2026-03-11T07:39:06Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000126",
+        "timestamp": "2026-03-11T07:43:34Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 182.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000126",
+          "prob_secure": 0.43,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.67,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000126",
+        "timestamp": "2026-03-11T07:44:39Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 64.95,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000126",
+          "ai_decision": "insecure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "normal"
+        }
+      },
+      {
+        "interaction_id": "SE_000126",
+        "timestamp": "2026-03-11T07:44:50Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 10.28,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000126",
+          "uncertainty_score": 0.86,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:43:34Z",
+    "session_ended_at": "2026-03-11T07:44:50Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000127",
+        "timestamp": "2026-03-11T07:48:24Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 130.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000127",
+          "prob_secure": 0.502,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.598,
+          "region": "south",
+          "weather_regime": "storm",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000127",
+        "timestamp": "2026-03-11T07:49:33Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 69.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000127",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "storm"
+        }
+      },
+      {
+        "interaction_id": "SE_000127",
+        "timestamp": "2026-03-11T07:49:41Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 12.11,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000127",
+          "uncertainty_score": 0.996,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:48:24Z",
+    "session_ended_at": "2026-03-11T07:49:41Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000128",
+        "timestamp": "2026-03-11T07:55:29Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 90.2,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000128",
+          "prob_secure": 0.906,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.094,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:55:29Z",
+    "session_ended_at": "2026-03-11T07:55:29Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000129",
+        "timestamp": "2026-03-11T07:58:33Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 168.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000129",
+          "prob_secure": 0.812,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.188,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T07:58:33Z",
+    "session_ended_at": "2026-03-11T07:58:33Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000130",
+        "timestamp": "2026-03-11T08:00:58Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 74.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000130",
+          "prob_secure": 0.959,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.041,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "line_loading_L014"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T08:00:58Z",
+    "session_ended_at": "2026-03-11T08:00:58Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000131",
+        "timestamp": "2026-03-11T08:04:47Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 147.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000131",
+          "prob_secure": 0.748,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.252,
+          "region": "islands",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T08:04:47Z",
+    "session_ended_at": "2026-03-11T08:04:47Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000132",
+        "timestamp": "2026-03-11T08:08:00Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 179.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000132",
+          "prob_secure": 0.692,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.408,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000132",
+        "timestamp": "2026-03-11T08:09:11Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 70.92,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000132",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "central",
+          "weather_regime": "normal"
+        }
+      },
+      {
+        "interaction_id": "SE_000132",
+        "timestamp": "2026-03-11T08:09:17Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 1.14,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000132",
+          "uncertainty_score": 0.616,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T08:08:00Z",
+    "session_ended_at": "2026-03-11T08:09:17Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000133",
+        "timestamp": "2026-03-11T08:13:31Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 185.0,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000133",
+          "prob_secure": 0.657,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.443,
+          "region": "south",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000133",
+        "timestamp": "2026-03-11T08:15:22Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 110.45,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000133",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "peak_demand"
+        }
+      },
+      {
+        "interaction_id": "SE_000133",
+        "timestamp": "2026-03-11T08:15:43Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 12.9,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000133",
+          "uncertainty_score": 0.686,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T08:13:31Z",
+    "session_ended_at": "2026-03-11T08:15:43Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000134",
+        "timestamp": "2026-03-11T08:19:58Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 118.8,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000134",
+          "prob_secure": 0.893,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.107,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T08:19:58Z",
+    "session_ended_at": "2026-03-11T08:19:58Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000135",
+        "timestamp": "2026-03-11T08:22:38Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 147.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000135",
+          "prob_secure": 0.569,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.531,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "generation_imbalance"
+        }
+      },
+      {
+        "interaction_id": "SE_000135",
+        "timestamp": "2026-03-11T08:23:25Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 46.96,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000135",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "normal"
+        }
+      },
+      {
+        "interaction_id": "SE_000135",
+        "timestamp": "2026-03-11T08:23:36Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 20.65,
+        "correct": false,
+        "payload": {
+          "instance_id": "GS_000135",
+          "uncertainty_score": 0.862,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T08:22:38Z",
+    "session_ended_at": "2026-03-11T08:23:36Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000136",
+        "timestamp": "2026-03-11T08:28:55Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 138.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000136",
+          "prob_secure": 0.686,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.414,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000136",
+        "timestamp": "2026-03-11T08:30:15Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 79.23,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000136",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "normal"
+        }
+      },
+      {
+        "interaction_id": "SE_000136",
+        "timestamp": "2026-03-11T08:30:24Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 5.57,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000136",
+          "uncertainty_score": 0.628,
+          "operator_label": "insecure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T08:28:55Z",
+    "session_ended_at": "2026-03-11T08:30:24Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000137",
+        "timestamp": "2026-03-11T08:32:17Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 153.8,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000137",
+          "prob_secure": 0.642,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.458,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000137",
+        "timestamp": "2026-03-11T08:33:27Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 69.49,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000137",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_01",
+          "region": "south",
+          "weather_regime": "normal"
+        }
+      },
+      {
+        "interaction_id": "SE_000137",
+        "timestamp": "2026-03-11T08:33:37Z",
+        "actor_type": "human",
+        "action": "al_label_selected",
+        "duration_s": 18.35,
+        "correct": true,
+        "payload": {
+          "instance_id": "GS_000137",
+          "uncertainty_score": 0.716,
+          "operator_label": "secure",
+          "operator_id": "op_01"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T08:32:17Z",
+    "session_ended_at": "2026-03-11T08:33:37Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000138",
+        "timestamp": "2026-03-11T08:37:36Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 184.7,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000138",
+          "prob_secure": 0.783,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.217,
+          "region": "islands",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "line_loading_L014"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T08:37:36Z",
+    "session_ended_at": "2026-03-11T08:37:36Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_al_aided_2026-03-11",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "al_aided",
+    "decisions": [
+      {
+        "interaction_id": "SE_000139",
+        "timestamp": "2026-03-11T08:40:40Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 139.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000139",
+          "prob_secure": 0.721,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.279,
+          "region": "south",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-11T08:40:40Z",
+    "session_ended_at": "2026-03-11T08:40:40Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000200",
+        "timestamp": "2026-03-12T06:04:07Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 120.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000200",
+          "prob_secure": 0.959,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.041,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:04:07Z",
+    "session_ended_at": "2026-03-12T06:04:07Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000201",
+        "timestamp": "2026-03-12T06:06:12Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 138.3,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000201",
+          "prob_secure": 0.609,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.491,
+          "region": "south",
+          "weather_regime": "low_generation",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000201",
+        "timestamp": "2026-03-12T06:06:15Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 3943.7,
+        "payload": {
+          "grid_state_id": "GS_000201",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "voltage_bus_B07",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000201",
+        "timestamp": "2026-03-12T06:06:59Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 43.24,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000201",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "south",
+          "weather_regime": "low_generation"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:06:12Z",
+    "session_ended_at": "2026-03-12T06:06:59Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000202",
+        "timestamp": "2026-03-12T06:09:43Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 169.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000202",
+          "prob_secure": 0.827,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.173,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:09:43Z",
+    "session_ended_at": "2026-03-12T06:09:43Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000203",
+        "timestamp": "2026-03-12T06:12:23Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 183.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000203",
+          "prob_secure": 0.952,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.048,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "line_loading_L014"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:12:23Z",
+    "session_ended_at": "2026-03-12T06:12:23Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000204",
+        "timestamp": "2026-03-12T06:16:53Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 171.3,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000204",
+          "prob_secure": 0.507,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.593,
+          "region": "south",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000204",
+        "timestamp": "2026-03-12T06:16:57Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 3352.51,
+        "payload": {
+          "grid_state_id": "GS_000204",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "load_margin",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000204",
+        "timestamp": "2026-03-12T06:17:26Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 28.99,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000204",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_02",
+          "region": "south",
+          "weather_regime": "peak_demand"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:16:53Z",
+    "session_ended_at": "2026-03-12T06:17:26Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000205",
+        "timestamp": "2026-03-12T06:23:03Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 104.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000205",
+          "prob_secure": 0.736,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.264,
+          "region": "islands",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "generation_imbalance"
+        }
+      },
+      {
+        "interaction_id": "SE_000205",
+        "timestamp": "2026-03-12T06:23:06Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 5240.36,
+        "payload": {
+          "grid_state_id": "GS_000205",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "generation_imbalance",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000205",
+        "timestamp": "2026-03-12T06:23:51Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 44.88,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000205",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "islands",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:23:03Z",
+    "session_ended_at": "2026-03-12T06:23:51Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000206",
+        "timestamp": "2026-03-12T06:27:20Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 158.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000206",
+          "prob_secure": 0.592,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.508,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000206",
+        "timestamp": "2026-03-12T06:27:23Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 3512.71,
+        "payload": {
+          "grid_state_id": "GS_000206",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "reactive_power_deficit",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000206",
+        "timestamp": "2026-03-12T06:28:10Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 47.03,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000206",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "central",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:27:20Z",
+    "session_ended_at": "2026-03-12T06:28:10Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000207",
+        "timestamp": "2026-03-12T06:31:34Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 115.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000207",
+          "prob_secure": 0.794,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.206,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:31:34Z",
+    "session_ended_at": "2026-03-12T06:31:34Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000208",
+        "timestamp": "2026-03-12T06:35:42Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 213.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000208",
+          "prob_secure": 0.671,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.429,
+          "region": "islands",
+          "weather_regime": "low_generation",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000208",
+        "timestamp": "2026-03-12T06:35:47Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 4366.6,
+        "payload": {
+          "grid_state_id": "GS_000208",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "reactive_power_deficit",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000208",
+        "timestamp": "2026-03-12T06:36:20Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 33.61,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000208",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "islands",
+          "weather_regime": "low_generation"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:35:42Z",
+    "session_ended_at": "2026-03-12T06:36:20Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000209",
+        "timestamp": "2026-03-12T06:37:48Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 156.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000209",
+          "prob_secure": 0.755,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.245,
+          "region": "north",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:37:48Z",
+    "session_ended_at": "2026-03-12T06:37:48Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000210",
+        "timestamp": "2026-03-12T06:41:36Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 156.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000210",
+          "prob_secure": 0.833,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.167,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:41:36Z",
+    "session_ended_at": "2026-03-12T06:41:36Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000211",
+        "timestamp": "2026-03-12T06:43:15Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 154.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000211",
+          "prob_secure": 0.545,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.555,
+          "region": "north",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000211",
+        "timestamp": "2026-03-12T06:43:19Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 2352.57,
+        "payload": {
+          "grid_state_id": "GS_000211",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "line_loading_L014",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000211",
+        "timestamp": "2026-03-12T06:43:35Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 16.15,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000211",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_02",
+          "region": "north",
+          "weather_regime": "peak_demand"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:43:15Z",
+    "session_ended_at": "2026-03-12T06:43:35Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000212",
+        "timestamp": "2026-03-12T06:45:59Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 172.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000212",
+          "prob_secure": 0.847,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.153,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:45:59Z",
+    "session_ended_at": "2026-03-12T06:45:59Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000213",
+        "timestamp": "2026-03-12T06:48:58Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 111.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000213",
+          "prob_secure": 0.811,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.189,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:48:58Z",
+    "session_ended_at": "2026-03-12T06:48:58Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000214",
+        "timestamp": "2026-03-12T06:51:48Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 139.7,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000214",
+          "prob_secure": 0.392,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.708,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000214",
+        "timestamp": "2026-03-12T06:51:52Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 4799.14,
+        "payload": {
+          "grid_state_id": "GS_000214",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "insecure",
+          "xai_summary": "voltage_bus_B07",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000214",
+        "timestamp": "2026-03-12T06:52:43Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 51.21,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000214",
+          "ai_decision": "insecure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "north",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:51:48Z",
+    "session_ended_at": "2026-03-12T06:52:43Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000215",
+        "timestamp": "2026-03-12T06:54:01Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 151.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000215",
+          "prob_secure": 0.753,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.247,
+          "region": "central",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "line_loading_L014"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:54:01Z",
+    "session_ended_at": "2026-03-12T06:54:01Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000216",
+        "timestamp": "2026-03-12T06:58:20Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 152.8,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000216",
+          "prob_secure": 0.749,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.251,
+          "region": "islands",
+          "weather_regime": "normal",
+          "xai_top_factor": "generation_imbalance"
+        }
+      },
+      {
+        "interaction_id": "SE_000216",
+        "timestamp": "2026-03-12T06:58:23Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 2854.17,
+        "payload": {
+          "grid_state_id": "GS_000216",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "generation_imbalance",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000216",
+        "timestamp": "2026-03-12T06:59:02Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 38.89,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000216",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "islands",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T06:58:20Z",
+    "session_ended_at": "2026-03-12T06:59:02Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000217",
+        "timestamp": "2026-03-12T07:00:38Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 159.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000217",
+          "prob_secure": 0.849,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.151,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:00:38Z",
+    "session_ended_at": "2026-03-12T07:00:38Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000218",
+        "timestamp": "2026-03-12T07:01:58Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 180.8,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000218",
+          "prob_secure": 0.866,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.134,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "generation_imbalance"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:01:58Z",
+    "session_ended_at": "2026-03-12T07:01:58Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000219",
+        "timestamp": "2026-03-12T07:06:01Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 155.5,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000219",
+          "prob_secure": 0.639,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.461,
+          "region": "north",
+          "weather_regime": "storm",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000219",
+        "timestamp": "2026-03-12T07:06:04Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 2274.81,
+        "payload": {
+          "grid_state_id": "GS_000219",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "load_margin",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000219",
+        "timestamp": "2026-03-12T07:06:42Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 37.7,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000219",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "north",
+          "weather_regime": "storm"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:06:01Z",
+    "session_ended_at": "2026-03-12T07:06:42Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000220",
+        "timestamp": "2026-03-12T07:11:22Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 180.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000220",
+          "prob_secure": 0.595,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.505,
+          "region": "islands",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000220",
+        "timestamp": "2026-03-12T07:11:26Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 3919.67,
+        "payload": {
+          "grid_state_id": "GS_000220",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "load_margin",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000220",
+        "timestamp": "2026-03-12T07:11:44Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 18.72,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000220",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "islands",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:11:22Z",
+    "session_ended_at": "2026-03-12T07:11:44Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000221",
+        "timestamp": "2026-03-12T07:14:53Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 130.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000221",
+          "prob_secure": 0.87,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.13,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:14:53Z",
+    "session_ended_at": "2026-03-12T07:14:53Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000222",
+        "timestamp": "2026-03-12T07:16:41Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 136.7,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000222",
+          "prob_secure": 0.746,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.254,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000222",
+        "timestamp": "2026-03-12T07:16:44Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 3608.56,
+        "payload": {
+          "grid_state_id": "GS_000222",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "reactive_power_deficit",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000222",
+        "timestamp": "2026-03-12T07:17:22Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 38.08,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000222",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "central",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:16:41Z",
+    "session_ended_at": "2026-03-12T07:17:22Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000223",
+        "timestamp": "2026-03-12T07:20:01Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 159.9,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000223",
+          "prob_secure": 0.633,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.467,
+          "region": "central",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000223",
+        "timestamp": "2026-03-12T07:20:06Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 1743.14,
+        "payload": {
+          "grid_state_id": "GS_000223",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "load_margin",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000223",
+        "timestamp": "2026-03-12T07:20:52Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 46.12,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000223",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "central",
+          "weather_regime": "peak_demand"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:20:01Z",
+    "session_ended_at": "2026-03-12T07:20:52Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000224",
+        "timestamp": "2026-03-12T07:23:01Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 107.7,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000224",
+          "prob_secure": 0.81,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.19,
+          "region": "central",
+          "weather_regime": "normal",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:23:01Z",
+    "session_ended_at": "2026-03-12T07:23:01Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000225",
+        "timestamp": "2026-03-12T07:25:32Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 110.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000225",
+          "prob_secure": 0.755,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.245,
+          "region": "islands",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:25:32Z",
+    "session_ended_at": "2026-03-12T07:25:32Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000226",
+        "timestamp": "2026-03-12T07:28:09Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 126.0,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000226",
+          "prob_secure": 0.707,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.393,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000226",
+        "timestamp": "2026-03-12T07:28:13Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 3241.95,
+        "payload": {
+          "grid_state_id": "GS_000226",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "line_loading_L014",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000226",
+        "timestamp": "2026-03-12T07:28:42Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 28.83,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000226",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "south",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:28:09Z",
+    "session_ended_at": "2026-03-12T07:28:42Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000227",
+        "timestamp": "2026-03-12T07:31:22Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 94.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000227",
+          "prob_secure": 0.787,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.213,
+          "region": "south",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "line_loading_L014"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:31:22Z",
+    "session_ended_at": "2026-03-12T07:31:22Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000228",
+        "timestamp": "2026-03-12T07:36:30Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 145.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000228",
+          "prob_secure": 0.705,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.395,
+          "region": "south",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "generation_imbalance"
+        }
+      },
+      {
+        "interaction_id": "SE_000228",
+        "timestamp": "2026-03-12T07:36:35Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 3985.96,
+        "payload": {
+          "grid_state_id": "GS_000228",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "generation_imbalance",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000228",
+        "timestamp": "2026-03-12T07:37:10Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 34.55,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000228",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_02",
+          "region": "south",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:36:30Z",
+    "session_ended_at": "2026-03-12T07:37:10Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000229",
+        "timestamp": "2026-03-12T07:38:32Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 130.2,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000229",
+          "prob_secure": 0.702,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.398,
+          "region": "north",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "reactive_power_deficit"
+        }
+      },
+      {
+        "interaction_id": "SE_000229",
+        "timestamp": "2026-03-12T07:38:37Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 2126.65,
+        "payload": {
+          "grid_state_id": "GS_000229",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "reactive_power_deficit",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000229",
+        "timestamp": "2026-03-12T07:39:04Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 27.39,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000229",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_02",
+          "region": "north",
+          "weather_regime": "peak_demand"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:38:32Z",
+    "session_ended_at": "2026-03-12T07:39:04Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000230",
+        "timestamp": "2026-03-12T07:42:15Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 187.2,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000230",
+          "prob_secure": 0.704,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.396,
+          "region": "central",
+          "weather_regime": "storm",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000230",
+        "timestamp": "2026-03-12T07:42:20Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 3353.71,
+        "payload": {
+          "grid_state_id": "GS_000230",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "load_margin",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000230",
+        "timestamp": "2026-03-12T07:43:01Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 41.13,
+        "correct": false,
+        "payload": {
+          "grid_state_id": "GS_000230",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "central",
+          "weather_regime": "storm"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:42:15Z",
+    "session_ended_at": "2026-03-12T07:43:01Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000231",
+        "timestamp": "2026-03-12T07:46:39Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 103.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000231",
+          "prob_secure": 0.412,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.688,
+          "region": "islands",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000231",
+        "timestamp": "2026-03-12T07:46:43Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 3346.89,
+        "payload": {
+          "grid_state_id": "GS_000231",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "insecure",
+          "xai_summary": "load_margin",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000231",
+        "timestamp": "2026-03-12T07:47:14Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 31.34,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000231",
+          "ai_decision": "insecure",
+          "operator_decision": "insecure",
+          "operator_id": "op_02",
+          "region": "islands",
+          "weather_regime": "peak_demand"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:46:39Z",
+    "session_ended_at": "2026-03-12T07:47:14Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000232",
+        "timestamp": "2026-03-12T07:50:28Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 172.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000232",
+          "prob_secure": 0.545,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.555,
+          "region": "north",
+          "weather_regime": "high_wind",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000232",
+        "timestamp": "2026-03-12T07:50:32Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 4337.58,
+        "payload": {
+          "grid_state_id": "GS_000232",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "line_loading_L014",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000232",
+        "timestamp": "2026-03-12T07:50:56Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 23.71,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000232",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "north",
+          "weather_regime": "high_wind"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:50:28Z",
+    "session_ended_at": "2026-03-12T07:50:56Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000233",
+        "timestamp": "2026-03-12T07:54:23Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 103.4,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000233",
+          "prob_secure": 0.521,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.579,
+          "region": "islands",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000233",
+        "timestamp": "2026-03-12T07:54:27Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 2919.12,
+        "payload": {
+          "grid_state_id": "GS_000233",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "voltage_bus_B07",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000233",
+        "timestamp": "2026-03-12T07:54:57Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 30.17,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000233",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "islands",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:54:23Z",
+    "session_ended_at": "2026-03-12T07:54:57Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000234",
+        "timestamp": "2026-03-12T07:57:28Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 141.7,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000234",
+          "prob_secure": 0.311,
+          "ai_decision": "insecure",
+          "al_flag": false,
+          "risk_score": 0.689,
+          "region": "islands",
+          "weather_regime": "low_generation",
+          "xai_top_factor": "generation_imbalance"
+        }
+      },
+      {
+        "interaction_id": "SE_000234",
+        "timestamp": "2026-03-12T07:57:31Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 2419.0,
+        "payload": {
+          "grid_state_id": "GS_000234",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "insecure",
+          "xai_summary": "generation_imbalance",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000234",
+        "timestamp": "2026-03-12T07:58:42Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 71.09,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000234",
+          "ai_decision": "insecure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "islands",
+          "weather_regime": "low_generation"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T07:57:28Z",
+    "session_ended_at": "2026-03-12T07:58:42Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000235",
+        "timestamp": "2026-03-12T08:02:00Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 199.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000235",
+          "prob_secure": 0.888,
+          "ai_decision": "secure",
+          "al_flag": false,
+          "risk_score": 0.112,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T08:02:00Z",
+    "session_ended_at": "2026-03-12T08:02:00Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000236",
+        "timestamp": "2026-03-12T08:03:57Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 185.6,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000236",
+          "prob_secure": 0.378,
+          "ai_decision": "insecure",
+          "al_flag": true,
+          "risk_score": 0.722,
+          "region": "south",
+          "weather_regime": "normal",
+          "xai_top_factor": "load_margin"
+        }
+      },
+      {
+        "interaction_id": "SE_000236",
+        "timestamp": "2026-03-12T08:04:02Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 1860.43,
+        "payload": {
+          "grid_state_id": "GS_000236",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "insecure",
+          "xai_summary": "load_margin",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000236",
+        "timestamp": "2026-03-12T08:04:38Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 36.29,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000236",
+          "ai_decision": "insecure",
+          "operator_decision": "insecure",
+          "operator_id": "op_02",
+          "region": "south",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T08:03:57Z",
+    "session_ended_at": "2026-03-12T08:04:38Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000237",
+        "timestamp": "2026-03-12T08:05:50Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 196.8,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000237",
+          "prob_secure": 0.585,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.515,
+          "region": "north",
+          "weather_regime": "normal",
+          "xai_top_factor": "line_loading_L014"
+        }
+      },
+      {
+        "interaction_id": "SE_000237",
+        "timestamp": "2026-03-12T08:05:52Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 3043.99,
+        "payload": {
+          "grid_state_id": "GS_000237",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "line_loading_L014",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000237",
+        "timestamp": "2026-03-12T08:06:19Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 27.03,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000237",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "north",
+          "weather_regime": "normal"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T08:05:50Z",
+    "session_ended_at": "2026-03-12T08:06:19Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000238",
+        "timestamp": "2026-03-12T08:10:25Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 131.1,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000238",
+          "prob_secure": 0.575,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.525,
+          "region": "central",
+          "weather_regime": "peak_demand",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000238",
+        "timestamp": "2026-03-12T08:10:29Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 4964.79,
+        "payload": {
+          "grid_state_id": "GS_000238",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "voltage_bus_B07",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000238",
+        "timestamp": "2026-03-12T08:10:55Z",
+        "actor_type": "human",
+        "action": "operator_overridden",
+        "duration_s": 25.86,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000238",
+          "ai_decision": "secure",
+          "operator_decision": "insecure",
+          "operator_id": "op_02",
+          "region": "central",
+          "weather_regime": "peak_demand"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T08:10:25Z",
+    "session_ended_at": "2026-03-12T08:10:55Z"
+  },
+  {
+    "sim_id": "pilot_se_v0",
+    "session_id": "se_agent_mediated_2026-03-12",
+    "pilot_tag": "energy",
+    "app_version": "se_v1.0.0",
+    "ai_model_version": "rf-security-2025-v1",
+    "policy": "agent_mediated",
+    "decisions": [
+      {
+        "interaction_id": "SE_000239",
+        "timestamp": "2026-03-12T08:13:54Z",
+        "actor_type": "ai",
+        "action": "security_classified",
+        "latency_ms": 144.7,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000239",
+          "prob_secure": 0.641,
+          "ai_decision": "secure",
+          "al_flag": true,
+          "risk_score": 0.459,
+          "region": "north",
+          "weather_regime": "low_generation",
+          "xai_top_factor": "voltage_bus_B07"
+        }
+      },
+      {
+        "interaction_id": "SE_000239",
+        "timestamp": "2026-03-12T08:13:56Z",
+        "actor_type": "ai",
+        "action": "agent_response",
+        "latency_ms": 5183.06,
+        "payload": {
+          "grid_state_id": "GS_000239",
+          "query_type": "security_assessment_review",
+          "ai_recommendation": "secure",
+          "xai_summary": "voltage_bus_B07",
+          "tools_called": [
+            "get_xai_explanation",
+            "get_simulation_result"
+          ]
+        }
+      },
+      {
+        "interaction_id": "SE_000239",
+        "timestamp": "2026-03-12T08:14:47Z",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "duration_s": 51.33,
+        "correct": true,
+        "payload": {
+          "grid_state_id": "GS_000239",
+          "ai_decision": "secure",
+          "operator_decision": "secure",
+          "operator_id": "op_02",
+          "region": "north",
+          "weather_regime": "low_generation"
+        }
+      }
+    ],
+    "session_started_at": "2026-03-12T08:13:54Z",
+    "session_ended_at": "2026-03-12T08:14:47Z"
+  }
+]

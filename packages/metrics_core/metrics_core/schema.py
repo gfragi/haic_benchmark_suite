@@ -51,6 +51,7 @@ class DecisionEvent(BaseModel):
     """
     interaction_id: str
     timestamp: datetime | None = None
+    t: float | None = None  # relative time in seconds (partner/simulator logs; pass-through)
     actor_type: ActorType | None = None
     action: str | None = None
     payload: dict[str, Any] = Field(default_factory=dict)
@@ -93,6 +94,7 @@ class SessionLog(BaseModel):
     decisions: list[DecisionEvent] = Field(default_factory=list)
     session_started_at: datetime | None = None
     session_ended_at: datetime | None = None
+    meta: dict[str, Any] = Field(default_factory=dict)   # pass-through metadata (task_parameters etc.)
     extras: dict[str, Any] = Field(default_factory=dict)
 
 

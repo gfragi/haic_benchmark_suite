@@ -39,7 +39,8 @@ const EMPTY_FORM = {
   ai_model_type: '',
   description: '',
   config_type: '',
-  metrics: [],
+  pilot_tag: '',
+  baseline_s: '',
 }
 
 const AI_MODEL_TYPES = [
@@ -47,10 +48,6 @@ const AI_MODEL_TYPES = [
   'XAI', 'Swarm Learning', 'Active Learning', 'Other',
 ]
 const CONFIG_TYPES = ['specific', 'generic']
-const METRIC_GROUPS = [
-  'Effectiveness', 'Efficiency', 'Adaptability and Learning',
-  'Collaboration and Interaction', 'Trust and Safety', 'Robustness and Generalization',
-]
 
 // ── Field Help Modal ──────────────────────────────────────────
 
@@ -72,8 +69,12 @@ const FIELD_HELP = [
     plain: '"Specific" means this configuration is tied to one exact AI model version — useful when you want to track changes between releases. "Generic" means the configuration applies to the application overall, regardless of model version.',
   },
   {
-    field: 'Metric groups',
-    plain: 'Choose which outcome categories to measure. Each group covers a different aspect of Human-AI collaboration: Effectiveness (accuracy, correctness), Efficiency (time, effort), Adaptability (learning over time), Collaboration (interaction patterns), Trust & Safety (reliability), Robustness (performance across conditions). Select all six if unsure — unused groups simply show no data.',
+    field: 'Pilot tag',
+    plain: 'Optional. Links this configuration to a pilot field-mapping adapter so the platform knows how to interpret your log format. Example: "smart_energy" or "radiology_v2". Leave blank if you are using the generic log format.',
+  },
+  {
+    field: 'Baseline (seconds)',
+    plain: 'Optional. The time in seconds a human would take to complete the same task without AI assistance. Used to compute Effort Loss (EL). Example: 300 means 5 minutes. Leave blank to let the platform auto-derive from your log data (requires 5+ sessions).',
   },
   {
     field: 'Description',
@@ -140,14 +141,7 @@ function NewConfigModal({ onClose, onCreated }) {
   }
 
   const canSave = form.application_name.trim() && form.ai_model_name.trim()
-    && form.ai_model_type && form.config_type && form.metrics.length > 0
-
-  function toggleMetric(m) {
-    setForm(f => ({
-      ...f,
-      metrics: f.metrics.includes(m) ? f.metrics.filter(x => x !== m) : [...f.metrics, m],
-    }))
-  }
+    && form.ai_model_type && form.config_type
 
   async function handleSave() {
     setSaving(true)
@@ -158,8 +152,10 @@ function NewConfigModal({ onClose, onCreated }) {
         ai_model_name: form.ai_model_name.trim(),
         ai_model_type: form.ai_model_type,
         config_type: form.config_type,
-        metrics: form.metrics,
+        metrics: [],
         ...(form.description.trim() && { description: form.description.trim() }),
+        ...(form.pilot_tag.trim() && { pilot_tag: form.pilot_tag.trim() }),
+        ...(form.baseline_s !== '' && { baseline_s: Number(form.baseline_s) }),
       }
       const created = await api.configs.create(payload)
       onCreated(created)
@@ -248,21 +244,28 @@ function NewConfigModal({ onClose, onCreated }) {
             </Field>
           </div>
 
-          <Field label="Metric groups" required>
-            <div className="grid grid-cols-2 gap-1.5 mt-0.5">
-              {METRIC_GROUPS.map(m => (
-                <label key={m} className="flex items-center gap-2 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={form.metrics.includes(m)}
-                    onChange={() => toggleMetric(m)}
-                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-300"
-                  />
-                  <span className="text-xs text-gray-700 group-hover:text-gray-900">{m}</span>
-                </label>
-              ))}
-            </div>
-          </Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Pilot tag">
+              <input
+                className={INPUT}
+                value={form.pilot_tag}
+                onChange={e => set('pilot_tag', e.target.value)}
+                placeholder="e.g. smart_energy"
+              />
+              <p className="text-xs text-gray-400 mt-1">Links to your pilot field mapping adapter</p>
+            </Field>
+            <Field label="Baseline (seconds)">
+              <input
+                className={INPUT}
+                type="number"
+                min="0"
+                value={form.baseline_s}
+                onChange={e => set('baseline_s', e.target.value)}
+                placeholder="e.g. 300"
+              />
+              <p className="text-xs text-gray-400 mt-1">Seconds for manual-only task. Leave blank for auto-derivation.</p>
+            </Field>
+          </div>
 
           <Field label="Description">
             <textarea

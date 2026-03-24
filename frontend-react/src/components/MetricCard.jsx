@@ -99,9 +99,15 @@ function DomainRange({ metricKey, domain }) {
 
 function WarningBox({ warnings, metricKey }) {
   if (!warnings?.length) return null
+
+  // Deduplicate by warning text, count occurrences per unique message
+  const counts = {}
+  warnings.forEach(w => { counts[w.warning] = (counts[w.warning] || 0) + 1 })
+  const deduped = Object.entries(counts).map(([warning, count]) => ({ warning, count }))
+
   return (
     <div className="mt-2 space-y-1">
-      {warnings.map((w, i) => (
+      {deduped.map(({ warning, count }, i) => (
         <div
           key={i}
           className="flex items-start gap-1.5 rounded bg-amber-50 border border-amber-200 px-2 py-1.5 text-xs text-amber-700 leading-tight"
@@ -110,7 +116,10 @@ function WarningBox({ warnings, metricKey }) {
           <span>
             <span className="font-semibold">{metricKey}</span>
             {' — '}
-            {w.warning}
+            {warning}
+            {count > 1 && (
+              <span className="text-amber-500 ml-1">({count} sessions)</span>
+            )}
           </span>
         </div>
       ))}

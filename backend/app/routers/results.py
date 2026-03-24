@@ -26,6 +26,54 @@ async def get_evaluation_results(configuration_id: int, db: Session = Depends(ge
         raise HTTPException(status_code=404, detail="No results found for this configuration")
     return results
 
+# Holistic summary: HAIC + fairness + SUS for a configuration
+@router.get("/{configuration_id}/holistic")
+async def get_holistic_summary(configuration_id: int, db: Session = Depends(get_db)):
+    from app.models.survey import Survey
+    from app.services.survey_service import calculate_sus_score
+
+    latest_result = (
+        db.query(EvaluationResult)
+        .filter(EvaluationResult.configuration_id == configuration_id)
+        .order_by(EvaluationResult.evaluation_date.desc())
+        .first()
+    )
+    if not latest_result:
+        raise HTTPException(status_code=404, detail="No evaluation results found for this configuration")
+
+    try:
+        result_object = minio_client.get_object(os.getenv("MINIO_BUCKET"), latest_result.result_minio_path)
+        result_data = json.load(io.BytesIO(result_object.read()))
+    except S3Error as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching result from MinIO: {str(e)}")
+
+    surveys = db.query(Survey).filter(Survey.configuration_id == configuration_id).all()
+    sus_summary = None
+    if surveys:
+        sus_scores = [calculate_sus_score(s.tam_sus_responses) for s in surveys]
+        ethics_scores = [
+            ((sum(s.ethics_responses.values()) / len(s.ethics_responses)) - 1) * 25
+            if s.ethics_responses else 0.0
+            for s in surveys
+        ]
+        sus_summary = {
+            "count": len(surveys),
+            "mean_sus": sum(sus_scores) / len(sus_scores),
+            "mean_ethics": sum(ethics_scores) / len(ethics_scores),
+            "scores": sus_scores,
+        }
+
+    return {
+        "configuration_id": configuration_id,
+        "haic": result_data.get("aggregates", {}).get("interaction", {}),
+        "warnings": result_data.get("warnings", []),
+        "fairness": result_data.get("fairness"),
+        "sus": sus_summary,
+        "evaluation_date": latest_result.evaluation_date,
+        "ai_model_version": latest_result.ai_model_version,
+    }
+
+
 # Fetch specific Evaluation Result
 @router.get("/{configuration_id}/{result_id}")
 async def get_evaluation_result(configuration_id: int, result_id: int, db: Session = Depends(get_db)):

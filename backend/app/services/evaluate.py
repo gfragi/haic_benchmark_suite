@@ -167,12 +167,61 @@ def _normalize_logs_data(logs_data):
     sessions, _ = normalize_log_payload(logs_data)
     return [s.model_dump(mode="json") for s in sessions]
 
-def _compute_derived_metrics(logs: list) -> list:
+def _session_duration_s(session: dict) -> float | None:
+    """
+    Estimate one session's duration in seconds.
+    Used to build the all_session_times list for P95 baseline derivation.
+
+    Priority: session_started_at / session_ended_at > t-range from decisions.
+    """
+    def _parse_dt(v: Any):
+        if v is None:
+            return None
+        if isinstance(v, datetime):
+            return v
+        if isinstance(v, str):
+            try:
+                return datetime.fromisoformat(v.replace("Z", "+00:00"))
+            except Exception:
+                pass
+        return None
+
+    s_dt = _parse_dt(session.get("session_started_at"))
+    e_dt = _parse_dt(session.get("session_ended_at"))
+    if s_dt and e_dt:
+        dur = (e_dt - s_dt).total_seconds()
+        if dur > 0:
+            return dur
+
+    # Fall back to t-value range from decisions (preserved by RC1 fix).
+    decisions = session.get("decisions") or []
+    t_vals = [
+        d["t"] for d in decisions
+        if isinstance(d.get("t"), (int, float)) and d["t"] is not None
+    ]
+    if t_vals:
+        span = max(t_vals) - min(t_vals)
+        if span > 0:
+            return span
+
+    return None
+
+
+def _compute_derived_metrics(logs: list, baseline_s: float | None = None) -> list:
     """Compute derived metrics for a list of logs."""
+    # Pre-compute session durations so _derive_baseline_s can use P95
+    # automatically for datasets with ≥5 sessions (no explicit config needed).
+    session_durations = [_session_duration_s(e) for e in logs]
+    all_session_times = [d for d in session_durations if d is not None and d > 0] or None
+
     derived_list = []
     for entry in logs:
         try:
-            derived = compute_from_log(entry)
+            derived = compute_from_log(
+                entry,
+                baseline_s=baseline_s,
+                all_session_times=all_session_times,
+            )
         except Exception as e:
             print(f"[evaluate] compute_from_log failed for entry: {repr(e)}")
             derived = {"by_metric": {}, "by_pillar": {}, "interaction": {}}
@@ -217,6 +266,15 @@ def _group_metrics_by_category(agg_by_metric: dict) -> dict:
             if k in ("Adversarial Robustness","Domain Generalization")
         },
     }
+
+def _compute_fairness(entries: list) -> dict | None:
+    try:
+        from app.services.fairness_service import compute_fairness_for_logs
+        return compute_fairness_for_logs(entries)
+    except Exception as e:
+        logger.warning("Fairness computation skipped: %s", repr(e))
+        return None
+
 
 def _save_result_to_minio(bucket: str, config_id: int, result_data: dict) -> str:
     """Save evaluation result to MinIO and return the path."""
@@ -278,7 +336,7 @@ def run_evaluation(config_id: int):
             app_version_str = ",".join(app_versions)
 
             # Compute and aggregate metrics
-            derived_list = _compute_derived_metrics(logs)
+            derived_list = _compute_derived_metrics(logs, baseline_s=config.baseline_s)
             agg_by_metric, agg_by_pillar, agg_interaction = _aggregate_metrics(derived_list)
             results_by_group = _group_metrics_by_category(agg_by_metric)
 
@@ -300,6 +358,7 @@ def run_evaluation(config_id: int):
                     "by_group": results_by_group,
                     "interaction": agg_interaction,
                 },
+                "fairness": _compute_fairness(logs),
             }
 
             # Save to MinIO and DB

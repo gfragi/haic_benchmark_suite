@@ -1,5 +1,5 @@
 # app/models/survey.py
-from sqlalchemy import Column, String, DateTime, JSON
+from sqlalchemy import Column, Integer, ForeignKey, String, DateTime, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from app.utils.database import Base
 
@@ -18,6 +18,7 @@ class Survey(Base):
     tam_sus_responses = Column(JSON)   # Store the SUS/TAM responses as JSON
     ethics_responses = Column(JSON)    # Store the ethics responses as JSON
     domain_specific = Column(JSON)       # Optional domain-specific data
+    configuration_id = Column(Integer, ForeignKey("configurations.id", ondelete="SET NULL"), nullable=True)
 
 
 

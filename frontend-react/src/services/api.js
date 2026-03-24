@@ -34,6 +34,7 @@ export const api = {
     get: (configId, resultId) => request(`/results/${configId}/${resultId}`),
     byGroup: (configId, groupName) =>
       request(`/results/${configId}/group/${encodeURIComponent(groupName)}`),
+    holistic: (configId) => request(`/results/${configId}/holistic`),
   },
 
   logs: {
@@ -106,7 +107,10 @@ export const api = {
 
   adapters: {
     // GET /meta/adapters — list all registered adapter tags
-    list: () => fetch('/meta/adapters').then((r) => r.json()),
+    list: () => fetch('/meta/adapters').then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      return r.json()
+    }),
     // GET /api/v1/adapters/{tag} — fetch saved config for one adapter
     getConfig: (tag) => request(`/adapters/${encodeURIComponent(tag)}`),
     // POST /api/v1/adapters/register — save + activate a field-mapping config

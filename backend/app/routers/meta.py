@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.services.seed_core_metrics import seed_core_definitions
@@ -73,3 +73,22 @@ def list_adapters():
             for t in tags
         ]
     }
+
+
+@router.get("/adapters/{pilot_tag}")
+def get_adapter(pilot_tag: str):
+    """
+    Returns 200 if an adapter is registered for this pilot_tag, 404 if not.
+    Used by StepPilot to check whether a pilot is already configured.
+    """
+    from metrics_core.adapters.registry import AdapterRegistry
+    from metrics_core.adapters import config_adapter as ca
+    ca.load_all_configs()
+    tag = pilot_tag.lower()
+    if not AdapterRegistry.has_adapter(tag):
+        raise HTTPException(
+            status_code=404,
+            detail=f"No adapter registered for pilot_tag '{pilot_tag}'",
+        )
+    builtin = {"generic", "applications", "pilot_apps"}
+    return {"pilot_tag": tag, "registered": True, "source": "builtin" if tag in builtin else "config"}

@@ -28,6 +28,7 @@ def log_schema_to_session_log(raw: dict) -> tuple[SessionLog, list[str]]:
         "pilot_tag":         raw.get("pilot_tag") or raw.get("app_version"),
         "app_version":       raw.get("app_version"),
         "ai_model_version":  raw.get("ai_model_version"),
+        "meta":              raw.get("meta", {}),
         "extras":            raw.get("extras", {}),
     }
 
@@ -101,6 +102,21 @@ def normalize_log_payload(payload: Any) -> tuple[list[SessionLog], list[str]]:
         )
 
     raw_sessions = [x for x in payload if isinstance(x, dict)]
+
+    # Unwrap any {"logs": [...]} envelope entries that appear inside the list.
+    # Some partners send mixed arrays where some entries are bare sessions and
+    # others are {"logs": [session, ...]} wrappers.
+    unwrapped = []
+    for entry in raw_sessions:
+        if (
+            "decisions" not in entry
+            and isinstance(entry.get("logs"), list)
+        ):
+            unwrapped.extend(x for x in entry["logs"] if isinstance(x, dict))
+        else:
+            unwrapped.append(entry)
+    raw_sessions = unwrapped
+
     if not raw_sessions:
         raise ValueError("Log contains no valid session objects.")
 

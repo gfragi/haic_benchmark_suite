@@ -37,3 +37,6 @@ class SurveyCreate(BaseModel):
     domain_specific: Optional[Dict[str, Any]] = Field(
         None, description="Optional domain-specific responses, e.g., for pilot-specific questions"
     )
+    configuration_id: Optional[int] = Field(
+        None, description="ID of the EvaluationConfig this survey belongs to"
+    )

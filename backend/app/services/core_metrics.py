@@ -1,5 +1,6 @@
 # app/services/core_metrics.py
 from __future__ import annotations
+from asyncio import events
 from typing import Optional, Dict, Any, Tuple
 from pathlib import Path
 import io, json
@@ -10,7 +11,7 @@ from metrics_core.interaction_metrics import (
     compute_metrics_by_agent,
 )
 from metrics_core.schema import MetricResult
-from metrics_core.adapters.generic import to_decisions as generic_to_decisions
+from metrics_core.adapters.registry import AdapterRegistry
 
 # IMPORTANT: import the module, not names (avoids ImportError)
 try:
@@ -125,8 +126,8 @@ def _write_core_artifact(run_id: str, artifact: dict) -> str:
 
 # Optional: if your backend logs aren't already in the generic schema,
 # replace this with a tiny custom adapter mapping -> decisions.
-def _to_decisions(events: list[dict]) -> list[dict]:
-    return generic_to_decisions(events)
+def _to_decisions(events: list[dict], pilot_tag: str = "generic") -> list[dict]:
+    return AdapterRegistry.adapt(pilot_tag, events)
 
 
 def extract_session_durations(sessions: list[dict]) -> list[float]:
@@ -166,13 +167,14 @@ def compute_core_v1_for_run(
     all_session_times: Optional[list[float]] = None,
 ) -> Tuple[Dict[str, Any], str]:
     events = _load_events_for_run(run_id)
-    decisions = _to_decisions(events)
+    pilot_tag = events[0].get("pilot_tag", "generic") if events else "generic"
+    decisions = _to_decisions(events, pilot_tag=pilot_tag)
 
     # Use new rich results
     rich_results: Dict[str, MetricResult] = compute_metrics_with_results(
         decisions=decisions,
         rt_max=rt_max,
-        baseline_s=baseline_s,
+        basel3ine_s=baseline_s,
         all_session_times=all_session_times,
     )
     by_agent = compute_metrics_by_agent(

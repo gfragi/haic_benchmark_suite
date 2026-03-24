@@ -103,12 +103,24 @@ def _normalize_decisions(
     return norm_rows
 
 
+_HAIC_ACTOR_TYPES = {"human", "ai"}
+
 def _only_agent_rows(decisions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Filter to rows that carry an agent identity."""
+    """
+    Filter to rows that represent a genuine human-AI interaction.
+
+    Accepts rows where:
+      - actor_type (lower-cased) is 'human' or 'ai', OR
+      - agent field is set (legacy simulator format)
+
+    Excludes actor_type='system', 'infrastructure', etc.
+    """
     return [
         e for e in decisions
-        if isinstance(e, dict)
-        and (e.get("agent") is not None or "actor_type" in e)
+        if isinstance(e, dict) and (
+            str(e.get("actor_type", "")).lower() in _HAIC_ACTOR_TYPES
+            or (e.get("agent") is not None and "actor_type" not in e)
+        )
     ]
 
 

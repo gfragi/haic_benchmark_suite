@@ -1,6 +1,7 @@
 # app/services/metrics_adapter.py
 
 from __future__ import annotations
+import datetime
 from typing import Any, Dict, Iterable, List, Optional
 
 from metrics_core.interaction_metrics import compute_metrics_with_results
@@ -8,6 +9,52 @@ from metrics_core.schema import MetricResult
 from metrics_core.outcome_metrics import Metrics as M
 
 Number = float | int
+
+
+def _derive_baseline_s(
+    sessions: List[Dict[str, Any]],
+    configured_baseline: Optional[float],
+    all_session_times: Optional[List[float]],
+) -> tuple[Optional[float], str]:
+    """
+    Derive the baseline_s to use for EL computation.
+
+    Priority order:
+      1. Explicitly configured value (caller-supplied baseline_s > 0).
+      2. meta.task_parameters.baseline_s in any session (partner-supplied in log).
+      3. P95 of all_session_times when at least 5 sessions are available.
+      4. Cannot derive — EL will be None.
+
+    Returns (baseline_s, source) where source is one of:
+      "configured", "session_meta", "p95_inferred (<N> sessions)", "unavailable"
+    """
+    # Priority 1 — caller-configured
+    if configured_baseline is not None and configured_baseline > 0:
+        return configured_baseline, "configured"
+
+    # Priority 2 — session meta.task_parameters.baseline_s
+    for s in sessions:
+        raw = (s.get("meta") or {}).get("task_parameters", {}).get("baseline_s")
+        if raw is not None:
+            try:
+                v = float(raw)
+                if v > 0:
+                    return v, "session_meta"
+            except (TypeError, ValueError):
+                pass
+
+    # Priority 3 — P95 of provided session durations (requires ≥5 for reliability)
+    if all_session_times and len(all_session_times) >= 5:
+        xs = sorted(all_session_times)
+        n = len(xs)
+        i = 0.95 * (n - 1)
+        lo = int(i)
+        hi = min(lo + 1, n - 1)
+        p95 = xs[lo] + (i - lo) * (xs[hi] - xs[lo])
+        if p95 > 0:
+            return p95, f"p95_inferred ({n} sessions)"
+
+    return None, "unavailable"
 
 
 def _as_sessions(log: Any) -> List[Dict[str, Any]]:
@@ -153,17 +200,74 @@ def compute_from_log(
     by_metric["Domain Generalization"]       = None
 
     # ----------------- Core HAIC (F, D, HCL, Tr, A, S, EL) -----------------
+    # Prefer rt_max from session meta.task_parameters over the caller-supplied default.
+    meta_rt_max: Optional[float] = None
+    for s in sessions:
+        tp = (s.get("meta") or {}).get("task_parameters", {})
+        rt_raw = tp.get("rt_max") or tp.get("rt_max_s")
+        if rt_raw is not None:
+            try:
+                meta_rt_max = float(rt_raw)
+                break
+            except (TypeError, ValueError):
+                pass
+    effective_rt_max = meta_rt_max if meta_rt_max is not None else rt_max
+
+    # Derive the best available baseline_s with explicit priority ordering.
+    effective_baseline, baseline_source = _derive_baseline_s(
+        sessions, baseline_s, all_session_times
+    )
+
     interaction_results: dict[str, MetricResult] = {}
     if all_decisions:
         try:
             interaction_results = compute_metrics_with_results(
                 decisions=all_decisions,
-                rt_max=rt_max,
-                baseline_s=baseline_s,
-                all_session_times=all_session_times,
+                rt_max=effective_rt_max,
+                baseline_s=effective_baseline,
+                all_session_times=None,  # P95 already handled by _derive_baseline_s
             )
         except Exception:
             interaction_results = {}
+
+    # Post-process EL to annotate derivation source.
+    if "EL" in interaction_results:
+        el_mr = interaction_results["EL"]
+        if baseline_source.startswith("p95_inferred"):
+            interaction_results["EL"] = MetricResult(
+                metric="EL",
+                value=el_mr.value,
+                n_events=el_mr.n_events,
+                inferred=True,
+                warning=(
+                    "EL baseline auto-derived from P95 of session durations. "
+                    "Upload more sessions or configure baseline_s to improve accuracy."
+                ),
+            )
+        elif baseline_source == "unavailable":
+            interaction_results["EL"] = MetricResult(
+                metric="EL",
+                value=None,
+                n_events=0,
+                warning=(
+                    "EL requires baseline_s. Configure it in your evaluation "
+                    "settings or upload 5+ sessions for auto-derivation."
+                ),
+            )
+        # "configured" and "session_meta" → leave MetricResult unchanged
+
+    # Warn when falling back to the default rt_max (HCL may be inaccurate).
+    if meta_rt_max is None and "HCL" in interaction_results:
+        hcl_mr = interaction_results["HCL"]
+        if hcl_mr.value is not None:
+            existing = (hcl_mr.warning + "; ") if hcl_mr.warning else ""
+            interaction_results["HCL"] = MetricResult(
+                metric="HCL",
+                value=hcl_mr.value,
+                n_events=hcl_mr.n_events,
+                warning=existing + f'HCL computed with default rt_max={rt_max}s. To calibrate for your domain add \u201cmeta\u201d: {{"task_parameters": {{"rt_max": N}}}} to each session, where N is the maximum acceptable human response time in seconds.',
+                inferred=hcl_mr.inferred,
+            )
 
     # Flatten for backward compat
     interaction = {k: v.value for k, v in interaction_results.items()}
