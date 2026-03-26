@@ -1,0 +1,1264 @@
+{
+  "logs": [
+    {
+      "session_id": "healthcare-test-0001",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0001",
+          "t": 0.0,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0001",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "I"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0001",
+          "t": 2.345591341114334,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 889.8562663989153,
+          "payload": {
+            "metrics": {
+              "auc": 0.8238955919271892
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0001",
+          "t": 4.418867504294813,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0001",
+          "t": 15.070875841783465,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 10.652008337488653,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:00:00+00:00",
+      "session_ended_at": "2026-01-01T00:00:15.070876+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0002",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0002",
+          "t": 92.48688473123659,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0002",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "I"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0002",
+          "t": 94.39771706799677,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1154.4547636203927,
+          "payload": {
+            "metrics": {
+              "auc": 0.8690805079291182
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0002",
+          "t": 98.55275481449374,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0002",
+          "t": 111.84834569495601,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 13.295590880462274,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:01:32.486885+00:00",
+      "session_ended_at": "2026-01-01T00:01:51.848346+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0003",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0003",
+          "t": 149.86545198580149,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0003",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0003",
+          "t": 150.87654162207755,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1100.385790647389,
+          "payload": {
+            "metrics": {
+              "auc": 0.892405542628883
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0003",
+          "t": 153.19630351176818,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0003",
+          "t": 167.27408119668013,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 14.077777684911949,
+          "correct": false,
+          "payload": {
+            "decision": "reject",
+            "note": "conflicts with guideline"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:02:29.865452+00:00",
+      "session_ended_at": "2026-01-01T00:02:47.274081+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0004",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0004",
+          "t": 247.76375409977848,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0004",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0004",
+          "t": 249.692853868927,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1022.9623176133581,
+          "payload": {
+            "metrics": {
+              "auc": 0.9100964017346529
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0004",
+          "t": 252.05692966649514,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0004",
+          "t": 260.5903726720787,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 8.53344300558355,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:04:07.763754+00:00",
+      "session_ended_at": "2026-01-01T00:04:20.590373+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0005",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0005",
+          "t": 324.3203483925579,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0005",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0005",
+          "t": 326.51125302949674,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1180.0158433772624,
+          "payload": {
+            "metrics": {
+              "auc": 0.9069711110972525
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0005",
+          "t": 330.34920999778205,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0005",
+          "t": 350.01541526202544,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 19.666205264243374,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:05:24.320348+00:00",
+      "session_ended_at": "2026-01-01T00:05:50.015415+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0006",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0006",
+          "t": 415.84880687862864,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0006",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0006",
+          "t": 417.74063410278205,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 863.6631630171997,
+          "payload": {
+            "metrics": {
+              "auc": 0.9033793891739915
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0006",
+          "t": 421.09084337452276,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0006",
+          "t": 441.3746023180325,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 20.283758943509717,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:06:55.848807+00:00",
+      "session_ended_at": "2026-01-01T00:07:21.374602+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0007",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0007",
+          "t": 479.7143745351657,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0007",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0007",
+          "t": 481.6835685693062,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 895.6983455258531,
+          "payload": {
+            "metrics": {
+              "auc": 0.8527847111917883
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0007",
+          "t": 485.8242031571394,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0007",
+          "t": 496.2795811394175,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 10.45537798227807,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:07:59.714375+00:00",
+      "session_ended_at": "2026-01-01T00:08:16.279581+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0008",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0008",
+          "t": 574.3657161746816,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0008",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "I"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0008",
+          "t": 575.6424642977139,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 892.5045918912747,
+          "payload": {
+            "metrics": {
+              "auc": 0.8832739774758863
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0008",
+          "t": 579.7617217227976,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0008",
+          "t": 586.9820698863613,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 7.220348163563683,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:09:34.365716+00:00",
+      "session_ended_at": "2026-01-01T00:09:46.982070+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0009",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0009",
+          "t": 651.4962731998774,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0009",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "II"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0009",
+          "t": 652.6208046210445,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1133.156467736195,
+          "payload": {
+            "metrics": {
+              "auc": 0.846737217520033
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0009",
+          "t": 656.9301919379885,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0009",
+          "t": 680.9053705762004,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 23.97517863821191,
+          "correct": false,
+          "payload": {
+            "decision": "reject",
+            "note": "conflicts with guideline"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:10:51.496273+00:00",
+      "session_ended_at": "2026-01-01T00:11:20.905371+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0010",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0010",
+          "t": 745.5291068377685,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0010",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0010",
+          "t": 747.289868895624,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 802.3584334335973,
+          "payload": {
+            "metrics": {
+              "auc": 0.842211056320619
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0010",
+          "t": 751.550294270802,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0010",
+          "t": 773.7658053316151,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 22.215511060812986,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:12:25.529107+00:00",
+      "session_ended_at": "2026-01-01T00:12:53.765805+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0011",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0011",
+          "t": 816.4801709692596,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0011",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0011",
+          "t": 818.9494390907723,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1119.947268376507,
+          "payload": {
+            "metrics": {
+              "auc": 0.9077373616879034
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0011",
+          "t": 822.4141275234231,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0011",
+          "t": 833.599898446925,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 11.185770923501874,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:13:36.480171+00:00",
+      "session_ended_at": "2026-01-01T00:13:53.599898+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0012",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0012",
+          "t": 885.923031131566,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0012",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0012",
+          "t": 888.2813149016226,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 961.7266676550548,
+          "payload": {
+            "metrics": {
+              "auc": 0.8198053677444211
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0012",
+          "t": 891.6834853493195,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0012",
+          "t": 900.1084134976616,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 8.424928148342053,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:14:45.923031+00:00",
+      "session_ended_at": "2026-01-01T00:15:00.108413+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0013",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0013",
+          "t": 937.2713537268228,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0013",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "II"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0013",
+          "t": 939.4551392780786,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1065.1999027344646,
+          "payload": {
+            "metrics": {
+              "auc": 0.8100736954594401
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0013",
+          "t": 942.7409775870619,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0013",
+          "t": 965.2111533433695,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 22.47017575630747,
+          "correct": false,
+          "payload": {
+            "decision": "reject",
+            "note": "conflicts with guideline"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:15:37.271354+00:00",
+      "session_ended_at": "2026-01-01T00:16:05.211153+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0014",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0014",
+          "t": 1000.2791694227881,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0014",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "II"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0014",
+          "t": 1001.702489991211,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 930.7383219525234,
+          "payload": {
+            "metrics": {
+              "auc": 0.8913475649472833
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0014",
+          "t": 1004.8398686379034,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0014",
+          "t": 1025.1280552854444,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 20.28818664754091,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:16:40.279169+00:00",
+      "session_ended_at": "2026-01-01T00:17:05.128055+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0015",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0015",
+          "t": 1062.892746011907,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0015",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "I"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0015",
+          "t": 1064.8333596843331,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1099.6097044331402,
+          "payload": {
+            "metrics": {
+              "auc": 0.8062502729891907
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0015",
+          "t": 1069.6891187614788,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0015",
+          "t": 1079.949339910154,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 10.260221148675216,
+          "correct": false,
+          "payload": {
+            "decision": "reject",
+            "note": "conflicts with guideline"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:17:42.892746+00:00",
+      "session_ended_at": "2026-01-01T00:17:59.949340+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0016",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0016",
+          "t": 1160.7570261507256,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0016",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "I"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0016",
+          "t": 1163.2654925588447,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1179.8446930863956,
+          "payload": {
+            "metrics": {
+              "auc": 0.8239232818835039
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0016",
+          "t": 1165.3266326108057,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0016",
+          "t": 1174.2218971807167,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 8.895264569911017,
+          "correct": false,
+          "payload": {
+            "decision": "reject",
+            "note": "conflicts with guideline"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:19:20.757026+00:00",
+      "session_ended_at": "2026-01-01T00:19:34.221897+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0017",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0017",
+          "t": 1244.2299683817212,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0017",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0017",
+          "t": 1247.1254824261546,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 986.0135933740883,
+          "payload": {
+            "metrics": {
+              "auc": 0.8307492435874624
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0017",
+          "t": 1250.2321679491233,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0017",
+          "t": 1267.7441291077691,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 17.511961158645917,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:20:44.229968+00:00",
+      "session_ended_at": "2026-01-01T00:21:07.744129+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0018",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0018",
+          "t": 1330.1478298115217,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0018",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "I"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0018",
+          "t": 1333.0772713575898,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 843.2394998630426,
+          "payload": {
+            "metrics": {
+              "auc": 0.803081411059696
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0018",
+          "t": 1336.0131430907738,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0018",
+          "t": 1354.8827415409316,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 18.869598450157767,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:22:10.147830+00:00",
+      "session_ended_at": "2026-01-01T00:22:34.882742+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0019",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0019",
+          "t": 1399.980551887353,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0019",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "III"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0019",
+          "t": 1401.3772114415365,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1036.8391444999409,
+          "payload": {
+            "metrics": {
+              "auc": 0.8996685960536382
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0019",
+          "t": 1404.1057595831478,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0019",
+          "t": 1423.3524266305674,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 19.24666704741967,
+          "correct": true,
+          "payload": {
+            "decision": "accept",
+            "note": "consistent with protocol"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:23:19.980552+00:00",
+      "session_ended_at": "2026-01-01T00:23:43.352427+00:00"
+    },
+    {
+      "session_id": "healthcare-test-0020",
+      "pilot_tag": "healthcare_oncology",
+      "user_id": "expert_anon",
+      "app_version": "ns_v1.0.0",
+      "ai_model_version": "ns-2025-10-17",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 30,
+          "baseline_s": 45
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "IMG0020",
+          "t": 1484.1935038456857,
+          "actor_type": "system",
+          "action": "initial_input_provided",
+          "payload": {
+            "image_id": "IMG0020",
+            "cohort": {
+              "cancer_type": "breast",
+              "stage": "I"
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0020",
+          "t": 1486.785958278886,
+          "actor_type": "ai",
+          "action": "model_trained",
+          "latency_ms": 1026.3730221469264,
+          "payload": {
+            "metrics": {
+              "auc": 0.8049282956247363
+            }
+          }
+        },
+        {
+          "interaction_id": "IMG0020",
+          "t": 1490.3841940148175,
+          "actor_type": "human",
+          "action": "human_review_notified",
+          "payload": {
+            "method": "sms"
+          }
+        },
+        {
+          "interaction_id": "IMG0020",
+          "t": 1508.9530994878771,
+          "actor_type": "human",
+          "action": "human_review_performed",
+          "duration_s": 18.568905473059765,
+          "correct": false,
+          "payload": {
+            "decision": "reject",
+            "note": "conflicts with guideline"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T00:24:44.193504+00:00",
+      "session_ended_at": "2026-01-01T00:25:08.953099+00:00"
+    }
+  ]
+}

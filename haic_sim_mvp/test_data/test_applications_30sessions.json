@@ -1,0 +1,2144 @@
+{
+  "logs": [
+    {
+      "session_id": "app-test-000001",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000001",
+          "timestamp": "2026-01-28T14:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_1"
+          }
+        },
+        {
+          "interaction_id": "APP_000001",
+          "timestamp": "2026-01-29T01:53:10.758571+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14099.8070468603,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000001",
+          "timestamp": "2026-01-29T10:46:53.354893+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 79.08298803735147,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-28T14:00:00+00:00",
+      "session_ended_at": "2026-01-29T11:35:14.775373+00:00"
+    },
+    {
+      "session_id": "app-test-000002",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000002",
+          "timestamp": "2026-01-02T16:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_2"
+          }
+        },
+        {
+          "interaction_id": "APP_000002",
+          "timestamp": "2026-01-03T03:15:30.719394+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 17953.50602746594,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000002",
+          "timestamp": "2026-01-03T12:16:37.688756+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 79.0447332542895,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-02T16:00:00+00:00",
+      "session_ended_at": "2026-01-03T10:30:13.218661+00:00"
+    },
+    {
+      "session_id": "app-test-000003",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000003",
+          "timestamp": "2026-01-26T11:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_3"
+          }
+        },
+        {
+          "interaction_id": "APP_000003",
+          "timestamp": "2026-01-26T22:59:53.186328+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 26904.575926140104,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000003",
+          "timestamp": "2026-01-27T05:12:37.426833+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 49.378238589682994,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-26T11:00:00+00:00",
+      "session_ended_at": "2026-01-27T10:01:44.823870+00:00"
+    },
+    {
+      "session_id": "app-test-000004",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000004",
+          "timestamp": "2026-01-05T16:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_4"
+          }
+        },
+        {
+          "interaction_id": "APP_000004",
+          "timestamp": "2026-01-06T06:27:54.520627+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 42285.13093097521,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        },
+        {
+          "interaction_id": "APP_000004",
+          "timestamp": "2026-01-06T12:43:14.635734+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 78.26052823092306,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-05T16:00:00+00:00",
+      "session_ended_at": "2026-01-06T16:46:33.472919+00:00"
+    },
+    {
+      "session_id": "app-test-000005",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000005",
+          "timestamp": "2026-01-17T11:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_5"
+          }
+        },
+        {
+          "interaction_id": "APP_000005",
+          "timestamp": "2026-01-18T03:01:49.034959+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 24465.40104667906,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000005",
+          "timestamp": "2026-01-18T04:44:05.771805+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 36.25996339413668,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-17T11:00:00+00:00",
+      "session_ended_at": "2026-01-18T09:10:37.899557+00:00"
+    },
+    {
+      "session_id": "app-test-000006",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000006",
+          "timestamp": "2026-01-13T16:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_6"
+          }
+        },
+        {
+          "interaction_id": "APP_000006",
+          "timestamp": "2026-01-14T07:55:29.673335+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 25205.049001566644,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-13T16:00:00+00:00",
+      "session_ended_at": "2026-01-14T12:26:42.309071+00:00"
+    },
+    {
+      "session_id": "app-test-000007",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000007",
+          "timestamp": "2026-01-16T21:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_7"
+          }
+        },
+        {
+          "interaction_id": "APP_000007",
+          "timestamp": "2026-01-17T12:00:36.406269+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 37341.90662146669,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000007",
+          "timestamp": "2026-01-17T14:03:48.050192+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 87.14804593773542,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-16T21:00:00+00:00",
+      "session_ended_at": "2026-01-17T18:07:04.196311+00:00"
+    },
+    {
+      "session_id": "app-test-000008",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000008",
+          "timestamp": "2026-01-11T18:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_8"
+          }
+        },
+        {
+          "interaction_id": "APP_000008",
+          "timestamp": "2026-01-12T08:39:59.995197+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 32277.98975098585,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        },
+        {
+          "interaction_id": "APP_000008",
+          "timestamp": "2026-01-12T14:28:12.285020+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 105.85667281708287,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-11T18:00:00+00:00",
+      "session_ended_at": "2026-01-12T17:07:59.997346+00:00"
+    },
+    {
+      "session_id": "app-test-000009",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000009",
+          "timestamp": "2026-01-11T02:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_9"
+          }
+        },
+        {
+          "interaction_id": "APP_000009",
+          "timestamp": "2026-01-11T15:20:23.295740+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 12647.54420846189,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-11T02:00:00+00:00",
+      "session_ended_at": "2026-01-12T02:16:34.083726+00:00"
+    },
+    {
+      "session_id": "app-test-000010",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000010",
+          "timestamp": "2026-01-25T12:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_10"
+          }
+        },
+        {
+          "interaction_id": "APP_000010",
+          "timestamp": "2026-01-26T02:45:08.773306+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 25825.276042426573,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-25T12:00:00+00:00",
+      "session_ended_at": "2026-01-26T12:17:16.427692+00:00"
+    },
+    {
+      "session_id": "app-test-000011",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000011",
+          "timestamp": "2026-01-20T21:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_11"
+          }
+        },
+        {
+          "interaction_id": "APP_000011",
+          "timestamp": "2026-01-21T11:06:19.545793+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 39880.55246609032,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000011",
+          "timestamp": "2026-01-21T16:02:48.676546+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 82.51796324510906,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-20T21:00:00+00:00",
+      "session_ended_at": "2026-01-21T16:40:59.893311+00:00"
+    },
+    {
+      "session_id": "app-test-000012",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000012",
+          "timestamp": "2026-01-07T05:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_12"
+          }
+        },
+        {
+          "interaction_id": "APP_000012",
+          "timestamp": "2026-01-07T16:22:22.327508+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14385.965214026366,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-07T05:00:00+00:00",
+      "session_ended_at": "2026-01-08T02:53:43.381251+00:00"
+    },
+    {
+      "session_id": "app-test-000013",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000013",
+          "timestamp": "2026-01-30T08:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_13"
+          }
+        },
+        {
+          "interaction_id": "APP_000013",
+          "timestamp": "2026-01-30T21:13:52.385730+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 49844.85520960387,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-30T08:00:00+00:00",
+      "session_ended_at": "2026-01-31T05:04:33.430353+00:00"
+    },
+    {
+      "session_id": "app-test-000014",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000014",
+          "timestamp": "2026-01-24T22:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_14"
+          }
+        },
+        {
+          "interaction_id": "APP_000014",
+          "timestamp": "2026-01-25T13:06:54.436387+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 37268.41476106299,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-24T22:00:00+00:00",
+      "session_ended_at": "2026-01-25T19:08:29.109912+00:00"
+    },
+    {
+      "session_id": "app-test-000015",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000015",
+          "timestamp": "2026-01-12T17:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_15"
+          }
+        },
+        {
+          "interaction_id": "APP_000015",
+          "timestamp": "2026-01-13T05:44:30.002573+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 16326.31017378679,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-12T17:00:00+00:00",
+      "session_ended_at": "2026-01-13T09:41:37.359483+00:00"
+    },
+    {
+      "session_id": "app-test-000016",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000016",
+          "timestamp": "2026-01-12T13:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_16"
+          }
+        },
+        {
+          "interaction_id": "APP_000016",
+          "timestamp": "2026-01-13T02:55:53.633492+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14256.4329119082,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-12T13:00:00+00:00",
+      "session_ended_at": "2026-01-13T10:52:39.005807+00:00"
+    },
+    {
+      "session_id": "app-test-000017",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000017",
+          "timestamp": "2026-01-28T14:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_17"
+          }
+        },
+        {
+          "interaction_id": "APP_000017",
+          "timestamp": "2026-01-29T03:11:18.277052+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 16461.961430126135,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-28T14:00:00+00:00",
+      "session_ended_at": "2026-01-29T14:36:44.992430+00:00"
+    },
+    {
+      "session_id": "app-test-000018",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000018",
+          "timestamp": "2026-01-23T23:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_18"
+          }
+        },
+        {
+          "interaction_id": "APP_000018",
+          "timestamp": "2026-01-24T12:49:32.114161+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14474.709012835803,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-23T23:00:00+00:00",
+      "session_ended_at": "2026-01-24T18:41:29.423015+00:00"
+    },
+    {
+      "session_id": "app-test-000019",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000019",
+          "timestamp": "2026-01-14T10:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_19"
+          }
+        },
+        {
+          "interaction_id": "APP_000019",
+          "timestamp": "2026-01-14T21:32:55.140966+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 39276.30379378511,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000019",
+          "timestamp": "2026-01-15T07:12:00.465068+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 118.01860443096008,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-14T10:00:00+00:00",
+      "session_ended_at": "2026-01-15T07:06:21.185086+00:00"
+    },
+    {
+      "session_id": "app-test-000020",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000020",
+          "timestamp": "2026-01-06T16:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_20"
+          }
+        },
+        {
+          "interaction_id": "APP_000020",
+          "timestamp": "2026-01-07T04:35:01.132579+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 44897.321643410294,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000020",
+          "timestamp": "2026-01-07T11:01:02.758804+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 49.061838489787384,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-06T16:00:00+00:00",
+      "session_ended_at": "2026-01-07T13:09:38.882663+00:00"
+    },
+    {
+      "session_id": "app-test-000021",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000021",
+          "timestamp": "2026-01-30T18:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_21"
+          }
+        },
+        {
+          "interaction_id": "APP_000021",
+          "timestamp": "2026-01-31T08:43:17.561153+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 27524.00335658016,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        },
+        {
+          "interaction_id": "APP_000021",
+          "timestamp": "2026-01-31T13:32:31.516821+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 40.890377628143916,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-30T18:00:00+00:00",
+      "session_ended_at": "2026-01-31T12:32:20.920111+00:00"
+    },
+    {
+      "session_id": "app-test-000022",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000022",
+          "timestamp": "2026-01-15T18:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_22"
+          }
+        },
+        {
+          "interaction_id": "APP_000022",
+          "timestamp": "2026-01-16T05:09:03.816780+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 38313.637861938165,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000022",
+          "timestamp": "2026-01-16T10:59:37.475338+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 36.066029529927675,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-15T18:00:00+00:00",
+      "session_ended_at": "2026-01-16T10:55:42.388742+00:00"
+    },
+    {
+      "session_id": "app-test-000023",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000023",
+          "timestamp": "2026-01-15T10:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_23"
+          }
+        },
+        {
+          "interaction_id": "APP_000023",
+          "timestamp": "2026-01-15T22:18:04.736147+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 15292.473949001,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000023",
+          "timestamp": "2026-01-16T07:51:50.284812+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 81.3938783992756,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-15T10:00:00+00:00",
+      "session_ended_at": "2026-01-16T06:36:20.130789+00:00"
+    },
+    {
+      "session_id": "app-test-000024",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000024",
+          "timestamp": "2026-01-21T12:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_24"
+          }
+        },
+        {
+          "interaction_id": "APP_000024",
+          "timestamp": "2026-01-21T23:38:58.616285+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 27242.0472962551,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-21T12:00:00+00:00",
+      "session_ended_at": "2026-01-22T08:11:47.358691+00:00"
+    },
+    {
+      "session_id": "app-test-000025",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000025",
+          "timestamp": "2026-01-21T06:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_25"
+          }
+        },
+        {
+          "interaction_id": "APP_000025",
+          "timestamp": "2026-01-21T20:44:29.109765+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 35847.19005179938,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-21T06:00:00+00:00",
+      "session_ended_at": "2026-01-21T23:10:18.380222+00:00"
+    },
+    {
+      "session_id": "app-test-000026",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000026",
+          "timestamp": "2026-01-15T19:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_26"
+          }
+        },
+        {
+          "interaction_id": "APP_000026",
+          "timestamp": "2026-01-16T07:10:31.801443+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 31451.430156413775,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-15T19:00:00+00:00",
+      "session_ended_at": "2026-01-16T12:50:05.468913+00:00"
+    },
+    {
+      "session_id": "app-test-000027",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000027",
+          "timestamp": "2026-01-09T03:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_27"
+          }
+        },
+        {
+          "interaction_id": "APP_000027",
+          "timestamp": "2026-01-09T16:34:22.614901+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 44453.96419047322,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        },
+        {
+          "interaction_id": "APP_000027",
+          "timestamp": "2026-01-09T22:43:26.506249+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 34.55294965723931,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-09T03:00:00+00:00",
+      "session_ended_at": "2026-01-10T03:59:38.474052+00:00"
+    },
+    {
+      "session_id": "app-test-000028",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000028",
+          "timestamp": "2026-01-01T23:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_28"
+          }
+        },
+        {
+          "interaction_id": "APP_000028",
+          "timestamp": "2026-01-02T14:49:33.914688+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 16652.44442415656,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T23:00:00+00:00",
+      "session_ended_at": "2026-01-02T19:42:49.233764+00:00"
+    },
+    {
+      "session_id": "app-test-000029",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000029",
+          "timestamp": "2026-01-10T10:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_29"
+          }
+        },
+        {
+          "interaction_id": "APP_000029",
+          "timestamp": "2026-01-10T22:01:32.742428+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 10086.215134057056,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-10T10:00:00+00:00",
+      "session_ended_at": "2026-01-11T05:55:12.652728+00:00"
+    },
+    {
+      "session_id": "app-test-000030",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "APP_000030",
+          "timestamp": "2026-01-20T17:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_30"
+          }
+        },
+        {
+          "interaction_id": "APP_000030",
+          "timestamp": "2026-01-21T08:27:47.230570+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 36474.85247802981,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000030",
+          "timestamp": "2026-01-21T12:22:13.428233+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 47.09080805408735,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-20T17:00:00+00:00",
+      "session_ended_at": "2026-01-21T11:28:51.026952+00:00"
+    },
+    {
+      "session_id": "app-test-000031",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000031",
+          "timestamp": "2026-01-03T19:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_31"
+          }
+        },
+        {
+          "interaction_id": "APP_000031",
+          "timestamp": "2026-01-04T10:15:59.511208+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 12286.610916299323,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-03T19:00:00+00:00",
+      "session_ended_at": "2026-01-04T16:32:05.327834+00:00"
+    },
+    {
+      "session_id": "app-test-000032",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000032",
+          "timestamp": "2026-01-22T18:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_32"
+          }
+        },
+        {
+          "interaction_id": "APP_000032",
+          "timestamp": "2026-01-23T05:25:37.591595+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 30313.13987973674,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-22T18:00:00+00:00",
+      "session_ended_at": "2026-01-23T17:45:40.276360+00:00"
+    },
+    {
+      "session_id": "app-test-000033",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000033",
+          "timestamp": "2026-01-04T06:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_33"
+          }
+        },
+        {
+          "interaction_id": "APP_000033",
+          "timestamp": "2026-01-04T18:25:04.077900+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14795.464557884967,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-04T06:00:00+00:00",
+      "session_ended_at": "2026-01-05T06:05:08.619424+00:00"
+    },
+    {
+      "session_id": "app-test-000034",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000034",
+          "timestamp": "2026-01-11T20:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_34"
+          }
+        },
+        {
+          "interaction_id": "APP_000034",
+          "timestamp": "2026-01-12T07:33:59.668110+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 36294.9265789009,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-11T20:00:00+00:00",
+      "session_ended_at": "2026-01-12T17:22:36.807715+00:00"
+    },
+    {
+      "session_id": "app-test-000035",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000035",
+          "timestamp": "2026-01-14T19:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_35"
+          }
+        },
+        {
+          "interaction_id": "APP_000035",
+          "timestamp": "2026-01-15T10:05:23.836016+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 19547.43810463384,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-14T19:00:00+00:00",
+      "session_ended_at": "2026-01-15T14:57:53.575404+00:00"
+    },
+    {
+      "session_id": "app-test-000036",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000036",
+          "timestamp": "2026-01-29T23:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_36"
+          }
+        },
+        {
+          "interaction_id": "APP_000036",
+          "timestamp": "2026-01-30T15:16:20.366634+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 47429.371497792934,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-29T23:00:00+00:00",
+      "session_ended_at": "2026-01-30T15:44:39.463707+00:00"
+    },
+    {
+      "session_id": "app-test-000037",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000037",
+          "timestamp": "2026-01-27T20:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_37"
+          }
+        },
+        {
+          "interaction_id": "APP_000037",
+          "timestamp": "2026-01-28T07:31:05.214422+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 18526.172490681616,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-27T20:00:00+00:00",
+      "session_ended_at": "2026-01-28T14:52:36.012443+00:00"
+    },
+    {
+      "session_id": "app-test-000038",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000038",
+          "timestamp": "2026-01-16T05:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_38"
+          }
+        },
+        {
+          "interaction_id": "APP_000038",
+          "timestamp": "2026-01-16T18:09:50.541775+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 16309.873294289278,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-16T05:00:00+00:00",
+      "session_ended_at": "2026-01-17T04:36:52.348639+00:00"
+    },
+    {
+      "session_id": "app-test-000039",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000039",
+          "timestamp": "2026-01-31T08:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_39"
+          }
+        },
+        {
+          "interaction_id": "APP_000039",
+          "timestamp": "2026-01-31T23:35:41.998865+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 31157.627704090803,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-31T08:00:00+00:00",
+      "session_ended_at": "2026-02-01T06:13:55.896111+00:00"
+    },
+    {
+      "session_id": "app-test-000040",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000040",
+          "timestamp": "2026-01-24T23:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_40"
+          }
+        },
+        {
+          "interaction_id": "APP_000040",
+          "timestamp": "2026-01-25T10:51:25.822288+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14617.146816764089,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        },
+        {
+          "interaction_id": "APP_000040",
+          "timestamp": "2026-01-25T16:15:40.719554+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 79.79012767963343,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-24T23:00:00+00:00",
+      "session_ended_at": "2026-01-25T17:56:10.446369+00:00"
+    },
+    {
+      "session_id": "app-test-000041",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000041",
+          "timestamp": "2026-01-27T03:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_41"
+          }
+        },
+        {
+          "interaction_id": "APP_000041",
+          "timestamp": "2026-01-27T18:50:58.256308+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 30216.36232391949,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        },
+        {
+          "interaction_id": "APP_000041",
+          "timestamp": "2026-01-27T21:03:42.425041+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 111.73431415967147,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-27T03:00:00+00:00",
+      "session_ended_at": "2026-01-27T20:05:23.966810+00:00"
+    },
+    {
+      "session_id": "app-test-000042",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000042",
+          "timestamp": "2026-01-28T09:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_42"
+          }
+        },
+        {
+          "interaction_id": "APP_000042",
+          "timestamp": "2026-01-28T20:07:50.913782+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 40844.768920785085,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-28T09:00:00+00:00",
+      "session_ended_at": "2026-01-29T06:58:33.401319+00:00"
+    },
+    {
+      "session_id": "app-test-000043",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000043",
+          "timestamp": "2026-01-12T12:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_43"
+          }
+        },
+        {
+          "interaction_id": "APP_000043",
+          "timestamp": "2026-01-13T02:13:38.137295+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14474.9552235734,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        },
+        {
+          "interaction_id": "APP_000043",
+          "timestamp": "2026-01-13T09:55:01.018781+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 92.19176613802888,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-12T12:00:00+00:00",
+      "session_ended_at": "2026-01-13T05:54:31.628564+00:00"
+    },
+    {
+      "session_id": "app-test-000044",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000044",
+          "timestamp": "2026-01-02T20:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_44"
+          }
+        },
+        {
+          "interaction_id": "APP_000044",
+          "timestamp": "2026-01-03T07:56:01.875711+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 15097.820771285551,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-02T20:00:00+00:00",
+      "session_ended_at": "2026-01-03T15:14:07.750498+00:00"
+    },
+    {
+      "session_id": "app-test-000045",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000045",
+          "timestamp": "2026-01-03T00:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_45"
+          }
+        },
+        {
+          "interaction_id": "APP_000045",
+          "timestamp": "2026-01-03T12:29:50.594784+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14111.744866871424,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-03T00:00:00+00:00",
+      "session_ended_at": "2026-01-03T23:10:03.487256+00:00"
+    },
+    {
+      "session_id": "app-test-000046",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000046",
+          "timestamp": "2026-01-18T16:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_46"
+          }
+        },
+        {
+          "interaction_id": "APP_000046",
+          "timestamp": "2026-01-19T08:15:15.276451+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 19469.493289174345,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-18T16:00:00+00:00",
+      "session_ended_at": "2026-01-19T10:01:15.053013+00:00"
+    },
+    {
+      "session_id": "app-test-000047",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000047",
+          "timestamp": "2026-01-08T21:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_47"
+          }
+        },
+        {
+          "interaction_id": "APP_000047",
+          "timestamp": "2026-01-09T12:12:11.289435+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 23287.418717857145,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-08T21:00:00+00:00",
+      "session_ended_at": "2026-01-09T21:25:24.476581+00:00"
+    },
+    {
+      "session_id": "app-test-000048",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000048",
+          "timestamp": "2026-01-29T21:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_48"
+          }
+        },
+        {
+          "interaction_id": "APP_000048",
+          "timestamp": "2026-01-30T09:35:36.114192+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 41494.98036541884,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-29T21:00:00+00:00",
+      "session_ended_at": "2026-01-30T14:34:02.868792+00:00"
+    },
+    {
+      "session_id": "app-test-000049",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000049",
+          "timestamp": "2026-01-02T23:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_49"
+          }
+        },
+        {
+          "interaction_id": "APP_000049",
+          "timestamp": "2026-01-03T14:38:51.732112+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 28412.12938715768,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-02T23:00:00+00:00",
+      "session_ended_at": "2026-01-03T18:12:35.726020+00:00"
+    },
+    {
+      "session_id": "app-test-000050",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000050",
+          "timestamp": "2026-01-11T01:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_50"
+          }
+        },
+        {
+          "interaction_id": "APP_000050",
+          "timestamp": "2026-01-11T13:39:32.061220+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 12776.830186512798,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "APP_000050",
+          "timestamp": "2026-01-11T21:57:46.532749+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 61.6031516174477,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-11T01:00:00+00:00",
+      "session_ended_at": "2026-01-11T21:54:42.170266+00:00"
+    },
+    {
+      "session_id": "app-test-000051",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000051",
+          "timestamp": "2026-01-30T07:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_51"
+          }
+        },
+        {
+          "interaction_id": "APP_000051",
+          "timestamp": "2026-01-30T23:19:44.742806+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14613.670074057103,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-30T07:00:00+00:00",
+      "session_ended_at": "2026-01-31T07:45:12.018331+00:00"
+    },
+    {
+      "session_id": "app-test-000052",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000052",
+          "timestamp": "2026-01-08T22:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_52"
+          }
+        },
+        {
+          "interaction_id": "APP_000052",
+          "timestamp": "2026-01-09T09:19:25.143947+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 33862.85019950979,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-08T22:00:00+00:00",
+      "session_ended_at": "2026-01-09T17:32:50.613350+00:00"
+    },
+    {
+      "session_id": "app-test-000053",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000053",
+          "timestamp": "2026-01-14T17:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_53"
+          }
+        },
+        {
+          "interaction_id": "APP_000053",
+          "timestamp": "2026-01-15T04:45:12.915681+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 45980.189316447984,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        }
+      ],
+      "session_started_at": "2026-01-14T17:00:00+00:00",
+      "session_ended_at": "2026-01-15T11:15:02.363235+00:00"
+    },
+    {
+      "session_id": "app-test-000054",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000054",
+          "timestamp": "2026-01-03T05:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_54"
+          }
+        },
+        {
+          "interaction_id": "APP_000054",
+          "timestamp": "2026-01-03T21:15:11.503310+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 31538.079883711674,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-03T05:00:00+00:00",
+      "session_ended_at": "2026-01-04T03:39:42.899974+00:00"
+    },
+    {
+      "session_id": "app-test-000055",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000055",
+          "timestamp": "2026-01-29T22:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_55"
+          }
+        },
+        {
+          "interaction_id": "APP_000055",
+          "timestamp": "2026-01-30T14:13:35.417124+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 34926.21639785636,
+          "payload": {
+            "ai_decision": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_A"
+            ]
+          }
+        },
+        {
+          "interaction_id": "APP_000055",
+          "timestamp": "2026-01-30T18:21:07.749525+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 41.2162784097931,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "role": "operator"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-29T22:00:00+00:00",
+      "session_ended_at": "2026-01-30T22:10:01.405053+00:00"
+    },
+    {
+      "session_id": "app-test-000056",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000056",
+          "timestamp": "2026-01-22T23:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_56"
+          }
+        },
+        {
+          "interaction_id": "APP_000056",
+          "timestamp": "2026-01-23T12:20:48.007741+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 21826.208101037882,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-22T23:00:00+00:00",
+      "session_ended_at": "2026-01-23T16:43:38.633972+00:00"
+    },
+    {
+      "session_id": "app-test-000057",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000057",
+          "timestamp": "2026-01-19T06:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_57"
+          }
+        },
+        {
+          "interaction_id": "APP_000057",
+          "timestamp": "2026-01-19T21:16:02.691203+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 16961.09372839776,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-19T06:00:00+00:00",
+      "session_ended_at": "2026-01-20T03:24:33.157646+00:00"
+    },
+    {
+      "session_id": "app-test-000058",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000058",
+          "timestamp": "2026-01-18T15:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_58"
+          }
+        },
+        {
+          "interaction_id": "APP_000058",
+          "timestamp": "2026-01-19T03:42:18.274337+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 27195.525999593385,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-18T15:00:00+00:00",
+      "session_ended_at": "2026-01-19T12:29:59.543436+00:00"
+    },
+    {
+      "session_id": "app-test-000059",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000059",
+          "timestamp": "2026-01-29T06:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_59"
+          }
+        },
+        {
+          "interaction_id": "APP_000059",
+          "timestamp": "2026-01-29T20:51:52.544664+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 30446.959874983484,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-29T06:00:00+00:00",
+      "session_ended_at": "2026-01-30T05:16:52.061973+00:00"
+    },
+    {
+      "session_id": "app-test-000060",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v2",
+      "decisions": [
+        {
+          "interaction_id": "APP_000060",
+          "timestamp": "2026-01-08T13:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "app_doc": "DOC_60"
+          }
+        },
+        {
+          "interaction_id": "APP_000060",
+          "timestamp": "2026-01-09T03:47:57.076726+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 34770.43221449502,
+          "payload": {
+            "ai_decision": "Accepted",
+            "ai_fields_with_error": []
+          }
+        }
+      ],
+      "session_started_at": "2026-01-08T13:00:00+00:00",
+      "session_ended_at": "2026-01-09T06:26:41.616002+00:00"
+    }
+  ]
+}
