@@ -1,0 +1,263 @@
+{
+  "sim_id": "pilot_se_hmi_eval_2d_v0",
+
+  "meta": {
+    "title": "Smart Energy — HMI Evaluation (2D Dashboard condition)",
+    "description": "Operator performs a structured N-1 security assessment workflow using the 2D digital twin dashboard. Used as the baseline condition in the 2D vs XR comparison study, and for HAIC metric computation.",
+    "version": "0.1",
+    "pilot_tag": "energy",
+    "study": "hmi_xr_comparison",
+    "condition": "2d_dashboard",
+    "partner_logging": {
+      "UBI": ["security_classified", "agent_response", "operator_accepted",
+              "operator_overridden", "n1_analysis_completed", "xai_explanation_served"],
+      "IML": ["simulation_triggered", "result_inspected", "contingency_defined",
+              "grid_element_selected", "agent_invoked", "session_ended"]
+    }
+  },
+
+  "environment": {
+    "id": "grid_security_hmi_2d",
+    "class": "base.Environment",
+    "attributes": {
+      "task": "n1_security_assessment",
+      "domain": "energy_grid",
+      "interface": "2d_dashboard",
+      "input_modality": "mouse_keyboard"
+    }
+  },
+
+  "task_parameters": {
+    "rt_max_s": 120,
+    "baseline_s": 95,
+    "task": "n1_security_assessment",
+    "domain": "energy_grid",
+    "interface": "2d_dashboard",
+    "note_rt_max": "Grid security review is deliberate; 120s is the realistic upper bound per step. Using 5s (app default) will deflate HCL artificially.",
+    "note_baseline": "Operator performing N-1 review without AI assistance ~95s per cycle. Required for EL computation."
+  },
+
+  "agents": [
+    {
+      "id": "OP",
+      "class": "base.Agent",
+      "model": "human",
+      "name": "Grid Operator",
+      "affordances": [
+        "open_environment",
+        "select_timestamp",
+        "simulation_triggered",
+        "result_inspected",
+        "contingency_defined",
+        "grid_element_selected",
+        "agent_invoked",
+        "operator_accepted",
+        "operator_overridden"
+      ],
+      "profile": {
+        "role": "grid_operator",
+        "expertise": "trained",
+        "interface_familiarity": "2d_dashboard"
+      }
+    },
+    {
+      "id": "SA",
+      "class": "base.Agent",
+      "model": "ai",
+      "name": "SecurityAI",
+      "affordances": ["security_classified"],
+      "profile": {
+        "model_version": "rf-security-2025-v1",
+        "accuracy_baseline": 0.92
+      }
+    },
+    {
+      "id": "OA",
+      "class": "base.Agent",
+      "model": "ai",
+      "name": "OperatorAgent",
+      "affordances": ["agent_response"],
+      "profile": {
+        "model_version": "operator-agent-llm-v1",
+        "note": "Active only when operator explicitly invokes at step 10."
+      }
+    }
+  ],
+
+  "objects": [
+    {
+      "id": "GS",
+      "class": "base.Object",
+      "name": "GridState",
+      "affordances": ["view", "classify", "approve"],
+      "fields": [
+        "prob_secure", "secure_gt", "al_flag",
+        "risk_score", "region", "weather_regime",
+        "xai_top_factor", "scenario_datetime"
+      ]
+    },
+    {
+      "id": "DT",
+      "class": "base.Object",
+      "name": "DigitalTwin",
+      "affordances": ["run_base_case", "run_n1", "return_results"],
+      "note": "pandapower-based; triggered via API or dashboard button."
+    },
+    {
+      "id": "HM",
+      "class": "base.Object",
+      "name": "Dashboard2D",
+      "affordances": [
+        "open_environment",
+        "select_timestamp",
+        "trigger_simulation",
+        "inspect_map",
+        "inspect_table",
+        "select_line_outage",
+        "view_line_results",
+        "view_voltage_results",
+        "select_element",
+        "open_agent_chat"
+      ],
+      "owner": "IML",
+      "interface": "2d_dashboard"
+    }
+  ],
+
+  "workflow": {
+    "description": "10-step structured evaluation protocol. Agreed with UBI and IML. Each step maps to one or more loggable events.",
+    "steps": [
+      {
+        "step": 1,
+        "label": "Open environment",
+        "actor": "OP",
+        "object": "HM",
+        "action": "open_environment",
+        "log_event": null,
+        "note": "Session boundary. Captured by session start_time, not a decision event."
+      },
+      {
+        "step": 2,
+        "label": "Select simulation timestamp",
+        "actor": "OP",
+        "object": "HM",
+        "action": "select_timestamp",
+        "log_event": null,
+        "note": "Not a standalone event. Goes into payload.scenario_datetime of the next simulation_triggered."
+      },
+      {
+        "step": 3,
+        "label": "Run base case",
+        "actor": "OP",
+        "object": "DT",
+        "action": "trigger_simulation",
+        "log_event": "simulation_triggered",
+        "payload_required": ["simulation_type:base_case", "scenario_datetime", "environment"],
+        "interaction_id_starts": false,
+        "owner": "IML"
+      },
+      {
+        "step": 4,
+        "label": "Inspect base case",
+        "actor": "OP",
+        "object": "HM",
+        "action": "inspect_map",
+        "log_event": "result_inspected",
+        "payload_required": ["result_type:base_case", "environment"],
+        "duration_s_required": true,
+        "interaction_id_starts": false,
+        "owner": "IML"
+      },
+      {
+        "step": 5,
+        "label": "Apply contingency (select line)",
+        "actor": "OP",
+        "object": "HM",
+        "action": "select_line_outage",
+        "log_event": "contingency_defined",
+        "payload_required": ["line_id", "outage_type:line_outage", "environment"],
+        "duration_s_required": true,
+        "interaction_id_starts": true,
+        "note": "interaction_id starts here and is shared by all events in steps 5-10.",
+        "owner": "IML"
+      },
+      {
+        "step": 6,
+        "label": "Run N-1 contingency",
+        "actor": "OP",
+        "object": "DT",
+        "action": "trigger_simulation",
+        "log_event": ["simulation_triggered", "n1_analysis_completed"],
+        "payload_required": ["simulation_type:n1_contingency", "line_id", "environment"],
+        "note": "IML fires simulation_triggered on button press. UBI fires n1_analysis_completed when Digital Twin returns. Same interaction_id.",
+        "owner": ["IML", "UBI+IML"]
+      },
+      {
+        "step": 7,
+        "label": "Inspect line results",
+        "actor": "OP",
+        "object": "HM",
+        "action": "view_line_results",
+        "log_event": "result_inspected",
+        "payload_required": ["result_type:line_loading", "environment"],
+        "duration_s_required": true,
+        "owner": "IML"
+      },
+      {
+        "step": 8,
+        "label": "Inspect voltage results",
+        "actor": "OP",
+        "object": "HM",
+        "action": "view_voltage_results",
+        "log_event": "result_inspected",
+        "payload_required": ["result_type:voltage", "environment"],
+        "duration_s_required": true,
+        "note": "Separate event from step 7. Different result panel, different duration_s.",
+        "owner": "IML"
+      },
+      {
+        "step": 9,
+        "label": "Identify violations (select element)",
+        "actor": "OP",
+        "object": "HM",
+        "action": "select_element",
+        "log_event": "grid_element_selected",
+        "payload_required": ["element_type", "element_id", "environment"],
+        "duration_s_required": true,
+        "note": "One event per element explicitly selected by operator. input_modality:mouse for 2D.",
+        "owner": "IML"
+      },
+      {
+        "step": 10,
+        "label": "Consult Operator Agent",
+        "actor": "OP",
+        "object": "HM",
+        "action": "open_agent_chat",
+        "log_event": ["agent_invoked", "agent_response", "operator_accepted", "operator_overridden"],
+        "payload_required": ["query_type", "environment"],
+        "note": "agent_invoked (IML) fires when operator opens chat. agent_response (UBI) fires when LLM returns. Operator decision closes the cycle.",
+        "owner": ["IML", "UBI"]
+      }
+    ]
+  },
+
+  "comparison": {
+    "study": "hmi_xr_comparison",
+    "paired_env": "pilot_se_hmi_eval_xr_v0",
+    "pivot_field": "payload.environment",
+    "pivot_values": {
+      "this_condition": "2d_dashboard",
+      "other_condition": "xr_hmi"
+    },
+    "metrics_of_interest": [
+      "D (avg_action_duration — dwell time per step)",
+      "F (interaction_frequency — steps completed per minute)",
+      "HCL (cognitive load proxy — normalised by rt_max_s=120)",
+      "TR (trust — accept/override ratio via agent_invoked→operator_accepted)",
+      "EL (effort_loss — relative to baseline_s=95)",
+    ],
+    "fairness_slices": ["operator_id", "payload.environment", "payload.region", "payload.weather_regime"]
+  },
+
+  "script": []
+}

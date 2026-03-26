@@ -114,13 +114,15 @@
           "weather_regime": "normal",
           "xai_top_factor": "reactive_power_deficit"
         }
-      }
+      }  
     ],
     "session_started_at": "2026-03-10T06:09:02Z",
     "session_ended_at": "2026-03-10T06:09:02Z"
   },
   {
     "sim_id": "pilot_se_v0",
+
+    
     "session_id": "se_baseline_2026-03-10",
     "pilot_tag": "energy",
     "app_version": "se_v2.0",
