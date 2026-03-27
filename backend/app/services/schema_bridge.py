@@ -49,11 +49,15 @@ def log_schema_to_session_log(raw: dict) -> tuple[SessionLog, list[str]]:
         if not isinstance(d, dict):
             warnings.append(f"decisions[{i}]: not a dict, skipped")
             continue
-        # Clean timestamp before validation
-        if "timestamp" in d:
-            d = {**d, "timestamp": _clean_ts(d["timestamp"])}
+        # Shallow-copy and clean timestamp; always preserve boolean fields
+        nd = {**d}
+        if "timestamp" in nd:
+            nd["timestamp"] = _clean_ts(nd["timestamp"])
+        # Explicit bool coercion: Pydantic may drop False as falsy default
+        if "correct" in nd:
+            nd["correct"] = bool(nd["correct"]) if nd["correct"] is not None else None
         try:
-            valid_decisions.append(DecisionEvent.model_validate(d))
+            valid_decisions.append(DecisionEvent.model_validate(nd))
         except Exception as e:
             warnings.append(
                 f"decisions[{i}] (id={d.get('interaction_id','?')}): "

@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.models import LogEntry
 from app.models.configuration import EvaluationConfig
 from app.services.metrics_adapter import compute_from_log
+from app.services.core_metrics import extract_session_durations
 from app.utils.minio_utils import get_minio_client, put_json
 import re
 
@@ -84,7 +85,11 @@ class LogService:
                 groups[ver].append(p)
 
             for ver, logs in groups.items():
-                derived_list = [compute_from_log(p) for p in logs]
+                all_session_times = extract_session_durations(logs) or None
+                derived_list = [
+                    compute_from_log(p, all_session_times=all_session_times)
+                    for p in logs
+                ]
                 derived = {
                     "by_metric": self._mean_map(derived_list, "by_metric"),
                     "by_pillar": self._mean_map(derived_list, "by_pillar"),
