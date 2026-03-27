@@ -160,7 +160,7 @@ def test_adaptability_none_when_under_4_events():
 
 
 # ---------------------------------------------------------------------------
-# Outcome metrics — precision None when no TP/FP
+# Extended metrics — precision None when no TP/FP
 # ---------------------------------------------------------------------------
 
 def test_outcome_precision_none_when_no_tp_fp():

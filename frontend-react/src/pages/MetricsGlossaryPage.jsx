@@ -104,9 +104,9 @@ const DOMAIN_TABLE = [
   { domain: 'Applications', Tr: '0.65–0.80', HCL: '0.55–0.75', EL: '0.15–0.40' },
 ]
 
-// ── Outcome Metrics ───────────────────────────────────────────────────────────
+// ── Extended Metrics ───────────────────────────────────────────────────────────
 
-const OUTCOME_PILLARS = [
+const EXTENDED_PILLARS = [
   {
     name: 'Effectiveness',
     color: 'indigo',
@@ -488,13 +488,13 @@ export default function MetricsGlossaryPage() {
         <h1 className="text-xl font-semibold text-gray-900">Metrics Reference</h1>
         <p className="mt-1 text-sm text-gray-500 leading-relaxed">
           The HAIC benchmark evaluates collaboration across two layers: 8 core interaction metrics
-          and up to 29 outcome metrics derived from logged event fields.
+          and up to 29 extended metrics derived from logged event fields.
         </p>
       </div>
 
       {/* Tab toggle */}
       <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-0.5 w-fit">
-        {[['core', 'Core HAIC (8)'], ['outcome', 'Outcome Metrics (29)']].map(([v, label]) => (
+        {[['core', 'Core HAIC (8)'], ['extended', 'Extended Metrics (29)']].map(([v, label]) => (
           <button
             key={v}
             onClick={() => setTab(v)}
@@ -549,16 +549,16 @@ export default function MetricsGlossaryPage() {
         </div>
       )}
 
-      {/* ── Outcome Metrics tab ── */}
-      {tab === 'outcome' && (
+      {/* ── Extended Metrics tab ── */}
+      {tab === 'extended' && (
         <div className="space-y-8">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-xs text-blue-700 leading-relaxed">
-            <strong>How outcome metrics work:</strong> Each metric is computed from log event fields
+            <strong>How extended metrics work:</strong> Each metric is computed from log event fields
             using flexible aliases. If the required fields are absent from your log, the metric is
             shown as unavailable (gray bar) in the Results dashboard. Add the relevant fields to
             your logs to unlock each metric.
           </div>
-          {OUTCOME_PILLARS.map(p => <PillarSection key={p.name} pillar={p} showFields={true} />)}
+          {EXTENDED_PILLARS.map(p => <PillarSection key={p.name} pillar={p} showFields={true} />)}
         </div>
       )}
 

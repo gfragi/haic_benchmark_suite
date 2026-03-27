@@ -11,7 +11,7 @@ A comprehensive platform for evaluating Human-AI Collaboration (HAIC) systems th
 The HAIC Benchmark Suite is an end-to-end platform for evaluating and benchmarking Human-AI collaborative systems. It combines realistic simulation environments, comprehensive metrics computation, and interactive evaluation tools to help researchers and practitioners assess the effectiveness of AI systems working alongside humans.
 
 - **🤖 Pilot reference environments**: example pilot scenarios (healthcare, manufacturing, energy, smart cities, smart ticketing) plus log-driven evaluation support
-- **📊 Comprehensive Metrics**: core HAIC interaction metrics (F, D, HCL, Tr, A, S, EL, EfficiencyScore) plus extensible outcome metrics
+- **📊 Comprehensive Metrics**: core HAIC interaction metrics (F, D, HCL, Tr, A, S, EL, EfficiencyScore) plus extensible metrics
 - **🔬 Evaluation workflow**: reproducible benchmarking runs + exports for analysis/visualization
 - **🌐 Web Interface**: Interactive dashboard for configuring, running, and analyzing evaluations
 - **⚡ Background evaluation**: async runs with progress tracking (when enabled)

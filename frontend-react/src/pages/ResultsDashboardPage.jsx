@@ -10,7 +10,7 @@ import clsx from 'clsx'
 import { api } from '../services/api'
 import QuadrantPlot, { PALETTE } from '../components/QuadrantPlot'
 import MetricCard from '../components/MetricCard'
-import OutcomeView from '../components/OutcomeView'
+import ExtendedView from '../components/ExtendedView'
 
 const CORE_METRICS = ['F', 'D', 'HCL', 'Tr', 'A', 'S', 'EL', 'EfficiencyScore']
 const LOWER_BETTER = new Set(['EL', 'D'])
@@ -535,7 +535,7 @@ export default function ResultsDashboardPage() {
       {/* Controls row */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <SegmentToggle
-          options={[['core', 'Core HAIC'], ['outcome', 'Outcome Metrics'], ['holistic', 'Holistic']]}
+          options={[['core', 'Core HAIC'], ['extended', 'Extended Metrics'], ['holistic', 'Holistic']]}
           value={mode}
           onChange={setMode}
         />
@@ -632,14 +632,14 @@ export default function ResultsDashboardPage() {
         </div>
       )}
 
-      {/* ── Outcome metrics mode ── */}
-      {results.length > 0 && mode === 'outcome' && (
+      {/* ── Extended metrics mode ── */}
+      {results.length > 0 && mode === 'extended' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-700">Outcome Metrics by Pillar</h2>
+            <h2 className="text-sm font-semibold text-gray-700">Extended Metrics by Pillar</h2>
             <VersionTabs versions={versions} selectedIdx={safeIdx} onSelect={setSelectedIdx} />
           </div>
-          <OutcomeView results={results} selectedIdx={safeIdx} />
+          <ExtendedView results={results} selectedIdx={safeIdx} />
         </div>
       )}
 

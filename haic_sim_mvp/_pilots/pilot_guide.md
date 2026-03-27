@@ -57,7 +57,7 @@ No schema change is needed if you already log the items below.
 * **EL (Effort loss vs baseline)**: Extra time vs a reference baseline.
 * **EfficiencyScore**: Composite shaped by EL and gentle off‑role/progress signals.
 
-### Outcome metrics (when data exists)
+### Extended metrics (when data exists)
 
 * **Effectiveness**: Prediction Accuracy, Precision, Recall, Overall System Accuracy, Model Improvement Rate.
 * **Efficiency**: Response Time, Teaching Query Efficiency, Resource Utilization, Task Completion Time, Correction Efficiency, Error Reduction, Knowledge Retention.

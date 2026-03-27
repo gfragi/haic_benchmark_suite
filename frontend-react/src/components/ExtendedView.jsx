@@ -70,7 +70,7 @@ function PillarChart({ metrics }) {
   )
 }
 
-export default function OutcomeView({ results, selectedIdx }) {
+export default function ExtendedView({ results, selectedIdx }) {
   const [activePillar, setActivePillar] = useState(PILLARS[0])
 
   const result = results[selectedIdx]

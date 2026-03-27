@@ -3,7 +3,7 @@ from metrics_core.schema import MetricResult
 
 class Metrics:
     """
-    Flexible outcome metrics with alias-aware field access and robust TP/FP/FN/TN derivation.
+    Flexible extended metrics with alias-aware field access and robust TP/FP/FN/TN derivation.
     Configure positive/negative vocab as needed in _CFG below.
     """
 

@@ -1,6 +1,6 @@
 # metrics-core
 
-Shared HAIC metrics package — collab-session metrics, outcome metrics, latency, and human response time.
+Shared HAIC metrics package — collab-session metrics, extended metrics, latency, and human response time.
 
 ## Setup
 

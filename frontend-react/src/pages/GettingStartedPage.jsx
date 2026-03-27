@@ -293,7 +293,7 @@ export default function GettingStartedPage() {
           </table>
         </div>
         <p className="text-xs text-gray-400 mt-2">
-          For the full metrics reference including outcome metrics across 6 pillars, see the{' '}
+          For the full metrics reference including extended metrics across 6 pillars, see the{' '}
           <Link to="/metrics" className="text-indigo-500 hover:text-indigo-700 underline underline-offset-2">
             Metrics Reference
           </Link>.
