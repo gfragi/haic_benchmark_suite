@@ -4,39 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
-
-const SUS_QUESTIONS = [
-  { key: 'sus_q1',  text: 'I think that I would like to use this system frequently.',                     odd: true  },
-  { key: 'sus_q2',  text: 'I found the system unnecessarily complex.',                                    odd: false },
-  { key: 'sus_q3',  text: 'I thought the system was easy to use.',                                        odd: true  },
-  { key: 'sus_q4',  text: 'I think that I would need the support of a technical person.',                 odd: false },
-  { key: 'sus_q5',  text: 'I found the various functions well integrated.',                               odd: true  },
-  { key: 'sus_q6',  text: 'I thought there was too much inconsistency in this system.',                   odd: false },
-  { key: 'sus_q7',  text: 'I would imagine most people would learn to use this quickly.',                 odd: true  },
-  { key: 'sus_q8',  text: 'I found the system very difficult to use.',                                    odd: false },
-  { key: 'sus_q9',  text: 'I felt very confident using the system.',                                      odd: true  },
-  { key: 'sus_q10', text: 'I needed to learn many things before I could get going.',                      odd: false },
-]
-
-const ETHICS_QUESTIONS = [
-  { key: 'q_fairness',       text: 'The system handles different users without bias.' },
-  { key: 'q_transparency',   text: 'I understand how the AI arrives at its decisions.' },
-  { key: 'q_privacy',        text: 'I feel confident that personal data is protected.' },
-  { key: 'q_accountability', text: 'It is clear who is responsible for errors.' },
-  { key: 'q_trust',          text: 'Overall, I trust the system to operate in my interest.' },
-]
-
-const SCALE_LABELS = { 1: 'Strongly Disagree', 3: 'Neutral', 5: 'Strongly Agree' }
-
-function computeSus(sus) {
-  const odd  = ['sus_q1','sus_q3','sus_q5','sus_q7','sus_q9']
-  const even = ['sus_q2','sus_q4','sus_q6','sus_q8','sus_q10']
-  const allAnswered = [...odd, ...even].every(k => sus[k] != null)
-  if (!allAnswered) return null
-  const sumOdd  = odd.reduce((a, k)  => a + sus[k], 0)
-  const sumEven = even.reduce((a, k) => a + sus[k], 0)
-  return ((sumOdd - 5) + (25 - sumEven)) * 2.5
-}
+import { SUS_QUESTIONS, ETHICS_QUESTIONS, SCALE_LABELS, computeSus } from '../surveyConfig'
 
 function RadioRow({ questionNum, text, qKey, value, onChange }) {
   return (

@@ -11,6 +11,7 @@ import { api } from '../services/api'
 import QuadrantPlot, { PALETTE } from '../components/QuadrantPlot'
 import MetricCard from '../components/MetricCard'
 import ExtendedView from '../components/ExtendedView'
+import BuildSurveyLinkModal from '../components/BuildSurveyLinkModal'
 
 const CORE_METRICS = ['F', 'D', 'HCL', 'Tr', 'A', 'S', 'EL', 'EfficiencyScore']
 const LOWER_BETTER = new Set(['EL', 'D'])
@@ -418,6 +419,7 @@ export default function ResultsDashboardPage() {
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [compMetric, setCompMetric] = useState('Tr')
   const [fairnessModalOpen, setFairnessModalOpen] = useState(false)
+  const [surveyLinkOpen, setSurveyLinkOpen] = useState(false)
   const queryClient = useQueryClient()
 
   // Config metadata
@@ -740,7 +742,17 @@ export default function ResultsDashboardPage() {
 
               {/* SUS section */}
               <div className="bg-white rounded-lg border border-gray-200 p-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3">User Experience (SUS)</h3>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h3 className="text-sm font-semibold text-gray-700">User Experience (SUS)</h3>
+                  {holistic.sus && config && (
+                    <button
+                      onClick={() => setSurveyLinkOpen(true)}
+                      className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                    >
+                      Build Link
+                    </button>
+                  )}
+                </div>
                 {holistic.sus ? (
                   <div className="space-y-3">
                     <div className="flex items-center gap-6">
@@ -779,7 +791,7 @@ export default function ResultsDashboardPage() {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <p className="text-xs text-gray-400">
                       No surveys collected for this configuration. Share the survey link with your users
                       and include{' '}
@@ -788,13 +800,20 @@ export default function ResultsDashboardPage() {
                       </code>{' '}
                       in the submission to link responses here.
                     </p>
-                    <Link
-                      to={`/survey?config_id=${configId}`}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium
-                                 bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
-                    >
-                      Submit a survey response →
-                    </Link>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <button
+                        onClick={() => setSurveyLinkOpen(true)}
+                        className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700"
+                      >
+                        Build Survey Link
+                      </button>
+                      <Link
+                        to={`/survey?config_id=${configId}`}
+                        className="text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-800"
+                      >
+                        Submit a response manually →
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
@@ -807,6 +826,12 @@ export default function ResultsDashboardPage() {
         <FairnessModal
           onClose={() => setFairnessModalOpen(false)}
           onSuccess={() => queryClient.invalidateQueries({ queryKey: ['holistic', configId] })}
+        />
+      )}
+      {surveyLinkOpen && config && (
+        <BuildSurveyLinkModal
+          config={config}
+          onClose={() => setSurveyLinkOpen(false)}
         />
       )}
     </div>

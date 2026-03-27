@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, Link } from 'react-router-dom'
-import { ChevronRight, AlertCircle, Loader2, Plus, X, HelpCircle } from 'lucide-react'
+import { ChevronRight, AlertCircle, Loader2, Plus, X, HelpCircle, Link2 } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
+import BuildSurveyLinkModal from '../components/BuildSurveyLinkModal'
 
 const STATUS = {
   completed: 'bg-green-100 text-green-800',
@@ -317,6 +318,7 @@ export default function ConfigListPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [showModal, setShowModal] = useState(false)
+  const [linkConfig, setLinkConfig] = useState(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['configs'],
@@ -355,6 +357,12 @@ export default function ConfigListPage() {
         <NewConfigModal
           onClose={() => setShowModal(false)}
           onCreated={handleCreated}
+        />
+      )}
+      {linkConfig && (
+        <BuildSurveyLinkModal
+          config={linkConfig}
+          onClose={() => setLinkConfig(null)}
         />
       )}
 
@@ -404,7 +412,7 @@ export default function ConfigListPage() {
                 <th className="px-4 py-3">Model Type</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Evaluation Date</th>
-                <th className="px-4 py-3 w-24"></th>
+                <th className="px-4 py-3 w-52"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -430,12 +438,21 @@ export default function ConfigListPage() {
                     {formatDate(cfg.evaluation_date)}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); navigate(`/config/${cfg.id}/results`) }}
-                      className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-                    >
-                      View results <ChevronRight size={14} />
-                    </button>
+                    <div className="flex items-center justify-end gap-4">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setLinkConfig(cfg) }}
+                        className="inline-flex items-center gap-1 text-gray-600 hover:text-indigo-700 text-sm font-medium"
+                      >
+                        <Link2 size={14} />
+                        Build Link
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); navigate(`/config/${cfg.id}/results`) }}
+                        className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                      >
+                        View results <ChevronRight size={14} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
