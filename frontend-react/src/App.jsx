@@ -8,6 +8,7 @@ import LogWizardPage from './pages/LogWizardPage'
 import MetricsGlossaryPage from './pages/MetricsGlossaryPage'
 import PilotOnboardingPage from './pages/PilotOnboardingPage'
 import GettingStartedPage from './pages/GettingStartedPage'
+import SurveyPage from './pages/SurveyPage'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/metrics" element={<MetricsGlossaryPage />} />
         <Route path="/pilot/new" element={<PilotOnboardingPage />} />
         <Route path="/getting-started" element={<GettingStartedPage />} />
+        <Route path="/survey" element={<SurveyPage />} />
       </Routes>
     </AppShell>
   )

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Upload, Link2, ChevronRight, CheckCircle2,
   AlertTriangle, Loader2, FileJson, X, FlaskConical,
-  Settings2,
+  Settings2, Archive,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
@@ -750,16 +750,188 @@ function DropZone({ onFile, disabled }) {
     >
       <FileJson size={28} className="text-gray-300" />
       <div className="text-center">
-        <p className="text-sm font-medium text-gray-600">Drop JSON log file here</p>
-        <p className="text-xs text-gray-400 mt-0.5">or click to browse</p>
+        <p className="text-sm font-medium text-gray-600">Drop log file here</p>
+        <p className="text-xs text-gray-400 mt-0.5">JSON or ZIP · or click to browse</p>
       </div>
       <input
         ref={inputRef}
         type="file"
-        accept=".json,application/json"
+        accept=".json,.zip,application/json,application/zip"
         className="hidden"
         onChange={e => { const f = e.target.files?.[0]; if (f) onFile(f) }}
       />
+    </div>
+  )
+}
+
+// ── Fairness results display ───────────────────────────────────
+
+function FairnessResults({ result }) {
+  const overallAcc = result.overall?.accuracy
+  const hasDisparity = Math.abs(result.demographic_parity_difference ?? 0) > 0.1
+  return (
+    <div className="space-y-3 pt-2">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold text-gray-700">Fairness Results</p>
+        {hasDisparity && (
+          <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium border border-red-200">
+            Disparity detected
+          </span>
+        )}
+      </div>
+      <p className="text-xs text-gray-500">
+        Demographic Parity Difference:{' '}
+        <span className="font-mono font-semibold text-gray-700">
+          {Number(result.demographic_parity_difference).toFixed(3)}
+        </span>
+        <span className="text-gray-400 ml-1">(0 = perfect parity)</span>
+      </p>
+      <div className="space-y-1.5">
+        {(result.groups ?? []).map(g => {
+          const acc = result.by_group?.accuracy?.[g]
+          const pct = acc != null ? Math.round(acc * 100) : null
+          const isLow = overallAcc != null && acc != null && acc < overallAcc - 0.1
+          return (
+            <div key={g} className="flex items-center gap-3">
+              <span className="text-xs text-gray-600 w-24 truncate">{g}</span>
+              <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+                <div
+                  className={clsx('h-2 rounded-full', isLow ? 'bg-red-400' : 'bg-indigo-500')}
+                  style={{ width: `${pct ?? 0}%` }}
+                />
+              </div>
+              <span className={clsx('text-xs font-mono w-10 text-right', isLow ? 'text-red-600' : 'text-gray-600')}>
+                {pct != null ? `${pct}%` : '—'}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      <p className="text-xs text-gray-400">{result.n_samples} samples across {result.groups?.length} groups</p>
+    </div>
+  )
+}
+
+// ── Fairness panel (collapsible, shown after upload) ──────────
+
+function FairnessPanel({ uploadedFile }) {
+  const [open, setOpen]             = useState(false)
+  const [fairnessResult, setResult] = useState(null)
+  const [fairnessError, setError]   = useState(null)
+  const [runningA, setRunningA]     = useState(false)
+  const [runningB, setRunningB]     = useState(false)
+  const bFileRef                    = useRef(null)
+
+  async function runFromUploadedLog() {
+    if (!uploadedFile) return
+    setRunningA(true); setError(null); setResult(null)
+    try {
+      const text = await uploadedFile.text()
+      const payload = JSON.parse(text)
+      const res = await api.fairness.evaluateFromLog(payload)
+      setResult(res)
+    } catch (e) {
+      setError(e instanceof SyntaxError ? `Invalid JSON: ${e.message}` : e.message)
+    } finally {
+      setRunningA(false)
+    }
+  }
+
+  async function runFromFile(f) {
+    setRunningB(true); setError(null); setResult(null)
+    try {
+      const text = await f.text()
+      const payload = JSON.parse(text)
+      const res = await api.fairness.evaluateFromLog(payload)
+      setResult(res)
+    } catch (e) {
+      setError(e instanceof SyntaxError ? `Invalid JSON: ${e.message}` : e.message)
+    } finally {
+      setRunningB(false)
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+      >
+        <div>
+          <p className="text-sm font-medium text-gray-700">Fairness evaluation (optional)</p>
+          <p className="text-xs text-gray-400">Detect disparities in AI performance across groups</p>
+        </div>
+        <ChevronRight size={14} className={clsx('text-gray-400 transition-transform', open && 'rotate-90')} />
+      </button>
+
+      {open && (
+        <div className="px-4 pb-4 space-y-4 border-t border-gray-100 pt-3">
+          {/* Requirements info */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700 space-y-1">
+            <p className="font-medium">Fairness evaluation requires your log to include:</p>
+            <ul className="space-y-0.5 ml-2">
+              <li>• <code className="font-mono bg-blue-100 px-0.5 rounded">prediction</code> or <code className="font-mono bg-blue-100 px-0.5 rounded">ai_decision</code> field on AI events</li>
+              <li>• <code className="font-mono bg-blue-100 px-0.5 rounded">ground_truth</code> or <code className="font-mono bg-blue-100 px-0.5 rounded">op_decision</code> field on human review events</li>
+              <li>• A sensitive feature: <code className="font-mono bg-blue-100 px-0.5 rounded">cohort</code>, <code className="font-mono bg-blue-100 px-0.5 rounded">role</code>, <code className="font-mono bg-blue-100 px-0.5 rounded">op_id</code>, or <code className="font-mono bg-blue-100 px-0.5 rounded">user_group</code> in payload</li>
+            </ul>
+          </div>
+
+          {/* Options */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Option A */}
+            <div className="border border-gray-200 rounded-lg p-3 space-y-2">
+              <p className="text-xs font-medium text-gray-700">Use the log I just uploaded</p>
+              <button
+                type="button"
+                disabled={!uploadedFile || runningA}
+                onClick={runFromUploadedLog}
+                className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md
+                           text-xs font-medium bg-indigo-600 text-white hover:bg-indigo-700
+                           transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {runningA ? <><Loader2 size={11} className="animate-spin" /> Analyzing…</> : 'Run fairness on uploaded log'}
+              </button>
+              {!uploadedFile && (
+                <p className="text-xs text-gray-400">Upload a log file first</p>
+              )}
+            </div>
+
+            {/* Option B */}
+            <div className="border border-gray-200 rounded-lg p-3 space-y-2">
+              <p className="text-xs font-medium text-gray-700">Upload separate fairness data</p>
+              <input
+                ref={bFileRef}
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) runFromFile(f) }}
+              />
+              <button
+                type="button"
+                disabled={runningB}
+                onClick={() => bFileRef.current?.click()}
+                className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md
+                           text-xs font-medium border border-gray-200 text-gray-600
+                           hover:bg-gray-50 transition-colors disabled:opacity-40"
+              >
+                {runningB ? <><Loader2 size={11} className="animate-spin" /> Analyzing…</> : 'Upload fairness data'}
+              </button>
+            </div>
+          </div>
+
+          {/* Error */}
+          {fairnessError && (
+            <div className="flex items-start gap-2 rounded-md bg-red-50 border border-red-200 p-3 text-xs text-red-700">
+              <AlertTriangle size={12} className="mt-0.5 flex-shrink-0" />
+              {fairnessError}
+            </div>
+          )}
+
+          {/* Results */}
+          {fairnessResult && <FairnessResults result={fairnessResult} />}
+        </div>
+      )}
     </div>
   )
 }
@@ -770,6 +942,7 @@ function Step2({ configId, onNext, onBack, skippedSetup }) {
   const [checklistConfirmed, setChecklistConfirmed] = useState(false)
   const [tab, setTab] = useState('upload')   // 'upload' | 'endpoint'
   const [file, setFile] = useState(null)
+  const [uploadedFile, setUploadedFile] = useState(null)  // kept after upload for fairness
   const [endpoint, setEndpoint] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadResult, setUploadResult] = useState(null)
@@ -797,8 +970,12 @@ function Step2({ configId, onNext, onBack, skippedSetup }) {
     setError(null)
     setUploadResult(null)
     try {
-      const result = await api.logs.upload(configId, file)
+      const isZip = file.name.endsWith('.zip')
+      const result = isZip
+        ? await api.logs.uploadZip(configId, file)
+        : await api.logs.upload(configId, file)
       setUploadResult(result)
+      setUploadedFile(file)
     } catch (e) {
       setError(e.message)
     } finally {
@@ -875,13 +1052,23 @@ function Step2({ configId, onNext, onBack, skippedSetup }) {
             <>
               <DropZone onFile={setFile} disabled={uploading} />
               {file && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <FileJson size={14} className="text-indigo-500" />
-                  <span className="font-medium">{file.name}</span>
-                  <span className="text-gray-400">({(file.size / 1024).toFixed(1)} KB)</span>
-                  <button onClick={() => setFile(null)} className="ml-auto text-gray-300 hover:text-gray-500">
-                    <X size={13} />
-                  </button>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    {file.name.endsWith('.zip')
+                      ? <Archive size={14} className="text-indigo-500" />
+                      : <FileJson size={14} className="text-indigo-500" />}
+                    <span className="font-medium">{file.name}</span>
+                    <span className="text-gray-400">({(file.size / 1024).toFixed(1)} KB)</span>
+                    <button onClick={() => setFile(null)} className="ml-auto text-gray-300 hover:text-gray-500">
+                      <X size={13} />
+                    </button>
+                  </div>
+                  {file.name.endsWith('.zip') && (
+                    <div className="flex items-start gap-2 rounded-md bg-indigo-50 border border-indigo-200 p-2.5 text-xs text-indigo-700">
+                      <Archive size={12} className="mt-0.5 flex-shrink-0" />
+                      ZIP detected — the platform will merge all JSON files in the archive into a single evaluation batch.
+                    </div>
+                  )}
                 </div>
               )}
               <button
@@ -958,6 +1145,9 @@ function Step2({ configId, onNext, onBack, skippedSetup }) {
           {error}
         </div>
       )}
+
+      {/* Fairness panel (shown after successful upload) */}
+      {canProceed && <FairnessPanel uploadedFile={uploadedFile} />}
 
       {/* Nav buttons */}
       <div className="flex items-center gap-3 pt-1">

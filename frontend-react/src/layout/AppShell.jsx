@@ -1,17 +1,18 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Home, LayoutList, GitCompare, Upload, BookOpen, Activity, Compass, HelpCircle } from 'lucide-react'
+import { Home, LayoutList, GitCompare, Upload, BookOpen, Activity, Compass, HelpCircle, ClipboardList } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 
 const NAV = [
-  { label: 'Home',              href: '/',                icon: Home,        exact: true },
-  { label: 'Getting Started',   href: '/getting-started', icon: HelpCircle               },
-  { label: 'Configurations',    href: '/configs',         icon: LayoutList               },
-  { label: 'New Pilot',         href: '/pilot/new',       icon: Compass                  },
-  { label: 'Compare Versions',  href: '/compare',         icon: GitCompare               },
-  { label: 'Ingest Logs',       href: '/ingest',          icon: Upload                   },
-  { label: 'Metrics Reference', href: '/metrics',         icon: BookOpen                 },
+  { label: 'Home',              href: '/',                icon: Home,          exact: true },
+  { label: 'Getting Started',   href: '/getting-started', icon: HelpCircle                },
+  { label: 'Configurations',    href: '/configs',         icon: LayoutList                },
+  { label: 'New Pilot',         href: '/pilot/new',       icon: Compass                   },
+  { label: 'Compare Versions',  href: '/compare',         icon: GitCompare                },
+  { label: 'Ingest Logs',       href: '/ingest',          icon: Upload                    },
+  { label: 'Submit Survey',     href: '/survey',          icon: ClipboardList             },
+  { label: 'Metrics Reference', href: '/metrics',         icon: BookOpen                  },
 ]
 
 function HealthDot() {

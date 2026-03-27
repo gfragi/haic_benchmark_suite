@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { useQuery, useQueries } from '@tanstack/react-query'
+import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, Cell, CartesianGrid,
 } from 'recharts'
-import { AlertCircle, ArrowLeft, Loader2, Sparkles } from 'lucide-react'
+import { AlertCircle, ArrowLeft, Loader2, Sparkles, X, AlertTriangle } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 import QuadrantPlot, { PALETTE } from '../components/QuadrantPlot'
@@ -286,6 +286,129 @@ function VersionBarChart({ results, compMetric, setCompMetric }) {
   )
 }
 
+function FairnessModal({ onClose, onSuccess }) {
+  const fileRef = useRef(null)
+  const [running, setRunning] = useState(false)
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState(null)
+
+  async function handleFile(f) {
+    setRunning(true); setError(null); setResult(null)
+    try {
+      const text = await f.text()
+      const payload = JSON.parse(text)
+      const res = await api.fairness.evaluateFromLog(payload)
+      setResult(res)
+      onSuccess()
+    } catch (e) {
+      setError(e instanceof SyntaxError ? `Invalid JSON: ${e.message}` : e.message)
+    } finally {
+      setRunning(false)
+    }
+  }
+
+  const overallAcc = result?.overall?.accuracy
+  const hasDisparity = Math.abs(result?.demographic_parity_difference ?? 0) > 0.1
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-gray-800">Fairness Evaluation</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={16} /></button>
+        </div>
+
+        <p className="text-xs text-gray-500 leading-relaxed">
+          Upload a log file (JSON) containing AI decisions with{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">prediction</code>/{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">ai_decision</code>,{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">ground_truth</code>/{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">op_decision</code>, and a sensitive
+          feature field (<code className="font-mono bg-gray-100 px-1 rounded">cohort</code>,{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">role</code>,{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">op_id</code>, or{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">user_group</code>).
+        </p>
+
+        <input
+          ref={fileRef}
+          type="file"
+          accept=".json,application/json"
+          className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
+        />
+
+        {!result && (
+          <button
+            onClick={() => fileRef.current?.click()}
+            disabled={running}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+                       text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700
+                       transition-colors disabled:opacity-40"
+          >
+            {running ? <><Loader2 size={14} className="animate-spin" /> Analyzing…</> : 'Upload fairness data'}
+          </button>
+        )}
+
+        {error && (
+          <div className="flex items-start gap-2 rounded-md bg-red-50 border border-red-200 p-3 text-xs text-red-700">
+            <AlertTriangle size={12} className="mt-0.5 flex-shrink-0" />
+            {error}
+          </div>
+        )}
+
+        {result && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-gray-700">Results</p>
+              {hasDisparity && (
+                <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
+                  Disparity detected
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500">
+              Demographic Parity Difference:{' '}
+              <span className="font-mono font-semibold text-gray-700">
+                {Number(result.demographic_parity_difference).toFixed(3)}
+              </span>
+            </p>
+            <div className="space-y-1.5">
+              {(result.groups ?? []).map(g => {
+                const acc = result.by_group?.accuracy?.[g]
+                const pct = acc != null ? Math.round(acc * 100) : null
+                const isLow = overallAcc != null && acc != null && acc < overallAcc - 0.1
+                return (
+                  <div key={g} className="flex items-center gap-3">
+                    <span className="text-xs text-gray-600 w-24 truncate">{g}</span>
+                    <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+                      <div
+                        className={clsx('h-2 rounded-full', isLow ? 'bg-red-400' : 'bg-indigo-500')}
+                        style={{ width: `${pct ?? 0}%` }}
+                      />
+                    </div>
+                    <span className={clsx('text-xs font-mono w-10 text-right', isLow ? 'text-red-600' : 'text-gray-600')}>
+                      {pct != null ? `${pct}%` : '—'}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+            <p className="text-xs text-gray-400">{result.n_samples} samples across {result.groups?.length} groups</p>
+            <button
+              onClick={onClose}
+              className="w-full px-4 py-2 rounded-lg text-xs font-medium border border-gray-200
+                         text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function ResultsDashboardPage() {
   const { id } = useParams()
   const configId = Number(id)
@@ -294,6 +417,8 @@ export default function ResultsDashboardPage() {
   const [audience, setAudience] = useState('researcher')
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [compMetric, setCompMetric] = useState('Tr')
+  const [fairnessModalOpen, setFairnessModalOpen] = useState(false)
+  const queryClient = useQueryClient()
 
   // Config metadata
   const { data: config } = useQuery({
@@ -594,13 +719,22 @@ export default function ResultsDashboardPage() {
                     </p>
                   </div>
                 ) : (
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Fairness evaluation requires <code className="font-mono bg-gray-100 px-1 rounded">prediction</code> or{' '}
-                    <code className="font-mono bg-gray-100 px-1 rounded">ai_decision</code> +{' '}
-                    <code className="font-mono bg-gray-100 px-1 rounded">ground_truth</code> or{' '}
-                    <code className="font-mono bg-gray-100 px-1 rounded">op_decision</code> + a sensitive feature field
-                    (cohort, role, op_id, or user_group) in your log events.
-                  </p>
+                  <div className="space-y-2">
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                      Fairness evaluation requires <code className="font-mono bg-gray-100 px-1 rounded">prediction</code> or{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">ai_decision</code> +{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">ground_truth</code> or{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">op_decision</code> + a sensitive feature field
+                      (cohort, role, op_id, or user_group) in your log events.
+                    </p>
+                    <button
+                      onClick={() => setFairnessModalOpen(true)}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium
+                                 bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+                    >
+                      Upload fairness data →
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -654,12 +788,26 @@ export default function ResultsDashboardPage() {
                       </code>{' '}
                       in the submission to link responses here.
                     </p>
+                    <Link
+                      to={`/survey?config_id=${configId}`}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium
+                                 bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+                    >
+                      Submit a survey response →
+                    </Link>
                   </div>
                 )}
               </div>
             </>
           )}
         </div>
+      )}
+
+      {fairnessModalOpen && (
+        <FairnessModal
+          onClose={() => setFairnessModalOpen(false)}
+          onSuccess={() => queryClient.invalidateQueries({ queryKey: ['holistic', configId] })}
+        />
       )}
     </div>
   )

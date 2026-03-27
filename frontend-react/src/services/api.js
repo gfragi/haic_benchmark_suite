@@ -50,6 +50,17 @@ export const api = {
         return r.json()
       })
     },
+    uploadZip: (configId, file) => {
+      const fd = new FormData()
+      fd.append('file', file)
+      return fetch(`${BASE}/logs/upload-zip?configuration_id=${configId}`, {
+        method: 'POST',
+        body: fd,
+      }).then((r) => {
+        if (!r.ok) return r.json().then((e) => Promise.reject(new Error(e.detail ?? `HTTP ${r.status}`)))
+        return r.json()
+      })
+    },
     register: (configId, body) =>
       request(`/logs/register?configuration_id=${configId}`, {
         method: 'POST',
@@ -100,6 +111,14 @@ export const api = {
       getLatest: (pilotTag) => request(`/survey/schemas?pilot_tag=${pilotTag}`),
       get: (schemaId) => request(`/survey/schemas/${schemaId}`),
     },
+  },
+
+  fairness: {
+    evaluateFromLog: (payload) =>
+      request('/fairness/evaluate-from-log/', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
   },
 
   interpret: (body) =>
