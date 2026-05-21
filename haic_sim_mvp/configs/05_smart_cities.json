@@ -1,25 +1,249 @@
 {
-    "schema_version": 1.0,
-    "sim_id": smart_city_v1,
-    "environment": {
-        "id": SMARTCITY_PERMITS,
-        "class": base.Environment,
-        "attributes": { "task": "permit_screening", "domain": "public_admin" }
+  "_schema": "haic.environment.v1",
+  "_notes": "Generic environment configuration for the Smart Cities - Applications Screening domain. Defines agents, affordances, field mappings, and metric computation rules. Batch-specific statistics (P95, means, distributions) are NOT embedded here — they are derived at runtime from the logs.",
+
+  "pilot": {
+    "pilot_id": "smart_cities_apps",
+    "name": "Smart Cities — Applications Screening",
+    "domain": "smart_cities",
+    "partner": "Novoville",
+    "project": "HumAIne (GA 101120218)",
+    "version": "v1",
+    "pilot_tag": "applications",
+    "description": "Citizens submit applications via the Novoville platform. An AI screener evaluates each application for field-level errors. A human operator reviews AI-rejected or AI-flagged cases and issues the final decision. The three-event structure (citizen → AI → operator) is the collaboration unit."
+  },
+
+  "agents": [
+    {
+      "agent_id": "citizen",
+      "label": "Citizen Applicant",
+      "actor_type": "human",
+      "role": "citizen",
+      "description": "End-user submitting an application. Initiates the collaboration loop. No review or decision role."
     },
-    "agents": [
-        {
-            "id": "OP",
-            "class": "base.Agent",
-            "model": "human",
-            "affordances": ["view", "annotate", "approve", "reject"]
-        }
+    {
+      "agent_id": "ai_screener",
+      "label": "AI Document Screener",
+      "actor_type": "ai",
+      "role": "ai",
+      "description": "AI model that evaluates each application for field-level errors and issues an initial screening decision."
+    },
+    {
+      "agent_id": "operator",
+      "label": "Municipal Operator",
+      "actor_type": "human",
+      "role": "operator",
+      "description": "Domain expert who reviews AI-rejected or AI-flagged applications and issues the final administrative decision. Primary human collaborator for HAIC metric computation."
+    }
+  ],
+
+  "task": {
+    "name": "application_screening",
+    "domain": "public_administration",
+    "unit_of_work": "application",
+    "description": "Each unit of work is one application record. The collaboration task is the full lifecycle from citizen submission through AI screening to (conditional) operator review.",
+    "fields_under_evaluation": [
+      "NAME",
+      "SURNAME",
+      "FATHER_NAME",
+      "MOBILE_PHONE",
+      "ID_NUMBER",
+      "VAT_NUMBER",
+      "ADDRESS",
+      "POWER_SUPPLY",
+      "LICENCE_PLATE"
     ]
-  - id: SYS
-    class: base.Agent
-    model: ai
-    affordances: [scan, explain]
-objects:
-  - id: APP
-    class: base.Object
-    attributes: { kind: "application" }
-    affordances: [create, update]
+  },
+
+  "affordances": [
+    {
+      "action": "application_created",
+      "label": "Application submitted",
+      "actor_type": "human",
+      "agent_id": "citizen",
+      "haic_event_type": "task_initiation",
+      "always_emitted": true,
+      "contributes_to_metrics": ["F"],
+      "log_fields": {
+        "duration_s": null,
+        "latency_ms": null,
+        "correct": null
+      },
+      "payload_schema": {
+        "required": [
+          "app_name", "app_surname", "app_father_name",
+          "app_mobile_phone", "app_id_number", "app_vat_number",
+          "app_address", "app_power_supply", "app_licence_plate",
+          "app_doc", "role"
+        ],
+        "optional": ["app_introduced_error_type"]
+      },
+      "triggers_next": "ai_evaluated",
+      "description": "Citizen submits a new application. Always the first event. Marks the start of the session timeline."
+    },
+    {
+      "action": "ai_evaluated",
+      "label": "AI screens application",
+      "actor_type": "ai",
+      "agent_id": "ai_screener",
+      "haic_event_type": "ai_decision",
+      "always_emitted": true,
+      "contributes_to_metrics": ["Tr", "F", "HCL"],
+      "log_fields": {
+        "duration_s": null,
+        "latency_ms": "required",
+        "correct": "derived"
+      },
+      "payload_schema": {
+        "required": ["ai_decision", "ai_fields_with_error", "ai_comment"],
+        "optional": ["ai_fields_corrected"]
+      },
+      "decision_vocabulary": [
+        "Accepted",
+        "Rejected",
+        "Corrected by model",
+        "Flagged for verification"
+      ],
+      "triggers_next": "operator_verified",
+      "trigger_condition": "ai_decision in ['Rejected', 'Flagged for verification']",
+      "description": "AI model completes field-level screening. `latency_ms` is the model response time. Operator review is triggered only when the AI decision is Rejected or Flagged for verification."
+    },
+    {
+      "action": "operator_verified",
+      "label": "Operator reviews application",
+      "actor_type": "human",
+      "agent_id": "operator",
+      "haic_event_type": "human_decision",
+      "always_emitted": false,
+      "condition": "Emitted only when ai_decision in ['Rejected', 'Flagged for verification']",
+      "contributes_to_metrics": ["EL", "Tr", "F", "HCL", "D"],
+      "log_fields": {
+        "duration_s": "required",
+        "latency_ms": null,
+        "correct": "required"
+      },
+      "payload_schema": {
+        "required": ["op_decision", "op_fields_with_error", "op_comment", "op_id", "role"],
+        "optional": ["op_address", "op_name"]
+      },
+      "decision_vocabulary": [
+        "Accepted",
+        "Rejected",
+        "Fixed & accepted",
+        "Accepted after verification"
+      ],
+      "description": "Operator issues final decision on an AI-rejected or AI-flagged case. `duration_s` is the operator's active review time — the primary input for EL and HCL. `correct` labels the decision quality and is required for Tr computation."
+    }
+  ],
+
+  "metrics": {
+    "enabled": ["EL", "Tr", "F", "HCL", "D"],
+    "EL": {
+      "input_field": "duration_s",
+      "actor_filter": {
+        "actor_type": "human",
+        "action": "operator_verified"
+      },
+      "baseline_derivation": "auto_p95",
+      "baseline_override": null,
+      "rt_max_derivation": "2x_baseline",
+      "rt_max_override": null,
+      "note": "Baseline is auto-derived as P95 of `duration_s` across all `operator_verified` events in the batch (requires ≥10 observations). Set `baseline_override` and `rt_max_override` to fix explicit values when needed."
+    },
+    "Tr": {
+      "decision_action": "operator_verified",
+      "correct_field": "correct",
+      "correct_derivation_rules": [
+        { "when": { "ai_decision": "Accepted" }, "set": true },
+        { "when": { "ai_decision": "Flagged for verification", "op_decision": "Accepted after verification" }, "set": true },
+        { "when": { "ai_decision": "Flagged for verification", "op_decision": "Rejected" }, "set": false },
+        { "when": { "ai_decision": "Rejected", "op_decision": "Fixed & accepted" }, "set": true },
+        { "when": { "ai_decision": "Rejected", "op_decision": "Rejected" }, "set": true },
+        { "when": { "ai_decision": "Rejected", "op_decision": "Accepted" }, "set": false }
+      ],
+      "note": "Tr returns None when no `correct`-labeled decisions exist in the batch. Apply `correct_derivation_rules` at ingestion time (e.g. in the Node-RED transform node) to populate the field before logging."
+    },
+    "F": {
+      "count_actor_types": ["human", "ai"],
+      "note": "All three action types count toward F. F = total events / session_duration_minutes."
+    },
+    "HCL": {
+      "input_field": "duration_s",
+      "actor_filter": {
+        "actor_type": "human",
+        "action": "operator_verified"
+      },
+      "rt_max_source": "EL.rt_max",
+      "note": "HCL = 1 - (duration_s / rt_max), averaged over operator_verified events. rt_max is shared with EL."
+    },
+    "D": {
+      "input_fields": {
+        "human": "duration_s",
+        "ai": "latency_ms"
+      },
+      "note": "D is computed separately per actor_type. AI latency_ms is converted to seconds before averaging."
+    }
+  },
+
+  "session_schema": {
+    "session_id_field": "session_id",
+    "interaction_id_field": "interaction_id",
+    "actor_type_field": "actor_type",
+    "action_field": "action",
+    "timestamp_field": "timestamp",
+    "payload_field": "payload",
+    "session_start_anchor": "application_created",
+    "session_end_anchor": "operator_verified",
+    "session_end_fallback": "ai_evaluated",
+    "note": "Session start is the timestamp of `application_created`. Session end is the timestamp of `operator_verified` if present, otherwise `ai_evaluated`. This defines the T_session used in F computation."
+  },
+
+  "node_red_mapping": {
+    "description": "Maps pilot log fields to the HAIC platform /logs/register payload. Each affordance action maps to a HAIC event type. The `meta.task_parameters` block must be included in every session POST.",
+    "action_to_haic_event": {
+      "application_created": "task_initiation",
+      "ai_evaluated":        "ai_decision",
+      "operator_verified":   "human_decision"
+    },
+    "payload_passthrough_keys": {
+      "application_created": ["role", "app_doc", "app_introduced_error_type"],
+      "ai_evaluated":        ["ai_decision", "ai_fields_with_error", "ai_comment"],
+      "operator_verified":   ["op_decision", "op_fields_with_error", "op_comment", "op_id", "role"]
+    },
+    "meta_task_parameters": {
+      "task_name":     "application_screening",
+      "domain":        "public_administration",
+      "unit_of_work":  "application",
+      "baseline_s":    null,
+      "rt_max":        null,
+      "note": "Set `baseline_s` and `rt_max` at runtime (from EL config above) or leave null for auto-derivation."
+    }
+  },
+
+  "data_source": {
+    "type": "minio",
+    "bucket": "haic-smart-cities",
+    "prefix": "applications/",
+    "filename_pattern": "app_{interaction_id}.json",
+    "ingest_mode": "batch",
+    "redaction_required": true,
+    "redaction_fields": [
+      "app_name", "app_surname", "app_father_name",
+      "app_mobile_phone", "app_id_number", "app_vat_number",
+      "app_address", "app_power_supply", "app_licence_plate"
+    ]
+  },
+
+  "fairness": {
+    "enabled": false,
+    "note": "Fairness evaluation requires demographic subgroup labels not present in the current application schema."
+  },
+
+  "surrogate_similarity": {
+    "enabled": false,
+    "note": "S metric requires surrogate_action and surrogate_probs fields. Not applicable for real-world pilot logs."
+  },
+
+  "created_by": "HUA / WP3 — HumAIne",
+  "status": "active"
+}
