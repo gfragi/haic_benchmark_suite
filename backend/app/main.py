@@ -2,7 +2,7 @@
 import os
 from fastapi import FastAPI, APIRouter
 from app.routers import logs, configuration, evaluate, log_generator, meta
-from app.routers import fairness, env_builder, simulator, results, survey, survey_schema, env_catalog, analytics
+from app.routers import fairness, env_builder, simulator, results, survey, survey_schema, env_catalog, analytics, reporting, collab
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.seed_core_metrics import seed_core_definitions
 
