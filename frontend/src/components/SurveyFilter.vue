@@ -19,6 +19,7 @@ const options = [
   "Manufacturing",
   "BenchmarkingSuite",
   "ExplainerDashboard",
+  "CommonFrontend",
 ];
 
 const emit = defineEmits(["update:pilotTag"]);
