@@ -1,7 +1,7 @@
 FROM node:18-alpine
 
-# Install necessary packages
-RUN apk add --no-cache git
+# Install packages required for native Node modules during npm install
+RUN apk add --no-cache git python3 make g++
 
 # Set the working directory
 WORKDIR /app

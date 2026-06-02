@@ -8,9 +8,9 @@ DEPLOYMENT="frontend"
 DOCKERFILE="Dockerfile.frontend"
 CONTEXT="."  # project root
 
-echo "🔐 Ensuring you're logged in to GHCR..."
-echo "If not already logged in, run: docker login ghcr.io"
-# (You can auto-login here if you want, but usually it's done once manually.)
+# echo "🔐 Ensuring you're logged in to GHCR..."
+# echo "If not already logged in, run: docker login ghcr.io"
+# # (You can auto-login here if you want, but usually it's done once manually.)
 
 # 1. Ensure buildx builder exists and is active
 if ! docker buildx inspect haic-builder >/dev/null 2>&1; then
