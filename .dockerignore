@@ -1,0 +1,54 @@
+.git
+.gitignore
+.DS_Store
+.vscode
+.idea
+
+# Python caches and local virtualenvs
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.coverage
+**/.coverage.*
+.venv
+venv
+env
+ENV
+bench-env
+agentbeats_smartgrid/.venv
+
+# Node and frontend build artifacts
+**/node_modules
+**/dist
+**/coverage
+frontend-react/.vite
+
+# Large local outputs, datasets, and generated artifacts
+haic_sim_mvp/results
+haic_sim_mvp/figures
+pilot_onboarding/runs
+runs
+docker/minio-init/data
+.minio.sys
+
+# Docs and editor metadata not needed in container builds
+docs
+backend/docs
+haic_env_builder/docs
+cypress
+frontend/cypress
+
+# Local env/config files
+**/.env
+**/.env.*
+
+# Unused top-level apps/packages for current images
+frontend-react
+agentbeats_smartgrid
+pilot_onboarding
+fairness
+survey
+.claude
