@@ -2,6 +2,15 @@
   "_schema": "haic.environment.v1",
   "_notes": "Generic environment configuration for the Smart Cities - Applications Screening domain. Defines agents, affordances, field mappings, and metric computation rules. Batch-specific statistics (P95, means, distributions) are NOT embedded here — they are derived at runtime from the logs.",
 
+  "environment": {
+    "id": "smart_cities_apps",
+    "class": "base.Environment",
+    "attributes": {
+      "task": "application_screening",
+      "domain": "smart_cities"
+    }
+  },
+
   "pilot": {
     "pilot_id": "smart_cities_apps",
     "name": "Smart Cities — Applications Screening",
