@@ -12,7 +12,7 @@ ENV PYTHON=/usr/bin/python3
 COPY frontend-react/package.json frontend-react/package-lock.json ./
 RUN npm ci
 
-# Copy the Vue frontend source from the repo root context.
+# Copy the React frontend source from the repo root context.
 COPY frontend-react/ ./
 
 RUN npm run build
