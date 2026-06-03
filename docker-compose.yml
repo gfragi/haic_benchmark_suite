@@ -64,21 +64,33 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.dev
     container_name: haic-frontend
+    environment:
+      VUE_APP_API_PROXY_TARGET: http://backend:8000
     ports:
       - "8080:8080"
     depends_on:
       - backend
+    profiles:
+      - vue
     restart: unless-stopped
 
   frontend-react:
     build:
       context: ./frontend-react
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: haic-frontend-react
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8000
     ports:
       - "3000:3000"
     depends_on:
       - backend
+    volumes:
+      - ./frontend-react:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port 3000
+    profiles:
+      - react
     restart: unless-stopped
 
 volumes:

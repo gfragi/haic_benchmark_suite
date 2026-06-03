@@ -1,5 +1,7 @@
 // frontend/vue.config.js
 const { defineConfig } = require("@vue/cli-service");
+const apiProxyTarget =
+  process.env.VUE_APP_API_PROXY_TARGET || "http://localhost:8000";
 
 module.exports = defineConfig({
   // Production optimizations
@@ -61,7 +63,7 @@ module.exports = defineConfig({
     // Proxy API calls to backend
     proxy: {
       "/api": {
-        target: "http://localhost:8000",
+        target: apiProxyTarget,
         changeOrigin: true,
         secure: false,
       },

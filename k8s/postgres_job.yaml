@@ -29,17 +29,14 @@ spec:
               PSQL="psql -v ON_ERROR_STOP=1 -h postgres -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""
 
               if $PSQL -tAc "SELECT to_regclass('public.configurations') IS NULL" | grep -q t; then
-                echo "==> Fresh DB: applying /init/00_init_dump.sql"
-                $PSQL -f /init/00_init_dump.sql
+                echo "==> Fresh DB: applying /init/00_init.sql"
+                $PSQL -f /init/00_init.sql
               else
-                echo "==> DB already initialized: skipping 00_init_dump.sql"
+                echo "==> DB already initialized: skipping 00_init.sql"
               fi
 
               echo "==> Applying /init/10_seed_metrics.sql"
               $PSQL -f /init/10_seed_metrics.sql
-
-              echo "==> Applying /init/12_create_surveys.sql"
-              $PSQL -f /init/12_create_surveys.sql
           volumeMounts:
             - name: init-sql
               mountPath: /init

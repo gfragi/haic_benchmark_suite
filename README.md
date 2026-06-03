@@ -166,7 +166,32 @@ cd haic_benchmark_suite
 
 ### 2. Start Infrastructure
 ```bash
-docker-compose up -d
+docker compose up -d
+```
+
+### 2a. Start the full local stack with a frontend
+
+Backend, Postgres, and MinIO always start. Choose the frontend with Compose profiles:
+
+```bash
+# Vue frontend on http://localhost:8080
+docker compose --profile vue up -d --build
+
+# React frontend on http://localhost:3000
+docker compose --profile react up -d --build
+
+# Both frontends at once
+docker compose --profile vue --profile react up -d --build
+```
+
+Useful local endpoints:
+
+```bash
+# FastAPI docs
+http://localhost:8000/api/docs
+
+# MinIO console
+http://localhost:9001
 ```
 
 ### 3. Install Dependencies

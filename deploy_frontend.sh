@@ -2,8 +2,8 @@
 set -e
 
 # Set these variables
-IMAGE="ghcr.io/gfragi/haic-frontend:rollback"
-NAMESPACE="benchmarking"
+IMAGE="ghcr.io/gfragi/haic-frontend:latest"
+NAMESPACE="bench"
 DEPLOYMENT="frontend"
 CONTEXT="."  # project root
 

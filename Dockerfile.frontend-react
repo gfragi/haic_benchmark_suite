@@ -9,11 +9,11 @@ RUN apk add --no-cache python3 make g++
 ENV PYTHON=/usr/bin/python3
 
 # Install dependencies first for better layer caching.
-COPY frontend/package.json frontend/package-lock.json ./
+COPY frontend-react/package.json frontend-react/package-lock.json ./
 RUN npm ci
 
 # Copy the Vue frontend source from the repo root context.
-COPY frontend/ ./
+COPY frontend-react/ ./
 
 RUN npm run build
 

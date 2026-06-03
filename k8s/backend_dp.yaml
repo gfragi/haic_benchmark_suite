@@ -17,7 +17,7 @@ spec:
         - name: ghcr-pull-secret
       containers:
       - name: backend
-        image: ghcr.io/gfragi/haic-backend:rollback
+        image: ghcr.io/gfragi/haic-backend:latest
         ports:
         - containerPort: 8000
         env:
