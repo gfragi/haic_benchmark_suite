@@ -1,3 +1,4 @@
+# DEPRECATED — use frontend_ingress.yaml instead (wrong issuer + old hostname)
 # frontend-ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
