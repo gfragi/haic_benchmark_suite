@@ -82,6 +82,8 @@ class TokenPoolManager(urllib3.PoolManager):
 
 
 def get_minio_client() -> Minio:
+    if not MINIO_ENDPOINT:
+        raise RuntimeError("MINIO_ENDPOINT environment variable is required")
     http_client = TokenPoolManager()
     return Minio(
         endpoint=MINIO_ENDPOINT,

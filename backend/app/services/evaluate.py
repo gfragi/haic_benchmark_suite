@@ -19,7 +19,13 @@ from collections import defaultdict
 
 load_dotenv()
 
-minio_client = get_minio_client()
+_minio_client = None
+
+def _get_client():
+    global _minio_client
+    if _minio_client is None:
+        _minio_client = get_minio_client()
+    return _minio_client
 
 def calculate_prediction_accuracy(interaction_data: list[dict]) -> float:
     """Calculate prediction accuracy from interaction data."""
@@ -127,7 +133,7 @@ def _mean_map(dicts: list[dict]) -> dict:
 def _load_logs_from_minio(bucket: str, minio_path: str) -> list:
     """Load and parse logs from MinIO."""
     try:
-        obj = minio_client.get_object(bucket, minio_path)
+        obj = _get_client().get_object(bucket, minio_path)
     except Exception as e:
         raise RuntimeError(f"Failed to get object from MinIO (bucket='{bucket}', path='{minio_path}'): {e}")
 
@@ -229,7 +235,7 @@ def _save_result_to_minio(bucket: str, config_id: int, result_data: dict) -> str
     """Save evaluation result to MinIO and return the path."""
     result_file_path = f"{config_id}/results/{uuid.uuid4()}.json"
     encoded = json.dumps(result_data, ensure_ascii=False, indent=2).encode("utf-8")
-    minio_client.put_object(
+    _get_client().put_object(
         bucket_name=bucket,
         object_name=result_file_path,
         data=io.BytesIO(encoded),
