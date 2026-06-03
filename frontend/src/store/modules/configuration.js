@@ -69,7 +69,7 @@ export default {
       commit("CLEAR_ERROR");
 
       try {
-        const response = await fetch("/api/v1/configuration");
+        const response = await fetch("/api/v1/configuration/list");
         if (!response.ok) throw new Error("Failed to fetch configurations");
 
         const configurations = await response.json();

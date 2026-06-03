@@ -1,0 +1,149 @@
+const BASE = '/api/v1'
+
+async function request(path, options = {}) {
+  const res = await fetch(`${BASE}${path}`, {
+    headers: { 'Content-Type': 'application/json', ...options.headers },
+    ...options,
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }))
+    const detail = err.detail
+    const msg = Array.isArray(detail)
+      ? detail.map(e => `${e.loc?.slice(-1)[0] ?? ''}: ${e.msg}`).join('; ')
+      : (detail ?? `HTTP ${res.status}`)
+    throw new Error(msg)
+  }
+  return res.json()
+}
+
+export const api = {
+  configs: {
+    list: (skip = 0, limit = 100) =>
+      request(`/configuration/?skip=${skip}&limit=${limit}`),
+    get: (id) => request(`/configuration/${id}`),
+    create: (body) =>
+      request('/configuration/new', { method: 'POST', body: JSON.stringify(body) }),
+    update: (id, body) =>
+      request(`/configuration/update/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+    delete: (id) =>
+      request(`/configuration/delete/${id}`, { method: 'DELETE' }),
+  },
+
+  results: {
+    list: (configId) => request(`/results/${configId}`),
+    get: (configId, resultId) => request(`/results/${configId}/${resultId}`),
+    byGroup: (configId, groupName) =>
+      request(`/results/${configId}/group/${encodeURIComponent(groupName)}`),
+    holistic: (configId) => request(`/results/${configId}/holistic`),
+  },
+
+  logs: {
+    list: (configId) => request(`/logs/${configId}`),
+    upload: (configId, file) => {
+      const fd = new FormData()
+      fd.append('file', file)
+      return fetch(`${BASE}/logs/upload?configuration_id=${configId}`, {
+        method: 'POST',
+        body: fd,
+      }).then((r) => {
+        if (!r.ok) return r.json().then((e) => Promise.reject(new Error(e.detail ?? `HTTP ${r.status}`)))
+        return r.json()
+      })
+    },
+    uploadZip: (configId, file) => {
+      const fd = new FormData()
+      fd.append('file', file)
+      return fetch(`${BASE}/logs/upload-zip?configuration_id=${configId}`, {
+        method: 'POST',
+        body: fd,
+      }).then((r) => {
+        if (!r.ok) return r.json().then((e) => Promise.reject(new Error(e.detail ?? `HTTP ${r.status}`)))
+        return r.json()
+      })
+    },
+    register: (configId, body) =>
+      request(`/logs/register?configuration_id=${configId}`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    downloadUrl: (configId, objectKey) =>
+      request(`/logs/download/${configId}?object_key=${encodeURIComponent(objectKey)}`),
+    remove: (configId, logName) =>
+      request(`/logs/${configId}/${encodeURIComponent(logName)}`, { method: 'DELETE' }),
+  },
+
+  evaluate: {
+    trigger: (configId) =>
+      request(`/evaluate/${configId}`, { method: 'POST' }),
+  },
+
+  reporting: {
+    aggregateByDate: () => request('/reporting/aggregate-by-date'),
+    timeSeries: () => request('/reporting/time-series-data'),
+    generateReport: () => request('/reporting/generate-report'),
+  },
+
+  analytics: {
+    latencyPctiles: (configId, params = {}) => {
+      const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v != null))
+      return request(`/analytics/latency/pctiles/${configId}?${qs}`)
+    },
+    humanRtPctiles: (configId, params = {}) => {
+      const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v != null))
+      return request(`/analytics/human_rt/pctiles/${configId}?${qs}`)
+    },
+  },
+
+  survey: {
+    submit: (body) => request('/survey', { method: 'POST', body: JSON.stringify(body) }),
+    aggregate: (pilotTag) =>
+      request(`/survey/aggregate${pilotTag ? `?pilot_tag=${pilotTag}` : ''}`),
+    versions: (pilotTag) => request(`/survey/versions?pilot_tag=${pilotTag}`),
+    summary: (pilotTag, appVersion) =>
+      request(`/survey/summary?pilot_tag=${pilotTag}&app_version=${appVersion}`),
+    compare: (pilotTag, versionA, versionB) =>
+      request(`/survey/compare?pilot_tag=${pilotTag}&version_a=${versionA}&version_b=${versionB}`),
+    questionAverages: (pilotTag, appVersion) =>
+      request(`/survey/question-averages?pilot_tag=${pilotTag}&app_version=${appVersion}`),
+    schemas: {
+      create: (body) =>
+        request('/survey/schemas', { method: 'POST', body: JSON.stringify(body) }),
+      getLatest: (pilotTag) => request(`/survey/schemas?pilot_tag=${pilotTag}`),
+      get: (schemaId) => request(`/survey/schemas/${schemaId}`),
+    },
+  },
+
+  fairness: {
+    evaluateFromLog: (payload) =>
+      request('/fairness/evaluate-from-log/', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
+  },
+
+  interpret: (body) =>
+    request('/interpret', { method: 'POST', body: JSON.stringify(body) }),
+
+  adapters: {
+    // GET /meta/adapters — list all registered adapter tags
+    list: () => fetch('/meta/adapters').then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      return r.json()
+    }),
+    // GET /api/v1/adapters/{tag} — fetch saved config for one adapter
+    getConfig: (tag) => request(`/adapters/${encodeURIComponent(tag)}`),
+    // POST /api/v1/adapters/register — save + activate a field-mapping config
+    register: (body) =>
+      request('/adapters/register', { method: 'POST', body: JSON.stringify(body) }),
+    // POST /api/v1/adapters/test — test mapping on a sample event dict
+    test: (body) =>
+      request('/adapters/test', { method: 'POST', body: JSON.stringify(body) }),
+  },
+
+  pilot: {
+    onboard: (body) =>
+      request('/pilot/onboard', { method: 'POST', body: JSON.stringify(body) }),
+  },
+
+  health: () => fetch('/meta/health').then((r) => r.json()),
+}

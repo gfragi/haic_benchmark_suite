@@ -1,0 +1,1978 @@
+{
+  "logs": [
+    {
+      "session_id": "fairness-test-0001",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0001",
+          "timestamp": "2026-02-05T15:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_1"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0001",
+          "timestamp": "2026-02-05T20:32:17.252740+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 17118.529238096933,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0001",
+          "timestamp": "2026-02-06T06:58:54.530251+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 46.81473074225248,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 4,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-05T15:00:00+00:00",
+      "session_ended_at": "2026-02-06T12:29:32.345537+00:00"
+    },
+    {
+      "session_id": "fairness-test-0002",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0002",
+          "timestamp": "2026-02-07T01:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_2"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0002",
+          "timestamp": "2026-02-07T08:27:45.571655+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 15358.592741645021,
+          "payload": {
+            "ai_decision": "Rejected",
+            "prediction": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_X"
+            ]
+          }
+        },
+        {
+          "interaction_id": "FAIR_0002",
+          "timestamp": "2026-02-07T16:41:40.769360+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 83.13995208726918,
+          "correct": true,
+          "payload": {
+            "op_decision": "Rejected",
+            "ground_truth": "Rejected",
+            "op_id": 1,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-07T01:00:00+00:00",
+      "session_ended_at": "2026-02-07T19:02:39.191329+00:00"
+    },
+    {
+      "session_id": "fairness-test-0003",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0003",
+          "timestamp": "2026-02-05T11:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_3"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0003",
+          "timestamp": "2026-02-05T15:46:00.038605+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14802.980095637446,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0003",
+          "timestamp": "2026-02-06T01:34:48.965231+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 70.1676001176993,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 5,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-05T11:00:00+00:00",
+      "session_ended_at": "2026-02-06T08:24:55.100812+00:00"
+    },
+    {
+      "session_id": "fairness-test-0004",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0004",
+          "timestamp": "2026-02-02T06:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_4"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0004",
+          "timestamp": "2026-02-02T14:58:38.077388+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 13102.471906283296,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0004",
+          "timestamp": "2026-02-02T22:54:35.943599+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 85.31946143062191,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-02T06:00:00+00:00",
+      "session_ended_at": "2026-02-02T20:47:12.657153+00:00"
+    },
+    {
+      "session_id": "fairness-test-0005",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0005",
+          "timestamp": "2026-02-06T20:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_5"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0005",
+          "timestamp": "2026-02-07T02:45:00.996998+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 10589.8796873473,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0005",
+          "timestamp": "2026-02-07T17:33:42.926842+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 31.256837117117502,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "ground_truth": "Rejected",
+            "op_id": 3,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-06T20:00:00+00:00",
+      "session_ended_at": "2026-02-07T18:41:13.564446+00:00"
+    },
+    {
+      "session_id": "fairness-test-0006",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0006",
+          "timestamp": "2026-02-07T16:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_6"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0006",
+          "timestamp": "2026-02-07T19:11:22.486758+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 8279.646143721391,
+          "payload": {
+            "ai_decision": "Rejected",
+            "prediction": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_X"
+            ]
+          }
+        },
+        {
+          "interaction_id": "FAIR_0006",
+          "timestamp": "2026-02-08T09:50:11.806435+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 77.3767645607264,
+          "correct": true,
+          "payload": {
+            "op_decision": "Rejected",
+            "ground_truth": "Rejected",
+            "op_id": 1,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-07T16:00:00+00:00",
+      "session_ended_at": "2026-02-08T06:47:26.406000+00:00"
+    },
+    {
+      "session_id": "fairness-test-0007",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0007",
+          "timestamp": "2026-02-05T20:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_7"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0007",
+          "timestamp": "2026-02-05T22:50:26.717705+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 11956.372213585626,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0007",
+          "timestamp": "2026-02-06T14:15:02.062489+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 34.055608905836266,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 5,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-05T20:00:00+00:00",
+      "session_ended_at": "2026-02-06T18:38:08.634638+00:00"
+    },
+    {
+      "session_id": "fairness-test-0008",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0008",
+          "timestamp": "2026-02-01T22:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_8"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0008",
+          "timestamp": "2026-02-02T09:56:45.352546+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 9516.210766477154,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0008",
+          "timestamp": "2026-02-02T19:44:00.573413+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 53.33003621216086,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 1,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-01T22:00:00+00:00",
+      "session_ended_at": "2026-02-02T12:30:32.707480+00:00"
+    },
+    {
+      "session_id": "fairness-test-0009",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0009",
+          "timestamp": "2026-02-09T05:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_9"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0009",
+          "timestamp": "2026-02-09T14:32:01.382624+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 12899.59354320469,
+          "payload": {
+            "ai_decision": "Rejected",
+            "prediction": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_X"
+            ]
+          }
+        },
+        {
+          "interaction_id": "FAIR_0009",
+          "timestamp": "2026-02-09T19:41:34.497391+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 30.05636871396129,
+          "correct": false,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 5,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-09T05:00:00+00:00",
+      "session_ended_at": "2026-02-09T20:49:25.402958+00:00"
+    },
+    {
+      "session_id": "fairness-test-0010",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0010",
+          "timestamp": "2026-02-03T05:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_10"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0010",
+          "timestamp": "2026-02-03T14:00:38.629365+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 17246.805831712503,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0010",
+          "timestamp": "2026-02-04T01:32:18.968085+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 79.22877928638387,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-03T05:00:00+00:00",
+      "session_ended_at": "2026-02-03T20:11:28.530820+00:00"
+    },
+    {
+      "session_id": "fairness-test-0011",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0011",
+          "timestamp": "2026-02-05T04:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_11"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0011",
+          "timestamp": "2026-02-05T06:54:05.939775+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 17990.64261147478,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0011",
+          "timestamp": "2026-02-05T20:42:03.048473+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 46.38819909048868,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 3,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-05T04:00:00+00:00",
+      "session_ended_at": "2026-02-05T21:37:50.159120+00:00"
+    },
+    {
+      "session_id": "fairness-test-0012",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0012",
+          "timestamp": "2026-02-05T14:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_12"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0012",
+          "timestamp": "2026-02-05T17:48:26.572408+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 18554.820332311916,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0012",
+          "timestamp": "2026-02-06T11:34:51.084826+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 70.51620118319914,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-05T14:00:00+00:00",
+      "session_ended_at": "2026-02-06T08:19:03.195752+00:00"
+    },
+    {
+      "session_id": "fairness-test-0013",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0013",
+          "timestamp": "2026-02-06T01:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_13"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0013",
+          "timestamp": "2026-02-06T11:02:14.546018+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 11727.876970685904,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0013",
+          "timestamp": "2026-02-06T22:10:26.904546+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 70.45076684635356,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "ground_truth": "Rejected",
+            "op_id": 3,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-06T01:00:00+00:00",
+      "session_ended_at": "2026-02-06T17:19:04.158376+00:00"
+    },
+    {
+      "session_id": "fairness-test-0014",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0014",
+          "timestamp": "2026-02-08T22:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_14"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0014",
+          "timestamp": "2026-02-09T11:26:03.674903+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 18590.268800063357,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0014",
+          "timestamp": "2026-02-09T15:23:53.274860+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 83.53601342391131,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 1,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-08T22:00:00+00:00",
+      "session_ended_at": "2026-02-09T12:39:47.065656+00:00"
+    },
+    {
+      "session_id": "fairness-test-0015",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0015",
+          "timestamp": "2026-02-04T11:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_15"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0015",
+          "timestamp": "2026-02-04T19:42:09.765060+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 19157.969018460513,
+          "payload": {
+            "ai_decision": "Rejected",
+            "prediction": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_X"
+            ]
+          }
+        },
+        {
+          "interaction_id": "FAIR_0015",
+          "timestamp": "2026-02-05T03:01:45.072633+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 81.71052105994347,
+          "correct": false,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 5,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-04T11:00:00+00:00",
+      "session_ended_at": "2026-02-05T05:26:13.298457+00:00"
+    },
+    {
+      "session_id": "fairness-test-0016",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0016",
+          "timestamp": "2026-02-08T08:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_16"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0016",
+          "timestamp": "2026-02-08T17:29:31.058495+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 19847.509499072643,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0016",
+          "timestamp": "2026-02-09T03:26:43.450971+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 50.803745639421294,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 1,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-08T08:00:00+00:00",
+      "session_ended_at": "2026-02-09T02:06:32.981165+00:00"
+    },
+    {
+      "session_id": "fairness-test-0017",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0017",
+          "timestamp": "2026-02-03T10:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_17"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0017",
+          "timestamp": "2026-02-03T16:03:36.051294+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 18205.47048985454,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0017",
+          "timestamp": "2026-02-04T07:18:59.868745+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 66.74717785430042,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 4,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-03T10:00:00+00:00",
+      "session_ended_at": "2026-02-04T08:39:39.701197+00:00"
+    },
+    {
+      "session_id": "fairness-test-0018",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0018",
+          "timestamp": "2026-02-04T02:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_18"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0018",
+          "timestamp": "2026-02-04T07:20:49.464097+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 18326.064902104652,
+          "payload": {
+            "ai_decision": "Rejected",
+            "prediction": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_X"
+            ]
+          }
+        },
+        {
+          "interaction_id": "FAIR_0018",
+          "timestamp": "2026-02-04T18:46:06.090906+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 47.993043588498814,
+          "correct": false,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-04T02:00:00+00:00",
+      "session_ended_at": "2026-02-04T17:08:13.286163+00:00"
+    },
+    {
+      "session_id": "fairness-test-0019",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0019",
+          "timestamp": "2026-02-07T00:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_19"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0019",
+          "timestamp": "2026-02-07T10:14:52.020696+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 16970.5379894782,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0019",
+          "timestamp": "2026-02-07T15:17:00.789842+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 74.9410098523307,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 3,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-07T00:00:00+00:00",
+      "session_ended_at": "2026-02-07T18:49:24.673213+00:00"
+    },
+    {
+      "session_id": "fairness-test-0020",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0020",
+          "timestamp": "2026-02-03T12:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_20"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0020",
+          "timestamp": "2026-02-03T19:58:40.979262+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14372.372653422655,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0020",
+          "timestamp": "2026-02-04T07:03:14.113313+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 64.21866415543249,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-03T12:00:00+00:00",
+      "session_ended_at": "2026-02-04T10:23:21.664366+00:00"
+    },
+    {
+      "session_id": "fairness-test-0021",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0021",
+          "timestamp": "2026-02-09T12:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_21"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0021",
+          "timestamp": "2026-02-09T15:56:46.060709+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 11690.012938580345,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0021",
+          "timestamp": "2026-02-10T06:43:35.329449+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 87.27965395213559,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 4,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-09T12:00:00+00:00",
+      "session_ended_at": "2026-02-10T06:31:10.917958+00:00"
+    },
+    {
+      "session_id": "fairness-test-0022",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0022",
+          "timestamp": "2026-02-05T06:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_22"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0022",
+          "timestamp": "2026-02-05T18:22:28.342464+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 12735.932504991877,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0022",
+          "timestamp": "2026-02-06T02:27:57.451128+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 38.53613303793639,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-05T06:00:00+00:00",
+      "session_ended_at": "2026-02-05T23:32:42.272313+00:00"
+    },
+    {
+      "session_id": "fairness-test-0023",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0023",
+          "timestamp": "2026-02-02T17:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_23"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0023",
+          "timestamp": "2026-02-03T00:06:00.891157+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14742.595132082537,
+          "payload": {
+            "ai_decision": "Rejected",
+            "prediction": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_X"
+            ]
+          }
+        },
+        {
+          "interaction_id": "FAIR_0023",
+          "timestamp": "2026-02-03T12:50:51.312865+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 45.1887421124558,
+          "correct": false,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 4,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-02T17:00:00+00:00",
+      "session_ended_at": "2026-02-03T09:11:44.460428+00:00"
+    },
+    {
+      "session_id": "fairness-test-0024",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0024",
+          "timestamp": "2026-02-06T06:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_24"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0024",
+          "timestamp": "2026-02-06T19:52:05.559306+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14873.57043262685,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0024",
+          "timestamp": "2026-02-07T01:06:15.544440+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 84.11977554369521,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "ground_truth": "Rejected",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-06T06:00:00+00:00",
+      "session_ended_at": "2026-02-07T03:16:40.485197+00:00"
+    },
+    {
+      "session_id": "fairness-test-0025",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0025",
+          "timestamp": "2026-02-02T03:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_25"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0025",
+          "timestamp": "2026-02-02T05:56:56.519187+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 11956.956547164713,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0025",
+          "timestamp": "2026-02-02T21:00:23.715852+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 43.502563877871374,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 5,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-02T03:00:00+00:00",
+      "session_ended_at": "2026-02-03T01:02:29.104167+00:00"
+    },
+    {
+      "session_id": "fairness-test-0026",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0026",
+          "timestamp": "2026-02-07T09:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_26"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0026",
+          "timestamp": "2026-02-07T16:22:37.554979+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 9991.810751213348,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0026",
+          "timestamp": "2026-02-08T03:47:24.287479+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 23.32419125593005,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-07T09:00:00+00:00",
+      "session_ended_at": "2026-02-07T23:17:25.665970+00:00"
+    },
+    {
+      "session_id": "fairness-test-0027",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0027",
+          "timestamp": "2026-02-04T23:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_27"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0027",
+          "timestamp": "2026-02-05T03:32:20.669345+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 13268.972789422267,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0027",
+          "timestamp": "2026-02-05T18:41:06.119588+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 49.24020592921981,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "ground_truth": "Rejected",
+            "op_id": 5,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-04T23:00:00+00:00",
+      "session_ended_at": "2026-02-05T21:50:14.173135+00:00"
+    },
+    {
+      "session_id": "fairness-test-0028",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0028",
+          "timestamp": "2026-02-02T13:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_28"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0028",
+          "timestamp": "2026-02-02T19:50:06.748840+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14716.41158331695,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0028",
+          "timestamp": "2026-02-03T04:32:27.197849+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 59.13002880032959,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-02T13:00:00+00:00",
+      "session_ended_at": "2026-02-03T10:41:12.778092+00:00"
+    },
+    {
+      "session_id": "fairness-test-0029",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0029",
+          "timestamp": "2026-02-08T07:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_29"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0029",
+          "timestamp": "2026-02-08T17:49:49.916481+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 17900.873107041713,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0029",
+          "timestamp": "2026-02-08T22:08:25.928430+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 26.055596413581796,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "ground_truth": "Rejected",
+            "op_id": 5,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-08T07:00:00+00:00",
+      "session_ended_at": "2026-02-09T05:19:27.345367+00:00"
+    },
+    {
+      "session_id": "fairness-test-0030",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0030",
+          "timestamp": "2026-02-08T05:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_30"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0030",
+          "timestamp": "2026-02-08T15:44:37.684734+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 15379.808122658576,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0030",
+          "timestamp": "2026-02-09T01:13:36.618450+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 62.77609125731598,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "ground_truth": "Rejected",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-08T05:00:00+00:00",
+      "session_ended_at": "2026-02-08T22:40:03.675596+00:00"
+    },
+    {
+      "session_id": "fairness-test-0031",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0031",
+          "timestamp": "2026-02-01T21:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_31"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0031",
+          "timestamp": "2026-02-02T03:11:38.614138+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 16866.197834414466,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0031",
+          "timestamp": "2026-02-02T12:06:36.972395+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 65.00305613625679,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 4,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-01T21:00:00+00:00",
+      "session_ended_at": "2026-02-02T16:40:49.653998+00:00"
+    },
+    {
+      "session_id": "fairness-test-0032",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0032",
+          "timestamp": "2026-02-01T11:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_32"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0032",
+          "timestamp": "2026-02-01T14:51:18.653879+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 17538.271158028874,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0032",
+          "timestamp": "2026-02-02T02:51:00.622998+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 51.069428110943974,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 1,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-01T11:00:00+00:00",
+      "session_ended_at": "2026-02-02T09:41:57.420102+00:00"
+    },
+    {
+      "session_id": "fairness-test-0033",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0033",
+          "timestamp": "2026-02-02T04:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_33"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0033",
+          "timestamp": "2026-02-02T15:22:41.803628+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 12477.39159342666,
+          "payload": {
+            "ai_decision": "Rejected",
+            "prediction": "Rejected",
+            "ai_fields_with_error": [
+              "FIELD_X"
+            ]
+          }
+        },
+        {
+          "interaction_id": "FAIR_0033",
+          "timestamp": "2026-02-02T20:30:01.890618+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 23.19204182106316,
+          "correct": false,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 3,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-02T04:00:00+00:00",
+      "session_ended_at": "2026-02-02T22:17:41.061818+00:00"
+    },
+    {
+      "session_id": "fairness-test-0034",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0034",
+          "timestamp": "2026-02-04T12:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_34"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0034",
+          "timestamp": "2026-02-04T17:57:05.768676+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 14672.032859539857,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0034",
+          "timestamp": "2026-02-05T04:18:23.069342+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 54.47103597167693,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 1,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-04T12:00:00+00:00",
+      "session_ended_at": "2026-02-05T10:47:44.770184+00:00"
+    },
+    {
+      "session_id": "fairness-test-0035",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0035",
+          "timestamp": "2026-02-01T18:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_35"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0035",
+          "timestamp": "2026-02-02T06:11:03.233428+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 15967.889934207935,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0035",
+          "timestamp": "2026-02-02T14:36:04.657331+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 87.81197952046749,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "ground_truth": "Rejected",
+            "op_id": 4,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-01T18:00:00+00:00",
+      "session_ended_at": "2026-02-02T12:04:26.222791+00:00"
+    },
+    {
+      "session_id": "fairness-test-0036",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0036",
+          "timestamp": "2026-02-04T05:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_36"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0036",
+          "timestamp": "2026-02-04T07:59:01.657544+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 18357.155198349923,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0036",
+          "timestamp": "2026-02-04T21:17:43.229735+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 47.968076090045344,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 1,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-04T05:00:00+00:00",
+      "session_ended_at": "2026-02-05T00:34:50.890359+00:00"
+    },
+    {
+      "session_id": "fairness-test-0037",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0037",
+          "timestamp": "2026-02-09T14:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_37"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0037",
+          "timestamp": "2026-02-09T17:23:02.901863+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 10901.182471019567,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0037",
+          "timestamp": "2026-02-10T06:03:14.203273+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 79.0487764753602,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 3,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-09T14:00:00+00:00",
+      "session_ended_at": "2026-02-10T04:55:58.260141+00:00"
+    },
+    {
+      "session_id": "fairness-test-0038",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0038",
+          "timestamp": "2026-02-01T09:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_38"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0038",
+          "timestamp": "2026-02-01T22:22:14.660476+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 15551.125344676198,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0038",
+          "timestamp": "2026-02-01T23:23:58.148904+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 81.61112008856179,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 1,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-01T09:00:00+00:00",
+      "session_ended_at": "2026-02-02T00:55:29.445058+00:00"
+    },
+    {
+      "session_id": "fairness-test-0039",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0039",
+          "timestamp": "2026-02-09T11:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "business",
+            "app_doc": "DOC_39"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0039",
+          "timestamp": "2026-02-09T14:10:24.016208+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 12749.905789221299,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0039",
+          "timestamp": "2026-02-10T09:09:12.263794+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 51.23716931925386,
+          "correct": false,
+          "payload": {
+            "op_decision": "Rejected",
+            "ground_truth": "Rejected",
+            "op_id": 4,
+            "op_experience": "junior",
+            "role": "operator",
+            "citizen_type": "business"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-09T11:00:00+00:00",
+      "session_ended_at": "2026-02-10T02:43:45.448641+00:00"
+    },
+    {
+      "session_id": "fairness-test-0040",
+      "pilot_tag": "applications",
+      "app_version": "apps_v2.0.0",
+      "ai_model_version": "apps-model-v1",
+      "decisions": [
+        {
+          "interaction_id": "FAIR_0040",
+          "timestamp": "2026-02-03T19:00:00+00:00",
+          "actor_type": "human",
+          "action": "application_created",
+          "payload": {
+            "role": "citizen",
+            "citizen_type": "standard",
+            "app_doc": "DOC_40"
+          }
+        },
+        {
+          "interaction_id": "FAIR_0040",
+          "timestamp": "2026-02-04T04:34:48.882748+00:00",
+          "actor_type": "ai",
+          "action": "ai_evaluated",
+          "latency_ms": 12434.899971064537,
+          "payload": {
+            "ai_decision": "Accepted",
+            "prediction": "Accepted",
+            "ai_fields_with_error": []
+          }
+        },
+        {
+          "interaction_id": "FAIR_0040",
+          "timestamp": "2026-02-04T10:13:16.361975+00:00",
+          "actor_type": "human",
+          "action": "operator_verified",
+          "duration_s": 71.35441906825997,
+          "correct": true,
+          "payload": {
+            "op_decision": "Accepted",
+            "ground_truth": "Accepted",
+            "op_id": 2,
+            "op_experience": "senior",
+            "role": "operator",
+            "citizen_type": "standard"
+          }
+        }
+      ],
+      "session_started_at": "2026-02-03T19:00:00+00:00",
+      "session_ended_at": "2026-02-04T14:16:25.603132+00:00"
+    }
+  ]
+}

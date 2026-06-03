@@ -55,6 +55,52 @@ test: ## Run all tests
 	@echo "Running tests..."
 	docker compose exec backend python -W ignore::DeprecationWarning -W ignore::PendingDeprecationWarning -W ignore::MovedIn20Warning -W ignore::UserWarning -m pytest tests/ -v --disable-warnings
 
+test-unit: ## Run fast unit tests (SQLite + mocks, no Docker needed)
+	@echo "Running unit tests (no Docker)..."
+	cd backend && ../bench-env/bin/python -W ignore::DeprecationWarning \
+		-m pytest tests/ \
+		--ignore=tests/test_live_integration.py \
+		--ignore=tests/test_config.py \
+		--ignore=tests/test_evaluation_result.py \
+		--ignore=tests/test_logs_and_evaluate.py \
+		--ignore=tests/test_evaluate.py \
+		--ignore=tests/test_log.py \
+		-v --disable-warnings
+
+test-live: ## Run live integration tests against ephemeral Docker stack
+	@echo "Starting ephemeral test stack..."
+	docker compose -f docker-compose.yml -f docker-compose.test.yml up -d --build
+	@echo "Waiting for backend to be healthy..."
+	@timeout 90 bash -c '\
+		until curl -sf http://localhost:8000/meta/health | python3 -c \
+			"import sys,json; h=json.load(sys.stdin); sys.exit(0 if h[\"db_ok\"] and h[\"minio_ok\"] else 1)" \
+			2>/dev/null; do \
+			echo "  waiting..."; sleep 5; \
+		done' || (docker compose -f docker-compose.yml -f docker-compose.test.yml down --volumes; exit 1)
+	@echo "Stack is healthy. Running live tests..."
+	docker compose -f docker-compose.yml -f docker-compose.test.yml \
+		exec backend python -m pytest tests/test_live_integration.py -v --disable-warnings; \
+	EXIT_CODE=$$?; \
+	docker compose -f docker-compose.yml -f docker-compose.test.yml down --volumes; \
+	exit $$EXIT_CODE
+
+test-all: ## Run unit tests then live integration tests
+	@echo "=== Phase 1: Unit tests ==="
+	$(MAKE) test-unit
+	@echo ""
+	@echo "=== Phase 2: Live integration tests ==="
+	$(MAKE) test-live
+
+test-smoke: ## Quick health check (services must already be running)
+	@echo "Running smoke tests..."
+	@curl -sf http://localhost:8000/meta/health | python3 -c \
+		"import sys,json; h=json.load(sys.stdin); \
+		 print('Backend:', '✅ ok' if h['status']=='ok' else '⚠️ degraded'); \
+		 print('  DB:', '✅' if h['db_ok'] else '❌'); \
+		 print('  MinIO:', '✅' if h['minio_ok'] else '❌')" \
+		|| echo "❌ Backend not reachable at :8000"
+	@curl -sf http://localhost:8080 > /dev/null && echo "Frontend: ✅ ok" || echo "Frontend: ❌ not reachable"
+	
 test-backend: ## Test only backend
 	@echo "Testing backend..."
 	docker compose exec backend python backend/test_refactored_flow.py

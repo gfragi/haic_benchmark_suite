@@ -5,7 +5,8 @@ import json
 import re
 
 from haic_env_builder.utils.simulation_runner import simulate_environment
-from app.models.api import SimulationEnvelope, ErrorEnvelope
+from app.models.api import SimulationEnvelope
+from app.utils.errors import ErrorEnvelope
 
 router = APIRouter()
 

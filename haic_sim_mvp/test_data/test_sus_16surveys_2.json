@@ -1,0 +1,482 @@
+[
+  {
+    "user_id": "anon_9265",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 4,
+      "sus_q2": 1,
+      "sus_q3": 5,
+      "sus_q4": 1,
+      "sus_q5": 4,
+      "sus_q6": 1,
+      "sus_q7": 5,
+      "sus_q8": 2,
+      "sus_q9": 4,
+      "sus_q10": 1
+    },
+    "ethics_responses": {
+      "e1": 5,
+      "e2": 5,
+      "e3": 3,
+      "e4": 5,
+      "e5": 5
+    },
+    "domain_specific": {
+      "user_type": "senior_operator",
+      "experience_months": 35
+    }
+  },
+  {
+    "user_id": "anon_6475",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 2,
+      "sus_q2": 2,
+      "sus_q3": 4,
+      "sus_q4": 2,
+      "sus_q5": 4,
+      "sus_q6": 4,
+      "sus_q7": 3,
+      "sus_q8": 3,
+      "sus_q9": 4,
+      "sus_q10": 4
+    },
+    "ethics_responses": {
+      "e1": 2,
+      "e2": 2,
+      "e3": 2,
+      "e4": 3,
+      "e5": 4
+    },
+    "domain_specific": {
+      "user_type": "senior_operator",
+      "experience_months": 32
+    }
+  },
+  {
+    "user_id": "anon_1166",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 2,
+      "sus_q2": 4,
+      "sus_q3": 2,
+      "sus_q4": 2,
+      "sus_q5": 3,
+      "sus_q6": 2,
+      "sus_q7": 3,
+      "sus_q8": 2,
+      "sus_q9": 2,
+      "sus_q10": 4
+    },
+    "ethics_responses": {
+      "e1": 3,
+      "e2": 2,
+      "e3": 2,
+      "e4": 4,
+      "e5": 3
+    },
+    "domain_specific": {
+      "user_type": "senior_operator",
+      "experience_months": 34
+    }
+  },
+  {
+    "user_id": "anon_1445",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 3,
+      "sus_q2": 3,
+      "sus_q3": 4,
+      "sus_q4": 1,
+      "sus_q5": 3,
+      "sus_q6": 2,
+      "sus_q7": 4,
+      "sus_q8": 1,
+      "sus_q9": 5,
+      "sus_q10": 2
+    },
+    "ethics_responses": {
+      "e1": 5,
+      "e2": 4,
+      "e3": 2,
+      "e4": 4,
+      "e5": 3
+    },
+    "domain_specific": {
+      "user_type": "senior_operator",
+      "experience_months": 23
+    }
+  },
+  {
+    "user_id": "anon_4471",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 2,
+      "sus_q2": 4,
+      "sus_q3": 2,
+      "sus_q4": 3,
+      "sus_q5": 2,
+      "sus_q6": 3,
+      "sus_q7": 3,
+      "sus_q8": 3,
+      "sus_q9": 2,
+      "sus_q10": 4
+    },
+    "ethics_responses": {
+      "e1": 2,
+      "e2": 2,
+      "e3": 1,
+      "e4": 2,
+      "e5": 2
+    },
+    "domain_specific": {
+      "user_type": "senior_operator",
+      "experience_months": 15
+    }
+  },
+  {
+    "user_id": "anon_7157",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 4,
+      "sus_q2": 3,
+      "sus_q3": 2,
+      "sus_q4": 4,
+      "sus_q5": 2,
+      "sus_q6": 3,
+      "sus_q7": 2,
+      "sus_q8": 4,
+      "sus_q9": 3,
+      "sus_q10": 2
+    },
+    "ethics_responses": {
+      "e1": 4,
+      "e2": 4,
+      "e3": 2,
+      "e4": 3,
+      "e5": 3
+    },
+    "domain_specific": {
+      "user_type": "junior_operator",
+      "experience_months": 36
+    }
+  },
+  {
+    "user_id": "anon_5439",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 4,
+      "sus_q2": 2,
+      "sus_q3": 5,
+      "sus_q4": 2,
+      "sus_q5": 3,
+      "sus_q6": 2,
+      "sus_q7": 5,
+      "sus_q8": 1,
+      "sus_q9": 3,
+      "sus_q10": 1
+    },
+    "ethics_responses": {
+      "e1": 3,
+      "e2": 4,
+      "e3": 3,
+      "e4": 5,
+      "e5": 3
+    },
+    "domain_specific": {
+      "user_type": "junior_operator",
+      "experience_months": 20
+    }
+  },
+  {
+    "user_id": "anon_1290",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 5,
+      "sus_q2": 1,
+      "sus_q3": 3,
+      "sus_q4": 2,
+      "sus_q5": 5,
+      "sus_q6": 2,
+      "sus_q7": 5,
+      "sus_q8": 1,
+      "sus_q9": 5,
+      "sus_q10": 3
+    },
+    "ethics_responses": {
+      "e1": 4,
+      "e2": 3,
+      "e3": 3,
+      "e4": 3,
+      "e5": 5
+    },
+    "domain_specific": {
+      "user_type": "junior_operator",
+      "experience_months": 19
+    }
+  },
+  {
+    "user_id": "anon_5583",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 4,
+      "sus_q2": 3,
+      "sus_q3": 3,
+      "sus_q4": 3,
+      "sus_q5": 4,
+      "sus_q6": 2,
+      "sus_q7": 4,
+      "sus_q8": 4,
+      "sus_q9": 4,
+      "sus_q10": 2
+    },
+    "ethics_responses": {
+      "e1": 3,
+      "e2": 3,
+      "e3": 1,
+      "e4": 2,
+      "e5": 4
+    },
+    "domain_specific": {
+      "user_type": "junior_operator",
+      "experience_months": 30
+    }
+  },
+  {
+    "user_id": "anon_1290",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 4,
+      "sus_q2": 2,
+      "sus_q3": 5,
+      "sus_q4": 1,
+      "sus_q5": 5,
+      "sus_q6": 1,
+      "sus_q7": 3,
+      "sus_q8": 3,
+      "sus_q9": 3,
+      "sus_q10": 3
+    },
+    "ethics_responses": {
+      "e1": 3,
+      "e2": 4,
+      "e3": 2,
+      "e4": 4,
+      "e5": 5
+    },
+    "domain_specific": {
+      "user_type": "junior_operator",
+      "experience_months": 2
+    }
+  },
+  {
+    "user_id": "anon_7805",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 2,
+      "sus_q2": 3,
+      "sus_q3": 1,
+      "sus_q4": 5,
+      "sus_q5": 3,
+      "sus_q6": 3,
+      "sus_q7": 1,
+      "sus_q8": 4,
+      "sus_q9": 2,
+      "sus_q10": 3
+    },
+    "ethics_responses": {
+      "e1": 1,
+      "e2": 3,
+      "e3": 1,
+      "e4": 1,
+      "e5": 3
+    },
+    "domain_specific": {
+      "user_type": "junior_operator",
+      "experience_months": 7
+    }
+  },
+  {
+    "user_id": "anon_1575",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 2,
+      "sus_q2": 3,
+      "sus_q3": 3,
+      "sus_q4": 4,
+      "sus_q5": 2,
+      "sus_q6": 2,
+      "sus_q7": 3,
+      "sus_q8": 4,
+      "sus_q9": 3,
+      "sus_q10": 3
+    },
+    "ethics_responses": {
+      "e1": 4,
+      "e2": 2,
+      "e3": 2,
+      "e4": 4,
+      "e5": 2
+    },
+    "domain_specific": {
+      "user_type": "junior_operator",
+      "experience_months": 5
+    }
+  },
+  {
+    "user_id": "anon_8527",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 3,
+      "sus_q2": 3,
+      "sus_q3": 2,
+      "sus_q4": 3,
+      "sus_q5": 4,
+      "sus_q6": 3,
+      "sus_q7": 2,
+      "sus_q8": 4,
+      "sus_q9": 3,
+      "sus_q10": 3
+    },
+    "ethics_responses": {
+      "e1": 3,
+      "e2": 4,
+      "e3": 2,
+      "e4": 4,
+      "e5": 2
+    },
+    "domain_specific": {
+      "user_type": "junior_operator",
+      "experience_months": 19
+    }
+  },
+  {
+    "user_id": "anon_1005",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 2,
+      "sus_q2": 3,
+      "sus_q3": 4,
+      "sus_q4": 2,
+      "sus_q5": 4,
+      "sus_q6": 2,
+      "sus_q7": 4,
+      "sus_q8": 3,
+      "sus_q9": 4,
+      "sus_q10": 4
+    },
+    "ethics_responses": {
+      "e1": 2,
+      "e2": 2,
+      "e3": 3,
+      "e4": 3,
+      "e5": 2
+    },
+    "domain_specific": {
+      "user_type": "supervisor",
+      "experience_months": 22
+    }
+  },
+  {
+    "user_id": "anon_5894",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 5,
+      "sus_q2": 1,
+      "sus_q3": 5,
+      "sus_q4": 1,
+      "sus_q5": 4,
+      "sus_q6": 1,
+      "sus_q7": 4,
+      "sus_q8": 1,
+      "sus_q9": 5,
+      "sus_q10": 1
+    },
+    "ethics_responses": {
+      "e1": 4,
+      "e2": 4,
+      "e3": 3,
+      "e4": 4,
+      "e5": 4
+    },
+    "domain_specific": {
+      "user_type": "supervisor",
+      "experience_months": 13
+    }
+  },
+  {
+    "user_id": "anon_4571",
+    "pilot_tag": "applications",
+    "app_version": "apps_v2.0.0",
+    "ai_model_version": "apps-model-v1",
+    "configuration_id": 3,
+    "tam_sus_responses": {
+      "sus_q1": 2,
+      "sus_q2": 4,
+      "sus_q3": 3,
+      "sus_q4": 4,
+      "sus_q5": 3,
+      "sus_q6": 2,
+      "sus_q7": 4,
+      "sus_q8": 4,
+      "sus_q9": 4,
+      "sus_q10": 2
+    },
+    "ethics_responses": {
+      "e1": 2,
+      "e2": 4,
+      "e3": 1,
+      "e4": 3,
+      "e5": 2
+    },
+    "domain_specific": {
+      "user_type": "supervisor",
+      "experience_months": 20
+    }
+  }
+]

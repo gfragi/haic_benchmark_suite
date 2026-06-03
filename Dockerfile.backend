@@ -25,6 +25,8 @@ COPY haic_env_builder ./haic_env_builder
 COPY packages/metrics_core ./packages/metrics_core
 COPY haic_sim_mvp/configs ./haic_sim_mvp/configs
 COPY backend/app ./app
+COPY backend/tests ./tests
+COPY backend/pytest.ini ./pytest.ini
 
 RUN pip install --no-cache-dir -r requirements.txt
 

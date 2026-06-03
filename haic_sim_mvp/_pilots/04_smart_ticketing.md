@@ -319,3 +319,47 @@ Fields per event: `interaction_id`, `t` *or* `timestamp`, `actor_type`, `action`
 * **ai_model_version:** model registry tag
 
 **Last updated:**  2025-19-11 by gfragi
+
+
+
+_______
+
+## IDs & timing
+- `session_id` = one AL run, stable for the cycle.
+- `interaction_id` = ticket_id (per-ticket).
+- Use `t` (relative seconds) or ISO `timestamp`.
+
+## Event catalog
+- `pool_snapshot` (system)
+- `al_query_issued` (ai)
+- `al_candidates` (ai)
+- `label_request_sent` (system) — per ticket
+- `label_received` (human, +`duration_s`) — per ticket
+- `model_update_started` / `model_update_finished` (ai, +`latency_ms`)
+- `deployment_promoted` (system)
+
+## Metrics mapping
+- **F** interactions/min; **D** avg `duration_s` on `label_received`; **HCL** `1 − min(duration_s/rt_max,1)` with `rt_max=60`; **Tr** acceptance/abstain (add `correct` when audited); **EL** model & query `latency_ms`, end-to-end timings.  
+- Fairness slices (optional): `language`, `channel`, `priority`, `customer_tier`, `geo_bucket` (no PII).
+
+## Sequence diagram
+See `smart_ticketing_al_sequence_pilot_only.mmd` (pilot-side only).
+
+
+
+## 2.1 Actors & Roles (who is who)
+
+| ID   | Role / Responsibility                       | `actor_type` | Typical implementation (examples)                                   | Emits / handles these actions |
+|------|---------------------------------------------|---------------|---------------------------------------------------------------------|-------------------------------|
+| **ORCH** | Orchestrator for an AL run; coordinates pool snapshot, notifications, and promotion | `system`      | Node-RED flow, backend service, pipeline controller                 | `start_run`, `notify`, `deployment_promoted` |
+| **AL**   | Active-learning selector; scores uncertainty and chooses a batch to label          | `ai`          | AL service (e.g., modAL/libact/Sklearn), custom selector microservice | `al_query_issued`, `al_candidates`, (reads pool) |
+| **LAB**  | Human labeler/subject-matter expert; annotates tickets                             | `human`       | Annotator UI, internal tool                                         | `label_received`, `correct`, `abstain` (with `duration_s`) |
+| **MOD**  | Model trainer/evaluator; updates model after new labels                            | `ai`          | Training pipeline (Kubeflow), job runner, notebook                  | `model_update_started`, `model_update_finished` (with `latency_ms`, metrics) |
+| **DEP**  | Deployer/promoter; makes a trained model active in serving                         | `system`      | CI/CD step, model registry hook, KServe/Seldon deployer             | `deployment_promoted` (and optional `rollback`) |
+
+### Objects (referenced in `objects[]`)
+- **Ticket** (`support_ticket`): a single support request; maps to `interaction_id` (= `ticket_id`).
+- **Pool** (`unlabeled_pool`): current unlabeled set seen by AL.
+- **Sel** (`selection_batch`): the chosen ticket batch for labeling in this AL step.
+- **DS** (`dataset`): labeled dataset/version used for training.
+- **Mdl** (`model`): trained model artifact/registry entry.

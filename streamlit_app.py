@@ -388,6 +388,8 @@ def render_mermaid(code: str, height: int = 260):
 st.set_page_config(page_title="HAIC Simulator | MVP", layout="wide")
 st.title("Human–AI Collaboration Simulator | MVP")
 
+# Integration with backend services could be added here
+
 # ---------- helpers ----------
 def list_files(dir_path: Path, suffixes=(".json",), exclude_contains=("_metrics", "_haic_metrics")):
     if not dir_path.exists(): return []

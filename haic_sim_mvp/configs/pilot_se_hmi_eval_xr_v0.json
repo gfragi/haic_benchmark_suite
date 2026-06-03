@@ -1,0 +1,287 @@
+{
+  "sim_id": "pilot_se_hmi_eval_xr_v0",
+
+  "meta": {
+    "title": "Smart Energy — HMI Evaluation (XR / Quest3 condition)",
+    "description": "Operator performs the same structured N-1 security assessment workflow using the XR HMI on Meta Quest3. Paired with pilot_se_hmi_eval_2d_v0 for the 2D vs XR comparison study. Same workflow, same events, different interface and input modality.",
+    "version": "0.1",
+    "pilot_tag": "energy",
+    "study": "hmi_xr_comparison",
+    "condition": "xr_hmi",
+    "device": "Quest3",
+    "partner_logging": {
+      "UBI": ["security_classified", "agent_response", "operator_accepted",
+              "operator_overridden", "n1_analysis_completed", "xai_explanation_served"],
+      "IML": ["simulation_triggered", "result_inspected", "contingency_defined",
+              "grid_element_selected", "agent_invoked", "session_ended"]
+    }
+  },
+
+  "environment": {
+    "id": "grid_security_hmi_xr",
+    "class": "base.Environment",
+    "attributes": {
+      "task": "n1_security_assessment",
+      "domain": "energy_grid",
+      "interface": "xr_hmi",
+      "input_modality": "xr_raycast",
+      "device": "Quest3"
+    }
+  },
+
+  "task_parameters": {
+    "rt_max_s": 120,
+    "baseline_s": 95,
+    "task": "n1_security_assessment",
+    "domain": "energy_grid",
+    "interface": "xr_hmi",
+    "note_rt_max": "Same domain task as 2D condition — rt_max_s must match for metrics to be comparable across conditions.",
+    "note_baseline": "Same baseline as 2D condition. Keeping it equal isolates the interface effect in EL."
+  },
+
+  "agents": [
+    {
+      "id": "OP",
+      "class": "base.Agent",
+      "model": "human",
+      "name": "Grid Operator",
+      "affordances": [
+        "open_environment",
+        "select_timestamp",
+        "simulation_triggered",
+        "result_inspected",
+        "contingency_defined",
+        "grid_element_selected",
+        "agent_invoked",
+        "operator_accepted",
+        "operator_overridden"
+      ],
+      "profile": {
+        "role": "grid_operator",
+        "expertise": "trained",
+        "interface_familiarity": "xr_hmi",
+        "device": "Quest3"
+      }
+    },
+    {
+      "id": "SA",
+      "class": "base.Agent",
+      "model": "ai",
+      "name": "SecurityAI",
+      "affordances": ["security_classified"],
+      "profile": {
+        "model_version": "rf-security-2025-v1",
+        "accuracy_baseline": 0.92,
+        "note": "Same AI backend as 2D condition — model is unchanged between conditions."
+      }
+    },
+    {
+      "id": "OA",
+      "class": "base.Agent",
+      "model": "ai",
+      "name": "OperatorAgent",
+      "affordances": ["agent_response"],
+      "profile": {
+        "model_version": "operator-agent-llm-v1",
+        "note": "Active only when operator explicitly invokes at step 10. In XR this may be a voice or gesture trigger — log as agent_invoked regardless of modality."
+      }
+    }
+  ],
+
+  "objects": [
+    {
+      "id": "GS",
+      "class": "base.Object",
+      "name": "GridState",
+      "affordances": ["view", "classify", "approve"],
+      "fields": [
+        "prob_secure", "secure_gt", "al_flag",
+        "risk_score", "region", "weather_regime",
+        "xai_top_factor", "scenario_datetime"
+      ]
+    },
+    {
+      "id": "DT",
+      "class": "base.Object",
+      "name": "DigitalTwin",
+      "affordances": ["run_base_case", "run_n1", "return_results"],
+      "note": "Same backend as 2D condition."
+    },
+    {
+      "id": "HM",
+      "class": "base.Object",
+      "name": "HMI_XR",
+      "affordances": [
+        "open_environment",
+        "select_timestamp",
+        "trigger_simulation",
+        "inspect_spatial_map",
+        "inspect_data_panel",
+        "select_line_outage",
+        "view_line_results",
+        "view_voltage_results",
+        "select_element",
+        "invoke_agent_voice_or_gesture"
+      ],
+      "owner": "IML",
+      "interface": "xr_hmi",
+      "device": "Quest3",
+      "note": "Affordances map to the same event names as the 2D condition. input_modality:xr_raycast in payload differentiates from 2D clicks."
+    }
+  ],
+
+  "workflow": {
+    "description": "Same 10-step protocol as pilot_se_hmi_eval_2d_v0. Event names are identical — only payload.environment and payload.input_modality differ. This is intentional: the comparison is between interfaces, not between different workflows.",
+    "steps": [
+      {
+        "step": 1,
+        "label": "Open environment",
+        "actor": "OP",
+        "object": "HM",
+        "action": "open_environment",
+        "log_event": null,
+        "note": "App launch = session boundary. start_time already present in IML JSON."
+      },
+      {
+        "step": 2,
+        "label": "Select simulation timestamp",
+        "actor": "OP",
+        "object": "HM",
+        "action": "select_timestamp",
+        "log_event": null,
+        "note": "Context for the run. Goes into payload.scenario_datetime of simulation_triggered."
+      },
+      {
+        "step": 3,
+        "label": "Run base case",
+        "actor": "OP",
+        "object": "DT",
+        "action": "trigger_simulation",
+        "log_event": "simulation_triggered",
+        "payload_required": ["simulation_type:base_case", "scenario_datetime", "environment:xr_hmi", "input_modality:xr_raycast"],
+        "interaction_id_starts": false,
+        "owner": "IML"
+      },
+      {
+        "step": 4,
+        "label": "Inspect base case",
+        "actor": "OP",
+        "object": "HM",
+        "action": "inspect_spatial_map",
+        "log_event": "result_inspected",
+        "payload_required": ["result_type:base_case", "environment:xr_hmi"],
+        "duration_s_required": true,
+        "interaction_id_starts": false,
+        "note": "In XR the operator may spatially rotate around the grid visualisation. duration_s = from render to next gesture/action.",
+        "owner": "IML"
+      },
+      {
+        "step": 5,
+        "label": "Apply contingency (select line)",
+        "actor": "OP",
+        "object": "HM",
+        "action": "select_line_outage",
+        "log_event": "contingency_defined",
+        "payload_required": ["line_id", "outage_type:line_outage", "environment:xr_hmi", "input_modality:xr_raycast"],
+        "duration_s_required": true,
+        "interaction_id_starts": true,
+        "note": "interaction_id starts here. In XR: operator points ray-cast at a line on the 3D grid map.",
+        "owner": "IML"
+      },
+      {
+        "step": 6,
+        "label": "Run N-1 contingency",
+        "actor": "OP",
+        "object": "DT",
+        "action": "trigger_simulation",
+        "log_event": ["simulation_triggered", "n1_analysis_completed"],
+        "payload_required": ["simulation_type:n1_contingency", "line_id", "environment:xr_hmi"],
+        "note": "IML fires simulation_triggered. UBI fires n1_analysis_completed when backend returns. Same interaction_id as step 5.",
+        "owner": ["IML", "UBI+IML"]
+      },
+      {
+        "step": 7,
+        "label": "Inspect line results",
+        "actor": "OP",
+        "object": "HM",
+        "action": "view_line_results",
+        "log_event": "result_inspected",
+        "payload_required": ["result_type:line_loading", "environment:xr_hmi"],
+        "duration_s_required": true,
+        "note": "In XR: operator may look at colour-coded lines in 3D space. Dwell time is the key metric here for the 2D vs XR comparison.",
+        "owner": "IML"
+      },
+      {
+        "step": 8,
+        "label": "Inspect voltage results",
+        "actor": "OP",
+        "object": "HM",
+        "action": "view_voltage_results",
+        "log_event": "result_inspected",
+        "payload_required": ["result_type:voltage", "environment:xr_hmi"],
+        "duration_s_required": true,
+        "note": "In XR: may be a spatial layer toggle. Each toggle that results in dwell = one result_inspected event.",
+        "owner": "IML"
+      },
+      {
+        "step": 9,
+        "label": "Identify violations (select element)",
+        "actor": "OP",
+        "object": "HM",
+        "action": "select_element",
+        "log_event": "grid_element_selected",
+        "payload_required": ["element_type", "element_id", "environment:xr_hmi", "input_modality:xr_raycast"],
+        "duration_s_required": true,
+        "note": "input_modality:xr_raycast is the payload field that distinguishes this from the 2D condition.",
+        "owner": "IML"
+      },
+      {
+        "step": 10,
+        "label": "Consult Operator Agent",
+        "actor": "OP",
+        "object": "HM",
+        "action": "invoke_agent_voice_or_gesture",
+        "log_event": ["agent_invoked", "agent_response", "operator_accepted", "operator_overridden"],
+        "payload_required": ["query_type", "environment:xr_hmi"],
+        "note": "In XR the operator may invoke the agent via voice command or spatial gesture. Log as agent_invoked regardless of input modality. Operator decision event closes the cycle.",
+        "owner": ["IML", "UBI"]
+      }
+    ]
+  },
+
+  "xr_specific": {
+    "note": "Fields below are XR-only additions to the payload. They are optional for the HAIC metrics but useful for the XR usability analysis.",
+    "optional_payload_fields": {
+      "head_rotation_deg": "Degrees of head rotation during inspection step — proxy for spatial engagement",
+      "controller_activations": "Number of ray-cast trigger events during a dwell period",
+      "layer_switches": "Number of display layer toggles (line vs voltage vs base case)"
+    }
+  },
+
+  "comparison": {
+    "study": "hmi_xr_comparison",
+    "paired_env": "pilot_se_hmi_eval_2d_v0",
+    "pivot_field": "payload.environment",
+    "pivot_values": {
+      "this_condition": "xr_hmi",
+      "other_condition": "2d_dashboard"
+    },
+    "expected_differences": {
+      "D": "XR may show higher dwell time on spatial inspection steps (7,8) — operator explores 3D space",
+      "F": "2D may show higher event frequency — familiar interface, faster navigation",
+      "HCL": "XR cognitive load unclear a priori — novelty effect vs spatial intuitiveness",
+      "TR": "Trust comparison requires sufficient cycles with agent interaction at step 10",
+      "EL": "If XR reduces decision time vs 2D, EL will be lower for XR — the key research question"
+    },
+    "metrics_of_interest": [
+      "D (avg_action_duration — dwell time per step)",
+      "F (interaction_frequency — steps completed per minute)",
+      "HCL (cognitive load proxy — normalised by rt_max_s=120)",
+      "TR (trust — accept/override ratio via agent_invoked→operator_accepted)",
+      "EL (effort_loss — relative to baseline_s=95)",
+    ],
+    "fairness_slices": ["operator_id", "payload.environment", "payload.input_modality", "payload.region"]
+  },
+
+  "script": []
+}

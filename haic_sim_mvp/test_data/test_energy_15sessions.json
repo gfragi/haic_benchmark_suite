@@ -1,0 +1,499 @@
+{
+  "logs": [
+    {
+      "session_id": "energy-test-0001",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0001",
+          "timestamp": "2026-01-01T08:06:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 709.7453761997464,
+          "payload": {
+            "load_setpoint": 1050,
+            "confidence": 0.7263847176609997
+          }
+        },
+        {
+          "interaction_id": "GRID_0001",
+          "timestamp": "2026-01-01T08:06:57.843316+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 50.5789021051352,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_02"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T08:06:00+00:00",
+      "session_ended_at": "2026-01-01T08:07:07.843316+00:00"
+    },
+    {
+      "session_id": "energy-test-0002",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0002",
+          "timestamp": "2026-01-01T11:42:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 305.6821766516356,
+          "payload": {
+            "load_setpoint": 1067,
+            "confidence": 0.9413684328095193
+          }
+        },
+        {
+          "interaction_id": "GRID_0002",
+          "timestamp": "2026-01-01T11:42:19.854532+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 34.599509854654066,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_04"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T11:42:00+00:00",
+      "session_ended_at": "2026-01-01T11:42:29.854532+00:00"
+    },
+    {
+      "session_id": "energy-test-0003",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0003",
+          "timestamp": "2026-01-01T11:58:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 461.34469580233656,
+          "payload": {
+            "load_setpoint": 1174,
+            "confidence": 0.8481186547659254
+          }
+        },
+        {
+          "interaction_id": "GRID_0003",
+          "timestamp": "2026-01-01T11:58:22.726752+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 56.404203323770005,
+          "correct": false,
+          "payload": {
+            "decision": "overridden",
+            "operator_id": "OP_03"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T11:58:00+00:00",
+      "session_ended_at": "2026-01-01T11:58:32.726752+00:00"
+    },
+    {
+      "session_id": "energy-test-0004",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0004",
+          "timestamp": "2026-01-01T15:31:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 470.4812001162623,
+          "payload": {
+            "load_setpoint": 1184,
+            "confidence": 0.8161771166508078
+          }
+        },
+        {
+          "interaction_id": "GRID_0004",
+          "timestamp": "2026-01-01T15:31:38.568244+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 6.578499877354927,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_03"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T15:31:00+00:00",
+      "session_ended_at": "2026-01-01T15:31:48.568244+00:00"
+    },
+    {
+      "session_id": "energy-test-0005",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0005",
+          "timestamp": "2026-01-01T09:33:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 492.52995943480664,
+          "payload": {
+            "load_setpoint": 981,
+            "confidence": 0.8994580892070241
+          }
+        },
+        {
+          "interaction_id": "GRID_0005",
+          "timestamp": "2026-01-01T09:33:23.718636+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 43.56510626827109,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_03"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T09:33:00+00:00",
+      "session_ended_at": "2026-01-01T09:33:33.718636+00:00"
+    },
+    {
+      "session_id": "energy-test-0006",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0006",
+          "timestamp": "2026-01-01T12:44:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 206.09066866320626,
+          "payload": {
+            "load_setpoint": 897,
+            "confidence": 0.7214032404895052
+          }
+        },
+        {
+          "interaction_id": "GRID_0006",
+          "timestamp": "2026-01-01T12:44:44.604107+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 46.699055941535654,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_04"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T12:44:00+00:00",
+      "session_ended_at": "2026-01-01T12:44:54.604107+00:00"
+    },
+    {
+      "session_id": "energy-test-0007",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0007",
+          "timestamp": "2026-01-01T13:30:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 627.1054438836336,
+          "payload": {
+            "load_setpoint": 1029,
+            "confidence": 0.8982332170330793
+          }
+        },
+        {
+          "interaction_id": "GRID_0007",
+          "timestamp": "2026-01-01T13:30:10.117934+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 43.0482935412361,
+          "correct": false,
+          "payload": {
+            "decision": "overridden",
+            "operator_id": "OP_03"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T13:30:00+00:00",
+      "session_ended_at": "2026-01-01T13:30:20.117934+00:00"
+    },
+    {
+      "session_id": "energy-test-0008",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0008",
+          "timestamp": "2026-01-01T13:39:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 548.9333511994203,
+          "payload": {
+            "load_setpoint": 1042,
+            "confidence": 0.8383682387525624
+          }
+        },
+        {
+          "interaction_id": "GRID_0008",
+          "timestamp": "2026-01-01T13:39:23.906657+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 35.271366001617324,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_03"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T13:39:00+00:00",
+      "session_ended_at": "2026-01-01T13:39:33.906657+00:00"
+    },
+    {
+      "session_id": "energy-test-0009",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0009",
+          "timestamp": "2026-01-01T13:59:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 472.2471577119071,
+          "payload": {
+            "load_setpoint": 956,
+            "confidence": 0.7628509190502353
+          }
+        },
+        {
+          "interaction_id": "GRID_0009",
+          "timestamp": "2026-01-01T13:59:11.636074+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 11.575510769027906,
+          "correct": false,
+          "payload": {
+            "decision": "overridden",
+            "operator_id": "OP_05"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T13:59:00+00:00",
+      "session_ended_at": "2026-01-01T13:59:21.636074+00:00"
+    },
+    {
+      "session_id": "energy-test-0010",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0010",
+          "timestamp": "2026-01-01T14:30:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 614.098132484331,
+          "payload": {
+            "load_setpoint": 898,
+            "confidence": 0.7540961599696514
+          }
+        },
+        {
+          "interaction_id": "GRID_0010",
+          "timestamp": "2026-01-01T14:30:31.630922+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 58.71338625856812,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_05"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T14:30:00+00:00",
+      "session_ended_at": "2026-01-01T14:30:41.630922+00:00"
+    },
+    {
+      "session_id": "energy-test-0011",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0011",
+          "timestamp": "2026-01-01T13:05:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 369.799221964973,
+          "payload": {
+            "load_setpoint": 851,
+            "confidence": 0.9081570908317669
+          }
+        },
+        {
+          "interaction_id": "GRID_0011",
+          "timestamp": "2026-01-01T13:05:21.293555+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 21.624717382923958,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_05"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T13:05:00+00:00",
+      "session_ended_at": "2026-01-01T13:05:31.293555+00:00"
+    },
+    {
+      "session_id": "energy-test-0012",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0012",
+          "timestamp": "2026-01-01T09:04:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 364.58679606996037,
+          "payload": {
+            "load_setpoint": 827,
+            "confidence": 0.8383397416996521
+          }
+        },
+        {
+          "interaction_id": "GRID_0012",
+          "timestamp": "2026-01-01T09:04:43.357957+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 52.76536584946192,
+          "correct": false,
+          "payload": {
+            "decision": "overridden",
+            "operator_id": "OP_04"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T09:04:00+00:00",
+      "session_ended_at": "2026-01-01T09:04:53.357957+00:00"
+    },
+    {
+      "session_id": "energy-test-0013",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0013",
+          "timestamp": "2026-01-01T08:52:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 723.6318409991208,
+          "payload": {
+            "load_setpoint": 1093,
+            "confidence": 0.7710848317842873
+          }
+        },
+        {
+          "interaction_id": "GRID_0013",
+          "timestamp": "2026-01-01T08:52:31.329281+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 58.10237037260621,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_03"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T08:52:00+00:00",
+      "session_ended_at": "2026-01-01T08:52:41.329281+00:00"
+    },
+    {
+      "session_id": "energy-test-0014",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0014",
+          "timestamp": "2026-01-01T15:21:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 486.6375123594126,
+          "payload": {
+            "load_setpoint": 833,
+            "confidence": 0.8001768605629849
+          }
+        },
+        {
+          "interaction_id": "GRID_0014",
+          "timestamp": "2026-01-01T15:21:09.074519+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 7.948499086089322,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_02"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T15:21:00+00:00",
+      "session_ended_at": "2026-01-01T15:21:19.074519+00:00"
+    },
+    {
+      "session_id": "energy-test-0015",
+      "pilot_tag": "smart_energy",
+      "app_version": "grid-ctrl-v3",
+      "ai_model_version": "grid-ai-v2",
+      "decisions": [
+        {
+          "interaction_id": "GRID_0015",
+          "timestamp": "2026-01-01T14:55:00+00:00",
+          "actor_type": "ai",
+          "action": "ai_recommendation",
+          "latency_ms": 537.7037582507385,
+          "payload": {
+            "load_setpoint": 955,
+            "confidence": 0.7212952270990575
+          }
+        },
+        {
+          "interaction_id": "GRID_0015",
+          "timestamp": "2026-01-01T14:55:18.650503+00:00",
+          "actor_type": "human",
+          "action": "operator_decision",
+          "duration_s": 27.889571177568065,
+          "correct": true,
+          "payload": {
+            "decision": "accepted",
+            "operator_id": "OP_05"
+          }
+        }
+      ],
+      "session_started_at": "2026-01-01T14:55:00+00:00",
+      "session_ended_at": "2026-01-01T14:55:28.650503+00:00"
+    }
+  ]
+}

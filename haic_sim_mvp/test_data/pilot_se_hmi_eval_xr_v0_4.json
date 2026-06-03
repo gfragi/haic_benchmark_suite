@@ -1,0 +1,225 @@
+{
+  "sim_id": "pilot_se_hmi_eval_xr_v0",
+  "meta": {
+    "title": "Smart Energy — HMI Evaluation (XR / Quest3 condition)",
+    "description": "Operator performs N-1 security assessment using the XR HMI on Meta Quest3. XR flow differs from 2D: element selection and contingency toggling are spatially integrated, timestamp and run are on the same panel, and results appear simultaneously. Paired with pilot_se_hmi_eval_2d_v0.",
+    "version": "0.2",
+    "pilot_tag": "energy",
+    "study": "hmi_xr_comparison",
+    "condition": "xr_hmi",
+    "device": "Quest3",
+    "revision_note": "v0.2 — workflow rebuilt from XR app screenshots. Original 10-step 2D flow does not apply to XR. XR has 6 steps.",
+    "partner_logging": {
+      "UBI": ["security_classified", "agent_response", "operator_accepted", "operator_overridden", "n1_analysis_completed"],
+      "IML": ["grid_element_selected", "contingency_defined", "simulation_triggered", "result_inspected", "session_ended"]
+    }
+  },
+  "environment": {
+    "id": "grid_security_hmi_xr",
+    "class": "base.Environment",
+    "attributes": {
+      "task": "n1_security_assessment",
+      "domain": "energy_grid",
+      "interface": "xr_hmi",
+      "input_modality": "xr_direct_touch",
+      "device": "Quest3",
+      "visualisation": "3d_globe_map"
+    }
+  },
+  "task_parameters": {
+    "rt_max_s": 120,
+    "baseline_s": 95,
+    "task": "n1_security_assessment",
+    "domain": "energy_grid",
+    "interface": "xr_hmi",
+    "note_rt_max": "Must match 2D condition (120s) for cross-condition metric comparison.",
+    "note_baseline": "Must match 2D condition (95s) to isolate interface effect in EL."
+  },
+  "agents": [
+    {
+      "id": "OP",
+      "class": "base.Agent",
+      "model": "human",
+      "name": "Grid Operator",
+      "affordances": ["navigate_globe", "select_bus_on_map", "toggle_line_outage", "set_timestamp", "run_simulation", "inspect_results", "operator_accepted", "operator_overridden"],
+      "profile": {"role": "grid_operator", "expertise": "trained", "interface_familiarity": "xr_hmi", "device": "Quest3", "input_modality": "xr_direct_touch"}
+    },
+    {
+      "id": "SA",
+      "class": "base.Agent",
+      "model": "ai",
+      "name": "SecurityAI",
+      "affordances": ["security_classified"],
+      "profile": {"model_version": "rf-security-2025-v1", "accuracy_baseline": 0.92, "note": "Same backend as 2D condition."}
+    }
+  ],
+  "objects": [
+    {
+      "id": "GLOBE",
+      "class": "base.Object",
+      "name": "GridGlobe3D",
+      "affordances": ["navigate", "select_bus"],
+      "note": "3D globe with green pins for substations and coloured line markers. Operator taps a pin to open the BUS_PANEL."
+    },
+    {
+      "id": "BUS_PANEL",
+      "class": "base.Object",
+      "name": "BusDetailPanel",
+      "affordances": ["view_bus_info", "view_connected_lines", "toggle_line_outage"],
+      "fields": ["bus_id", "type", "voltage_kv", "country", "connected_lines"],
+      "note": "Floating panel showing bus metadata and connected lines. Each line has a red toggle button — tapping it deactivates the line (contingency) and adds it to the SIM_PANEL list."
+    },
+    {
+      "id": "SIM_PANEL",
+      "class": "base.Object",
+      "name": "SimulationControlPanel",
+      "affordances": ["set_timestamp", "run_simulation", "clear_contingencies"],
+      "note": "Persistent floating panel with date/time spinners (year/month/day/hour/minute), list of deactivated lines, and blue Run Simulation button. Trash icon clears all contingencies."
+    },
+    {
+      "id": "RESULTS_BUS",
+      "class": "base.Object",
+      "name": "BusResultsPanel",
+      "affordances": ["view_bus_results", "filter_active_inactive", "paginate"],
+      "fields": ["bus", "vm_pu", "va_degree", "p_mw", "q_mvar", "s_mw", "s_mvar"],
+      "note": "Centre floating table. Appears simultaneously with RESULTS_LINE after simulation run."
+    },
+    {
+      "id": "RESULTS_LINE",
+      "class": "base.Object",
+      "name": "LineResultsPanel",
+      "affordances": ["view_line_results", "filter_active_inactive", "paginate"],
+      "fields": ["line", "loading_percent"],
+      "note": "Right floating table. Appears simultaneously with RESULTS_BUS. Shows loading_percent per line."
+    }
+  ],
+  "workflow": {
+    "description": "6-step XR workflow. Derived from screenshots of the running app. Key structural differences from 2D: (1) element selected before simulation, not after; (2) contingency defined by toggling lines in bus detail panel; (3) timestamp + run are on the same panel; (4) bus and line results appear simultaneously, not as separate views.",
+    "xr_vs_2d_key_differences": [
+      "XR step 2 (select bus) happens BEFORE the simulation — in 2D, element selection (step 9) happens AFTER",
+      "XR has no separate base case run — operator goes directly to contingency setup",
+      "XR timestamp selection and Run Simulation are on the same panel, after contingency is defined",
+      "XR bus + line results appear simultaneously — 2D has separate tabs inspected sequentially",
+      "XR Operator Agent not yet implemented (step 10 from 2D workflow is absent in current XR version)"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "label": "Open environment",
+        "xr_action": "App launches, 3D globe with grid markers appears",
+        "log_event": null,
+        "note": "Session boundary. Captured by start_time in session header. No decision event.",
+        "owner": "IML"
+      },
+      {
+        "step": 2,
+        "label": "Select bus on globe",
+        "xr_action": "Operator physically taps a green substation pin on the 3D globe",
+        "log_event": "grid_element_selected",
+        "payload_required": {
+          "element_type": "bus",
+          "element_id": "bus number from panel header e.g. '16'",
+          "environment": "xr_hmi",
+          "input_modality": "xr_direct_touch"
+        },
+        "duration_s_required": true,
+        "interaction_id_starts": true,
+        "note": "interaction_id starts here. Carries through to step 6.",
+        "owner": "IML",
+        "2d_equivalent": "step 9 — but inverted sequence"
+      },
+      {
+        "step": 3,
+        "label": "Toggle line(s) off — define contingency",
+        "xr_action": "Operator taps red toggle button next to a line in the BUS_PANEL",
+        "log_event": "contingency_defined",
+        "payload_required": {
+          "line_id": "line number from panel row e.g. '12'",
+          "bus_id": "parent bus e.g. '16'",
+          "outage_type": "line_outage",
+          "environment": "xr_hmi",
+          "input_modality": "xr_direct_touch"
+        },
+        "duration_s_required": true,
+        "note": "One event per line toggled. If operator toggles two lines, emit two contingency_defined events. interaction_id carries over from step 2.",
+        "owner": "IML",
+        "2d_equivalent": "step 5"
+      },
+      {
+        "step": 4,
+        "label": "Set timestamp and run simulation",
+        "xr_action": "Operator adjusts date/time spinners on SIM_PANEL, then physically touches the blue Run Simulation button",
+        "log_event": "simulation_triggered",
+        "payload_required": {
+          "simulation_type": "n1_contingency",
+          "scenario_datetime": "ISO datetime from spinner e.g. '2025-05-01T10:00:00Z'",
+          "lines_deactivated": "array of line IDs currently toggled off e.g. ['12', '15']",
+          "environment": "xr_hmi",
+          "input_modality": "xr_direct_touch"
+        },
+        "duration_s_required": true,
+        "note": "duration_s = time from last contingency_defined to Run Simulation press. interaction_id carries over.",
+        "owner": "IML",
+        "2d_equivalent": "steps 2+3+6 collapsed into one"
+      },
+      {
+        "step": 5,
+        "label": "Inspect results",
+        "xr_action": "Bus results (centre) and line loading results (right) appear as simultaneous floating panels. Operator reads both.",
+        "log_event": "result_inspected",
+        "payload_required": {
+          "result_type": "bus_and_line",
+          "environment": "xr_hmi"
+        },
+        "duration_s_required": true,
+        "note": "ONE event for both panels — they appear simultaneously in XR. duration_s = time from panel render to next operator action. interaction_id carries over.",
+        "optional_payload": {
+          "n_pages_bus": "pages scrolled in bus table",
+          "n_pages_line": "pages scrolled in line table",
+          "filter_used": "whether Active/Inactive filter was tapped"
+        },
+        "owner": "IML",
+        "2d_equivalent": "steps 7+8 combined"
+      },
+      {
+        "step": 6,
+        "label": "Operator decision",
+        "xr_action": "Operator concludes inspection. Accepts result, or clears contingency (trash icon) and repeats with different line.",
+        "log_event": "operator_accepted OR operator_overridden",
+        "payload_required": {
+          "lines_deactivated": "array of line IDs in this cycle",
+          "operator_decision": "accepted or overridden",
+          "environment": "xr_hmi"
+        },
+        "duration_s_required": true,
+        "correct_derivation": "correct = whether operator assessment matches SecurityAI classification from UBI. Cleared contingency + repeat cycle = implicit override = new interaction_id.",
+        "note": "interaction_id closes here. Trash + new bus tap = new cycle with new interaction_id.",
+        "owner": "IML+UBI",
+        "2d_equivalent": "implicit decision after step 9"
+      }
+    ]
+  },
+  "comparison": {
+    "study": "hmi_xr_comparison",
+    "paired_env": "pilot_se_hmi_eval_2d_v0",
+    "pivot_field": "payload.environment",
+    "pivot_values": {"this_condition": "xr_hmi", "other_condition": "2d_dashboard"},
+    "step_mapping_to_2d": {
+      "xr_step_2_grid_element_selected": "2D step 9 — structurally inverted",
+      "xr_step_3_contingency_defined": "2D step 5",
+      "xr_step_4_simulation_triggered": "2D steps 2+3+6 collapsed",
+      "xr_step_5_result_inspected": "2D steps 7+8 simultaneous",
+      "xr_step_6_operator_decision": "2D implicit decision"
+    },
+    "expected_differences": {
+      "F": "XR emits fewer events per cycle by design — F will be structurally lower. Normalise by cycle count not raw event count for fair comparison.",
+      "D": "XR step 5 may show higher dwell — operator processes bus and line results simultaneously",
+      "HCL": "Open research question — XR spatial integration may lower or raise cognitive load",
+      "EL": "Primary hypothesis: XR reduces total decision time vs 2D → lower EL",
+      "S": "Sequence order differs structurally — S will capture this divergence as a feature, not noise"
+    },
+    "metrics_of_interest": ["D", "F", "HCL", "EL", "S"],
+    "fairness_slices": ["operator_id", "payload.environment", "payload.lines_deactivated"]
+  },
+  "script": []
+}

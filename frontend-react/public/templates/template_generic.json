@@ -1,0 +1,57 @@
+[
+  {
+    "_note": "Generic template — works for any Human-AI collaboration domain. Replace event_type values with your own action names.",
+    "session_id": "session_001",
+    "_note_session_id": "Required. Any unique identifier for this interaction session.",
+    "baseline_s": 120,
+    "_note_baseline_s": "Optional. Average time this task takes WITHOUT AI, in seconds. Powers the Effort Loss (EL) metric. Remove this key if not applicable.",
+    "decisions": [
+      {
+        "_note": "Minimum viable AI event. Only interaction_id, timestamp, event_type, and actor_type are strictly required.",
+        "interaction_id": "evt_001",
+        "_note_interaction_id": "Required. Unique string ID for this event.",
+        "timestamp": "2024-01-15T10:00:00Z",
+        "_note_timestamp": "Required. ISO 8601 date-time. All timing metrics depend on this.",
+        "event_type": "ai_decision",
+        "_note_event_type": "Required. Name of the action. Use whatever names appear in your system logs.",
+        "actor_type": "ai",
+        "_note_actor_type": "Required. 'ai' or 'human'. This single field unlocks all actor-level metrics.",
+        "latency_ms": 500,
+        "_note_latency_ms": "Optional. AI response time in milliseconds. Include this for D and HCL metrics.",
+        "correct": true,
+        "_note_correct": "Optional but recommended. Boolean — was the AI correct? Include this for Trust (Tr) metric."
+      },
+      {
+        "_note": "Minimum viable human event.",
+        "interaction_id": "evt_002",
+        "timestamp": "2024-01-15T10:00:08Z",
+        "event_type": "human_review",
+        "actor_type": "human",
+        "duration_s": 8.3,
+        "_note_duration_s": "Optional. Human decision time in seconds. Include this for D and HCL metrics."
+      }
+    ]
+  },
+  {
+    "_note": "Second session. Add as many sessions as you have. Each session = one complete task attempt.",
+    "session_id": "session_002",
+    "baseline_s": 120,
+    "decisions": [
+      {
+        "interaction_id": "evt_003",
+        "timestamp": "2024-01-15T11:00:00Z",
+        "event_type": "ai_decision",
+        "actor_type": "ai",
+        "latency_ms": 620,
+        "correct": false
+      },
+      {
+        "interaction_id": "evt_004",
+        "timestamp": "2024-01-15T11:00:12Z",
+        "event_type": "human_review",
+        "actor_type": "human",
+        "duration_s": 18.7
+      }
+    ]
+  }
+]

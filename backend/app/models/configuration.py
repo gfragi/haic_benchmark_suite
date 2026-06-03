@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, DateTime, ForeignKey, String, Integer, JSON
+from sqlalchemy import Column, DateTime, Float, ForeignKey, String, Integer, JSON
 from sqlalchemy.orm import relationship
 from app.utils.database import Base
 
@@ -22,6 +22,8 @@ class EvaluationConfig(Base):
     config_type = Column(String, nullable=True)
     evaluation_status = Column(String,default=STATUS_PENDING)
     minio_path = Column(String, nullable=True)
+    pilot_tag = Column(String, nullable=True)
+    baseline_s = Column(Float, nullable=True)
 
 
     # Relationship to associate with logs

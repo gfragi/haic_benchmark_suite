@@ -26,59 +26,111 @@
         </v-col>
       </v-row>
 
-      <v-row>
-        <!-- Sidebar -->
-        <v-col cols="2">
-          <v-list density="compact">
-            <v-list-item
-              v-for="group in groupOptions"
-              :key="group.value"
-              @click="selectedGroup = group.value"
-              :class="{ 'selected-group': selectedGroup === group.value }"
-              :title="groupedMetrics?.[group.value]?.group_description || ''"
-              style="cursor: pointer"
-            >
-              <template #prepend>
-                <v-icon>{{ getGroupIcon(group.value) }}</v-icon>
-              </template>
-              <v-list-item-title class="text-caption">
-                {{ group.title }}
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-col>
-
-        <!-- Charts -->
-        <v-col cols="10">
-          <v-row>
-            <v-col
-              v-for="(metric, index) in selectedMetrics"
-              :key="index"
-              cols="10"
-              md="6"
-            >
-              <!-- Use labelFor(metric) if your template referenced it -->
-              <h3 class="text-h6 mb-2">{{ labelFor(metric) }}</h3>
-              <p class="text-caption mb-2" style="min-height: 32px">
-                {{
-                  metricDescriptions?.[selectedGroup]?.[metric] ??
-                  "No description"
-                }}
-              </p>
-              <ChartComponent
-                v-if="chartData[metric]"
-                :chartId="'chart-' + index"
-                :chartData="chartData[metric]"
-                :chartType="'line'"
-                :chartOptions="getChartOptions(metric)"
-              />
-              <div v-else class="text-caption text-medium-emphasis">
-                No data yet for this metric.
-              </div>
-            </v-col>
-          </v-row>
+      <!-- ── EMPTY STATE ─────────────────────────────────────────────── -->
+      <v-row v-if="hasNoData && !isLoading">
+        <v-col>
+          <EmptyState
+            icon="mdi-chart-areaspline"
+            title="No evaluation runs yet"
+            message="This configuration has no runs to visualize. The platform computes metrics like Trust, Cognitive Load, Adaptability, and more — once you have data."
+            hint="Upload a log file and trigger an evaluation to see charts here."
+            actionLabel="Upload a Log"
+            actionTo="/logs/upload"
+            actionIcon="mdi-upload"
+          />
         </v-col>
       </v-row>
+
+      <!-- ── CHARTS (only shown when there is data) ─────────────────── -->
+      <template v-else>
+        <v-row>
+          <!-- Sidebar -->
+          <v-col cols="2">
+            <v-list density="compact">
+              <v-list-item
+                v-for="group in groupOptions"
+                :key="group.value"
+                @click="selectedGroup = group.value"
+                :class="{ 'selected-group': selectedGroup === group.value }"
+                :title="groupedMetrics?.[group.value]?.group_description || ''"
+                style="cursor: pointer"
+              >
+                <template #prepend>
+                  <v-icon>{{ getGroupIcon(group.value) }}</v-icon>
+                </template>
+                <v-list-item-title class="text-caption">
+                  {{ group.title }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-col>
+
+          <!-- Charts -->
+          <v-col cols="10">
+            <v-row>
+              <v-col
+                v-for="(metric, index) in selectedMetrics"
+                :key="index"
+                cols="10"
+                md="6"
+              >
+                <!-- Metric header with optional info tooltip -->
+                <div class="d-flex align-center ga-2 mb-2">
+                  <h3 class="text-h6">{{ labelFor(metric) }}</h3>
+
+                  <!-- ⓘ tooltip — shown in core mode for known metrics -->
+                  <v-tooltip
+                    v-if="coreMode && metricInfo[metric]"
+                    location="top"
+                    max-width="320"
+                  >
+                    <template #activator="{ props }">
+                      <v-icon
+                        v-bind="props"
+                        size="18"
+                        color="info"
+                        style="cursor: help; flex-shrink: 0"
+                      >
+                        mdi-information-outline
+                      </v-icon>
+                    </template>
+
+                    <div>
+                      <div class="font-weight-bold mb-1">
+                        {{ metricInfo[metric].fullName }}
+                      </div>
+                      <div class="mb-1">
+                        {{ metricInfo[metric].description }}
+                      </div>
+                      <div class="text-caption" style="opacity: 0.8">
+                        Range: {{ metricInfo[metric].range }}
+                      </div>
+                    </div>
+                  </v-tooltip>
+                </div>
+
+                <p class="text-caption mb-2" style="min-height: 32px">
+                  {{
+                    metricDescriptions?.[selectedGroup]?.[metric] ??
+                    "No description"
+                  }}
+                </p>
+
+                <ChartComponent
+                  v-if="chartData[metric]"
+                  :chartId="'chart-' + index"
+                  :chartData="chartData[metric]"
+                  :chartType="'line'"
+                  :chartOptions="getChartOptions(metric)"
+                />
+                <div v-else class="text-caption text-medium-emphasis">
+                  No data yet for this metric.
+                </div>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </template>
 
       <v-row>
         <v-col cols="12" class="text-center">
@@ -102,6 +154,7 @@
 
 <script>
 import ChartComponent from "@/components/PlotChart.vue";
+import EmptyState from "@/components/EmptyState.vue";
 import resultService from "@/services/resultService";
 import evaluationService from "@/services/evaluationService";
 import BaseLayout from "@/components/BaseLayout.vue";
@@ -109,7 +162,7 @@ import BaseLayout from "@/components/BaseLayout.vue";
 const CORE_GROUP = "Core HAIC";
 
 export default {
-  components: { ChartComponent, BaseLayout },
+  components: { ChartComponent, EmptyState, BaseLayout },
   data() {
     return {
       configId: null,
@@ -122,6 +175,59 @@ export default {
       labels: [],
       selectedMetrics: [],
       runData: [],
+
+      // ── Metric info for tooltips (Problem 2) ────────────────────────
+      metricInfo: {
+        F: {
+          fullName: "Interaction Frequency",
+          description:
+            "How many human-AI interactions happen per minute. Higher = more active collaboration.",
+          range: "Higher is better",
+        },
+        D: {
+          fullName: "Avg. Action Duration",
+          description:
+            "Average time per action in seconds. Higher = slower interactions, possible bottlenecks.",
+          range: "Lower is better",
+        },
+        HCL: {
+          fullName: "Human Cognitive Load proxy",
+          description:
+            "Proxy for how much mental effort the human is spending. Higher means the human is carrying less burden.",
+          range: "0–1, higher = less load",
+        },
+        Tr: {
+          fullName: "Trust proxy",
+          description:
+            "How often humans accept AI suggestions without overriding. Reflects confidence in the AI system.",
+          range: "0–1, higher = more trust",
+        },
+        A: {
+          fullName: "Adaptability Δ",
+          description:
+            "Whether collaboration quality improved over the session. Positive values indicate the team is learning and improving.",
+          range: "-1 to 1, positive = improving",
+        },
+        S: {
+          fullName: "Similarity",
+          description:
+            "How closely surrogate agents replicate human behavior (simulation only).",
+          range: "0–1",
+        },
+        EL: {
+          fullName: "Effort Loss",
+          description:
+            "How much slower the collaboration is compared to the baseline. Zero means no loss.",
+          range: "0 = no loss, higher = worse",
+        },
+        EfficiencyScore: {
+          fullName: "Efficiency Score",
+          description:
+            "Normalized efficiency combining Effort Loss and other signals into a single score.",
+          range: "0–1, higher = better",
+        },
+      },
+
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -145,14 +251,21 @@ export default {
       snackbarColor: "info",
     };
   },
+
+  computed: {
+    // True when loading is done and there are no runs to show (Problem 1)
+    hasNoData() {
+      return !this.isLoading && this.runData.length === 0;
+    },
+  },
+
   mounted() {
     this.configId = this.$route.params.configId;
     this.bootstrap();
   },
+
   methods: {
-    // 🔧 ADD THIS: labelFor used in template
     labelFor(metric) {
-      // Friendly labels for core metrics (you can extend this)
       const map = {
         EL: "EL (Efficiency Loss, ↑ worse)",
         D: "D (Avg. Action Duration, s)",
@@ -191,9 +304,7 @@ export default {
     _niceHeadroomMax(values, fallback = 1) {
       const max = Math.max(...values, 0);
       const base = max || fallback;
-      // add 10–20% headroom and round to a “nice” step
       const head = base * 1.2;
-      // compute a magnitude (1, 2, 5 * 10^k) to round up to
       const mag = Math.pow(10, Math.floor(Math.log10(head || 1)));
       const steps = [1, 2, 5, 10].map((s) => s * mag);
       const nice = steps.find((s) => head <= s) ?? steps[steps.length - 1];
@@ -201,7 +312,6 @@ export default {
     },
 
     getChartOptions(metricName) {
-      // Default base options
       const base = {
         responsive: true,
         maintainAspectRatio: false,
@@ -218,13 +328,9 @@ export default {
         },
       };
 
-      // If we're in Core mode, honor the agreed ranges per metric
       if (this.coreMode) {
-        // [0, 1] metrics
         const zeroToOne = new Set(["HCL", "Tr", "S", "EfficiencyScore"]);
-        // Unbounded, seconds
         const seconds = new Set(["D"]);
-        // Unbounded, generic
         const unbounded = new Set(["F", "EL"]);
 
         if (zeroToOne.has(metricName)) {
@@ -241,7 +347,6 @@ export default {
         }
 
         if (metricName === "A") {
-          // [-1, 1] for Adaptability Δ
           return {
             ...base,
             scales: {
@@ -285,14 +390,13 @@ export default {
             },
           };
         }
-        // fallback for any future core metric
+
         return {
           ...base,
           scales: { y: { beginAtZero: true } },
         };
       }
 
-      // ----- Outcome (extended) mode rules (as you already had) -----
       const timeMetrics = new Set([
         "Response Time",
         "Task Completion Time",
@@ -324,7 +428,6 @@ export default {
         };
       }
 
-      // default: probabilities / rates → clamp to [0, 1]
       return {
         ...base,
         scales: {

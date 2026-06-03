@@ -1,11 +1,17 @@
 # app/services/core_metrics.py
 from __future__ import annotations
+from asyncio import events
 from typing import Optional, Dict, Any, Tuple
 from pathlib import Path
 import io, json
 
-from metrics_core.interaction_metrics import compute_metrics, compute_metrics_by_agent
-from metrics_core.adapters.generic_json import to_decisions as generic_to_decisions
+from metrics_core.interaction_metrics import (
+    compute_metrics,
+    compute_metrics_with_results,
+    compute_metrics_by_agent,
+)
+from metrics_core.schema import MetricResult
+from metrics_core.adapters.registry import AdapterRegistry
 
 # IMPORTANT: import the module, not names (avoids ImportError)
 try:
@@ -120,8 +126,36 @@ def _write_core_artifact(run_id: str, artifact: dict) -> str:
 
 # Optional: if your backend logs aren't already in the generic schema,
 # replace this with a tiny custom adapter mapping -> decisions.
-def _to_decisions(events: list[dict]) -> list[dict]:
-    return generic_to_decisions(events)
+def _to_decisions(events: list[dict], pilot_tag: str = "generic") -> list[dict]:
+    return AdapterRegistry.adapt(pilot_tag, events)
+
+
+def extract_session_durations(sessions: list[dict]) -> list[float]:
+    """
+    Extract total duration per session from a list of session dicts.
+    Used to infer baseline_s via P95 when not explicitly configured.
+    """
+    import re
+    from datetime import datetime
+
+    def _clean(ts: Any) -> str:
+        return re.sub(r"(\.\d{6})\d+", r"\1", str(ts).replace("Z", "+00:00"))
+
+    durations = []
+    for s in sessions:
+        start = s.get("session_started_at")
+        end = s.get("session_ended_at")
+        if start and end:
+            try:
+                t0 = datetime.fromisoformat(_clean(start))
+                t1 = datetime.fromisoformat(_clean(end))
+                d = (t1 - t0).total_seconds()
+                if d > 0:
+                    durations.append(d)
+            except Exception:
+                pass
+    return durations
+
 
 # ---------- public API ----------
 
@@ -130,18 +164,39 @@ def compute_core_v1_for_run(
     *,
     rt_max: float = 5.0,
     baseline_s: Optional[float] = None,
+    all_session_times: Optional[list[float]] = None,
 ) -> Tuple[Dict[str, Any], str]:
     events = _load_events_for_run(run_id)
-    decisions = _to_decisions(events)
+    pilot_tag = events[0].get("pilot_tag", "generic") if events else "generic"
+    decisions = _to_decisions(events, pilot_tag=pilot_tag)
 
-    summary = compute_metrics(decisions=decisions, rt_max=rt_max, baseline_s=baseline_s)
-    by_agent = compute_metrics_by_agent(decisions, rt_max=rt_max, baseline_s=baseline_s)
+    # Use new rich results
+    rich_results: Dict[str, MetricResult] = compute_metrics_with_results(
+        decisions=decisions,
+        rt_max=rt_max,
+        basel3ine_s=baseline_s,
+        all_session_times=all_session_times,
+    )
+    by_agent = compute_metrics_by_agent(
+        decisions, rt_max=rt_max, baseline_s=baseline_s
+    )
+
+    # Flatten for backward compat (value or None)
+    metrics_flat = {k: v.value for k, v in rich_results.items()}
+
+    # Collect warnings — only non-None
+    warnings = [
+        {"metric": k, "warning": v.warning}
+        for k, v in rich_results.items()
+        if v.warning is not None
+    ]
 
     artifact = {
         "run_id": run_id,
         "metrics_suite": "core_v1",
         "params": {"rt_max": rt_max, "baseline_s": baseline_s},
-        "metrics": summary,
+        "metrics": metrics_flat,        # dict[str, float|None]
+        "warnings": warnings,           # NEW: surfaces all metric warnings
         "by_agent": by_agent,
         "counts": {"events": len(events), "decisions": len(decisions)},
     }

@@ -3,8 +3,11 @@ import json, os, io
 import logging
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
+import zipfile
+
 
 from app.schemas.log import LogSchema
+from app.schemas.responses import LogIngestResponse, UploadResponse
 from app.utils.database import get_db
 from app.utils.minio_utils import get_minio_client, list_files, download_file, delete_file, put_json
 from app.services.log_service import LogService
@@ -22,7 +25,7 @@ MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 minio_client = get_minio_client()
 
 
-@router.post("/upload")
+@router.post("/upload")  # remove response_model=UploadResponse if it's there
 async def upload_log(
     configuration_id: int = Query(..., description="Evaluation configuration id"),
     file: UploadFile = File(...),
@@ -30,21 +33,23 @@ async def upload_log(
 ):
     raw = await file.read()
 
-    # Parse JSON
     try:
         payload = json.loads(raw.decode("utf-8"))
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=400, detail=f"Invalid JSON file: {e.msg}")
 
-    # Unwrap generator wrapper: {count, file_path, logs: [...]}
     if isinstance(payload, dict) and isinstance(payload.get("logs"), list):
         payload = payload["logs"]
 
     try:
-        results = log_service.process_uploaded_log(configuration_id, payload, file.filename, raw, db)
+        results = log_service.process_uploaded_log(
+            configuration_id, payload, file.filename, raw, db
+        )
         return {
             "detail": f"Uploaded and processed log(s) for configuration {configuration_id}.",
-            "minio_paths": results,
+            "original_path": results.get("original"),
+            "derived_by_version": results.get("derived_by_version", {}),
+            "schema_warnings": results.get("schema_warnings", []),
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -53,7 +58,7 @@ async def upload_log(
 
 
 
-@router.post("/register", response_model=dict)
+@router.post("/register", response_model=LogIngestResponse)
 def register_log(
     log: LogSchema,
     configuration_id: int = Query(..., description="Evaluation configuration id"),
@@ -79,8 +84,12 @@ def register_log(
     try:
         derived = compute_from_log(payload)
     except Exception as e:
-        print(f"[logs/register] compute_from_log failed: {repr(e)}")
+        logger.warning(
+            "compute_from_log failed for configuration %s: %s",
+            configuration_id, repr(e), exc_info=True,
+        )
         derived = {"by_metric": {}, "by_pillar": {}, "interaction": {}}
+        derived["_warning"] = f"Metric computation failed: {type(e).__name__}"
 
     # 2) Load existing aggregated logs from MinIO (if any)
     aggregated_entries: list[dict]
@@ -158,13 +167,17 @@ def register_log(
     db.refresh(log_entry)
 
     # 5) Response
-    return {
-        "detail": "Registered log.",
-        "configuration_id": configuration_id,
-        "log_id": log_entry.id,
-        "minio_path": object_name,     # this is exactly what run_evaluation will use
-        "derived": derived,            # per-session KPIs, if compute_from_log is used
-    }
+    event_count = len(payload.get("decisions") or [])
+    validation_warnings = derived.get("warnings") or []
+    return LogIngestResponse(
+        detail="Registered log.",
+        configuration_id=configuration_id,
+        log_id=log_entry.id,
+        minio_path=object_name,
+        event_count=event_count,
+        validation_warnings=validation_warnings,
+        derived=derived,
+    )
 
 
 @router.get("/{config_id}")
@@ -201,3 +214,76 @@ def remove_log(config_id: int, log_name: str):
         return {"detail": "Log deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.post("/upload-zip")
+async def upload_zip(
+    configuration_id: int = Query(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    """
+    Accepts a ZIP of individual session JSON files (one per application case).
+    Merges all logs[] arrays into one aggregated payload and processes normally.
+    This is how pilot partners deliver their data.
+    """
+    if not file.filename.endswith(".zip"):
+        raise HTTPException(status_code=400, detail="File must be a .zip archive")
+
+    raw = await file.read()
+
+    # Extract and merge all JSON files from the zip
+    merged_sessions = []
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as zf:
+            json_files = [n for n in zf.namelist()
+                         if n.endswith(".json") and not n.startswith("__")]
+            if not json_files:
+                raise HTTPException(status_code=400,
+                                   detail="ZIP contains no JSON files")
+
+            for name in sorted(json_files):
+                try:
+                    content = json.loads(zf.read(name).decode("utf-8"))
+                    # Each file is {"logs": [session]} — unwrap and merge
+                    if isinstance(content, dict) and "logs" in content:
+                        merged_sessions.extend(content["logs"])
+                    elif isinstance(content, dict):
+                        merged_sessions.append(content)
+                    elif isinstance(content, list):
+                        merged_sessions.extend(content)
+                except Exception as e:
+                    logger.warning("Skipping %s: %s", name, e)
+    except zipfile.BadZipFile:
+        raise HTTPException(status_code=400, detail="Invalid ZIP file")
+
+    if not merged_sessions:
+        raise HTTPException(status_code=400,
+                           detail="No valid session data found in ZIP")
+
+    # Repack as aggregated format and process normally
+    merged_payload = {"logs": merged_sessions}
+    merged_bytes = json.dumps(merged_payload, ensure_ascii=False).encode("utf-8")
+
+    try:
+        results = log_service.process_uploaded_log(
+            configuration_id,
+            merged_sessions,        # already a list
+            file.filename,
+            merged_bytes,
+            db,
+        )
+        return {
+            "detail": f"Merged {len(merged_sessions)} sessions from "
+                      f"{len(json_files)} files.",
+            "session_count": len(merged_sessions),
+            "file_count": len(json_files),
+            "original_path": results.get("original"),
+            "derived_by_version": results.get("derived_by_version", {}),
+            "schema_warnings": results.get("schema_warnings", []),
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Processing failed: {e}")

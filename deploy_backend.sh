@@ -4,7 +4,7 @@
 set -e
 
 # Set these variables
-IMAGE="ghcr.io/gfragi/haic-backend:latest"
+IMAGE="ghcr.io/gfragi/haic-backend:rollback"
 NAMESPACE="benchmarking"
 DEPLOYMENT="backend"
 DOCKERFILE="Dockerfile.backend"

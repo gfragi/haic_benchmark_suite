@@ -1,0 +1,110 @@
+[
+  {
+    "session_id": "hmi_xr_evaluation-002",
+    "user_id": "user1",
+    "app_version": "0.0.1",
+    "start_time": "2026-03-26T08:20:47Z",
+    "end_time": "2026-03-26T08:21:28Z",
+    "task_name": "hmi_xr_evaluation",
+    "schema_version": "1.0",
+    "task_parameters": {
+      "environment": "xr_hmi",
+      "rt_max_s": 120,
+      "baseline_s": 95
+    },
+    "agents": [
+      {
+        "id": "user1",
+        "name": "Power Grid Operator",
+        "type": "human"
+      }
+    ],
+    "runMeta": {
+      "cohort": "xr_group",
+      "app_version": "0.0.1",
+      "device": "Quest3"
+    },
+    "decisions": [
+
+      {
+        "t": 9.79,
+        "agent": "user1",
+        "actor_type": "human",
+        "action": "grid_element_selected",
+        "interaction_id": "cycle_001",
+        "duration_s": 6.13,
+        "correct": null,
+        "payload": {
+          "element_type": "bus",
+          "element_id": "16",
+          "environment": "xr_hmi",
+          "input_modality": "xr_direct_touch"
+        }
+      },
+
+      {
+        "t": 15.92,
+        "agent": "user1",
+        "actor_type": "human",
+        "action": "contingency_defined",
+        "interaction_id": "cycle_001",
+        "duration_s": 7.43,
+        "correct": null,
+        "payload": {
+          "line_id": "12",
+          "bus_id": "16",
+          "outage_type": "line_outage",
+          "environment": "xr_hmi",
+          "input_modality": "xr_direct_touch"
+        }
+      },
+
+      {
+        "t": 23.35,
+        "agent": "user1",
+        "actor_type": "human",
+        "action": "simulation_triggered",
+        "interaction_id": "cycle_001",
+        "duration_s": 7.43,
+        "correct": null,
+        "payload": {
+          "simulation_type": "n1_contingency",
+          "scenario_datetime": "2025-05-01T10:00:00Z",
+          "lines_deactivated": ["12"],
+          "environment": "xr_hmi",
+          "input_modality": "xr_direct_touch"
+        }
+      },
+
+      {
+        "t": 27.99,
+        "agent": "user1",
+        "actor_type": "human",
+        "action": "result_inspected",
+        "interaction_id": "cycle_001",
+        "duration_s": 4.64,
+        "correct": null,
+        "payload": {
+          "result_type": "bus_and_line",
+          "environment": "xr_hmi"
+        }
+      },
+
+      {
+        "t": 32.63,
+        "agent": "user1",
+        "actor_type": "human",
+        "action": "operator_accepted",
+        "interaction_id": "cycle_001",
+        "duration_s": 4.64,
+        "correct": true,
+        "payload": {
+          "lines_deactivated": ["12"],
+          "operator_decision": "accepted",
+          "environment": "xr_hmi"
+        }
+      }
+
+    ]
+  }
+]

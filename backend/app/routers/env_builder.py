@@ -6,8 +6,8 @@ from pathlib import Path
 import re
 import yaml
 
-from app.models.api import ConfigList, MessageWithPath, ErrorEnvelope
-from app.utils.errors import http_error
+from app.models.api import ConfigList, MessageWithPath
+from app.utils.errors import http_error, ErrorEnvelope
 from haic_env_builder.config_builder.builder import ConfigBuilder
 from haic_env_builder.schemas.config import ConfigSchema  # validate early for clear 422s
 

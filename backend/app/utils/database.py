@@ -5,13 +5,13 @@ from sqlalchemy.orm import sessionmaker
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "5432")
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "CHANGEME123")
-DB_NAME = os.getenv("DB_NAME", "test_bench")
+DB_USER = os.getenv("DB_USER", "haic_user")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "changeme123")
+DB_NAME = os.getenv("DB_NAME", "haic_benchmark")
 
 DATABASE_URL = os.getenv("DATABASE_URL", f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
-# DATABASE_URL = "postgresql://postgres:CHANGEME123@localhost:5432/test_bench" # Use for local development
+# DATABASE_URL = "postgresql://haic_user:changeme123@localhost:5432/haic_benchmark" # Use for local development
 
 metadata = MetaData()
 
@@ -26,5 +26,7 @@ def get_db():
     finally:
         db.close()
 
-# Ensure all models are imported for Alembic
-from app.models import *
+# Ensure all models are imported
+# from app.models import *
+
+# Base.metadata.create_all(bind=engine)

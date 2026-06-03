@@ -25,7 +25,8 @@ def create_survey(db: Session, survey_data: SurveyCreate):
         schema_id=uuid.UUID(survey_data.schema_id) if survey_data.schema_id else None,
         tam_sus_responses=survey_data.tam_sus_responses.dict(),
         ethics_responses=survey_data.ethics_responses.dict(),
-        domain_specific=survey_data.domain_specific
+        domain_specific=survey_data.domain_specific,
+        configuration_id=survey_data.configuration_id,
     )
     db.add(db_survey)
     db.commit()

@@ -1,0 +1,78 @@
+[
+  {
+    "_note": "One object = one complete clinical session (e.g., one scan read by radiologist + AI).",
+    "session_id": "case_2024_0042",
+    "_note_session_id": "Required. Use your case ID, patient study ID, or any unique identifier. Do not use personal health information directly.",
+    "baseline_s": 900,
+    "_note_baseline_s": "Optional but strongly recommended. Average time a radiologist spends reading this scan type WITHOUT AI, in seconds. Used to compute Effort Loss (EL). Example: 15 minutes = 900.",
+    "decisions": [
+      {
+        "_note": "AI event: the AI system analyses the scan and produces a diagnosis recommendation.",
+        "interaction_id": "evt_001",
+        "_note_interaction_id": "Required. Unique ID for this event.",
+        "timestamp": "2024-01-15T08:30:00Z",
+        "_note_timestamp": "Required. ISO 8601 datetime. Used to compute interaction timing.",
+        "event_type": "ai_diagnosis",
+        "_note_event_type": "The AI action name — match what you defined in Pilot Setup.",
+        "actor_type": "ai",
+        "_note_actor_type": "Always 'ai' for AI system events.",
+        "latency_ms": 4200,
+        "_note_latency_ms": "How long the AI took to analyse the scan and return its recommendation (milliseconds).",
+        "correct": true,
+        "_note_correct": "Was the AI recommendation correct? Set to true if the radiologist confirmed without modification; false if they overrode or corrected the AI."
+      },
+      {
+        "_note": "Human event: radiologist reviews the AI recommendation.",
+        "interaction_id": "evt_002",
+        "timestamp": "2024-01-15T08:32:10Z",
+        "event_type": "radiologist_reviewed",
+        "_note_event_type": "Human action — radiologist opening and examining the AI output.",
+        "actor_type": "human",
+        "_note_actor_type": "Always 'human' for clinician events.",
+        "duration_s": 95.0,
+        "_note_duration_s": "How long the radiologist spent reviewing this case (seconds). Key field for HCL and D metrics."
+      },
+      {
+        "_note": "Human event: radiologist confirms the AI diagnosis.",
+        "interaction_id": "evt_003",
+        "timestamp": "2024-01-15T08:33:45Z",
+        "event_type": "diagnosis_confirmed",
+        "_note_event_type": "Confirmation = AI was correct. Override would indicate AI was wrong.",
+        "actor_type": "human",
+        "duration_s": 8.5
+      }
+    ]
+  },
+  {
+    "_note": "Session where AI was wrong — radiologist overrides.",
+    "session_id": "case_2024_0043",
+    "baseline_s": 900,
+    "decisions": [
+      {
+        "interaction_id": "evt_004",
+        "timestamp": "2024-01-15T09:10:00Z",
+        "event_type": "ai_diagnosis",
+        "actor_type": "ai",
+        "latency_ms": 3800,
+        "correct": false,
+        "_note_correct": "AI was incorrect — radiologist overrode the recommendation below."
+      },
+      {
+        "interaction_id": "evt_005",
+        "timestamp": "2024-01-15T09:12:30Z",
+        "event_type": "radiologist_reviewed",
+        "actor_type": "human",
+        "duration_s": 140.0,
+        "_note_duration_s": "Longer review time: radiologist spent more time scrutinising the incorrect AI output."
+      },
+      {
+        "interaction_id": "evt_006",
+        "timestamp": "2024-01-15T09:14:50Z",
+        "event_type": "diagnosis_overridden",
+        "_note_event_type": "Override event — confirms the AI was wrong (correct: false on the AI event).",
+        "actor_type": "human",
+        "duration_s": 15.2
+      }
+    ]
+  }
+]

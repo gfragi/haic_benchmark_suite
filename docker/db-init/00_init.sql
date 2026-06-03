@@ -39,7 +39,7 @@ CREATE TABLE public.configurations (
 );
 
 
-ALTER TABLE public.configurations OWNER TO postgres;
+ALTER TABLE public.configurations OWNER TO haic_user;
 
 --
 -- Name: configurations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -54,7 +54,7 @@ CREATE SEQUENCE public.configurations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.configurations_id_seq OWNER TO postgres;
+ALTER TABLE public.configurations_id_seq OWNER TO haic_user;
 
 --
 -- Name: configurations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -84,7 +84,7 @@ CREATE TABLE public.logs (
 );
 
 
-ALTER TABLE public.logs OWNER TO postgres;
+ALTER TABLE public.logs OWNER TO haic_user;
 
 --
 -- Name: logs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -99,7 +99,7 @@ CREATE SEQUENCE public.logs_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.logs_id_seq OWNER TO postgres;
+ALTER TABLE public.logs_id_seq OWNER TO haic_user;
 
 --
 -- Name: logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -119,7 +119,7 @@ CREATE TABLE public.metric_groups (
 );
 
 
-ALTER TABLE public.metric_groups OWNER TO postgres;
+ALTER TABLE public.metric_groups OWNER TO haic_user;
 
 --
 -- Name: metric_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -134,7 +134,7 @@ CREATE SEQUENCE public.metric_groups_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.metric_groups_id_seq OWNER TO postgres;
+ALTER TABLE public.metric_groups_id_seq OWNER TO haic_user;
 
 --
 -- Name: metric_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -155,7 +155,7 @@ CREATE TABLE public.metrics (
 );
 
 
-ALTER TABLE public.metrics OWNER TO postgres;
+ALTER TABLE public.metrics OWNER TO haic_user;
 
 --
 -- Name: metrics_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -170,7 +170,7 @@ CREATE SEQUENCE public.metrics_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.metrics_id_seq OWNER TO postgres;
+ALTER TABLE public.metrics_id_seq OWNER TO haic_user;
 
 --
 -- Name: metrics_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -193,7 +193,7 @@ CREATE TABLE public.results (
 );
 
 
-ALTER TABLE public.results OWNER TO postgres;
+ALTER TABLE public.results OWNER TO haic_user;
 
 --
 -- Name: results_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -208,7 +208,7 @@ CREATE SEQUENCE public.results_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.results_id_seq OWNER TO postgres;
+ALTER TABLE public.results_id_seq OWNER TO haic_user;
 
 --
 -- Name: results_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -258,7 +258,7 @@ ALTER TABLE ONLY public.results ALTER COLUMN id SET DEFAULT nextval('public.resu
 
 -- COPY public.configurations (id, application_name, ai_model_name, ai_model_type, description, metrics, evaluation_date, config_type, evaluation_status, minio_path) FROM stdin;
 -- 1	Image recognition app	ImageModel	Classification	Short description.	["Confidence", "Knowledge Retention", "AI Assistance Rate", "Feedback Impact", "Decision Effectiveness", "Trust Score", "Learning Efficiency", "Time to Resolution", "Error Reduction Rate", "Correction Efficiency", "Human-AI Agreement Rate", "Adaptability Score", "Objective Fullfillemnt Rate", "Resource Utilization", "Adversarial Robustness", "Human Effort Saved", "Response Time", "Query Efficiency", "Task Completion Time", "System Reliability", "Domain Generalization", "Safety Incidents", "Teaching Efficiency", "Impact of Corrections"]	2025-03-21 21:28:54.837558		completed	1/config_1.json
-\.
+-- \.
 
 
 --
@@ -440,35 +440,35 @@ COPY public.metrics (id, name, description, group_id) FROM stdin;
 -- Name: configurations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
--- SELECT pg_catalog.setval('public.configurations_id_seq', 1, true);
+SELECT pg_catalog.setval('public.configurations_id_seq', 1, true);
 
 
--- --
--- -- Name: logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
--- --
+--
+-- Name: logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: haic_user
+--
 
--- SELECT pg_catalog.setval('public.logs_id_seq', 1, false);
-
-
--- --
--- -- Name: metric_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
--- --
-
--- SELECT pg_catalog.setval('public.metric_groups_id_seq', 6, true);
+SELECT pg_catalog.setval('public.logs_id_seq', 1, false);
 
 
--- --
--- -- Name: metrics_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
--- --
+--
+-- Name: metric_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: haic_user
+--
 
--- SELECT pg_catalog.setval('public.metrics_id_seq', 29, true);
+SELECT pg_catalog.setval('public.metric_groups_id_seq', 6, true);
 
 
--- --
--- -- Name: results_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
--- --
+--
+-- Name: metrics_id_seq; Type: SEQUENCE SET; Schema: public; Owner: haic_user
+--
 
--- SELECT pg_catalog.setval('public.results_id_seq', 108, true);
+SELECT pg_catalog.setval('public.metrics_id_seq', 29, true);
+
+
+--
+-- Name: results_id_seq; Type: SEQUENCE SET; Schema: public; Owner: haic_user
+--
+
+SELECT pg_catalog.setval('public.results_id_seq', 108, true);
 
 
 --

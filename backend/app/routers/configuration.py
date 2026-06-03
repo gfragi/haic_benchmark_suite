@@ -64,9 +64,10 @@ def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(g
 
 
 # GET endpoint to list all evaluation configurations
+@router.get("/", response_model=List[EvaluationConfigSchema])
 @router.get("/list", response_model=List[EvaluationConfigSchema])
-def get_all_configurations(db: Session = Depends(get_db)):
-    return db.query(EvaluationConfig).all()
+def get_all_configurations(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return db.query(EvaluationConfig).offset(skip).limit(limit).all()
 
 # GET endpoint to retrieve an evaluation configuration by ID
 @router.get("/{configuration_id}", response_model=EvaluationConfigSchema)
