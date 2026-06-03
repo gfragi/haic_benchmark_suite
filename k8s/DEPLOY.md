@@ -14,12 +14,8 @@ Deploys three components into a single namespace:
 > Skip if the image is already in GHCR.
 
 ```bash
-# From the repo root
-docker buildx build \
-  --platform linux/amd64,linux/arm64 \
-  -f Dockerfile.frontend-react \
-  -t ghcr.io/gfragi/haic-frontend:latest \
-  . --push
+docker build -f Dockerfile.frontend-react -t ghcr.io/gfragi/haic-frontend-react:latest .
+docker push ghcr.io/gfragi/haic-frontend-react:latest
 ```
 
 To build the backend:
