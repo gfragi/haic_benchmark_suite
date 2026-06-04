@@ -44,6 +44,7 @@ frontend/cypress
 # Local env/config files
 **/.env
 **/.env.*
+!frontend/.env.production
 
 # Unused top-level apps/packages for current images
 frontend-react
