@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: haic-benchmark
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/gfragi/haic-frontend:rollback
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          env:
+            - name: VUE_APP_API_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: haic-frontend-secret
+                  key: VUE_APP_API_BASE_URL
+            - name: VUE_APP_KEYCLOAK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: haic-frontend-secret
+                  key: VUE_APP_KEYCLOAK_URL
+            - name: VUE_APP_KEYCLOAK_REALM
+              valueFrom:
+                secretKeyRef:
+                  name: haic-frontend-secret
+                  key: VUE_APP_KEYCLOAK_REALM
+            - name: VUE_APP_KEYCLOAK_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: haic-frontend-secret
+                  key: VUE_APP_KEYCLOAK_CLIENT_ID
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3

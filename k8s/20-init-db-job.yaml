@@ -1,0 +1,68 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-db-migrations
+  namespace: haic-benchmark
+  labels:
+    app: init-db
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: default
+      restartPolicy: Never
+      containers:
+        - name: alembic-migrate
+          image: ghcr.io/gfragi/haic-backend:rollback
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              echo "==> Waiting for database to be ready..."
+              until pg_isready -h postgres -p 5432 -U $DB_USER; do
+                echo "Database not ready, waiting..."
+                sleep 2
+              done
+
+              echo "==> Database is ready. Running Alembic migrations..."
+              cd /app
+
+              # Run migrations
+              alembic upgrade head
+
+              echo "==> Migrations completed successfully!"
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DATABASE_URL
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_NAME
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_PASSWORD
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

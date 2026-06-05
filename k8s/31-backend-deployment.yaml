@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: haic-benchmark
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      # Wait for init jobs to complete before starting backend
+      initContainers:
+        - name: wait-for-db-migration
+          image: ghcr.io/gfragi/haic-backend:rollback
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for database migrations to complete..."
+              until pg_isready -h postgres -p 5432 -U $DB_USER; do
+                echo "Database not ready..."
+                sleep 2
+              done
+              echo "Database is ready!"
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_PASSWORD
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_PASSWORD
+      containers:
+        - name: backend
+          image: ghcr.io/gfragi/haic-backend:rollback
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DATABASE_URL
+            - name: AUTH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: AUTH_URL
+            - name: MINIO_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: MINIO_ENDPOINT
+            - name: MINIO_SECURE
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: MINIO_SECURE
+            - name: MINIO_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: MINIO_REGION
+            - name: MINIO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: MINIO_USERNAME
+            - name: MINIO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: MINIO_PASSWORD
+            - name: MINIO_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: MINIO_BUCKET
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /api/meta/health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/meta/health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3

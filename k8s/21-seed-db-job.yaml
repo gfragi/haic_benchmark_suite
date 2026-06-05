@@ -1,0 +1,66 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-db-metrics
+  namespace: haic-benchmark
+  labels:
+    app: seed-db
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: seed-metrics
+          image: postgres:15
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              echo "==> Waiting for database to be ready..."
+              until pg_isready -h postgres -p 5432 -U $DB_USER; do
+                echo "Database not ready, waiting..."
+                sleep 2
+              done
+
+              echo "==> Database is ready. Seeding metrics and definitions..."
+              psql -h postgres -U $DB_USER -d $DB_NAME -f /seed/seed-metrics.sql
+
+              echo "==> Seed data applied successfully!"
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_PASSWORD
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: haic-benchmark-secret
+                  key: DB_NAME
+          volumeMounts:
+            - name: seed
+              mountPath: /seed
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+      volumes:
+        - name: seed
+          configMap:
+            name: db-seed-metrics
