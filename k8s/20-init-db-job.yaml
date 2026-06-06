@@ -6,7 +6,7 @@ metadata:
   labels:
     app: init-db
 spec:
-  backoffLimit: 3
+  backoffLimit: 1
   template:
     spec:
       serviceAccountName: default
@@ -21,12 +21,13 @@ spec:
             - |
               set -e
               echo "==> Waiting for database to be ready..."
-              until pg_isready -h postgres -p 5432 -U $DB_USER; do
+              until nc -z postgres 5432; do
                 echo "Database not ready, waiting..."
                 sleep 2
               done
+              echo "Database is ready!"
 
-              echo "==> Database is ready. Running Alembic migrations..."
+              echo "==> Running Alembic migrations..."
               cd /app
 
               # Run migrations

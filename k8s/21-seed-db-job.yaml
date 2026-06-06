@@ -20,13 +20,17 @@ spec:
             - |
               set -e
               echo "==> Waiting for database to be ready..."
-              until pg_isready -h postgres -p 5432 -U $DB_USER; do
-                echo "Database not ready, waiting..."
+              for i in $(seq 1 30); do
+                if psql -h postgres -p 5432 -U $DB_USER -d $DB_NAME -c "SELECT 1;" >/dev/null 2>&1; then
+                  echo "Database is ready!"
+                  break
+                fi
+                echo "Database not ready (attempt $i/30), waiting..."
                 sleep 2
               done
 
-              echo "==> Database is ready. Seeding metrics and definitions..."
-              psql -h postgres -U $DB_USER -d $DB_NAME -f /seed/seed-metrics.sql
+              echo "==> Seeding metrics and definitions..."
+              psql -h postgres -U $DB_USER -d $DB_NAME -v ON_ERROR_STOP=1 -f /seed/seed-metrics.sql
 
               echo "==> Seed data applied successfully!"
           env:
