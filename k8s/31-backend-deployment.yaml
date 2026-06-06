@@ -19,7 +19,7 @@ spec:
       initContainers:
         - name: wait-for-db-migration
           image: ghcr.io/gfragi/haic-backend:rollback
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
