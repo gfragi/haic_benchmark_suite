@@ -1,118 +1,68 @@
 # HAIC Benchmark — Kubernetes Deployment Guide
 
-This directory contains clean, reusable Kubernetes manifests for deploying the HAIC Benchmark system from scratch.
+This directory contains Kubernetes manifests for deploying the HAIC Benchmark system from scratch.
 
 ## Quick Start
 
-1. **Create namespace & secrets**: `kubectl apply -f 00-namespace.yaml && cp 01-secrets-template.yaml 01-secrets.yaml && kubectl apply -f 01-secrets.yaml`
-2. **Create ConfigMap**: `kubectl apply -f 02-seed-metrics-configmap.yaml`
-3. **Deploy postgres**: `kubectl apply -f 10-postgres-*.yaml`
-4. **Run migrations**: `kubectl apply -f 20-init-db-job.yaml && kubectl wait --for=condition=complete job/init-db-migrations -n haic-benchmark --timeout=300s`
-5. **Seed metrics**: `kubectl apply -f 21-seed-db-job.yaml && kubectl wait --for=condition=complete job/seed-db-metrics -n haic-benchmark --timeout=300s`
-6. **Deploy backend & frontend**: `kubectl apply -f 30-*.yaml 40-*.yaml`
+```bash
+./deploy.sh
+```
 
-Or simply run: `./deploy.sh`
+Or step by step (from the `k8s/` directory):
+
+```bash
+kubectl apply -f 00-namespace.yaml
+kubectl apply -f 01-secrets.yaml
+kubectl apply -f 02-seed-metrics-configmap.yaml
+kubectl apply -f 10-postgres-pvc.yaml 11-postgres-service.yaml 12-postgres-deployment.yaml
+kubectl rollout status deployment/postgres -n haic-benchmark --timeout=120s
+kubectl apply -f 20-init-db-job.yaml
+kubectl wait --for=condition=complete job/init-db-migrations -n haic-benchmark --timeout=300s
+kubectl apply -f 21-seed-db-job.yaml
+kubectl wait --for=condition=complete job/seed-db-metrics -n haic-benchmark --timeout=120s
+kubectl apply -f 30-backend-service.yaml 31-backend-deployment.yaml
+kubectl apply -f 40-frontend-service.yaml 41-frontend-deployment.yaml
+```
 
 ## Architecture
 
-- **PostgreSQL** — Primary database with Alembic migrations
-- **Backend** — FastAPI service (ghcr.io/gfragi/haic-backend:rollback)
-- **Frontend** — Vue.js app (ghcr.io/gfragi/haic-frontend:rollback)
-- **MinIO** — External object storage (managed separately)
+- **PostgreSQL** — Primary database, managed with Alembic migrations
+- **Backend** — FastAPI service (`ghcr.io/gfragi/haic-backend:rollback`)
+- **Frontend** — Vue.js app (`ghcr.io/gfragi/haic-frontend:rollback`)
+- **MinIO** — External object storage (managed separately, outside k8s)
 
-### Secret for github registry
+## Build & Push Images
 
-To create a secret for the GitHub registry, use the following command:
-
-```bash
-kubectl create secret docker-registry ghcr-pull-secret \
-  --docker-server=ghcr.io \
-  --docker-username=<PAT_username> \
-  --docker-password=<PAT_secret> \
-  --namespace=benchmarking \
-  --dry-run=client -o yaml
-```
-
-### Generate a Kubernetes secret
-
-To generate a Kubernetes secret from a file, use the following command:
+Images must be built for `linux/amd64` (the cluster node architecture) even when building on an Apple Silicon Mac.
 
 ```bash
-kubectl create secret generic benchmarking-secret \
-  --from-env-file=k8s/.env \
-  --namespace=benchmarking
-```
-
-### Generate a Kubernetes secret for the frontend
-
-To generate a Kubernetes secret for the frontend, use the following command:
-
-```bash
-kubectl create secret generic frontend-secret \
-  --from-env-file=frontend/.env \
-  --namespace=benchmarking
-```
-
-## Build the Frontend Image
-
-``` bash
-docker build -f Dockerfile.frontend -t ghcr.io/gfragi/haic-frontend:latest .
-```
-
-## Build the Backend Image
-
-``` bash
-docker build -f Dockerfile.backend -t ghcr.io/gfragi/haic-backend:latest .
-```
-
-## Authenticate to GHCR
-
-``` bash
-source k8s/.env
+# Authenticate
 echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+
+# Build and push backend
+docker buildx build --platform linux/amd64 \
+  -f Dockerfile.backend \
+  -t ghcr.io/gfragi/haic-backend:rollback \
+  . --push
+
+# Build and push frontend
+docker buildx build --platform linux/amd64 \
+  -f Dockerfile.frontend \
+  -t ghcr.io/gfragi/haic-frontend:rollback \
+  . --push
 ```
 
-## Push the Images to GHCR
+### If the cluster node cannot reach ghcr.io
 
-``` bash
-docker push ghcr.io/gfragi/haic-backend:latest
-docker push ghcr.io/gfragi/haic-frontend:latest
-```
-
-## Install NGINX Ingress Controller
+If the node has no reliable outbound internet, import images directly:
 
 ```bash
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo update
-
-# Install into the ingress-nginx namespace
-kubectl create ns ingress-nginx
-helm install ingress-nginx ingress-nginx/ingress-nginx \
-  --namespace ingress-nginx \
-  --set controller.publishService.enabled=true
+# Save locally (use --load instead of --push in the build step above)
+docker save ghcr.io/gfragi/haic-backend:rollback | ssh <user>@<node-ip> 'microk8s ctr images import -'
+docker save ghcr.io/gfragi/haic-frontend:rollback | ssh <user>@<node-ip> 'microk8s ctr images import -'
 ```
 
-## Install cert-manager & configure Let’s Encrypt
-
-### Install cert-manager
-
-```bash
-# Install the CRDs
-kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/latest/download/cert-manager.crds.yaml
-
-# Create namespace
-kubectl create namespace cert-manager
-
-# Install cert-manager itself
-helm repo add jetstack https://charts.jetstack.io
-helm repo update
-
-helm install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --version v1.12.0
-```
-
-### Create a Let’s Encrypt issuer
+> **Image pull policy**: Deployments use `imagePullPolicy: IfNotPresent`. If you push a new image under the same tag, the node will not re-pull it automatically. Either import the image directly (above) or temporarily set `imagePullPolicy: Always` in the relevant manifest and revert it after the pod starts.
 
 ## Detailed Deployment Steps
 
@@ -129,22 +79,23 @@ kubectl apply -f 00-namespace.yaml
 cp 01-secrets-template.yaml 01-secrets.yaml
 ```
 
-2. Edit `01-secrets.yaml` and update ALL values (never use defaults):
-   - `DB_PASSWORD` — Change from `changeme123` to a strong password
-   - `DATABASE_URL` — Should match your deployment (usually fine as-is)
-   - `MINIO_ENDPOINT` — Your MinIO endpoint
+2. Edit `01-secrets.yaml` and update all values:
+   - `DB_PASSWORD` — strong password
+   - `DATABASE_URL` — must match `DB_*` values
+   - `MINIO_ENDPOINT` — your MinIO endpoint (host:port)
    - `MINIO_USERNAME` / `MINIO_PASSWORD` — MinIO credentials
-   - `AUTH_URL` — Your authentication service
-   - Frontend Keycloak settings
+   - `AUTH_URL` — Keycloak token endpoint (leave empty to disable)
+   - `KEYCLOAK_*` — frontend Keycloak settings
 
 3. Apply:
 ```bash
 kubectl apply -f 01-secrets.yaml
 ```
 
-4. **IMPORTANT**: Add to `.gitignore`:
+4. Keep out of git:
+
 ```bash
-echo "01-secrets.yaml" >> .gitignore
+echo "k8s/01-secrets.yaml" >> .gitignore
 ```
 
 ### Step 3: Deploy PostgreSQL
@@ -153,245 +104,204 @@ echo "01-secrets.yaml" >> .gitignore
 kubectl apply -f 10-postgres-pvc.yaml
 kubectl apply -f 11-postgres-service.yaml
 kubectl apply -f 12-postgres-deployment.yaml
-```
-
-Verify:
-```bash
-kubectl rollout status deployment/postgres -n haic-benchmark
+kubectl rollout status deployment/postgres -n haic-benchmark --timeout=120s
 ```
 
 ### Step 4: Run Alembic Migrations
 
 ```bash
 kubectl apply -f 20-init-db-job.yaml
+kubectl wait --for=condition=complete job/init-db-migrations -n haic-benchmark --timeout=300s
 ```
 
-Monitor:
+Monitor live:
 ```bash
 kubectl logs -f job/init-db-migrations -n haic-benchmark
 ```
 
-Wait for completion:
-```bash
-kubectl wait --for=condition=complete job/init-db-migrations -n haic-benchmark --timeout=300s
-```
+The migration job uses `nc -z postgres 5432` to wait for the database (the backend image does not include `psql` or `pg_isready`).
 
-### Step 4b: Seed Database with Metrics & Definitions
+### Step 4b: Seed Database
 
-This step loads the initial metrics, metric groups, and their descriptions into the database. This is idempotent (safe to run multiple times).
+Loads metric groups, metrics, and definitions. Safe to run multiple times — uses `ON CONFLICT (name)` which requires the unique index created by the migration.
 
 ```bash
-kubectl apply -f 02-seed-metrics-configmap.yaml
 kubectl apply -f 21-seed-db-job.yaml
-```
-
-Monitor:
-```bash
-kubectl logs -f job/seed-db-metrics -n haic-benchmark
-```
-
-Wait for completion:
-```bash
-kubectl wait --for=condition=complete job/seed-db-metrics -n haic-benchmark --timeout=300s
+kubectl wait --for=condition=complete job/seed-db-metrics -n haic-benchmark --timeout=120s
 ```
 
 **What gets seeded:**
 - 6 metric groups: Performance, Efficiency, Adaptability and Learning, Collaboration and Interaction, Trust and Safety, Robustness and Generalization
-- 29 metrics with detailed descriptions provided to users
-- All data is inserted with `ON CONFLICT DO NOTHING` to prevent duplicates on repeated runs
+- 29 metrics with descriptions
 
 ### Step 5: Deploy Backend
 
 ```bash
 kubectl apply -f 30-backend-service.yaml
 kubectl apply -f 31-backend-deployment.yaml
+kubectl rollout status deployment/backend -n haic-benchmark
 ```
 
-Verify:
-```bash
-kubectl rollout status deployment/backend -n haic-benchmark
-kubectl logs -f deployment/backend -n haic-benchmark
-```
+The backend pod has an init container (`wait-for-db-migration`) that uses `nc -z postgres 5432` before starting the API.
 
 ### Step 6: Deploy Frontend
 
 ```bash
 kubectl apply -f 40-frontend-service.yaml
 kubectl apply -f 41-frontend-deployment.yaml
-```
-
-Verify:
-```bash
 kubectl rollout status deployment/frontend -n haic-benchmark
 ```
 
-### Step 7: Test
-
-Port-forward to access locally:
+### Step 7: Verify
 
 ```bash
-# Backend API
+# Backend health
 kubectl port-forward svc/backend 8000:8000 -n haic-benchmark
-curl http://localhost:8000/api/meta/health
+curl http://localhost:8000/meta/health
 
 # Frontend
 kubectl port-forward svc/frontend 8080:80 -n haic-benchmark
-# Open browser to http://localhost:8080
+# Open http://localhost:8080
 ```
 
-## Updating Your Deployment
+> Note: the health endpoint is `/meta/health`, not `/api/meta/health`. The `/api/v1` prefix applies only to application routes.
 
-### New Code Release (No Schema Changes)
+## Updating the Deployment
 
-If you're only updating code (no database migrations):
+### Code-only update (no schema changes)
 
 ```bash
-# Edit 31-backend-deployment.yaml and update image tag
-kubectl apply -f 31-backend-deployment.yaml
+./update.sh
+```
+
+Or manually:
+```bash
+kubectl rollout restart deployment/backend -n haic-benchmark
 kubectl rollout status deployment/backend -n haic-benchmark
 ```
 
-Or use the automated script:
+### Update with new Alembic migrations
+
 ```bash
-./update.sh v2.0
+./update.sh --migrate
 ```
 
-### Code + Database Migrations
-
-If your update includes new Alembic migrations:
-
-**Option 1: Automated (recommended)**
+Or manually:
 ```bash
-./update.sh v2.0
-```
-
-The script will:
-1. Run Alembic migrations
-2. Wait for completion
-3. Update backend image
-4. Roll out the update
-
-**Option 2: Manual steps**
-
-```bash
-# 1. Run migrations first
-kubectl delete job init-db-migrations -n haic-benchmark
+kubectl delete job init-db-migrations -n haic-benchmark --ignore-not-found
 kubectl apply -f 20-init-db-job.yaml
 kubectl wait --for=condition=complete job/init-db-migrations -n haic-benchmark --timeout=300s
-
-# 2. Update image tag in 31-backend-deployment.yaml, then apply
-kubectl apply -f 31-backend-deployment.yaml
+kubectl rollout restart deployment/backend -n haic-benchmark
 kubectl rollout status deployment/backend -n haic-benchmark
 ```
 
-**Important:** Always run migrations BEFORE updating the backend image. This prevents the backend from starting before the database schema is ready.
+**Always run migrations before restarting the backend.**
 
 ### Rollback
 
-If something goes wrong:
 ```bash
 kubectl rollout undo deployment/backend -n haic-benchmark
 kubectl rollout status deployment/backend -n haic-benchmark
 ```
 
-### Frontend Updates
-
-Frontend updates don't require migrations - just update the image tag:
+### Frontend update
 
 ```bash
-# Edit 41-frontend-deployment.yaml and update image tag
-kubectl apply -f 41-frontend-deployment.yaml
+kubectl rollout restart deployment/frontend -n haic-benchmark
 kubectl rollout status deployment/frontend -n haic-benchmark
 ```
 
 ## Troubleshooting
 
-### Backend pod won’t start
+### Pod stuck in ContainerCreating
 
+Usually an image pull problem. Check events:
 ```bash
-# Check logs
-kubectl logs deployment/backend -n haic-benchmark
-
-# Check events
-kubectl describe pod -l app=backend -n haic-benchmark
-
-# Test database connection
-kubectl run -it --rm debug --image=postgres:15 --restart=Never -n haic-benchmark -- \
-  psql -h postgres -U haic_user -d haic_benchmark -c "SELECT 1;"
+kubectl describe pod -l app=backend -n haic-benchmark | grep -A 20 Events
 ```
+
+If the node cached an old image with the same tag and won't re-pull:
+```bash
+# On the node
+microk8s ctr images rm ghcr.io/gfragi/haic-backend:rollback
+# Then delete and reapply the job/deployment
+```
+
+Or import the new image directly (see Build & Push section above).
 
 ### Migrations failed
 
 ```bash
-# View the job logs
 kubectl logs job/init-db-migrations -n haic-benchmark
 
-# If you need to retry
-kubectl delete job init-db-migrations -n haic-benchmark
+# Retry
+kubectl delete job init-db-migrations -n haic-benchmark --ignore-not-found
 kubectl apply -f 20-init-db-job.yaml
-kubectl logs -f job/init-db-migrations -n haic-benchmark
 ```
 
 ### Seed job failed
 
 ```bash
-# Check seed job logs
 kubectl logs job/seed-db-metrics -n haic-benchmark
 
-# Verify metrics were seeded
+# Verify data
 kubectl run -it --rm debug --image=postgres:15 --restart=Never -n haic-benchmark -- \
   psql -h postgres -U haic_user -d haic_benchmark -c "SELECT COUNT(*) FROM metrics;"
 
-# If you need to retry (safe - uses ON CONFLICT DO NOTHING)
-kubectl delete job seed-db-metrics -n haic-benchmark
+# Retry (idempotent)
+kubectl delete job seed-db-metrics -n haic-benchmark --ignore-not-found
 kubectl apply -f 21-seed-db-job.yaml
-kubectl logs -f job/seed-db-metrics -n haic-benchmark
 ```
 
-### Frontend can’t reach backend
-
-- Verify `VUE_APP_API_BASE_URL` in secret: `kubectl get secret haic-frontend-secret -n haic-benchmark -o yaml`
-- Check frontend logs: `kubectl logs deployment/frontend -n haic-benchmark`
-- Check backend is running: `kubectl get pods -n haic-benchmark | grep backend`
-
-### View pod details
+### Backend won't start
 
 ```bash
-# List all pods
-kubectl get pods -n haic-benchmark
+kubectl logs deployment/backend -n haic-benchmark
+kubectl describe pod -l app=backend -n haic-benchmark
+```
 
-# Describe a pod to see status and events
-kubectl describe pod <pod-name> -n haic-benchmark
+Test database connectivity directly:
+```bash
+kubectl run -it --rm debug --image=postgres:15 --restart=Never -n haic-benchmark -- \
+  psql -h postgres -U haic_user -d haic_benchmark -c "SELECT 1;"
+```
 
-# Get pod logs
-kubectl logs <pod-name> -n haic-benchmark
+### Namespace stuck in Terminating
 
-# Get previous logs (if pod crashed)
-kubectl logs <pod-name> -n haic-benchmark --previous
+```bash
+kubectl proxy &
+kubectl get namespace haic-benchmark -o json \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); d['spec']['finalizers']=[]; print(json.dumps(d))" \
+  | curl -s -k -H "Content-Type: application/json" -X PUT \
+    http://127.0.0.1:8001/api/v1/namespaces/haic-benchmark/finalize -d @-
+kill %1
 ```
 
 ## File Reference
 
 | File | Purpose |
-|------|---------|
-| `00-namespace.yaml` | Kubernetes namespace definition |
-| `01-secrets-template.yaml` | Template for secrets (copy and fill in values) |
-| `02-seed-metrics-configmap.yaml` | ConfigMap with metric and definition seed data |
+| ---- | ------- |
+| `00-namespace.yaml` | Namespace definition |
+| `01-secrets-template.yaml` | Template — copy to `01-secrets.yaml` and fill in values |
+| `01-secrets.yaml` | Actual secrets (gitignored) |
+| `02-seed-metrics-configmap.yaml` | ConfigMap with seed SQL |
 | `10-postgres-pvc.yaml` | Persistent volume for database |
-| `11-postgres-service.yaml` | Service to expose postgres |
+| `11-postgres-service.yaml` | PostgreSQL service |
 | `12-postgres-deployment.yaml` | PostgreSQL deployment |
 | `20-init-db-job.yaml` | Alembic migrations job |
-| `21-seed-db-job.yaml` | Seed metrics and definitions job |
-| `30-backend-service.yaml` | Service to expose backend API |
-| `31-backend-deployment.yaml` | Backend deployment (with init containers) |
-| `40-frontend-service.yaml` | Service to expose frontend |
+| `21-seed-db-job.yaml` | Seed metrics and definitions |
+| `30-backend-service.yaml` | Backend service |
+| `31-backend-deployment.yaml` | Backend deployment (includes DB-ready init container) |
+| `40-frontend-service.yaml` | Frontend service |
 | `41-frontend-deployment.yaml` | Frontend deployment |
-| `deploy.sh` | Automated deployment script |
-| `update.sh` | Automated update script (runs migrations + updates backend) |
+| `deploy.sh` | Full deployment from scratch |
+| `update.sh` | Rolling update (code-only or with migrations) |
+| `seed-metrics.sql` | SQL loaded into the seed ConfigMap |
 
 ## Cleanup
 
-To remove everything:
-
 ```bash
 kubectl delete namespace haic-benchmark
+```
+
+If stuck, see the "Namespace stuck in Terminating" section above.
