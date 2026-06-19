@@ -14,7 +14,6 @@ from app.services.log_service import LogService
 from app.models.configuration import EvaluationConfig
 from app.models.logs import LogEntry
 from app.services.metrics_adapter import compute_from_log
-from app.services.evaluate import _normalize_logs_data
 
 
 router = APIRouter()
@@ -114,14 +113,17 @@ def register_log(
                 detail=f"Existing log at '{config.minio_path}' is not valid JSON: {e}",
             )
 
-        # Normalize using the same function as in run_evaluation
-        try:
-            entries = _normalize_logs_data(existing_json)
-        except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Failed to normalize existing logs: {e}",
-            )
+        # Keep entries in their original raw LogSchema shape; only unwrap a
+        # {"logs": [...]} envelope. Normalizing here (e.g. via
+        # _normalize_logs_data) would convert older entries to the lossy
+        # SessionLog metrics schema while the newly appended entry stays raw,
+        # leaving the aggregated file with mixed, inconsistent shapes.
+        if isinstance(existing_json, dict) and isinstance(existing_json.get("logs"), list):
+            entries = existing_json["logs"]
+        elif isinstance(existing_json, list):
+            entries = existing_json
+        else:
+            entries = [existing_json]
 
         aggregated_entries = entries + [payload]
 
