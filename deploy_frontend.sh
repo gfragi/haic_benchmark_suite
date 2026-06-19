@@ -62,7 +62,7 @@ fi
 
 # 2. Build & push multi-arch image
 echo "🔨 Building and pushing multi-arch Docker image..."
-docker buildx build \
+docker buildx build --platform linux/amd64 build \
   --platform linux/amd64,linux/arm64 \
   -f "$DOCKERFILE" \
   -t "$IMAGE" \

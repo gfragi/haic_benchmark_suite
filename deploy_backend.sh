@@ -12,7 +12,7 @@ CONTEXT="."  # path to your backend root
 
 # 1. Build the Docker image
 echo "🔨 Building Docker image..."
-docker build -f $DOCKERFILE -t $IMAGE $CONTEXT
+docker buildx build --platform linux/amd64 -f $DOCKERFILE -t $IMAGE $CONTEXT
 
 # 2. Push to GitHub Container Registry
 echo "📤 Pushing image to GHCR..."
