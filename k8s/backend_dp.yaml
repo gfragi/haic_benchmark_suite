@@ -13,11 +13,10 @@ spec:
       labels:
         app: backend
     spec:
-      imagePullSecrets:
-        - name: ghcr-pull-secret
       containers:
       - name: backend
         image: ghcr.io/gfragi/haic-backend:rollback
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:
