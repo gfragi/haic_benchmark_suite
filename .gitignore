@@ -124,6 +124,12 @@ celerybeat.pid
 # Environments
 .env*
 .venv
+
+# k8s manifests carrying literal secret values (create these imperatively
+# instead, per k8s/DEPLOY.md - never commit real credentials)
+k8s/01-secrets.yaml
+k8s/secret_pull.yaml
+k8s/*-secrets.yaml
 env/
 venv/
 ENV/

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  namespace: benchmarking
+  namespace: benchmark-v2
 spec:
   replicas: 1
   selector:
@@ -26,3 +26,53 @@ spec:
             secretKeyRef:
               name: benchmarking-secret
               key: DATABASE_URL
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: DB_PORT
+        - name: MINIO_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: MINIO_ENDPOINT
+        - name: MINIO_SECURE
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: MINIO_SECURE
+        - name: MINIO_REGION
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: MINIO_REGION
+        - name: MINIO_BUCKET
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: MINIO_BUCKET
+        - name: MINIO_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: MINIO_USERNAME
+        - name: MINIO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: MINIO_PASSWORD
+        - name: AUTH_URL
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: AUTH_URL
+        - name: LOG_LEVEL
+          valueFrom:
+            secretKeyRef:
+              name: benchmarking-secret
+              key: LOG_LEVEL

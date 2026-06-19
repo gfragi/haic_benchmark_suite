@@ -58,24 +58,36 @@ DB_NAME=haic_benchmark
 DB_USER=haic_user
 DB_PASSWORD=<choose-a-strong-password>
 DATABASE_URL=postgresql://haic_user:<same-password>@postgres:5432/haic_benchmark
+DB_HOST=postgres
+DB_PORT=5432
 MINIO_ENDPOINT=<your-minio-host>
 MINIO_ACCESS_KEY=<your-minio-access-key>
 MINIO_SECRET_KEY=<your-minio-secret-key>
 MINIO_BUCKET=benchmarking-suite
 MINIO_REGION=us-east-1
 MINIO_SECURE=True
+AUTH_URL=
 LOG_LEVEL=INFO
 ```
 
-> **MinIO note:** The backend uses MinIO (S3-compatible) to store evaluation result files.
+`backend_dp.yaml` wires all of these keys into the backend pod's environment via
+`secretKeyRef`. **All of them must exist in the secret** even if empty — the pod
+fails `CreateContainerConfigError` on any key it references that's missing from
+the secret, not just the ones the app actually reads at runtime.
+
+> **MinIO note:** The backend uses MinIO (S3-compatible) to store evaluation result
+> files. **MinIO IS required for the platform to start** — `get_minio_client()` runs
+> at import time in several routers, and a missing/invalid `MINIO_ENDPOINT` crashes
+> the backend pod immediately (it does not degrade gracefully).
 > If GFT has its own MinIO instance, use those credentials here.
 > If you want to use the HUA shared MinIO, request the credentials from George.
-> MinIO is **not** required for the platform to start — it only affects result file storage.
 
-> **AUTH_URL / Keycloak note:** `AUTH_URL` in `.env.production` is the Keycloak token endpoint
-> used by the backend to validate tokens. If your cluster has its own Keycloak, set
-> `AUTH_URL`, `KEYCLOAK_SERVER_URL`, `KEYCLOAK_REALM_NAME`, `KEYCLOAK_CLIENT_ID` accordingly.
-> These are **optional** — the platform runs without auth in development mode.
+> **AUTH_URL / Keycloak-fronted MinIO note:** if `AUTH_URL` is set, the backend's
+> MinIO client authenticates via Keycloak token exchange using `MINIO_USERNAME` /
+> `MINIO_PASSWORD` instead of `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` — add those
+> two keys instead in that case (see `k8s/01-secrets.yaml` for an example against
+> the HUA shared MinIO). Leave `AUTH_URL` empty to use direct access-key auth and
+> skip Keycloak token validation entirely (the platform runs without auth in dev mode).
 
 ```bash
 kubectl create secret generic benchmarking-secret \
@@ -178,6 +190,35 @@ curl http://<node-ip>:30080/health
 
 ## 7. Deploy the frontend
 
+The React frontend (`frontend-react/`) is the current default — it calls relative
+`/api` and `/meta` paths (see `frontend-react/vite.config.js`), so it has no
+build-time or runtime backend URL to configure; whichever ingress serves it
+determines the backend it talks to.
+
+```bash
+kubectl apply -f k8s/frontend-react_dp.yaml -n benchmarking
+kubectl apply -f k8s/frontend-react_svc.yaml -n benchmarking
+kubectl rollout status deployment/frontend-react -n benchmarking
+```
+
+> **Port-forward testing gap:** the served nginx image only serves static files —
+> it does **not** proxy `/api` anywhere (unlike the Vite dev server's `server.proxy`).
+> `kubectl port-forward svc/frontend-react ...` will load the page shell, but every
+> API call will hit nginx's SPA fallback and get HTML back instead of JSON. Path-based
+> `/api` routing only happens at the Ingress layer (see `frontend_ingress.yaml`'s
+> rules). To test end-to-end before wiring ingress, either:
+>
+> - `kubectl port-forward svc/backend 8000:8000` and run `npm run dev` locally in
+>   `frontend-react/` with `VITE_API_PROXY_TARGET=http://localhost:8000`, or
+> - apply a temporary namespace-scoped Ingress with its own test hostname (distinct
+>   from the production host) instead of port-forwarding the frontend directly.
+
+The old Vue frontend (`frontend_dp.yaml` / `frontend_svc.yaml`) is still present but
+deploys a stale image build. Its `env:` block has no effect at runtime — Vue CLI
+bakes `VUE_APP_*` values in at *build time* from `frontend/.env.production`, which is
+hardcoded to the production hostname. Don't use it for namespace-isolated testing
+without first rebuilding the image with a different `.env.production`.
+
 ```bash
 kubectl apply -f k8s/frontend_dp.yaml -n benchmarking
 kubectl apply -f k8s/frontend_svc.yaml -n benchmarking
@@ -264,10 +305,11 @@ bash k8s/create_configmap.sh $NS
 for f in k8s/postgres_pvc.yaml k8s/postgres_dp.yaml k8s/postgres_svc.yaml \
          k8s/postgres_job.yaml \
          k8s/backend_dp.yaml k8s/backend_svc.yaml \
-         k8s/frontend_dp.yaml k8s/frontend_svc.yaml \
-         k8s/frontend_ingress.yaml; do
+         k8s/frontend-react_dp.yaml k8s/frontend-react_svc.yaml; do
   sed "s/namespace: benchmarking/namespace: $NS/g" "$f" | kubectl apply -f -
 done
+# Add k8s/frontend_ingress.yaml to the list above once you're ready to wire
+# ingress for this namespace - see the port-forward testing note in step 7.
 ```
 
 ---
@@ -283,9 +325,13 @@ done
 | `create_configmap.sh` | Creates `pg-init-sql` ConfigMap from SQL files |
 | `backend_dp.yaml` | Backend Deployment |
 | `backend_svc.yaml` | Backend NodePort Service (port 30080) |
-| `frontend_dp.yaml` | Frontend Deployment |
-| `frontend_svc.yaml` | Frontend NodePort Service (port 80) |
+| `frontend-react_dp.yaml` | React Frontend Deployment (current default) |
+| `frontend-react_svc.yaml` | React Frontend NodePort Service (port 80) |
+| `frontend_dp.yaml` | Legacy Vue Frontend Deployment — image/env are stale, see step 7 |
+| `frontend_svc.yaml` | Legacy Vue Frontend NodePort Service (port 80) |
 | `frontend_ingress.yaml` | Ingress (nginx + optional TLS) — **edit hostname before applying** |
 | `cluster_issuer.yaml` | Let's Encrypt ClusterIssuer — **edit email before applying** |
 
 > `init-db-job.yaml` and `frontend-ingress.yaml` are **deprecated** — do not apply them.
+> `secret_pull.yaml` has been removed — it committed a literal GHCR token to git.
+> Create `ghcr-pull-secret` imperatively per step 2a instead.

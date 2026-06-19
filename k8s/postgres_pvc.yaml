@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-data
-  namespace: benchmarking
+  namespace: benchmark-v2
 spec:
   storageClassName: microk8s-hostpath
   accessModes:
