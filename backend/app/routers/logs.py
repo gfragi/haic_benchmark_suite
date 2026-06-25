@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-import json, os, io
+import json, os, io, uuid
 import logging
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
@@ -90,63 +90,25 @@ def register_log(
         derived = {"by_metric": {}, "by_pillar": {}, "interaction": {}}
         derived["_warning"] = f"Metric computation failed: {type(e).__name__}"
 
-    # 2) Load existing aggregated logs from MinIO (if any)
-    aggregated_entries: list[dict]
+    # 2) Write this session as an individual file under uploads/
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+    session_id = payload.get("session_id") or uuid.uuid4().hex
+    object_name = f"{configuration_id}/uploads/{session_id}.{ts}.json"
 
-    if config.minio_path:
-        # There is already a log file for this config; load + append
-        try:
-            obj = minio_client.get_object(MINIO_BUCKET, config.minio_path)
-            raw_bytes = obj.read()
-        finally:
-            try:
-                obj.close()
-                obj.release_conn()
-            except Exception:
-                pass
+    encoded = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
+    try:
+        minio_client.put_object(
+            bucket_name=MINIO_BUCKET,
+            object_name=object_name,
+            data=io.BytesIO(encoded),
+            length=len(encoded),
+            content_type="application/json",
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"MinIO upload failed: {e}")
 
-        try:
-            existing_json = json.loads(raw_bytes.decode("utf-8"))
-        except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Existing log at '{config.minio_path}' is not valid JSON: {e}",
-            )
-
-        # Keep entries in their original raw LogSchema shape; only unwrap a
-        # {"logs": [...]} envelope. Normalizing here (e.g. via
-        # _normalize_logs_data) would convert older entries to the lossy
-        # SessionLog metrics schema while the newly appended entry stays raw,
-        # leaving the aggregated file with mixed, inconsistent shapes.
-        if isinstance(existing_json, dict) and isinstance(existing_json.get("logs"), list):
-            entries = existing_json["logs"]
-        elif isinstance(existing_json, list):
-            entries = existing_json
-        else:
-            entries = [existing_json]
-
-        aggregated_entries = entries + [payload]
-
-        # We'll overwrite the same object with the updated list
-        object_name = config.minio_path
-
-    else:
-        # First log for this configuration: create new list
-        aggregated_entries = [payload]
-        # use a stable name, similar to upload_file: "<config_id>/config_<id>.json"
-        filename = f"config_{configuration_id}.json"
-        object_name = f"{configuration_id}/{filename}"
-        config.minio_path = object_name  # this is what run_evaluation uses
-
-    # 3) Save updated aggregated logs back to MinIO
-    encoded = json.dumps(aggregated_entries, ensure_ascii=False, indent=2).encode("utf-8")
-    minio_client.put_object(
-        bucket_name=MINIO_BUCKET,
-        object_name=object_name,
-        data=io.BytesIO(encoded),
-        length=len(encoded),
-        content_type="application/json",
-    )
+    # 3) Point minio_path to the uploads folder so evaluation scans all sessions
+    config.minio_path = f"{configuration_id}/uploads/"
 
     # 4) Create LogEntry row for this session (for auditing/inspection)
     log_entry = LogEntry(

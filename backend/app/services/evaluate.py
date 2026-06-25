@@ -130,6 +130,21 @@ def _mean_map(dicts: list[dict]) -> dict:
     return out
 
 
+def _load_all_logs_from_prefix(bucket: str, prefix: str) -> list:
+    """Scan all raw JSON files under a MinIO prefix and return combined session entries."""
+    entries = []
+    objects = _get_client().list_objects(bucket, prefix=prefix, recursive=True)
+    for obj in objects:
+        name = obj.object_name
+        if not name.endswith(".json") or name.endswith(".derived.json"):
+            continue
+        try:
+            entries.extend(_load_logs_from_minio(bucket, name))
+        except Exception as e:
+            print(f"[evaluate] Skipping {name}: {e}")
+    return entries
+
+
 def _load_logs_from_minio(bucket: str, minio_path: str) -> list:
     """Load and parse logs from MinIO."""
     try:
@@ -274,8 +289,11 @@ def run_evaluation(config_id: int):
                 f"Upload or register a log first."
             )
 
-        # Load and normalize logs
-        entries = _load_logs_from_minio(bucket, config.minio_path)
+        # Load and normalize logs — folder prefix (ends with /) → scan all files
+        if config.minio_path.endswith("/"):
+            entries = _load_all_logs_from_prefix(bucket, config.minio_path)
+        else:
+            entries = _load_logs_from_minio(bucket, config.minio_path)
 
         # Group by AI model version
         logs_by_ai_version = split_logs_by_ai_model_version(entries)
