@@ -176,3 +176,5 @@ haic_sim_mvp/.DS_Store
 frontend-react/node_modules
 
 k8s/01-secrets.yaml
+
+haic_sim_mvp/examples/sim-pilot-apps-*
