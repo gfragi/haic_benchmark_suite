@@ -274,6 +274,7 @@ npm run serve
 
 #### Logs
 - `POST /api/v1/logs/upload` - Upload evaluation logs
+- `POST /api/v1/logs/upload-zip` - Upload a ZIP of individual session logs
 - `POST /api/v1/logs/register` - Register individual log entry
 - `GET /api/v1/logs/{config_id}` - List logs for configuration
 - `DELETE /api/v1/logs/{config_id}/{log_name}` - Delete log
@@ -418,6 +419,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - **Documentation**: [Full API Docs](docs/)
+- **Kubernetes Deployment**: [k8s/README.md](k8s/README.md)
 - **Issues**: [GitHub Issues](https://github.com/your-org/haic_benchmark_suite/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/your-org/haic_benchmark_suite/discussions)
 
