@@ -35,10 +35,10 @@ def trigger_evaluation(configuration_id: int, background_tasks: BackgroundTasks,
     if not config:
         raise HTTPException(status_code=404, detail="Configuration not found")
 
-    # Check if configuration has any logs
+    # Accept if logs were registered via /register (LogEntry rows) OR uploaded via /upload-zip (sets minio_path)
     log_count = db.query(LogEntry).filter(LogEntry.configuration_id == configuration_id).count()
-    if log_count == 0:
-        raise HTTPException(status_code=400, detail="No logs found for this configuration")
+    if log_count == 0 and not config.minio_path:
+        raise HTTPException(status_code=400, detail="No logs found for this configuration. Upload logs first via /logs/upload-zip or /logs/register.")
 
     # Update status to running
     config.evaluation_status = EvaluationConfig.STATUS_RUNNING

@@ -21,7 +21,13 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-minio_client = get_minio_client()
+_minio_client = None
+
+def _get_client():
+    global _minio_client
+    if _minio_client is None:
+        _minio_client = get_minio_client()
+    return _minio_client
 
 def calculate_prediction_accuracy(interaction_data: list[dict]) -> float:
     """Calculate prediction accuracy from interaction data."""
@@ -126,10 +132,25 @@ def _mean_map(dicts: list[dict]) -> dict:
     return out
 
 
+def _load_all_logs_from_prefix(bucket: str, prefix: str) -> list:
+    """Scan all raw JSON files under a MinIO prefix and return combined session entries."""
+    entries = []
+    objects = _get_client().list_objects(bucket, prefix=prefix, recursive=True)
+    for obj in objects:
+        name = obj.object_name
+        if not name.endswith(".json") or name.endswith(".derived.json"):
+            continue
+        try:
+            entries.extend(_load_logs_from_minio(bucket, name))
+        except Exception as e:
+            print(f"[evaluate] Skipping {name}: {e}")
+    return entries
+
+
 def _load_logs_from_minio(bucket: str, minio_path: str) -> list:
     """Load and parse logs from MinIO."""
     try:
-        obj = minio_client.get_object(bucket, minio_path)
+        obj = _get_client().get_object(bucket, minio_path)
     except Exception as e:
         raise RuntimeError(f"Failed to get object from MinIO (bucket='{bucket}', path='{minio_path}'): {e}")
 
@@ -280,7 +301,7 @@ def _save_result_to_minio(bucket: str, config_id: int, result_data: dict) -> str
     """Save evaluation result to MinIO and return the path."""
     result_file_path = f"{config_id}/results/{uuid.uuid4()}.json"
     encoded = json.dumps(result_data, ensure_ascii=False, indent=2).encode("utf-8")
-    minio_client.put_object(
+    _get_client().put_object(
         bucket_name=bucket,
         object_name=result_file_path,
         data=io.BytesIO(encoded),
@@ -319,8 +340,11 @@ def run_evaluation(config_id: int):
                 f"Upload or register a log first."
             )
 
-        # Load and normalize logs
-        entries = _load_logs_from_minio(bucket, config.minio_path)
+        # Load and normalize logs — folder prefix (ends with /) → scan all files
+        if config.minio_path.endswith("/"):
+            entries = _load_all_logs_from_prefix(bucket, config.minio_path)
+        else:
+            entries = _load_logs_from_minio(bucket, config.minio_path)
 
         # Group by AI model version
         logs_by_ai_version = split_logs_by_ai_model_version(entries)

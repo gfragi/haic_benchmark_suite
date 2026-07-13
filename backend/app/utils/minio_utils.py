@@ -19,8 +19,6 @@ MINIO_SECURE = os.getenv("MINIO_SECURE", "false").lower() == "true"
 MINIO_REGION = os.getenv("MINIO_REGION")
 MINIO_USERNAME = os.getenv("MINIO_USERNAME")
 MINIO_PASSWORD = os.getenv("MINIO_PASSWORD")
-MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "")
-MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "")
 MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 
 # cache for token
@@ -29,7 +27,8 @@ _lock = threading.Lock()
 
 
 def _refresh_token():
-    """Fetches a fresh Keycloak token and updates the cache."""
+    if not AUTH_URL:
+        return
     payload = {"username": MINIO_USERNAME, "password": MINIO_PASSWORD}
     encoded_payload = urllib.parse.urlencode(payload)
     headers = {"accept": "application/json", "Content-Type": "application/x-www-form-urlencoded"}
@@ -41,9 +40,9 @@ def _refresh_token():
         raise Exception("access_token not found in auth response")
 
     token = token_json["access_token"]
-    expires_in = token_json.get("expires_in", 300)  # default 5 minutes
+    expires_in = token_json.get("expires_in", 300)
     _token_cache["token"] = token
-    _token_cache["expires_at"] = time.time() + expires_in - 60  # refresh 1min before expiry
+    _token_cache["expires_at"] = time.time() + expires_in - 60
 
 
 def get_auth_token():
@@ -84,6 +83,8 @@ class TokenPoolManager(urllib3.PoolManager):
 
 
 def get_minio_client() -> Minio:
+    if not MINIO_ENDPOINT:
+        raise RuntimeError("MINIO_ENDPOINT environment variable is required")
     if AUTH_URL:
         http_client = TokenPoolManager()
         return Minio(
@@ -96,8 +97,8 @@ def get_minio_client() -> Minio:
         )
     return Minio(
         endpoint=MINIO_ENDPOINT,
-        access_key=MINIO_ACCESS_KEY,
-        secret_key=MINIO_SECRET_KEY,
+        access_key=MINIO_USERNAME or "",
+        secret_key=MINIO_PASSWORD or "",
         secure=MINIO_SECURE,
         region=MINIO_REGION,
     )

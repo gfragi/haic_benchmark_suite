@@ -1,0 +1,88 @@
+-- Seed data for HAIC Benchmark metrics and definitions
+-- This file is idempotent - safe to run multiple times
+
+BEGIN;
+
+-- Insert metric groups (ON CONFLICT prevents duplicates)
+INSERT INTO metric_groups (name, description) VALUES
+    ('Performance', 'Measures how accurately the system achieves the intended task (correctness and quality of outputs).'),
+    ('Efficiency', 'Measures speed and resource use: how quickly and efficiently the system delivers results.'),
+    ('Adaptability and Learning', 'Measures how well the system adapts over time, learns from feedback, and improves.'),
+    ('Collaboration and Interaction', 'Measures the quality of human–AI teamwork: alignment, assistance, and joint outcomes.'),
+    ('Trust and Safety', 'Measures safety, reliability, and user confidence while avoiding harmful behavior.'),
+    ('Robustness and Generalization', 'Measures performance under distribution shifts, edge cases, and adversarial conditions.')
+ON CONFLICT (name) DO NOTHING;
+
+-- Insert metrics with descriptions
+-- Performance metrics
+INSERT INTO metrics (name, description, group_id)
+SELECT name, description, (SELECT id FROM metric_groups WHERE name = 'Performance')
+FROM (VALUES
+    ('Prediction Accuracy', 'Share of correct outcomes over all evaluated cases.'),
+    ('Precision', 'Share of predicted positives that are truly positive (precision = TP / (TP + FP)).'),
+    ('Recall', 'Share of actual positives that were found (recall = TP / (TP + FN)).'),
+    ('Overall System Accuracy', 'Overall accuracy considering the end-to-end system context.'),
+    ('Model Improvement Rate', 'Change in performance vs. a baseline or earlier period (improvement over time).')
+) AS t(name, description)
+ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description;
+
+-- Efficiency metrics
+INSERT INTO metrics (name, description, group_id)
+SELECT name, description, (SELECT id FROM metric_groups WHERE name = 'Efficiency')
+FROM (VALUES
+    ('Response Time', 'Average response/processing latency per task or event.'),
+    ('Teaching Efficiency', 'How effectively teaching/training actions translate to better outcomes.'),
+    ('Query Efficiency', 'How many useful results you get per unit of querying/interaction effort.'),
+    ('Resource Utilization', 'Share of available resources consumed (e.g., CPU/GPU, memory, budget).'),
+    ('Task Completion Time', 'Time to finish a task from start to completion.'),
+    ('Correction Efficiency', 'Speed/effort of applying corrections relative to issues found.'),
+    ('Error Reduction Rate', 'Decrease in errors after AI/human interventions (higher = fewer errors remain).'),
+    ('Knowledge Retention', 'How well learned knowledge persists over time or transfers to later tasks.')
+) AS t(name, description)
+ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description;
+
+-- Adaptability and Learning metrics
+INSERT INTO metrics (name, description, group_id)
+SELECT name, description, (SELECT id FROM metric_groups WHERE name = 'Adaptability and Learning')
+FROM (VALUES
+    ('Feedback Impact', 'Impact of feedback events on subsequent performance (learning from feedback).'),
+    ('Adaptability Score', 'Overall capacity to adjust to new conditions, data, or goals.'),
+    ('Impact of Corrections', 'Effect that applied corrections have on improving outcomes.'),
+    ('Learning Efficiency', 'Performance gain achieved per unit of training/feedback effort.'),
+    ('Objective Fulfillment Rate', 'Rate at which the system or team meets stated objectives.')
+) AS t(name, description)
+ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description;
+
+-- Collaboration and Interaction metrics
+INSERT INTO metrics (name, description, group_id)
+SELECT name, description, (SELECT id FROM metric_groups WHERE name = 'Collaboration and Interaction')
+FROM (VALUES
+    ('Human-AI Agreement Rate', 'How often human and AI reach the same (correct) conclusions.'),
+    ('AI Assistance Rate', 'Share of steps assisted by the AI (indicator of AI involvement).'),
+    ('Decision Effectiveness', 'Quality of decisions when combining human judgment and AI suggestions.'),
+    ('Time to Resolution', 'Time from problem identification to successful resolution.'),
+    ('Human Effort Saved', 'Amount of manual work avoided due to AI assistance.')
+) AS t(name, description)
+ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description;
+
+-- Trust and Safety metrics
+INSERT INTO metrics (name, description, group_id)
+SELECT name, description, (SELECT id FROM metric_groups WHERE name = 'Trust and Safety')
+FROM (VALUES
+    ('Confidence', 'Calibrated confidence in outputs (or user-reported confidence with the system).'),
+    ('Trust Score', 'Composite trust indicator (confidence, consistency, clarity of rationale).'),
+    ('Safety Incidents', 'Number of safety-related incidents or violations (lower is better).'),
+    ('System Reliability', 'Uptime and fault tolerance; probability the system works as expected.')
+) AS t(name, description)
+ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description;
+
+-- Robustness and Generalization metrics
+INSERT INTO metrics (name, description, group_id)
+SELECT name, description, (SELECT id FROM metric_groups WHERE name = 'Robustness and Generalization')
+FROM (VALUES
+    ('Adversarial Robustness', 'Performance under adversarial or stressful inputs (resistance to attacks).'),
+    ('Domain Generalization', 'Ability to maintain performance across domains, cohorts, or distributions.')
+) AS t(name, description)
+ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description;
+
+COMMIT;

@@ -114,7 +114,7 @@ class LogService:
         config = db.query(EvaluationConfig).get(configuration_id)
         if not config:
             raise ValueError("Evaluation configuration not found.")
-        config.minio_path = orig_name
+        config.minio_path = f"{configuration_id}/uploads/"
         db.add(config)
         db.commit()
         db.refresh(config)

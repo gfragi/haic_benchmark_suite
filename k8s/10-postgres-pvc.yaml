@@ -2,9 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-data
-  namespace: benchmark-v2
+  namespace: haic-benchmark
 spec:
-  storageClassName: microk8s-hostpath
   accessModes:
     - ReadWriteOnce
   resources:

@@ -177,9 +177,8 @@ docker/minio-initdocker/minio-init/data/.minio.sys
 docker/minio-init/data/.minio.sys
 .minio.sys/
 
-haic_sim_mvp/.DS_Store
 frontend-react/node_modules
 
+**/.DS_Store
 
-
-*/.DS_Store
+haic_sim_mvp/examples/sim-pilot-apps-*

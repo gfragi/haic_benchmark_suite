@@ -86,7 +86,7 @@ def _clamp01(x: float) -> float:
 def compute_from_log(
     log: Any,
     *,
-    rt_max: float = 5.0,          # cap for efficiency normalization
+    rt_max: float = 30.0,         # cap for efficiency normalization (pilot AI evals run ~14s)
     baseline_s: Optional[float] = None,  # reserved (e.g., Human Effort Saved)
     all_session_times: list[float] | None = None,
 ) -> Dict[str, Any]:
