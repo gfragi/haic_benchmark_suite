@@ -23,7 +23,7 @@ async function request(path, options = {}) {
 export const api = {
   configs: {
     list: (skip = 0, limit = 100) =>
-      request(`/configuration/?skip=${skip}&limit=${limit}`),
+      request(`/configuration/list?skip=${skip}&limit=${limit}`),
     get: (id) => request(`/configuration/${id}`),
     create: (body) =>
       request('/configuration/new', { method: 'POST', body: JSON.stringify(body) }),
