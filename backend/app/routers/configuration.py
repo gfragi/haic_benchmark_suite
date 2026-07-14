@@ -33,7 +33,9 @@ def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(g
         metrics=selected_metrics,  # Save the expanded list of metrics
         evaluation_date=datetime.now(timezone.utc),
         config_type=config.config_type,
-        evaluation_status=config.evaluation_status
+        evaluation_status=config.evaluation_status,
+        pilot_tag=config.pilot_tag,
+        baseline_s=config.baseline_s,
     )
     db.add(new_config)
     db.commit()
@@ -96,6 +98,8 @@ def update_configuration(configuration_id: int, updated_config: EvaluationConfig
     config.evaluation_date = updated_config.evaluation_date
     config.config_type = updated_config.config_type
     config.metrics = updated_config.metrics
+    config.pilot_tag = updated_config.pilot_tag
+    config.baseline_s = updated_config.baseline_s
 
     # Commit the changes to the database
     db.commit()
