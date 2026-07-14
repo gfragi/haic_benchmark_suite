@@ -151,5 +151,8 @@ export const api = {
       request('/pilot/onboard', { method: 'POST', body: JSON.stringify(body) }),
   },
 
-  health: () => fetch('/meta/health').then((r) => r.json()),
+  health: () => fetch('/meta/health').then((r) => {
+    if (!r.ok) throw new Error(`HTTP ${r.status}`)
+    return r.json()
+  }),
 }

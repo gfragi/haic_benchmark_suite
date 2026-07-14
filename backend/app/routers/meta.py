@@ -3,7 +3,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.services.seed_core_metrics import seed_core_definitions
 from app.utils.database import get_db
-from app.utils.minio_utils import get_minio_client
+from app.utils.minio_utils import get_minio_client, MINIO_BUCKET
 from app.schemas.responses import HealthResponse
 import time, os
 
@@ -24,7 +24,12 @@ def health(db: Session = Depends(get_db)):
 
     try:
         client = get_minio_client()
-        client.list_buckets()
+        # bucket_exists() only needs permission scoped to MINIO_BUCKET itself;
+        # list_buckets() needs account-wide ListAllMyBuckets, which a shared/
+        # scoped service account (as used here) may not have even though it
+        # can read/write objects within this bucket fine - that mismatch was
+        # causing "degraded" health despite the app working correctly.
+        client.bucket_exists(MINIO_BUCKET)
         minio_ok = True
     except Exception:
         pass
