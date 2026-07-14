@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Copy, ExternalLink, Link2, QrCode, X, Download } from 'lucide-react'
+import { Copy, ExternalLink, Link2, QrCode, X, Download, ListChecks } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
+import clsx from 'clsx'
+import { api } from '../services/api'
+import QuestionSetEditor from './QuestionSetEditor'
 
 function normalizeText(value) {
   return typeof value === 'string' ? value : ''
@@ -16,13 +19,16 @@ function buildSurveyUrl({ origin, pilotTag, configId, appVersion, aiModelVersion
   return `${origin}/public/survey?${params.toString()}`
 }
 
-export default function BuildSurveyLinkModal({ config, schemaId, onClose }) {
+export default function BuildSurveyLinkModal({ config, schemaId: schemaIdProp, onClose }) {
+  const [tab, setTab] = useState('link') // 'link' | 'schema'
   const [pilotTag, setPilotTag] = useState(normalizeText(config?.pilot_tag))
   const [appVersion, setAppVersion] = useState(normalizeText(config?.app_version))
   const [aiModelVersion, setAiModelVersion] = useState(
     normalizeText(config?.ai_model_version || config?.ai_model_name),
   )
   const [copied, setCopied] = useState(false)
+  const [schemaId, setSchemaId] = useState(normalizeText(schemaIdProp))
+  const [autoAttach, setAutoAttach] = useState(true)
   const qrWrapperRef = useRef(null)
 
   useEffect(() => {
@@ -30,6 +36,16 @@ export default function BuildSurveyLinkModal({ config, schemaId, onClose }) {
     setAppVersion(normalizeText(config?.app_version))
     setAiModelVersion(normalizeText(config?.ai_model_version || config?.ai_model_name))
   }, [config])
+
+  // Auto-attach the latest active question set for this pilot, if any.
+  useEffect(() => {
+    if (!autoAttach || !pilotTag.trim()) return
+    let cancelled = false
+    api.survey.schemas.getLatest(pilotTag.trim())
+      .then((latest) => { if (!cancelled) setSchemaId(normalizeText(latest?.schema_id)) })
+      .catch(() => { if (!cancelled) setSchemaId('') })
+    return () => { cancelled = true }
+  }, [autoAttach, pilotTag])
 
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const generatedUrl = useMemo(() => buildSurveyUrl({
@@ -88,6 +104,37 @@ export default function BuildSurveyLinkModal({ config, schemaId, onClose }) {
           </button>
         </div>
 
+        <div className="flex gap-1 border-b border-gray-100 px-6 pt-3">
+          <button
+            onClick={() => setTab('link')}
+            className={clsx(
+              'inline-flex items-center gap-1.5 rounded-t-md px-3 py-2 text-sm font-medium transition-colors',
+              tab === 'link' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500 hover:text-gray-700',
+            )}
+          >
+            <Link2 size={14} /> Link
+          </button>
+          <button
+            onClick={() => setTab('schema')}
+            className={clsx(
+              'inline-flex items-center gap-1.5 rounded-t-md px-3 py-2 text-sm font-medium transition-colors',
+              tab === 'schema' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500 hover:text-gray-700',
+            )}
+          >
+            <ListChecks size={14} /> Question Set
+          </button>
+        </div>
+
+        {tab === 'schema' && (
+          <div className="max-h-[70vh] overflow-y-auto px-6 py-5">
+            <QuestionSetEditor
+              pilotTag={pilotTag}
+              onCreated={(schema) => { setSchemaId(schema.schema_id); setAutoAttach(false); setTab('link') }}
+            />
+          </div>
+        )}
+
+        {tab === 'link' && (
         <div className="grid gap-6 px-6 py-5 md:grid-cols-[minmax(0,1fr)_220px]">
           <div className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2">
@@ -151,6 +198,37 @@ export default function BuildSurveyLinkModal({ config, schemaId, onClose }) {
               </div>
             </div>
 
+            <div>
+              <div className="mb-1 flex items-center justify-between gap-2">
+                <span className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
+                  <ListChecks size={13} /> Question set
+                </span>
+                <label className="flex items-center gap-1.5 text-xs text-gray-500">
+                  <input type="checkbox" checked={autoAttach} onChange={(e) => setAutoAttach(e.target.checked)} />
+                  Auto-attach latest for this pilot
+                </label>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={schemaId}
+                  onChange={(event) => { setAutoAttach(false); setSchemaId(event.target.value) }}
+                  placeholder="No question set attached"
+                  className="min-w-0 flex-1 rounded-md border border-gray-200 px-3 py-2 text-sm font-mono text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                />
+                <button
+                  onClick={() => setTab('schema')}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  <ListChecks size={14} />
+                  {schemaId ? 'Edit' : 'Create'}
+                </button>
+              </div>
+              <p className="mt-1 text-xs text-gray-400">
+                Respondents will see these questions in addition to SUS &amp; Ethics.
+              </p>
+            </div>
+
             <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
               You can also append <code className="rounded bg-white px-1">app_version</code> and{' '}
               <code className="rounded bg-white px-1">ai_model_version</code> to prefill metadata.
@@ -179,22 +257,27 @@ export default function BuildSurveyLinkModal({ config, schemaId, onClose }) {
             </div>
           </div>
         </div>
+        )}
 
         <div className="flex flex-wrap justify-end gap-3 border-t border-gray-100 px-6 py-4">
-          <button
-            onClick={handleOpen}
-            className="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
-          >
-            <ExternalLink size={14} />
-            OPEN
-          </button>
-          <button
-            onClick={handleCopy}
-            className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-          >
-            <Copy size={14} />
-            COPY
-          </button>
+          {tab === 'link' && (
+            <>
+              <button
+                onClick={handleOpen}
+                className="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+              >
+                <ExternalLink size={14} />
+                OPEN
+              </button>
+              <button
+                onClick={handleCopy}
+                className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              >
+                <Copy size={14} />
+                COPY
+              </button>
+            </>
+          )}
           <button
             onClick={onClose}
             className="inline-flex items-center rounded-md border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
