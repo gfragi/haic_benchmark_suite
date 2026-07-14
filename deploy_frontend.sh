@@ -2,12 +2,12 @@
 set -e
 
 # Set these variables
-IMAGE="ghcr.io/gfragi/haic-frontend:latest"
-NAMESPACE="bench"
+IMAGE="ghcr.io/gfragi/haic-frontend-react:latest"
+NAMESPACE="benchmarking"
 DEPLOYMENT="frontend"
 CONTEXT="."  # project root
 
-DEFAULT_DOCKERFILE="Dockerfile.frontend"
+DEFAULT_DOCKERFILE="Dockerfile.frontend-react"
 DOCKERFILE_OPTIONS=("Dockerfile.frontend" "Dockerfile.frontend-react")
 
 choose_dockerfile() {
