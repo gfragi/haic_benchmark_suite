@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session
 from app.models.survey_schema import SurveyQuestionSet
 from app.schemas.survey_schema import SurveyQuestionSetIn
 
-def fetch_schema_by_id(db: Session, schema_id: str) -> SurveyQuestionSet:
+def fetch_schema_by_id(db: Session, schema_id: str, raise_if_missing: bool = True) -> Optional[SurveyQuestionSet]:
     obj = db.query(SurveyQuestionSet).filter(SurveyQuestionSet.schema_id == UUID(schema_id)).first()
-    if not obj:
+    if not obj and raise_if_missing:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="schema not found")
     return obj
 

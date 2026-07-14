@@ -5,13 +5,14 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
   ResponsiveContainer, CartesianGrid,
 } from 'recharts'
-import { ArrowLeft, Loader2, ChevronDown } from 'lucide-react'
+import { ArrowLeft, Loader2, ChevronDown, Download } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 import { SUS_QUESTIONS, ETHICS_QUESTIONS } from '../surveyConfig'
 
 function VersionBarTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
+  const count = payload[0]?.payload?.count
   return (
     <div className="bg-white border border-gray-200 rounded shadow-sm text-xs p-2">
       <p className="font-semibold text-gray-800 mb-1">{label}</p>
@@ -19,6 +20,57 @@ function VersionBarTooltip({ active, payload, label }) {
         <p key={p.dataKey} style={{ color: p.fill }}>
           {p.name}: {p.value?.toFixed(1)}
         </p>
+      ))}
+      <p className="text-gray-400 mt-1">n = {count}</p>
+    </div>
+  )
+}
+
+function downloadCsv(filename, header, rows) {
+  const csv = [header, ...rows].map((r) => r.join(',')).join('\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = filename
+  link.click()
+  URL.revokeObjectURL(link.href)
+}
+
+function distributionSummary(dist) {
+  const total = Object.values(dist).reduce((a, b) => a + b, 0)
+  return Object.entries(dist)
+    .sort(([, a], [, b]) => b - a)
+    .map(([opt, n]) => `${opt} (${Math.round((n / total) * 100)}%)`)
+    .join(', ')
+}
+
+function DomainSpecificBlock({ title, data }) {
+  const schemas = data?.schemas ?? []
+  if (schemas.length === 0) {
+    return <p className="text-xs text-gray-400">No domain-specific responses for {title}.</p>
+  }
+  return (
+    <div className="space-y-3">
+      {schemas.map((schema) => (
+        <div key={schema.schema_id} className="rounded-md border border-gray-200 p-3">
+          <p className="text-xs font-medium text-gray-600 mb-2">
+            {schema.name || 'Question set'} <span className="text-gray-400">· {schema.respondent_count} respondents</span>
+          </p>
+          <div className="space-y-1.5">
+            {schema.questions.map((q) => (
+              <div key={q.id} className="text-xs">
+                <span className="text-gray-600">{q.label}</span>{' '}
+                {q.type === 'likert' || q.type === 'number' ? (
+                  <span className="font-mono text-gray-800">— avg {q.avg.toFixed(2)} (n={q.count})</span>
+                ) : q.distribution ? (
+                  <span className="text-gray-500">— {distributionSummary(q.distribution)} (n={q.count})</span>
+                ) : (
+                  <span className="text-gray-400">— {q.count} responses</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   )
@@ -127,6 +179,18 @@ export default function SurveyDetailPage() {
     enabled: canCompare,
   })
 
+  const { data: dsA } = useQuery({
+    queryKey: ['survey-domain-specific', pilotTag, versionA],
+    queryFn: () => api.survey.domainSpecificAverages(pilotTag, versionA),
+    enabled: canCompare,
+  })
+
+  const { data: dsB } = useQuery({
+    queryKey: ['survey-domain-specific', pilotTag, versionB],
+    queryFn: () => api.survey.domainSpecificAverages(pilotTag, versionB),
+    enabled: canCompare,
+  })
+
   const chartData = useMemo(() => {
     if (!aggregate) return []
     return Object.entries(aggregate).map(([version, stats]) => ({
@@ -164,7 +228,21 @@ export default function SurveyDetailPage() {
         <>
           {/* Per-version overview */}
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h2 className="text-sm font-semibold text-gray-700 mb-3">Average score by app version</h2>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-gray-700">Average score by app version</h2>
+              {chartData.length > 0 && (
+                <button
+                  onClick={() => downloadCsv(
+                    `survey_${pilotTag}.csv`,
+                    ['App Version', 'Avg SUS', 'Avg Ethics', 'Responses'],
+                    chartData.map((d) => [d.version, d['Avg SUS'].toFixed(2), d['Avg Ethics'].toFixed(2), d.count]),
+                  )}
+                  className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  <Download size={12} /> Export CSV
+                </button>
+              )}
+            </div>
             {aggregateLoading && (
               <div className="flex items-center justify-center h-40 gap-2 text-gray-400 text-sm">
                 <Loader2 size={16} className="animate-spin" /> Loading…
@@ -260,6 +338,28 @@ export default function SurveyDetailPage() {
                       versionA={versionA}
                       versionB={versionB}
                     />
+                  </div>
+                )}
+
+                {(dsA || dsB) && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      Domain-specific questions
+                    </p>
+                    <p className="text-xs text-gray-400 mb-3">
+                      Each pilot version may use its own custom question set, so these are shown
+                      separately rather than in a shared table.
+                    </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs font-medium text-indigo-700 mb-2">{versionA}</p>
+                        <DomainSpecificBlock title={versionA} data={dsA} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-teal-700 mb-2">{versionB}</p>
+                        <DomainSpecificBlock title={versionB} data={dsB} />
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

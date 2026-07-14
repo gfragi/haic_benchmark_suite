@@ -163,3 +163,94 @@ def question_averages(session: Session, pilot_tag: str, app_version: str):
     row = session.execute(stmt, {"pilot": pilot_tag, "ver": app_version}).first()
     # row[0] and row[1] can be None if no data
     return {"sus": row[0] or {}, "ethics": row[1] or {}} if row else {"sus": {}, "ethics": {}}
+
+
+def domain_specific_averages(db: Session, pilot_tag: str, app_version: str):
+    """
+    Aggregate each survey's domain_specific responses, grouped by the schema_id
+    that was active when it was submitted (different versions of a pilot can
+    have different custom question sets, so there's no single fixed key set
+    to aggregate against like SUS/Ethics).
+
+    Returns:
+      { "schemas": [
+          { "schema_id": "...", "name": "...", "version": 1, "respondent_count": 12,
+            "questions": [
+              {"id": "q1", "label": "...", "type": "likert", "avg": 4.2, "count": 12},
+              {"id": "q2", "label": "...", "type": "single", "distribution": {"Yes": 8, "No": 4}, "count": 12},
+              {"id": "q3", "label": "...", "type": "text", "count": 5},
+            ] },
+          ...
+      ] }
+    """
+    surveys = (
+        db.query(Survey)
+        .filter(
+            Survey.pilot_tag == pilot_tag,
+            Survey.app_version == app_version,
+            Survey.schema_id.isnot(None),
+        )
+        .all()
+    )
+
+    by_schema: Dict[str, List[Survey]] = {}
+    for s in surveys:
+        if not s.domain_specific:
+            continue
+        by_schema.setdefault(str(s.schema_id), []).append(s)
+
+    schemas_out = []
+    for schema_id, group in by_schema.items():
+        schema = fetch_schema_by_id(db, schema_id, raise_if_missing=False)
+        if not schema:
+            continue
+
+        questions_out = []
+        for q in schema.questions:
+            qid, qtype = q["id"], q["type"]
+            answers = [
+                s.domain_specific[qid]
+                for s in group
+                if s.domain_specific and qid in s.domain_specific and s.domain_specific[qid] is not None
+            ]
+            if not answers:
+                continue
+
+            if qtype in ("likert", "number"):
+                questions_out.append({
+                    "id": qid, "label": q["label"], "type": qtype,
+                    "avg": sum(answers) / len(answers), "count": len(answers),
+                })
+            elif qtype == "multi":
+                dist: Dict[str, int] = {}
+                for val in answers:
+                    for opt in (val or []):
+                        dist[opt] = dist.get(opt, 0) + 1
+                questions_out.append({
+                    "id": qid, "label": q["label"], "type": qtype,
+                    "distribution": dist, "count": len(answers),
+                })
+            elif qtype in ("single", "boolean"):
+                dist: Dict[str, int] = {}
+                for val in answers:
+                    key = str(val)
+                    dist[key] = dist.get(key, 0) + 1
+                questions_out.append({
+                    "id": qid, "label": q["label"], "type": qtype,
+                    "distribution": dist, "count": len(answers),
+                })
+            else:  # text or unrecognized types: just count responses, no content
+                questions_out.append({
+                    "id": qid, "label": q["label"], "type": qtype,
+                    "count": len(answers),
+                })
+
+        schemas_out.append({
+            "schema_id": schema_id,
+            "name": schema.name,
+            "version": schema.version,
+            "respondent_count": len(group),
+            "questions": questions_out,
+        })
+
+    return {"schemas": schemas_out}

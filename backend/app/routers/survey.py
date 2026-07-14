@@ -10,6 +10,7 @@ from app.services.survey_service import (
     distinct_app_versions,
     aggregate_for_version,
     question_averages,
+    domain_specific_averages,
 )
 
 router = APIRouter()
@@ -73,3 +74,11 @@ def question_averages_route(
     db: Session = Depends(get_db),
 ):
     return question_averages(db, pilot_tag, app_version)
+
+@router.get("/domain-specific-averages", summary="Aggregate domain-specific question responses, grouped by schema")
+def domain_specific_averages_route(
+    pilot_tag: str = Query(..., min_length=1),
+    app_version: str = Query(..., min_length=1),
+    db: Session = Depends(get_db),
+):
+    return domain_specific_averages(db, pilot_tag, app_version)

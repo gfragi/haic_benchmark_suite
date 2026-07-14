@@ -109,6 +109,8 @@ export const api = {
       request(`/survey/compare?pilot_tag=${pilotTag}&version_a=${versionA}&version_b=${versionB}`),
     questionAverages: (pilotTag, appVersion) =>
       request(`/survey/question-averages?pilot_tag=${pilotTag}&app_version=${appVersion}`),
+    domainSpecificAverages: (pilotTag, appVersion) =>
+      request(`/survey/domain-specific-averages?pilot_tag=${pilotTag}&app_version=${appVersion}`),
     schemas: {
       create: (body) =>
         request('/survey/schemas', { method: 'POST', body: JSON.stringify(body) }),
