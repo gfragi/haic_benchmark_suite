@@ -26,7 +26,11 @@ async def get_evaluation_results(configuration_id: int, db: Session = Depends(ge
         raise HTTPException(status_code=404, detail="No results found for this configuration")
     return results
 
-# Holistic summary: HAIC + fairness + SUS for a configuration
+# Holistic summary: HAIC + fairness + SUS for a configuration.
+# SUS/ethics survey data is independent of whether an evaluation has run yet -
+# a configuration can have survey responses with no logs/evaluation at all
+# (e.g. freshly created pilots), so this only 404s when there's truly nothing
+# to show, rather than requiring an EvaluationResult as a prerequisite.
 @router.get("/{configuration_id}/holistic")
 async def get_holistic_summary(configuration_id: int, db: Session = Depends(get_db)):
     from app.models.survey import Survey
@@ -38,16 +42,26 @@ async def get_holistic_summary(configuration_id: int, db: Session = Depends(get_
         .order_by(EvaluationResult.evaluation_date.desc())
         .first()
     )
-    if not latest_result:
-        raise HTTPException(status_code=404, detail="No evaluation results found for this configuration")
-
-    try:
-        result_object = minio_client.get_object(os.getenv("MINIO_BUCKET"), latest_result.result_minio_path)
-        result_data = json.load(io.BytesIO(result_object.read()))
-    except S3Error as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching result from MinIO: {str(e)}")
 
     surveys = db.query(Survey).filter(Survey.configuration_id == configuration_id).all()
+
+    if not latest_result and not surveys:
+        raise HTTPException(
+            status_code=404,
+            detail="No evaluation results or survey responses found for this configuration",
+        )
+
+    haic, warnings, fairness = {}, [], None
+    if latest_result:
+        try:
+            result_object = minio_client.get_object(os.getenv("MINIO_BUCKET"), latest_result.result_minio_path)
+            result_data = json.load(io.BytesIO(result_object.read()))
+            haic = result_data.get("aggregates", {}).get("interaction", {})
+            warnings = result_data.get("warnings", [])
+            fairness = result_data.get("fairness")
+        except S3Error as e:
+            raise HTTPException(status_code=500, detail=f"Error fetching result from MinIO: {str(e)}")
+
     sus_summary = None
     if surveys:
         sus_scores = [calculate_sus_score(s.tam_sus_responses) for s in surveys]
@@ -65,12 +79,12 @@ async def get_holistic_summary(configuration_id: int, db: Session = Depends(get_
 
     return {
         "configuration_id": configuration_id,
-        "haic": result_data.get("aggregates", {}).get("interaction", {}),
-        "warnings": result_data.get("warnings", []),
-        "fairness": result_data.get("fairness"),
+        "haic": haic,
+        "warnings": warnings,
+        "fairness": fairness,
         "sus": sus_summary,
-        "evaluation_date": latest_result.evaluation_date,
-        "ai_model_version": latest_result.ai_model_version,
+        "evaluation_date": latest_result.evaluation_date if latest_result else None,
+        "ai_model_version": latest_result.ai_model_version if latest_result else None,
     }
 
 
