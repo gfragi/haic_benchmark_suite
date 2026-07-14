@@ -28,4 +28,10 @@ class EvaluationConfig(Base):
 
     # Relationship to associate with logs
     logs = relationship("LogEntry", back_populates="configuration")
-    results = relationship("EvaluationResult", back_populates="configuration")
+    # passive_deletes=True: results.configuration_id is NOT NULL with an
+    # ON DELETE CASCADE FK at the DB level. Without this, SQLAlchemy's default
+    # ORM-level cascade tries to UPDATE results SET configuration_id=NULL
+    # before deleting the parent, which violates the NOT NULL constraint for
+    # any configuration that actually has results rows. This tells the ORM to
+    # trust the DB's own cascade instead of managing the FK itself.
+    results = relationship("EvaluationResult", back_populates="configuration", passive_deletes=True)
