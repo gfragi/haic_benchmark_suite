@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, Link } from 'react-router-dom'
-import { ChevronRight, AlertCircle, Loader2, Plus, X, HelpCircle, Link2 } from 'lucide-react'
+import { ChevronRight, AlertCircle, Loader2, Plus, X, HelpCircle, Link2, Trash2 } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 import BuildSurveyLinkModal from '../components/BuildSurveyLinkModal'
@@ -319,6 +319,7 @@ export default function ConfigListPage() {
   const queryClient = useQueryClient()
   const [showModal, setShowModal] = useState(false)
   const [linkConfig, setLinkConfig] = useState(null)
+  const [deletingId, setDeletingId] = useState(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['configs'],
@@ -329,6 +330,22 @@ export default function ConfigListPage() {
     queryClient.invalidateQueries({ queryKey: ['configs'] })
     setShowModal(false)
     navigate(`/config/${newCfg.id}/results`)
+  }
+
+  async function handleDelete(cfg) {
+    if (!window.confirm(
+      `Delete "${cfg.application_name}" (config ${cfg.id})? This permanently removes its logs, ` +
+      `results, and all uploaded data from storage. This cannot be undone.`
+    )) return
+    setDeletingId(cfg.id)
+    try {
+      await api.configs.delete(cfg.id)
+      queryClient.invalidateQueries({ queryKey: ['configs'] })
+    } catch (e) {
+      window.alert(`Failed to delete configuration ${cfg.id}: ${e.message}`)
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   if (isLoading) {
@@ -407,6 +424,7 @@ export default function ConfigListPage() {
           <table className="min-w-full divide-y divide-gray-100">
             <thead>
               <tr className="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3">ID</th>
                 <th className="px-4 py-3">Application</th>
                 <th className="px-4 py-3">AI Model</th>
                 <th className="px-4 py-3">Model Type</th>
@@ -422,6 +440,9 @@ export default function ConfigListPage() {
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={() => navigate(`/config/${cfg.id}/results`)}
                 >
+                  <td className="px-4 py-3 text-sm text-gray-400 tabular-nums">
+                    {cfg.id}
+                  </td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">
                     {cfg.application_name}
                   </td>
@@ -451,6 +472,16 @@ export default function ConfigListPage() {
                         className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                       >
                         View results <ChevronRight size={14} />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(cfg) }}
+                        disabled={deletingId === cfg.id}
+                        className="inline-flex items-center gap-1 text-gray-400 hover:text-red-600 text-sm font-medium disabled:opacity-50"
+                        title="Delete configuration and all its data"
+                      >
+                        {deletingId === cfg.id
+                          ? <Loader2 size={14} className="animate-spin" />
+                          : <Trash2 size={14} />}
                       </button>
                     </div>
                   </td>

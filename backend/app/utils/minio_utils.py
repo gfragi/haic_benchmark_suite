@@ -133,6 +133,18 @@ def delete_file(config_id: int, log_name: str):
     client.remove_object(MINIO_BUCKET, log_path)
 
 
+def delete_all_files(config_id: int) -> int:
+    """Remove every object under config_id/ (uploads, aggregated logs, results). Returns count deleted."""
+    client = get_minio_client()
+    object_names = [
+        obj.object_name
+        for obj in client.list_objects(MINIO_BUCKET, prefix=f"{config_id}/", recursive=True)
+    ]
+    for name in object_names:
+        client.remove_object(MINIO_BUCKET, name)
+    return len(object_names)
+
+
 def put_json(config_id: int, filename: str, data: dict) -> str:
     """
     Store a JSON object under config_id/filename in the MINIO_BUCKET.

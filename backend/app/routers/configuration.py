@@ -5,7 +5,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models.configuration import EvaluationConfig
+from app.models.logs import LogEntry
 from app.schemas.configuration import EvaluationConfigSchema
+from app.utils.minio_utils import delete_all_files
 # Temporarily comment out metrics_core import
 # from metrics_core.outcome_metrics import Metrics
 
@@ -101,7 +103,9 @@ def update_configuration(configuration_id: int, updated_config: EvaluationConfig
 
     return config
 
-# DELETE endpoint to delete an evaluation configuration
+# DELETE endpoint to delete an evaluation configuration and everything tied to it
+# (LogEntry rows, MinIO objects under configuration_id/, and the config row itself -
+# results rows cascade automatically via results_configuration_id_fkey's ON DELETE CASCADE)
 @router.delete("/delete/{configuration_id}", response_model=dict)
 def delete_configuration(configuration_id: int, db: Session = Depends(get_db)):
     # Retrieve the existing config
@@ -109,8 +113,24 @@ def delete_configuration(configuration_id: int, db: Session = Depends(get_db)):
     if not config:
         raise HTTPException(status_code=404, detail="Evaluation configuration not found")
 
-    # Delete the config
+    deleted_log_count = db.query(LogEntry).filter(
+        LogEntry.configuration_id == configuration_id
+    ).delete()
+
+    try:
+        deleted_object_count = delete_all_files(configuration_id)
+    except Exception as e:
+        logger.warning(
+            "Failed to delete MinIO objects for configuration %s: %s",
+            configuration_id, repr(e),
+        )
+        deleted_object_count = 0
+
     db.delete(config)
     db.commit()
 
-    return {"message": f"Evaluation configuration with id {configuration_id} has been deleted."}
+    return {
+        "message": f"Evaluation configuration with id {configuration_id} has been deleted.",
+        "deleted_log_entries": deleted_log_count,
+        "deleted_minio_objects": deleted_object_count,
+    }

@@ -48,7 +48,7 @@ spec:
                   key: DB_PASSWORD
       containers:
         - name: backend
-          image: ghcr.io/gfragi/haic-backend:rollback
+          image: ghcr.io/gfragi/haic-backend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
@@ -96,19 +96,19 @@ spec:
                   key: MINIO_BUCKET
           resources:
             requests:
-              memory: "512Mi"
+              memory: "768Mi"
               cpu: "500m"
             limits:
-              memory: "1Gi"
-              cpu: "1000m"
+              memory: "2Gi"
+              cpu: "2000m"
           livenessProbe:
             httpGet:
               path: /meta/health
               port: 8000
             initialDelaySeconds: 30
             periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
+            timeoutSeconds: 10
+            failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /meta/health
