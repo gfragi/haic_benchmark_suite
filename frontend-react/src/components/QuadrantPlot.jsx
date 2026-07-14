@@ -10,6 +10,35 @@ export const PALETTE = [
 
 const Q_LABEL = { fontSize: 10, fill: '#d1d5db', fontStyle: 'italic' }
 
+function median(values) {
+  const sorted = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
+}
+
+// Robust axis bounds: uses median + median-absolute-deviation instead of raw
+// min/max, so a single corrupted/outlier data point (e.g. a garbage value in
+// test data) can't stretch the whole domain and squash every real point into
+// one corner. Outliers beyond 6 MADs are excluded from the span calculation
+// but still get plotted — they just render clipped at the axis edge.
+function robustDomain(values, ref) {
+  const all = [...values, ref]
+  if (values.length < 3) {
+    const min = Math.min(...all)
+    const max = Math.max(...all)
+    const span = Math.max(max - min, 0.1)
+    return [min - span * 0.3, max + span * 0.3]
+  }
+  const med = median(values)
+  const mad = median(values.map(v => Math.abs(v - med))) || 0.1
+  const filtered = values.filter(v => Math.abs(v - med) <= mad * 6)
+  const useValues = filtered.length >= 2 ? [...filtered, ref] : all
+  const min = Math.min(...useValues)
+  const max = Math.max(...useValues)
+  const span = Math.max(max - min, 0.1)
+  return [min - span * 0.3, max + span * 0.3]
+}
+
 function ScatterTooltip({ active, payload, xLabel, yLabel }) {
   if (!active || !payload?.length) return null
   const d = payload[0]?.payload
@@ -43,13 +72,18 @@ export default function QuadrantPlot({ title, points, xLabel, yLabel, xRef, yRef
 
   const xs = valid.map(p => p.x)
   const ys = valid.map(p => p.y)
-  const xSpan = Math.max(Math.max(...xs) - Math.min(...xs), 0.1)
-  const ySpan = Math.max(Math.max(...ys) - Math.min(...ys), 0.1)
+  const [xMin, xMax] = robustDomain(xs, xRef)
+  const [yMinRaw, yMaxRaw] = robustDomain(ys, yRef)
+  const yMin = Math.min(yMinRaw, 0)
+  const yMax = Math.max(yMaxRaw, 1)
 
-  const xMin = Math.min(Math.min(...xs) - xSpan * 0.3, xRef - xSpan * 0.5)
-  const xMax = Math.max(Math.max(...xs) + xSpan * 0.3, xRef + xSpan * 0.5)
-  const yMin = Math.min(Math.min(...ys) - ySpan * 0.2, yRef - 0.15, 0)
-  const yMax = Math.max(Math.max(...ys) + ySpan * 0.2, yRef + 0.15, 1)
+  // One legend entry per unique version, even if several data points share it
+  // (e.g. many test results with no real version tag) - otherwise the legend
+  // repeats the same label once per point.
+  const legendPayload = [...new Map(valid.map(p => [p.version, p])).values()]
+    .map(p => ({ value: p.version, type: 'circle', color: p.color }))
+
+  const tickFmt = (v) => Number(v).toFixed(2)
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -59,10 +93,12 @@ export default function QuadrantPlot({ title, points, xLabel, yLabel, xRef, yRef
           <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
           <XAxis
             type="number" dataKey="x" domain={[xMin, xMax]} tick={{ fontSize: 10 }}
+            tickFormatter={tickFmt}
             label={{ value: xLabel, position: 'insideBottom', offset: -10, style: { fontSize: 10, fill: '#9ca3af' } }}
           />
           <YAxis
             type="number" dataKey="y" domain={[yMin, yMax]} tick={{ fontSize: 10 }}
+            tickFormatter={tickFmt}
             label={{ value: yLabel, angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 10, fill: '#9ca3af' } }}
           />
 
@@ -85,7 +121,7 @@ export default function QuadrantPlot({ title, points, xLabel, yLabel, xRef, yRef
           <ReferenceLine y={yRef} stroke="#e5e7eb" strokeDasharray="5 3" />
 
           <Tooltip content={(props) => <ScatterTooltip {...props} xLabel={xLabel} yLabel={yLabel} />} />
-          <Legend iconSize={8} wrapperStyle={{ fontSize: 11, paddingTop: 4 }} />
+          <Legend iconSize={8} wrapperStyle={{ fontSize: 11, paddingTop: 4 }} payload={legendPayload} />
 
           {valid.map((point, i) => (
             <Scatter

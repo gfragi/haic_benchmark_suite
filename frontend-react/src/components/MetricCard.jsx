@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { AlertTriangle } from 'lucide-react'
 
-const METRICS = {
+export const METRICS = {
   F: {
     full: 'Interaction Frequency', unit: 'events/min',
     range: '0+, typical 0–50', better: 'higher',

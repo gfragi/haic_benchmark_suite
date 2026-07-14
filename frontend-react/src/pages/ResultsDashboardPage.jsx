@@ -9,12 +9,23 @@ import { AlertCircle, ArrowLeft, Loader2, Sparkles, X, AlertTriangle } from 'luc
 import clsx from 'clsx'
 import { api } from '../services/api'
 import QuadrantPlot, { PALETTE } from '../components/QuadrantPlot'
-import MetricCard from '../components/MetricCard'
+import MetricCard, { METRICS } from '../components/MetricCard'
 import ExtendedView from '../components/ExtendedView'
 import BuildSurveyLinkModal from '../components/BuildSurveyLinkModal'
 
 const CORE_METRICS = ['F', 'D', 'HCL', 'Tr', 'A', 'S', 'EL', 'EfficiencyScore']
 const LOWER_BETTER = new Set(['EL', 'D'])
+
+// Documented reference thresholds per metric (see haic-libs interpretation
+// guide); metrics without a fixed threshold fall back to the mean of the
+// plotted values (computed in buildRef below).
+const METRIC_THRESHOLDS = { EL: 0.3, Tr: 0.5, HCL: 0.5, A: 0, S: 0.6 }
+
+function buildRef(points, key) {
+  if (METRIC_THRESHOLDS[key] != null) return METRIC_THRESHOLDS[key]
+  const values = points.map(p => p[key]).filter(v => v != null)
+  return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0.5
+}
 
 function deriveDomain(config) {
   const text = `${config?.application_name ?? ''} ${config?.description ?? ''}`.toLowerCase()
@@ -420,6 +431,10 @@ export default function ResultsDashboardPage() {
   const [compMetric, setCompMetric] = useState('Tr')
   const [fairnessModalOpen, setFairnessModalOpen] = useState(false)
   const [surveyLinkOpen, setSurveyLinkOpen] = useState(false)
+  const [hiddenVersions, setHiddenVersions] = useState(() => new Set())
+  const [customX, setCustomX] = useState('D')
+  const [customY, setCustomY] = useState('EfficiencyScore')
+  const [activeQuadrant, setActiveQuadrant] = useState('el-tr')
   const queryClient = useQueryClient()
 
   // Config metadata
@@ -464,12 +479,14 @@ export default function ResultsDashboardPage() {
   const versions = results.map(r => r.ai_model_version)
   const safeIdx = results.length > 0 ? Math.min(selectedIdx, results.length - 1) : 0
 
-  // Build quadrant data
-  const quadrantPoints = results.map((r, i) => ({
-    version: r.ai_model_version,
-    color: PALETTE[i % PALETTE.length],
-    ...(r.aggregates?.interaction ?? {}),
-  }))
+  // Build quadrant data — filtered by which versions the user has toggled visible
+  const quadrantPoints = results
+    .map((r, i) => ({
+      version: r.ai_model_version,
+      color: PALETTE[i % PALETTE.length],
+      ...(r.aggregates?.interaction ?? {}),
+    }))
+    .filter(p => !hiddenVersions.has(p.version))
 
   const elTrPoints = quadrantPoints.map(p => ({
     version: p.version, color: p.color,
@@ -485,6 +502,28 @@ export default function ResultsDashboardPage() {
     version: p.version, color: p.color,
     x: p.F ?? null, y: p.HCL ?? null,
   }))
+
+  const aTrPoints = quadrantPoints.map(p => ({
+    version: p.version, color: p.color,
+    x: p.A ?? null, y: p.Tr ?? null,
+  }))
+
+  const elHclPoints = quadrantPoints.map(p => ({
+    version: p.version, color: p.color,
+    x: p.EL ?? null, y: p.HCL ?? null,
+  }))
+
+  const sAPoints = quadrantPoints.map(p => ({
+    version: p.version, color: p.color,
+    x: p.S ?? null, y: p.A ?? null,
+  }))
+
+  const customPoints = quadrantPoints.map(p => ({
+    version: p.version, color: p.color,
+    x: p[customX] ?? null, y: p[customY] ?? null,
+  }))
+  const customXRef = buildRef(quadrantPoints, customX)
+  const customYRef = buildRef(quadrantPoints, customY)
 
   // Selected result for cards
   const selResult = results[safeIdx]
@@ -565,36 +604,158 @@ export default function ResultsDashboardPage() {
       {results.length > 0 && mode === 'core' && (
         <div className="space-y-6">
 
-          {/* Hero: quadrant scatter plots */}
-          <div className="grid grid-cols-2 gap-4">
-            <QuadrantPlot
-              title="Effort Loss × Trust"
-              points={elTrPoints}
-              xLabel="EL (Effort Loss)"
-              yLabel="Tr (Trust)"
-              xRef={0}
-              yRef={0.5}
-              quadrants={{
-                topLeft: 'Trusted but slow',
-                topRight: 'Ideal collaboration',
-                bottomLeft: 'Redesign needed',
-                bottomRight: 'Efficient but untrusted',
-              }}
-            />
-            <QuadrantPlot
-              title="Interaction Frequency × Cognitive Load"
-              points={fHclPoints}
-              xLabel="F (Frequency)"
-              yLabel="HCL (Cognitive Load)"
-              xRef={fRef}
-              yRef={0.5}
-              quadrants={{
-                topLeft: 'Overloaded',
-                topRight: 'Smooth & active',
-                bottomLeft: 'Low engagement',
-                bottomRight: 'Smooth but passive',
-              }}
-            />
+          {/* Version filter — which results' points show on the quadrant plots */}
+          {[...new Set(versions)].length > 1 && (
+            <div className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2.5">
+              <span className="text-xs font-medium text-gray-500">Show versions:</span>
+              {[...new Set(versions)].map((v, i) => (
+                <label key={v} className="flex items-center gap-1.5 text-xs text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={!hiddenVersions.has(v)}
+                    onChange={() => setHiddenVersions((prev) => {
+                      const next = new Set(prev)
+                      if (next.has(v)) next.delete(v); else next.add(v)
+                      return next
+                    })}
+                  />
+                  <span
+                    className="inline-block w-2 h-2 rounded-full"
+                    style={{ backgroundColor: PALETTE[i % PALETTE.length] }}
+                  />
+                  {v}
+                </label>
+              ))}
+            </div>
+          )}
+
+          {/* Diagnostic quadrant — one plot at a time */}
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <SmallToggle
+                options={[
+                  ['el-tr', 'EL × Tr'],
+                  ['f-hcl', 'F × HCL'],
+                  ['a-tr', 'A × Tr'],
+                  ['el-hcl', 'EL × HCL'],
+                  ['s-a', 'S × A'],
+                  ['custom', 'Custom'],
+                ]}
+                value={activeQuadrant}
+                onChange={setActiveQuadrant}
+              />
+              {activeQuadrant === 'custom' && (
+                <div className="flex items-center gap-2">
+                  <select
+                    value={customX}
+                    onChange={(e) => setCustomX(e.target.value)}
+                    className="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700"
+                  >
+                    {CORE_METRICS.map((k) => <option key={k} value={k}>{k} — {METRICS[k]?.full}</option>)}
+                  </select>
+                  <span className="text-xs text-gray-400">vs</span>
+                  <select
+                    value={customY}
+                    onChange={(e) => setCustomY(e.target.value)}
+                    className="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700"
+                  >
+                    {CORE_METRICS.map((k) => <option key={k} value={k}>{k} — {METRICS[k]?.full}</option>)}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {activeQuadrant === 'el-tr' && (
+              <QuadrantPlot
+                title="Effort Loss × Trust"
+                points={elTrPoints}
+                xLabel="EL (Effort Loss)"
+                yLabel="Tr (Trust)"
+                xRef={0}
+                yRef={0.5}
+                quadrants={{
+                  topLeft: 'Trusted but slow',
+                  topRight: 'Ideal collaboration',
+                  bottomLeft: 'Redesign needed',
+                  bottomRight: 'Efficient but untrusted',
+                }}
+              />
+            )}
+            {activeQuadrant === 'f-hcl' && (
+              <QuadrantPlot
+                title="Interaction Frequency × Cognitive Load"
+                points={fHclPoints}
+                xLabel="F (Frequency)"
+                yLabel="HCL (Cognitive Load)"
+                xRef={fRef}
+                yRef={0.5}
+                quadrants={{
+                  topLeft: 'Overloaded',
+                  topRight: 'Smooth & active',
+                  bottomLeft: 'Low engagement',
+                  bottomRight: 'Smooth but passive',
+                }}
+              />
+            )}
+            {activeQuadrant === 'a-tr' && (
+              <QuadrantPlot
+                title="Adaptability × Trust"
+                points={aTrPoints}
+                xLabel="A (Adaptability)"
+                yLabel="Tr (Trust)"
+                xRef={0}
+                yRef={0.5}
+                quadrants={{
+                  topLeft: 'Trusted, not improving',
+                  topRight: 'Improving & trusted',
+                  bottomLeft: 'Struggling',
+                  bottomRight: 'Improving, not yet trusted',
+                }}
+              />
+            )}
+            {activeQuadrant === 'el-hcl' && (
+              <QuadrantPlot
+                title="Effort Loss × Cognitive Load"
+                points={elHclPoints}
+                xLabel="EL (Effort Loss)"
+                yLabel="HCL (Cognitive Load)"
+                xRef={0.3}
+                yRef={0.5}
+                quadrants={{
+                  topLeft: 'Slow but manageable',
+                  topRight: 'Costly overload',
+                  bottomLeft: 'Lean & smooth',
+                  bottomRight: 'Fast but taxing',
+                }}
+              />
+            )}
+            {activeQuadrant === 's-a' && (
+              <QuadrantPlot
+                title="Surrogate Similarity × Adaptability"
+                points={sAPoints}
+                xLabel="S (Surrogate Similarity)"
+                yLabel="A (Adaptability)"
+                xRef={0.6}
+                yRef={0}
+                quadrants={{
+                  topLeft: 'Diverging from reality',
+                  topRight: 'Realistic & improving',
+                  bottomLeft: 'Unrealistic, stagnant',
+                  bottomRight: 'Realistic, not improving',
+                }}
+              />
+            )}
+            {activeQuadrant === 'custom' && (
+              <QuadrantPlot
+                title={`${customX} × ${customY}`}
+                points={customPoints}
+                xLabel={`${customX} (${METRICS[customX]?.full})`}
+                yLabel={`${customY} (${METRICS[customY]?.full})`}
+                xRef={customXRef}
+                yRef={customYRef}
+                quadrants={{ topLeft: '', topRight: '', bottomLeft: '', bottomRight: '' }}
+              />
+            )}
           </div>
 
           {/* Metric cards */}
