@@ -45,9 +45,9 @@ frontend/cypress
 **/.env
 **/.env.*
 !frontend/.env.production
+!frontend-react/.env.production
 
 # Unused top-level apps/packages for current images
-frontend-react
 agentbeats_smartgrid
 pilot_onboarding
 fairness

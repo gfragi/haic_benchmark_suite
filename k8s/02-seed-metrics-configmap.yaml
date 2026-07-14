@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: db-seed-metrics
-  namespace: haic-benchmark
+  namespace: benchmarking
 data:
   seed-metrics.sql: |
     -- Seed data for HAIC Benchmark metrics and definitions

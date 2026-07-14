@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: haic-benchmark
+  namespace: benchmarking
   labels:
     app: postgres
 spec:
@@ -27,17 +27,17 @@ spec:
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: haic-benchmark-secret
+                  name: benchmarking-secret
                   key: DB_NAME
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: haic-benchmark-secret
+                  name: benchmarking-secret
                   key: DB_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: haic-benchmark-secret
+                  name: benchmarking-secret
                   key: DB_PASSWORD
           ports:
             - containerPort: 5432

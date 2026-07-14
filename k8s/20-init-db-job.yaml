@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: init-db-migrations
-  namespace: haic-benchmark
+  namespace: benchmarking
   labels:
     app: init-db
 spec:
@@ -38,27 +38,27 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: haic-benchmark-secret
+                  name: benchmarking-secret
                   key: DATABASE_URL
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: haic-benchmark-secret
+                  name: benchmarking-secret
                   key: DB_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: haic-benchmark-secret
+                  name: benchmarking-secret
                   key: DB_PASSWORD
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: haic-benchmark-secret
+                  name: benchmarking-secret
                   key: DB_NAME
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: haic-benchmark-secret
+                  name: benchmarking-secret
                   key: DB_PASSWORD
           resources:
             requests:

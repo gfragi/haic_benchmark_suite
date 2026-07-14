@@ -1,8 +1,12 @@
 const BASE = '/api/v1'
 
 async function request(path, options = {}) {
+  const headers = { 'Content-Type': 'application/json', ...options.headers }
+  if (window.__kc?.authenticated && window.__kc?.token) {
+    headers.Authorization = `Bearer ${window.__kc.token}`
+  }
   const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
+    headers,
     ...options,
   })
   if (!res.ok) {

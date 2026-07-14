@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import AppShell from './layout/AppShell'
+import RequireAuth from './components/RequireAuth'
 import HomePage from './pages/HomePage'
 import ConfigListPage from './pages/ConfigListPage'
 import ResultsDashboardPage from './pages/ResultsDashboardPage'
@@ -21,14 +22,14 @@ export default function App() {
           <AppShell>
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/configs" element={<ConfigListPage />} />
-              <Route path="/config/:id/results" element={<ResultsDashboardPage />} />
-              <Route path="/compare" element={<CompareVersionsPage />} />
-              <Route path="/ingest" element={<LogWizardPage />} />
+              <Route path="/configs" element={<RequireAuth><ConfigListPage /></RequireAuth>} />
+              <Route path="/config/:id/results" element={<RequireAuth><ResultsDashboardPage /></RequireAuth>} />
+              <Route path="/compare" element={<RequireAuth><CompareVersionsPage /></RequireAuth>} />
+              <Route path="/ingest" element={<RequireAuth><LogWizardPage /></RequireAuth>} />
               <Route path="/metrics" element={<MetricsGlossaryPage />} />
-              <Route path="/pilot/new" element={<PilotOnboardingPage />} />
+              <Route path="/pilot/new" element={<RequireAuth><PilotOnboardingPage /></RequireAuth>} />
               <Route path="/getting-started" element={<GettingStartedPage />} />
-              <Route path="/survey" element={<SurveyPage />} />
+              <Route path="/survey" element={<RequireAuth><SurveyPage /></RequireAuth>} />
             </Routes>
           </AppShell>
         )}
