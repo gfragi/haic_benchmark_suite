@@ -745,12 +745,20 @@ export default function ResultsDashboardPage() {
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <h3 className="text-sm font-semibold text-gray-700">User Experience (SUS)</h3>
                   {holistic.sus && config && (
-                    <button
-                      onClick={() => setSurveyLinkOpen(true)}
-                      className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
-                    >
-                      Build Link
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to={`/config/${configId}/survey-details`}
+                        className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50"
+                      >
+                        View details
+                      </Link>
+                      <button
+                        onClick={() => setSurveyLinkOpen(true)}
+                        className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                      >
+                        Build Link
+                      </button>
+                    </div>
                   )}
                 </div>
                 {holistic.sus ? (

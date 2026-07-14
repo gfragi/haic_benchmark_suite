@@ -11,6 +11,7 @@ import PilotOnboardingPage from './pages/PilotOnboardingPage'
 import GettingStartedPage from './pages/GettingStartedPage'
 import SurveyPage from './pages/SurveyPage'
 import PublicSurveyPage from './pages/PublicSurveyPage'
+import SurveyDetailPage from './pages/SurveyDetailPage'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/configs" element={<RequireAuth><ConfigListPage /></RequireAuth>} />
               <Route path="/config/:id/results" element={<RequireAuth><ResultsDashboardPage /></RequireAuth>} />
+              <Route path="/config/:id/survey-details" element={<RequireAuth><SurveyDetailPage /></RequireAuth>} />
               <Route path="/compare" element={<RequireAuth><CompareVersionsPage /></RequireAuth>} />
               <Route path="/ingest" element={<RequireAuth><LogWizardPage /></RequireAuth>} />
               <Route path="/metrics" element={<MetricsGlossaryPage />} />
