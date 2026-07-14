@@ -18,7 +18,7 @@ spec:
       containers:
         - name: frontend
           image: ghcr.io/gfragi/haic-frontend-react:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
               name: http
