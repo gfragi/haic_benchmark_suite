@@ -432,9 +432,17 @@ export default function ResultsDashboardPage() {
   const [fairnessModalOpen, setFairnessModalOpen] = useState(false)
   const [surveyLinkOpen, setSurveyLinkOpen] = useState(false)
   const [hiddenVersions, setHiddenVersions] = useState(() => new Set())
-  const [customX, setCustomX] = useState('D')
-  const [customY, setCustomY] = useState('EfficiencyScore')
-  const [activeQuadrant, setActiveQuadrant] = useState('el-tr')
+  // Defaults to Tr×HCL rather than D×EfficiencyScore: Tr's only two homes in
+  // the 5 fixed quadrants are EL×Tr and A×Tr, both of which need EL/A (often
+  // unavailable without baseline_s / early-late labels) - HCL has no such
+  // dependency, so this pairing is reachable even when EL and A are null.
+  const [customX, setCustomX] = useState('HCL')
+  const [customY, setCustomY] = useState('Tr')
+  const [whatIfBaselineS, setWhatIfBaselineS] = useState('')
+  // null = not yet manually chosen -> auto-pick the first quadrant with data
+  // once results load (see effectiveActiveQuadrant below). Once the user
+  // picks a tab explicitly, that choice sticks even if it has no data.
+  const [activeQuadrant, setActiveQuadrant] = useState(null)
   const queryClient = useQueryClient()
 
   // Config metadata
@@ -479,12 +487,30 @@ export default function ResultsDashboardPage() {
   const versions = results.map(r => r.ai_model_version)
   const safeIdx = results.length > 0 ? Math.min(selectedIdx, results.length - 1) : 0
 
+  // Live "what if baseline_s were X" preview, computed per-version so it can
+  // feed the EL-based quadrant plots (EL×Tr, EL×HCL) as well as the Metric
+  // Cards below — otherwise EL stays null in the scatter data (whatever
+  // baseline_s, if any, was configured at evaluation time) even though the
+  // card shows a live recomputed number, making the plot look stuck on
+  // "No data available" while a real value is visible elsewhere on the page.
+  const whatIfValue = Number(whatIfBaselineS)
+  const whatIfActive = whatIfBaselineS !== '' && whatIfValue > 0
+  function liveElFor(r) {
+    const sessions = r?.el_recompute_sessions ?? []
+    if (!whatIfActive || !sessions.length) return null
+    const els = sessions.map(s => Math.max(0, (s.total_time_s - whatIfValue) / whatIfValue))
+    const effs = sessions.map((s, i) => Math.min(1, Math.max(0, (1 / (1 + els[i])) * s.shaping_factor)))
+    const mean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length
+    return { EL: mean(els), EfficiencyScore: mean(effs) }
+  }
+
   // Build quadrant data — filtered by which versions the user has toggled visible
   const quadrantPoints = results
     .map((r, i) => ({
       version: r.ai_model_version,
       color: PALETTE[i % PALETTE.length],
       ...(r.aggregates?.interaction ?? {}),
+      ...(liveElFor(r) ?? {}),
     }))
     .filter(p => !hiddenVersions.has(p.version))
 
@@ -525,11 +551,32 @@ export default function ResultsDashboardPage() {
   const customXRef = buildRef(quadrantPoints, customX)
   const customYRef = buildRef(quadrantPoints, customY)
 
+  // Auto-pick the first quadrant tab that actually has data, so the page
+  // doesn't default to "No data available" just because EL/A need config
+  // (baseline_s) or labels most evaluations won't have set up yet - F×HCL is
+  // checked first since F and HCL don't require any special labeling.
+  const hasPlotData = (pts) => pts.some(p => p.x != null && p.y != null)
+  const QUADRANT_PRIORITY = [
+    ['f-hcl', fHclPoints],
+    ['el-tr', elTrPoints],
+    ['a-tr', aTrPoints],
+    ['el-hcl', elHclPoints],
+    ['s-a', sAPoints],
+  ]
+  const autoQuadrant = QUADRANT_PRIORITY.find(([, pts]) => hasPlotData(pts))?.[0] ?? 'el-tr'
+  const effectiveActiveQuadrant = activeQuadrant ?? autoQuadrant
+
   // Selected result for cards
   const selResult = results[safeIdx]
-  const interaction = selResult?.aggregates?.interaction ?? {}
+  const baseInteraction = selResult?.aggregates?.interaction ?? {}
   const warnings = selResult?.warnings ?? []
   const domain = deriveDomain(config)
+
+  // Live recompute for the selected result's Metric Cards — reuses liveElFor
+  // above so the cards and the EL×Tr/EL×HCL plots always agree.
+  const recomputeSessions = selResult?.el_recompute_sessions ?? []
+  const selLiveEl = liveElFor(selResult)
+  const interaction = selLiveEl ? { ...baseInteraction, ...selLiveEl } : baseInteraction
 
   // ── Loading / error states ──────────────────────────────────
 
@@ -641,10 +688,10 @@ export default function ResultsDashboardPage() {
                   ['s-a', 'S × A'],
                   ['custom', 'Custom'],
                 ]}
-                value={activeQuadrant}
+                value={effectiveActiveQuadrant}
                 onChange={setActiveQuadrant}
               />
-              {activeQuadrant === 'custom' && (
+              {effectiveActiveQuadrant === 'custom' && (
                 <div className="flex items-center gap-2">
                   <select
                     value={customX}
@@ -665,7 +712,7 @@ export default function ResultsDashboardPage() {
               )}
             </div>
 
-            {activeQuadrant === 'el-tr' && (
+            {effectiveActiveQuadrant === 'el-tr' && (
               <QuadrantPlot
                 title="Effort Loss × Trust"
                 points={elTrPoints}
@@ -681,7 +728,7 @@ export default function ResultsDashboardPage() {
                 }}
               />
             )}
-            {activeQuadrant === 'f-hcl' && (
+            {effectiveActiveQuadrant === 'f-hcl' && (
               <QuadrantPlot
                 title="Interaction Frequency × Cognitive Load"
                 points={fHclPoints}
@@ -697,7 +744,7 @@ export default function ResultsDashboardPage() {
                 }}
               />
             )}
-            {activeQuadrant === 'a-tr' && (
+            {effectiveActiveQuadrant === 'a-tr' && (
               <QuadrantPlot
                 title="Adaptability × Trust"
                 points={aTrPoints}
@@ -713,7 +760,7 @@ export default function ResultsDashboardPage() {
                 }}
               />
             )}
-            {activeQuadrant === 'el-hcl' && (
+            {effectiveActiveQuadrant === 'el-hcl' && (
               <QuadrantPlot
                 title="Effort Loss × Cognitive Load"
                 points={elHclPoints}
@@ -729,7 +776,7 @@ export default function ResultsDashboardPage() {
                 }}
               />
             )}
-            {activeQuadrant === 's-a' && (
+            {effectiveActiveQuadrant === 's-a' && (
               <QuadrantPlot
                 title="Surrogate Similarity × Adaptability"
                 points={sAPoints}
@@ -745,7 +792,7 @@ export default function ResultsDashboardPage() {
                 }}
               />
             )}
-            {activeQuadrant === 'custom' && (
+            {effectiveActiveQuadrant === 'custom' && (
               <QuadrantPlot
                 title={`${customX} × ${customY}`}
                 points={customPoints}
@@ -755,6 +802,47 @@ export default function ResultsDashboardPage() {
                 yRef={customYRef}
                 quadrants={{ topLeft: '', topRight: '', bottomLeft: '', bottomRight: '' }}
               />
+            )}
+          </div>
+
+          {/* baseline_s what-if explorer — recomputes EL/EfficiencyScore live,
+              client-side, without touching the stored evaluation result */}
+          <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="text-xs font-medium text-gray-600">
+                What if baseline_s were…
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="any"
+                value={whatIfBaselineS}
+                onChange={(e) => setWhatIfBaselineS(e.target.value)}
+                placeholder="seconds"
+                className="w-28 rounded-md border border-gray-200 px-2 py-1 text-sm text-gray-700"
+              />
+              <span className="text-xs text-gray-400">seconds</span>
+              {whatIfBaselineS !== '' && (
+                <button
+                  onClick={() => setWhatIfBaselineS('')}
+                  className="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2"
+                >
+                  Clear
+                </button>
+              )}
+              {whatIfActive && recomputeSessions.length === 0 && (
+                <span className="text-xs text-amber-600">
+                  This result has no per-session data to recompute from — re-run evaluation to enable this.
+                </span>
+              )}
+            </div>
+            {whatIfActive && recomputeSessions.length > 0 && (
+              <p className="mt-2 text-xs text-indigo-600">
+                EL and EfficiencyScore below are a live preview for baseline_s = {whatIfValue}s across
+                the selected version's {recomputeSessions.length} sessions — not the stored evaluation
+                result. Effort Loss/Efficiency depend heavily on the pilot and task, so use this to see
+                the effect before deciding on a real value.
+              </p>
             )}
           </div>
 

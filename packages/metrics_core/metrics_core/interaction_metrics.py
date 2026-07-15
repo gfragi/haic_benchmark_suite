@@ -129,12 +129,25 @@ def _total_time(
     explicit_t: Optional[float],
 ) -> float:
     """
-    Prefer explicit_t; else use t-range; else fallback to timestamp span.
+    Prefer explicit_t; else sum of per-event active-processing durations
+    (duration_s/latency_ms, the same signal D uses); else t-range; else
+    fallback to timestamp span.
+
+    Summed durations are preferred over any timestamp-based span because a
+    span measures wall-clock elapsed time, which can include time the case
+    spent waiting for a human to become available (queueing/backlog) rather
+    than actual effort - that queue-wait time isn't part of the AI-human
+    collaboration's own effort and shouldn't inflate EL or dilute F.
     """
     if explicit_t is not None:
         return float(explicit_t)
     if not decisions:
         return 0.0
+
+    durs = _durations(decisions)
+    if durs:
+        return max(0.0, sum(durs))
+
     # t-range (always present after normalization)
     try:
         t_vals = [float(e.get("t") or 0.0) for e in decisions]
@@ -522,6 +535,18 @@ def compute_metrics_with_results(
         inferred=el_inferred,
     )
 
+    # Exposed (underscore-prefixed, not a displayable metric) so callers can
+    # recompute EL/EfficiencyScore for a different baseline_s without
+    # re-running the full pipeline - e.g. a "what if baseline were X" slider.
+    # shaping_factor is the offrole/progress part of EfficiencyScore, which
+    # doesn't depend on baseline_s, so it's precomputed once here and reused
+    # as-is: new_efficiency = clip01((1 / (1 + new_EL)) * shaping_factor).
+    shaping_factor = (1.0 - _OFFROLE_PENALTY_WEIGHT * _clip01(offrole_rate)) * (
+        1.0 + _PROGRESS_BONUS_WEIGHT * _clip01(progress_rate)
+    )
+    total_time_mr = MetricResult(metric="_TotalTimeS", value=total_time if total_time > 0 else None, n_events=n_agents)
+    shaping_mr = MetricResult(metric="_EffShapingFactor", value=shaping_factor, n_events=n_agents)
+
     return {
         "F":               f_mr,
         "D":               d_mr,
@@ -531,6 +556,8 @@ def compute_metrics_with_results(
         "S":               s_mr,
         "EL":              el_mr,
         "EfficiencyScore": eff_mr,
+        "_TotalTimeS":     total_time_mr,
+        "_EffShapingFactor": shaping_mr,
     }
 
 

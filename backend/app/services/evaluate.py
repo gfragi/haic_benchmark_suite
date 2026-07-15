@@ -239,17 +239,13 @@ def _human_rt_seconds(decision: dict) -> float | None:
     return None
 
 
-def _compute_derived_metrics(logs: list, baseline_s: float | None = None) -> list:
-    """Compute derived metrics for a list of logs."""
-    # Pre-compute session durations so _derive_baseline_s can use P95
-    # automatically for datasets with ≥5 sessions (no explicit config needed).
-    session_durations = [_session_duration_s(e) for e in logs]
-    all_session_times = [d for d in session_durations if d is not None and d > 0] or None
+def _all_session_times(logs: list) -> list | None:
+    times = [_session_duration_s(e) for e in logs]
+    return [d for d in times if d is not None and d > 0] or None
 
-    # Same idea for HCL's rt_max ceiling: P95 of every human response time
-    # across the whole batch, so it auto-calibrates instead of falling back
-    # to a flat default when no meta.task_parameters.rt_max is configured.
-    all_human_rts = [
+
+def _all_human_rts(logs: list) -> list | None:
+    return [
         rt
         for entry in logs
         for d in (entry.get("decisions") or [])
@@ -257,6 +253,31 @@ def _compute_derived_metrics(logs: list, baseline_s: float | None = None) -> lis
         for rt in [_human_rt_seconds(d)]
         if rt is not None and rt > 0
     ] or None
+
+
+def _compute_derived_metrics(
+    logs: list,
+    baseline_s: float | None = None,
+    all_session_times: list | None = None,
+    all_human_rts: list | None = None,
+) -> list:
+    """
+    Compute derived metrics for a list of logs.
+
+    `all_session_times`/`all_human_rts` should be computed ONCE across every
+    ai_model_version being evaluated together (see run_evaluation) and passed
+    in here, rather than recomputed per version-group from `logs` alone.
+    Otherwise each version gets its own P95-derived baseline_s/rt_max ceiling,
+    which shrinks as a version's own performance improves - silently
+    absorbing genuine gains into a lower denominator instead of showing them
+    in EL/HCL, and making the versions not comparable on a common scale. When
+    not supplied (e.g. a single-version caller), falls back to deriving from
+    just `logs`.
+    """
+    if all_session_times is None:
+        all_session_times = _all_session_times(logs)
+    if all_human_rts is None:
+        all_human_rts = _all_human_rts(logs)
 
     derived_list = []
     for entry in logs:
@@ -373,6 +394,12 @@ def run_evaluation(config_id: int):
         # Group by AI model version
         logs_by_ai_version = split_logs_by_ai_model_version(entries)
 
+        # Computed ONCE across all versions being compared in this run, not
+        # per version-group - see _compute_derived_metrics docstring for why
+        # a shared ceiling/baseline is required for cross-version comparability.
+        global_session_times = _all_session_times(entries)
+        global_human_rts = _all_human_rts(entries)
+
         wrote_any_result = False
 
         for ai_model_version, logs in logs_by_ai_version.items():
@@ -384,13 +411,37 @@ def run_evaluation(config_id: int):
             app_version_str = ",".join(app_versions)
 
             # Compute and aggregate metrics
-            derived_list = _compute_derived_metrics(logs, baseline_s=config.baseline_s)
+            derived_list = _compute_derived_metrics(
+                logs,
+                baseline_s=config.baseline_s,
+                all_session_times=global_session_times,
+                all_human_rts=global_human_rts,
+            )
             agg_by_metric, agg_by_pillar, agg_interaction = _aggregate_metrics(derived_list)
             results_by_group = _group_metrics_by_category(agg_by_metric)
 
             all_warnings = []
             for d in derived_list:
                 all_warnings.extend(d.get("warnings", []))
+
+            # Per-session values needed to recompute EL/EfficiencyScore live
+            # for a different baseline_s (e.g. a "what if" slider) without
+            # re-running the full pipeline. Not aggregated by simple mean
+            # like the rest of `interaction` - EL clamps at 0 per session,
+            # so the aggregate must be mean(per-session EL), not
+            # EL(mean(total_time)) - pop them out of the naive-mean aggregate
+            # and keep the raw per-session pairs instead.
+            agg_interaction.pop("_TotalTimeS", None)
+            agg_interaction.pop("_EffShapingFactor", None)
+            el_recompute_sessions = [
+                {
+                    "total_time_s": d["interaction"]["_TotalTimeS"],
+                    "shaping_factor": d["interaction"]["_EffShapingFactor"],
+                }
+                for d in derived_list
+                if d.get("interaction", {}).get("_TotalTimeS") is not None
+                and d.get("interaction", {}).get("_EffShapingFactor") is not None
+            ]
 
             # Compose result data
             result_data = {
@@ -407,6 +458,7 @@ def run_evaluation(config_id: int):
                     "interaction": agg_interaction,
                 },
                 "fairness": _compute_fairness(logs),
+                "el_recompute_sessions": el_recompute_sessions,
             }
 
             # Save to MinIO and DB
