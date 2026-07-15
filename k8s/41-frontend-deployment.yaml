@@ -23,26 +23,17 @@ spec:
             - containerPort: 80
               name: http
           env:
-            - name: VUE_APP_API_BASE_URL
+            # Used by nginx.conf (envsubst template) to build the backend's
+            # fully-qualified DNS name for this namespace - makes the image
+            # portable across namespaces/clusters instead of hardcoding one.
+            # NOTE: VITE_KEYCLOAK_*/API base URL are NOT runtime env vars for
+            # this image - Vite bakes them into the static JS bundle at
+            # `docker build` time (from frontend-react/.env.production), so
+            # setting them here would have no effect. See k8s/DEPLOY.md.
+            - name: POD_NAMESPACE
               valueFrom:
-                secretKeyRef:
-                  name: frontend-secret
-                  key: VUE_APP_API_BASE_URL
-            - name: VUE_APP_KEYCLOAK_URL
-              valueFrom:
-                secretKeyRef:
-                  name: frontend-secret
-                  key: VUE_APP_KEYCLOAK_URL
-            - name: VUE_APP_KEYCLOAK_REALM
-              valueFrom:
-                secretKeyRef:
-                  name: frontend-secret
-                  key: VUE_APP_KEYCLOAK_REALM
-            - name: VUE_APP_KEYCLOAK_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: frontend-secret
-                  key: VUE_APP_KEYCLOAK_CLIENT_ID
+                fieldRef:
+                  fieldPath: metadata.namespace
           resources:
             requests:
               memory: "128Mi"

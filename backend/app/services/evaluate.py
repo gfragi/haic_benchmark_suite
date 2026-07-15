@@ -228,12 +228,35 @@ def _session_duration_s(session: dict) -> float | None:
     return None
 
 
+def _human_rt_seconds(decision: dict) -> float | None:
+    """Prefer explicit duration_s; fall back to latency_ms -> seconds."""
+    v = decision.get("duration_s")
+    if isinstance(v, (int, float)):
+        return float(v)
+    ms = decision.get("latency_ms")
+    if isinstance(ms, (int, float)):
+        return float(ms) / 1000.0
+    return None
+
+
 def _compute_derived_metrics(logs: list, baseline_s: float | None = None) -> list:
     """Compute derived metrics for a list of logs."""
     # Pre-compute session durations so _derive_baseline_s can use P95
     # automatically for datasets with ≥5 sessions (no explicit config needed).
     session_durations = [_session_duration_s(e) for e in logs]
     all_session_times = [d for d in session_durations if d is not None and d > 0] or None
+
+    # Same idea for HCL's rt_max ceiling: P95 of every human response time
+    # across the whole batch, so it auto-calibrates instead of falling back
+    # to a flat default when no meta.task_parameters.rt_max is configured.
+    all_human_rts = [
+        rt
+        for entry in logs
+        for d in (entry.get("decisions") or [])
+        if str(d.get("actor_type", "")).lower() == "human"
+        for rt in [_human_rt_seconds(d)]
+        if rt is not None and rt > 0
+    ] or None
 
     derived_list = []
     for entry in logs:
@@ -242,6 +265,7 @@ def _compute_derived_metrics(logs: list, baseline_s: float | None = None) -> lis
                 entry,
                 baseline_s=baseline_s,
                 all_session_times=all_session_times,
+                all_human_rts=all_human_rts,
             )
         except Exception as e:
             print(f"[evaluate] compute_from_log failed for entry: {repr(e)}")

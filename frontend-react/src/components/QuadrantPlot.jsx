@@ -83,7 +83,23 @@ export default function QuadrantPlot({ title, points, xLabel, yLabel, xRef, yRef
   const legendPayload = [...new Map(valid.map(p => [p.version, p])).values()]
     .map(p => ({ value: p.version, type: 'circle', color: p.color }))
 
-  const tickFmt = (v) => Number(v).toFixed(2)
+  // Fixed 2-decimal ticks break down for metrics like F (interaction
+  // frequency), which can be a tiny fraction of an event/minute - every tick
+  // would round to "0.00", making the axis look empty even with real data.
+  // Pick decimal places from the axis's own span instead of a flat count, so
+  // ticks stay readable whether the metric ranges over 0-1 or 0-0.0005.
+  function tickFormatterFor(min, max) {
+    const span = Math.abs(max - min) || 1
+    if (span < 0.001) return (v) => Number(v).toExponential(1)
+    if (span < 0.01) return (v) => Number(v).toFixed(5)
+    if (span < 0.1) return (v) => Number(v).toFixed(4)
+    if (span < 1) return (v) => Number(v).toFixed(3)
+    if (span < 10) return (v) => Number(v).toFixed(2)
+    if (span < 1000) return (v) => Number(v).toFixed(1)
+    return (v) => Number(v).toFixed(0)
+  }
+  const xTickFmt = tickFormatterFor(xMin, xMax)
+  const yTickFmt = tickFormatterFor(yMin, yMax)
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -93,12 +109,12 @@ export default function QuadrantPlot({ title, points, xLabel, yLabel, xRef, yRef
           <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
           <XAxis
             type="number" dataKey="x" domain={[xMin, xMax]} tick={{ fontSize: 10 }}
-            tickFormatter={tickFmt}
+            tickFormatter={xTickFmt}
             label={{ value: xLabel, position: 'insideBottom', offset: -10, style: { fontSize: 10, fill: '#9ca3af' } }}
           />
           <YAxis
             type="number" dataKey="y" domain={[yMin, yMax]} tick={{ fontSize: 10 }}
-            tickFormatter={tickFmt}
+            tickFormatter={yTickFmt}
             label={{ value: yLabel, angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 10, fill: '#9ca3af' } }}
           />
 

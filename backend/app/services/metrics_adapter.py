@@ -57,6 +57,50 @@ def _derive_baseline_s(
     return None, "unavailable"
 
 
+def _derive_rt_max(
+    sessions: List[Dict[str, Any]],
+    all_human_rts: Optional[List[float]],
+) -> tuple[Optional[float], str]:
+    """
+    Derive the rt_max (human response-time ceiling) used to normalize HCL —
+    same P95 auto-derivation pattern as _derive_baseline_s above, applied to
+    human response times instead of session durations.
+
+    Priority order:
+      1. meta.task_parameters.rt_max / rt_max_s in any session (partner-supplied).
+      2. P95 of all_human_rts when at least 5 human response times are
+         available across the batch - used as the ceiling itself (not just
+         a fallback), since P95 already excludes the extreme top 5% as
+         outliers rather than letting the single slowest response set the cap.
+      3. Cannot derive - caller's default rt_max is used instead.
+
+    Returns (rt_max, source) where source is "session_meta", "p95_inferred
+    (<N> events)", or "default".
+    """
+    for s in sessions:
+        tp = (s.get("meta") or {}).get("task_parameters", {})
+        raw = tp.get("rt_max") or tp.get("rt_max_s")
+        if raw is not None:
+            try:
+                v = float(raw)
+                if v > 0:
+                    return v, "session_meta"
+            except (TypeError, ValueError):
+                pass
+
+    if all_human_rts and len(all_human_rts) >= 5:
+        xs = sorted(all_human_rts)
+        n = len(xs)
+        i = 0.95 * (n - 1)
+        lo = int(i)
+        hi = min(lo + 1, n - 1)
+        p95 = xs[lo] + (i - lo) * (xs[hi] - xs[lo])
+        if p95 > 0:
+            return p95, f"p95_inferred ({n} events)"
+
+    return None, "default"
+
+
 def _as_sessions(log: Any) -> List[Dict[str, Any]]:
     """Accept a single session dict or a list of session dicts."""
     if isinstance(log, list):
@@ -89,6 +133,7 @@ def compute_from_log(
     rt_max: float = 30.0,         # cap for efficiency normalization (pilot AI evals run ~14s)
     baseline_s: Optional[float] = None,  # reserved (e.g., Human Effort Saved)
     all_session_times: list[float] | None = None,
+    all_human_rts: list[float] | None = None,
 ) -> Dict[str, Any]:
     """
     Returns:
@@ -200,18 +245,10 @@ def compute_from_log(
     by_metric["Domain Generalization"]       = None
 
     # ----------------- Core HAIC (F, D, HCL, Tr, A, S, EL) -----------------
-    # Prefer rt_max from session meta.task_parameters over the caller-supplied default.
-    meta_rt_max: Optional[float] = None
-    for s in sessions:
-        tp = (s.get("meta") or {}).get("task_parameters", {})
-        rt_raw = tp.get("rt_max") or tp.get("rt_max_s")
-        if rt_raw is not None:
-            try:
-                meta_rt_max = float(rt_raw)
-                break
-            except (TypeError, ValueError):
-                pass
-    effective_rt_max = meta_rt_max if meta_rt_max is not None else rt_max
+    # Derive rt_max: session meta > P95 of human response times (≥5 events) >
+    # the caller-supplied default.
+    derived_rt_max, rt_max_source = _derive_rt_max(sessions, all_human_rts)
+    effective_rt_max = derived_rt_max if derived_rt_max is not None else rt_max
 
     # Derive the best available baseline_s with explicit priority ordering.
     effective_baseline, baseline_source = _derive_baseline_s(
@@ -256,18 +293,32 @@ def compute_from_log(
             )
         # "configured" and "session_meta" → leave MetricResult unchanged
 
-    # Warn when falling back to the default rt_max (HCL may be inaccurate).
-    if meta_rt_max is None and "HCL" in interaction_results:
+    # Annotate HCL with how its rt_max ceiling was determined.
+    if "HCL" in interaction_results:
         hcl_mr = interaction_results["HCL"]
         if hcl_mr.value is not None:
             existing = (hcl_mr.warning + "; ") if hcl_mr.warning else ""
-            interaction_results["HCL"] = MetricResult(
-                metric="HCL",
-                value=hcl_mr.value,
-                n_events=hcl_mr.n_events,
-                warning=existing + f'HCL computed with default rt_max={rt_max}s. To calibrate for your domain add \u201cmeta\u201d: {{"task_parameters": {{"rt_max": N}}}} to each session, where N is the maximum acceptable human response time in seconds.',
-                inferred=hcl_mr.inferred,
-            )
+            if rt_max_source.startswith("p95_inferred"):
+                interaction_results["HCL"] = MetricResult(
+                    metric="HCL",
+                    value=hcl_mr.value,
+                    n_events=hcl_mr.n_events,
+                    inferred=True,
+                    warning=existing + (
+                        f"HCL rt_max auto-derived as P95 of human response times "
+                        f"({effective_rt_max:.1f}s from {rt_max_source}). Upload more "
+                        f"sessions or configure meta.task_parameters.rt_max to override."
+                    ),
+                )
+            elif rt_max_source == "default":
+                interaction_results["HCL"] = MetricResult(
+                    metric="HCL",
+                    value=hcl_mr.value,
+                    n_events=hcl_mr.n_events,
+                    warning=existing + f'HCL computed with default rt_max={rt_max}s. To calibrate for your domain add \u201cmeta\u201d: {{"task_parameters": {{"rt_max": N}}}} to each session, where N is the maximum acceptable human response time in seconds, or upload 5+ sessions for auto-derivation from P95.',
+                    inferred=hcl_mr.inferred,
+                )
+            # "session_meta" \u2192 leave MetricResult unchanged
 
     # Flatten for backward compat
     interaction = {k: v.value for k, v in interaction_results.items()}

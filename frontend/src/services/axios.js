@@ -2,9 +2,8 @@
 import axios from "axios";
 import keycloak from "@/services/keycloak";
 
-// Hardcode the production URL directly
 const api = axios.create({
-  baseURL: process.env.VUE_APP_API_BASE_URL || "https://benchmark.humaine-horizon.eu/api/v1",
+  baseURL: process.env.VUE_APP_API_BASE_URL,
 });
 
 console.log("🚀 Axios configured with baseURL:", api.defaults.baseURL);

@@ -10,6 +10,58 @@ def _clean_ts(v: Any) -> Any:
         v = v.replace("Z", "+00:00")
     return v
 
+def _rule_matches(when: dict, merged_payload: dict) -> bool:
+    for key, expected in when.items():
+        actual = merged_payload.get(key)
+        if isinstance(actual, str) and isinstance(expected, str):
+            if actual.strip().lower() != expected.strip().lower():
+                return False
+        elif actual != expected:
+            return False
+    return True
+
+
+def apply_derive_correct_rules(decisions: list[dict], rules: list[dict]) -> None:
+    """
+    Mutates `decisions` in place: for each interaction_id group without an
+    already-native 'correct' label, merges that interaction's payload fields
+    (across all its events, e.g. ai_decision + op_decision) and evaluates
+    `rules` (the documented extras.derive_correct_rules format:
+    [{"when": {...}, "set": bool}, ...], first match wins) against the merge.
+
+    Sets 'correct' on exactly one event per interaction (the AI event, which
+    is always present, falling back to the last event otherwise) rather than
+    every matching event - Tr/A read 'correct' per decision event, so tagging
+    every event in a multi-event interaction would double-count it.
+    """
+    if not rules:
+        return
+
+    by_interaction: dict[str, list[dict]] = {}
+    for d in decisions:
+        iid = d.get("interaction_id")
+        if iid is not None:
+            by_interaction.setdefault(iid, []).append(d)
+
+    for events in by_interaction.values():
+        if any(e.get("correct") is not None for e in events):
+            continue  # native label already present - don't override it
+
+        merged: dict = {}
+        for e in events:
+            merged.update(e.get("payload") or {})
+
+        for rule in rules:
+            when = rule.get("when") or {}
+            if when and _rule_matches(when, merged):
+                target = next(
+                    (e for e in events if str(e.get("actor_type", "")).lower() == "ai"),
+                    events[-1],
+                )
+                target["correct"] = bool(rule.get("set"))
+                break
+
+
 def log_schema_to_session_log(raw: dict) -> tuple[SessionLog, list[str]]:
     """
     Maps a LogSchema-shaped dict to a validated SessionLog.
@@ -44,6 +96,13 @@ def log_schema_to_session_log(raw: dict) -> tuple[SessionLog, list[str]]:
 
     # Decisions: validate each individually, collect warnings for bad ones
     raw_decisions = raw.get("decisions") or []
+
+    derive_rules = (raw.get("extras") or {}).get("derive_correct_rules")
+    if derive_rules:
+        apply_derive_correct_rules(
+            [d for d in raw_decisions if isinstance(d, dict)], derive_rules
+        )
+
     valid_decisions = []
     for i, d in enumerate(raw_decisions):
         if not isinstance(d, dict):
