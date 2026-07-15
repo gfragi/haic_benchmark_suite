@@ -82,6 +82,7 @@ def log_schema_to_session_log(raw: dict) -> tuple[SessionLog, list[str]]:
         "ai_model_version":  raw.get("ai_model_version"),
         "meta":              raw.get("meta", {}),
         "extras":            raw.get("extras", {}),
+        "interaction_data":  raw.get("interaction_data", {}),
     }
 
     # Timestamps: LogSchema uses start_time/end_time (str),

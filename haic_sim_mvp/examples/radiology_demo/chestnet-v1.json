@@ -1,0 +1,3854 @@
+{
+  "logs": [
+    {
+      "session_id": "radiology_chestnet-v1_session00",
+      "pilot_tag": "radiology_demo",
+      "ai_model_version": "chestnet-v1",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 45.0,
+          "baseline_s": 340.0
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "XR_chestnet-v1_00_000",
+          "timestamp": "2026-07-15T08:00:04.945885+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_000",
+          "latency_ms": 428.1,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.66,
+              0.1107,
+              0.146,
+              0.0142,
+              0.069
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_000",
+          "timestamp": "2026-07-15T08:00:14.006817+00:00",
+          "actor_type": "human",
+          "action": "uncertain_review for XR_chestnet-v1_00_000",
+          "duration_s": 9.06,
+          "correct": null,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_001",
+          "timestamp": "2026-07-15T08:00:18.812117+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_001",
+          "latency_ms": 600.6,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0469,
+              0.0502,
+              0.0311,
+              0.0972,
+              0.7745
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_001",
+          "timestamp": "2026-07-15T08:00:27.047347+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_001",
+          "duration_s": 8.24,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_002",
+          "timestamp": "2026-07-15T08:00:30.393725+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_002",
+          "latency_ms": 685.0,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0219,
+              0.0229,
+              0.2003,
+              0.6122,
+              0.1427
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_002",
+          "timestamp": "2026-07-15T08:00:46.609970+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_002",
+          "duration_s": 16.22,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_003",
+          "timestamp": "2026-07-15T08:00:49.782683+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_003",
+          "latency_ms": 377.6,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0246,
+              0.0347,
+              0.0142,
+              0.0075,
+              0.9189
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_003",
+          "timestamp": "2026-07-15T08:01:05.040369+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_003",
+          "duration_s": 15.26,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_004",
+          "timestamp": "2026-07-15T08:01:08.854010+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_004",
+          "latency_ms": 483.0,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.1251,
+              0.6966,
+              0.0244,
+              0.0533,
+              0.1006
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_004",
+          "timestamp": "2026-07-15T08:01:40.942702+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_00_004",
+          "duration_s": 32.09,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_005",
+          "timestamp": "2026-07-15T08:01:44.022493+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_005",
+          "latency_ms": 511.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.151,
+              0.6479,
+              0.1123,
+              0.0358,
+              0.0529
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_005",
+          "timestamp": "2026-07-15T08:01:50.805624+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_005",
+          "duration_s": 6.78,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_006",
+          "timestamp": "2026-07-15T08:01:56.577263+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_006",
+          "latency_ms": 423.8,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.2122,
+              0.0762,
+              0.1587,
+              0.0958,
+              0.4571
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_006",
+          "timestamp": "2026-07-15T08:02:23.048559+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_00_006",
+          "duration_s": 26.47,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_007",
+          "timestamp": "2026-07-15T08:02:27.382691+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_007",
+          "latency_ms": 500.0,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0638,
+              0.1759,
+              0.0244,
+              0.6488,
+              0.087
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_007",
+          "timestamp": "2026-07-15T08:03:03.910264+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_00_007",
+          "duration_s": 36.53,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_008",
+          "timestamp": "2026-07-15T08:03:08.293818+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_008",
+          "latency_ms": 484.7,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0869,
+              0.0467,
+              0.1028,
+              0.175,
+              0.5886
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_008",
+          "timestamp": "2026-07-15T08:03:26.157612+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_00_008",
+          "duration_s": 17.86,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_009",
+          "timestamp": "2026-07-15T08:03:29.972507+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_009",
+          "latency_ms": 502.2,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.2226,
+              0.2044,
+              0.0615,
+              0.3946,
+              0.1168
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_009",
+          "timestamp": "2026-07-15T08:04:07.788203+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_00_009",
+          "duration_s": 37.82,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_010",
+          "timestamp": "2026-07-15T08:04:11.945719+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_010",
+          "latency_ms": 616.9,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.2807,
+              0.4111,
+              0.1912,
+              0.0002,
+              0.1168
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_010",
+          "timestamp": "2026-07-15T08:04:50.173184+00:00",
+          "actor_type": "human",
+          "action": "uncertain_review for XR_chestnet-v1_00_010",
+          "duration_s": 38.23,
+          "correct": null,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_011",
+          "timestamp": "2026-07-15T08:04:52.488212+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_011",
+          "latency_ms": 548.6,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0846,
+              0.0944,
+              0.6463,
+              0.1131,
+              0.0616
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_011",
+          "timestamp": "2026-07-15T08:05:07.724724+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_011",
+          "duration_s": 15.24,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_012",
+          "timestamp": "2026-07-15T08:05:13.582176+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_012",
+          "latency_ms": 562.3,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0719,
+              0.0585,
+              0.0534,
+              0.0552,
+              0.7611
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_012",
+          "timestamp": "2026-07-15T08:05:28.985793+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_012",
+          "duration_s": 15.4,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_013",
+          "timestamp": "2026-07-15T08:05:31.884582+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_013",
+          "latency_ms": 392.4,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0597,
+              0.1038,
+              0.757,
+              0.0406,
+              0.0389
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_013",
+          "timestamp": "2026-07-15T08:05:46.720023+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_013",
+          "duration_s": 14.84,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_014",
+          "timestamp": "2026-07-15T08:05:50.776647+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_014",
+          "latency_ms": 465.6,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0601,
+              0.5626,
+              0.1048,
+              0.1164,
+              0.1561
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_014",
+          "timestamp": "2026-07-15T08:06:04.843610+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_014",
+          "duration_s": 14.07,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_015",
+          "timestamp": "2026-07-15T08:06:08.567815+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_015",
+          "latency_ms": 383.9,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.106,
+              0.1169,
+              0.1825,
+              0.1685,
+              0.4262
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_015",
+          "timestamp": "2026-07-15T08:06:26.028262+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_00_015",
+          "duration_s": 17.46,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_016",
+          "timestamp": "2026-07-15T08:06:29.822716+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_016",
+          "latency_ms": 416.6,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.4495,
+              0.124,
+              0.0819,
+              0.0734,
+              0.2713
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_016",
+          "timestamp": "2026-07-15T08:07:06.356444+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_00_016",
+          "duration_s": 36.53,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_017",
+          "timestamp": "2026-07-15T08:07:08.729495+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_017",
+          "latency_ms": 355.2,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.7662,
+              0.0938,
+              0.0294,
+              0.0506,
+              0.0599
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_017",
+          "timestamp": "2026-07-15T08:07:27.363695+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_017",
+          "duration_s": 18.63,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_018",
+          "timestamp": "2026-07-15T08:07:32.499977+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_018",
+          "latency_ms": 442.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.009,
+              0.9441,
+              0.0083,
+              0.0189,
+              0.0196
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_018",
+          "timestamp": "2026-07-15T08:07:48.557693+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_018",
+          "duration_s": 16.06,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_019",
+          "timestamp": "2026-07-15T08:07:53.500642+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_00_019",
+          "latency_ms": 370.5,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0245,
+              0.6371,
+              0.1262,
+              0.0202,
+              0.1919
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_00_019",
+          "timestamp": "2026-07-15T08:08:06.936408+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_00_019",
+          "duration_s": 13.44,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        }
+      ],
+      "interaction_data": {
+        "validation_data": {
+          "system_metrics": {
+            "accuracy": 0.6111,
+            "precision": 0.7333,
+            "recall": 0.7857
+          },
+          "processing_time_seconds": 0.4776,
+          "confidence_level": 0.638
+        },
+        "review_data": {
+          "false_positives": 4,
+          "false_negatives": 3,
+          "detections_confirmed": 11,
+          "time_spent_on_corrections_seconds": 252.05
+        }
+      }
+    },
+    {
+      "session_id": "radiology_chestnet-v1_session01",
+      "pilot_tag": "radiology_demo",
+      "ai_model_version": "chestnet-v1",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 45.0,
+          "baseline_s": 340.0
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "XR_chestnet-v1_01_000",
+          "timestamp": "2026-07-16T08:00:02.271843+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_000",
+          "latency_ms": 374.0,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.096,
+              0.6905,
+              0.045,
+              0.1049,
+              0.0635
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_000",
+          "timestamp": "2026-07-16T08:00:18.265385+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_01_000",
+          "duration_s": 15.99,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_001",
+          "timestamp": "2026-07-16T08:00:22.944289+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_001",
+          "latency_ms": 441.3,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0749,
+              0.0633,
+              0.0312,
+              0.154,
+              0.6765
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_001",
+          "timestamp": "2026-07-16T08:00:41.950546+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_001",
+          "duration_s": 19.01,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_002",
+          "timestamp": "2026-07-16T08:00:44.350471+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_002",
+          "latency_ms": 547.0,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.7985,
+              0.0711,
+              0.0669,
+              0.0175,
+              0.0461
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_002",
+          "timestamp": "2026-07-16T08:00:53.770453+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_002",
+          "duration_s": 9.42,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_003",
+          "timestamp": "2026-07-16T08:00:58.217164+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_003",
+          "latency_ms": 596.2,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0466,
+              0.0309,
+              0.8835,
+              0.0004,
+              0.0386
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_003",
+          "timestamp": "2026-07-16T08:01:13.504606+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_003",
+          "duration_s": 15.29,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_004",
+          "timestamp": "2026-07-16T08:01:16.126398+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_004",
+          "latency_ms": 609.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0174,
+              0.9059,
+              0.013,
+              0.0212,
+              0.0425
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_004",
+          "timestamp": "2026-07-16T08:01:29.202125+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_004",
+          "duration_s": 13.08,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_005",
+          "timestamp": "2026-07-16T08:01:32.308846+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_005",
+          "latency_ms": 498.3,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.3869,
+              0.0013,
+              0.2825,
+              0.2334,
+              0.096
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_005",
+          "timestamp": "2026-07-16T08:02:01.100857+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_01_005",
+          "duration_s": 28.79,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_006",
+          "timestamp": "2026-07-16T08:02:03.697074+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_006",
+          "latency_ms": 591.9,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.928,
+              0.0019,
+              0.0192,
+              0.0287,
+              0.0223
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_006",
+          "timestamp": "2026-07-16T08:02:14.802195+00:00",
+          "actor_type": "human",
+          "action": "uncertain_review for XR_chestnet-v1_01_006",
+          "duration_s": 11.11,
+          "correct": null,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_007",
+          "timestamp": "2026-07-16T08:02:18.216910+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_007",
+          "latency_ms": 583.4,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0669,
+              0.1045,
+              0.6228,
+              0.1163,
+              0.0895
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_007",
+          "timestamp": "2026-07-16T08:02:39.135343+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_01_007",
+          "duration_s": 20.92,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_008",
+          "timestamp": "2026-07-16T08:02:44.264889+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_008",
+          "latency_ms": 673.6,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.4217,
+              0.1153,
+              0.1876,
+              0.2059,
+              0.0695
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_008",
+          "timestamp": "2026-07-16T08:03:16.796844+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_01_008",
+          "duration_s": 32.53,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_009",
+          "timestamp": "2026-07-16T08:03:20.195478+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_009",
+          "latency_ms": 671.5,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.1817,
+              0.1929,
+              0.4298,
+              0.0494,
+              0.1462
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_009",
+          "timestamp": "2026-07-16T08:03:42.160555+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_01_009",
+          "duration_s": 21.97,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_010",
+          "timestamp": "2026-07-16T08:03:47.535200+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_010",
+          "latency_ms": 587.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0545,
+              0.0045,
+              0.7538,
+              0.1443,
+              0.043
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_010",
+          "timestamp": "2026-07-16T08:04:07.304908+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_010",
+          "duration_s": 19.77,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_011",
+          "timestamp": "2026-07-16T08:04:10.559617+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_011",
+          "latency_ms": 605.0,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.7238,
+              0.0805,
+              0.0679,
+              0.0512,
+              0.0766
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_011",
+          "timestamp": "2026-07-16T08:04:26.482611+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_011",
+          "duration_s": 15.92,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_012",
+          "timestamp": "2026-07-16T08:04:32.243663+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_012",
+          "latency_ms": 590.4,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.8726,
+              0.0406,
+              0.0108,
+              0.0237,
+              0.0522
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_012",
+          "timestamp": "2026-07-16T08:04:46.967839+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_012",
+          "duration_s": 14.72,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_013",
+          "timestamp": "2026-07-16T08:04:50.601411+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_013",
+          "latency_ms": 458.2,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.6701,
+              0.1066,
+              0.0783,
+              0.0337,
+              0.1113
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_013",
+          "timestamp": "2026-07-16T08:05:06.083862+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_013",
+          "duration_s": 15.48,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_014",
+          "timestamp": "2026-07-16T08:05:08.085486+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_014",
+          "latency_ms": 541.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0485,
+              0.6704,
+              0.0726,
+              0.098,
+              0.1106
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_014",
+          "timestamp": "2026-07-16T08:05:20.275723+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_014",
+          "duration_s": 12.19,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_015",
+          "timestamp": "2026-07-16T08:05:25.219569+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_015",
+          "latency_ms": 685.9,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0392,
+              0.8675,
+              0.0169,
+              0.0395,
+              0.0369
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_015",
+          "timestamp": "2026-07-16T08:05:44.547564+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_015",
+          "duration_s": 19.33,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_016",
+          "timestamp": "2026-07-16T08:05:46.645266+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_016",
+          "latency_ms": 419.7,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0537,
+              0.6399,
+              0.1042,
+              0.1863,
+              0.016
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_016",
+          "timestamp": "2026-07-16T08:06:01.461981+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_016",
+          "duration_s": 14.82,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_017",
+          "timestamp": "2026-07-16T08:06:04.052266+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_017",
+          "latency_ms": 489.9,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0613,
+              0.7036,
+              0.0795,
+              0.0767,
+              0.0789
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_017",
+          "timestamp": "2026-07-16T08:06:13.116042+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_017",
+          "duration_s": 9.06,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_018",
+          "timestamp": "2026-07-16T08:06:15.601476+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_018",
+          "latency_ms": 671.1,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0179,
+              0.0625,
+              0.0714,
+              0.0752,
+              0.773
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_018",
+          "timestamp": "2026-07-16T08:06:32.174976+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_018",
+          "duration_s": 16.57,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_019",
+          "timestamp": "2026-07-16T08:06:37.497253+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_01_019",
+          "latency_ms": 526.7,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0334,
+              0.0547,
+              0.0453,
+              0.8377,
+              0.0289
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_01_019",
+          "timestamp": "2026-07-16T08:06:46.958609+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_01_019",
+          "duration_s": 9.46,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        }
+      ],
+      "interaction_data": {
+        "validation_data": {
+          "system_metrics": {
+            "accuracy": 0.7368,
+            "precision": 0.7368,
+            "recall": 1.0
+          },
+          "processing_time_seconds": 0.5582,
+          "confidence_level": 0.7128
+        },
+        "review_data": {
+          "false_positives": 5,
+          "false_negatives": 0,
+          "detections_confirmed": 14,
+          "time_spent_on_corrections_seconds": 131.31
+        }
+      }
+    },
+    {
+      "session_id": "radiology_chestnet-v1_session02",
+      "pilot_tag": "radiology_demo",
+      "ai_model_version": "chestnet-v1",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 45.0,
+          "baseline_s": 340.0
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "XR_chestnet-v1_02_000",
+          "timestamp": "2026-07-17T08:00:02.309933+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_000",
+          "latency_ms": 446.1,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0805,
+              0.0766,
+              0.0901,
+              0.1522,
+              0.6007
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_000",
+          "timestamp": "2026-07-17T08:00:23.091470+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_02_000",
+          "duration_s": 20.78,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_001",
+          "timestamp": "2026-07-17T08:00:26.754567+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_001",
+          "latency_ms": 539.9,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0281,
+              0.713,
+              0.057,
+              0.1227,
+              0.0792
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_001",
+          "timestamp": "2026-07-17T08:00:44.748815+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_001",
+          "duration_s": 17.99,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_002",
+          "timestamp": "2026-07-17T08:00:49.762716+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_002",
+          "latency_ms": 473.1,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.1285,
+              0.1435,
+              0.0631,
+              0.1125,
+              0.5524
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_002",
+          "timestamp": "2026-07-17T08:01:04.208252+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_002",
+          "duration_s": 14.45,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_003",
+          "timestamp": "2026-07-17T08:01:07.763681+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_003",
+          "latency_ms": 520.0,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0752,
+              0.6592,
+              0.0897,
+              0.0814,
+              0.0945
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_003",
+          "timestamp": "2026-07-17T08:01:27.493789+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_003",
+          "duration_s": 19.73,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_004",
+          "timestamp": "2026-07-17T08:01:29.602197+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_004",
+          "latency_ms": 547.5,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.1456,
+              0.0307,
+              0.1046,
+              0.0114,
+              0.7076
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_004",
+          "timestamp": "2026-07-17T08:01:38.565441+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_004",
+          "duration_s": 8.96,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_005",
+          "timestamp": "2026-07-17T08:01:44.370257+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_005",
+          "latency_ms": 447.4,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0167,
+              0.0331,
+              0.9019,
+              0.0186,
+              0.0297
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_005",
+          "timestamp": "2026-07-17T08:02:03.697133+00:00",
+          "actor_type": "human",
+          "action": "uncertain_review for XR_chestnet-v1_02_005",
+          "duration_s": 19.33,
+          "correct": null,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_006",
+          "timestamp": "2026-07-17T08:02:08.714066+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_006",
+          "latency_ms": 578.1,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0988,
+              0.8625,
+              0.0207,
+              0.0021,
+              0.0159
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_006",
+          "timestamp": "2026-07-17T08:02:24.086490+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_006",
+          "duration_s": 15.37,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_007",
+          "timestamp": "2026-07-17T08:02:26.757647+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_007",
+          "latency_ms": 618.4,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0982,
+              0.121,
+              0.0185,
+              0.6298,
+              0.1325
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_007",
+          "timestamp": "2026-07-17T08:02:44.460116+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_02_007",
+          "duration_s": 17.7,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_008",
+          "timestamp": "2026-07-17T08:02:50.225998+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_008",
+          "latency_ms": 481.4,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0092,
+              0.0276,
+              0.9132,
+              0.0387,
+              0.0113
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_008",
+          "timestamp": "2026-07-17T08:03:00.448156+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_008",
+          "duration_s": 10.22,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_009",
+          "timestamp": "2026-07-17T08:03:03.930440+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_009",
+          "latency_ms": 499.9,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.4889,
+              0.1027,
+              0.0692,
+              0.1724,
+              0.1668
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_009",
+          "timestamp": "2026-07-17T08:03:42.950129+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_02_009",
+          "duration_s": 39.02,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_010",
+          "timestamp": "2026-07-17T08:03:48.812024+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_010",
+          "latency_ms": 606.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0355,
+              0.1061,
+              0.0707,
+              0.7242,
+              0.0635
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_010",
+          "timestamp": "2026-07-17T08:04:05.046391+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_010",
+          "duration_s": 16.23,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_011",
+          "timestamp": "2026-07-17T08:04:08.162104+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_011",
+          "latency_ms": 677.1,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.065,
+              0.1082,
+              0.6482,
+              0.0822,
+              0.0964
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_011",
+          "timestamp": "2026-07-17T08:04:21.082395+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_011",
+          "duration_s": 12.92,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_012",
+          "timestamp": "2026-07-17T08:04:24.443750+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_012",
+          "latency_ms": 629.2,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.1721,
+              0.1371,
+              0.6348,
+              0.054,
+              0.002
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_012",
+          "timestamp": "2026-07-17T08:04:31.642331+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_012",
+          "duration_s": 7.2,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_013",
+          "timestamp": "2026-07-17T08:04:36.225943+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_013",
+          "latency_ms": 591.7,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0451,
+              0.0728,
+              0.0085,
+              0.8533,
+              0.0203
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_013",
+          "timestamp": "2026-07-17T08:04:46.512827+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_013",
+          "duration_s": 10.29,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_014",
+          "timestamp": "2026-07-17T08:04:52.499353+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_014",
+          "latency_ms": 470.3,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0757,
+              0.0484,
+              0.0624,
+              0.0422,
+              0.7714
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_014",
+          "timestamp": "2026-07-17T08:05:08.597334+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_014",
+          "duration_s": 16.1,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_015",
+          "timestamp": "2026-07-17T08:05:11.337933+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_015",
+          "latency_ms": 616.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0212,
+              0.0475,
+              0.7643,
+              0.0711,
+              0.0958
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_015",
+          "timestamp": "2026-07-17T08:05:21.299915+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_015",
+          "duration_s": 9.96,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_016",
+          "timestamp": "2026-07-17T08:05:23.356508+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_016",
+          "latency_ms": 412.8,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.1278,
+              0.0656,
+              0.2331,
+              0.441,
+              0.1324
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_016",
+          "timestamp": "2026-07-17T08:05:41.513495+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_02_016",
+          "duration_s": 18.16,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_017",
+          "timestamp": "2026-07-17T08:05:45.428352+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_017",
+          "latency_ms": 449.5,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0627,
+              0.1775,
+              0.0464,
+              0.5549,
+              0.1585
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_017",
+          "timestamp": "2026-07-17T08:05:52.343160+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_017",
+          "duration_s": 6.91,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_018",
+          "timestamp": "2026-07-17T08:05:54.939950+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_018",
+          "latency_ms": 368.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0564,
+              0.0304,
+              0.0996,
+              0.8018,
+              0.0119
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_018",
+          "timestamp": "2026-07-17T08:06:09.428397+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_018",
+          "duration_s": 14.49,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_019",
+          "timestamp": "2026-07-17T08:06:13.199281+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_02_019",
+          "latency_ms": 507.7,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0747,
+              0.0859,
+              0.0265,
+              0.0539,
+              0.759
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_02_019",
+          "timestamp": "2026-07-17T08:06:29.560531+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_02_019",
+          "duration_s": 16.36,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        }
+      ],
+      "interaction_data": {
+        "validation_data": {
+          "system_metrics": {
+            "accuracy": 0.7895,
+            "precision": 0.9375,
+            "recall": 0.8333
+          },
+          "processing_time_seconds": 0.5241,
+          "confidence_level": 0.6991
+        },
+        "review_data": {
+          "false_positives": 1,
+          "false_negatives": 3,
+          "detections_confirmed": 15,
+          "time_spent_on_corrections_seconds": 114.99
+        }
+      }
+    },
+    {
+      "session_id": "radiology_chestnet-v1_session03",
+      "pilot_tag": "radiology_demo",
+      "ai_model_version": "chestnet-v1",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 45.0,
+          "baseline_s": 340.0
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "XR_chestnet-v1_03_000",
+          "timestamp": "2026-07-18T08:00:02.959461+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_000",
+          "latency_ms": 378.4,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.1052,
+              0.6559,
+              0.0298,
+              0.0778,
+              0.1313
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_000",
+          "timestamp": "2026-07-18T08:00:09.416419+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_000",
+          "duration_s": 6.46,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_001",
+          "timestamp": "2026-07-18T08:00:14.165959+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_001",
+          "latency_ms": 508.9,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.052,
+              0.0444,
+              0.8312,
+              0.0352,
+              0.0372
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_001",
+          "timestamp": "2026-07-18T08:00:26.117905+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_001",
+          "duration_s": 11.95,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_002",
+          "timestamp": "2026-07-18T08:00:28.686850+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_002",
+          "latency_ms": 443.0,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0102,
+              0.1362,
+              0.1023,
+              0.1417,
+              0.6096
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_002",
+          "timestamp": "2026-07-18T08:00:40.834998+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_002",
+          "duration_s": 12.15,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_003",
+          "timestamp": "2026-07-18T08:00:44.836887+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_003",
+          "latency_ms": 679.9,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0803,
+              0.0131,
+              0.0065,
+              0.8299,
+              0.0703
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_003",
+          "timestamp": "2026-07-18T08:00:54.342038+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_003",
+          "duration_s": 9.51,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_004",
+          "timestamp": "2026-07-18T08:00:58.690530+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_004",
+          "latency_ms": 651.2,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.8197,
+              0.0017,
+              0.0632,
+              0.0678,
+              0.0476
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_004",
+          "timestamp": "2026-07-18T08:01:07.143200+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_004",
+          "duration_s": 8.45,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_005",
+          "timestamp": "2026-07-18T08:01:11.484519+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_005",
+          "latency_ms": 413.5,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0339,
+              0.0262,
+              0.0049,
+              0.0186,
+              0.9164
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_005",
+          "timestamp": "2026-07-18T08:01:26.866388+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_005",
+          "duration_s": 15.38,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_006",
+          "timestamp": "2026-07-18T08:01:32.647162+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_006",
+          "latency_ms": 450.9,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0658,
+              0.8275,
+              0.0445,
+              0.0368,
+              0.0254
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_006",
+          "timestamp": "2026-07-18T08:01:52.229748+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_006",
+          "duration_s": 19.58,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_007",
+          "timestamp": "2026-07-18T08:01:55.882738+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_007",
+          "latency_ms": 539.9,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.6131,
+              0.0376,
+              0.0725,
+              0.1516,
+              0.1253
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_007",
+          "timestamp": "2026-07-18T08:02:15.971694+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_03_007",
+          "duration_s": 20.09,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_008",
+          "timestamp": "2026-07-18T08:02:21.864281+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_008",
+          "latency_ms": 392.5,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0667,
+              0.0262,
+              0.8293,
+              0.0174,
+              0.0604
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_008",
+          "timestamp": "2026-07-18T08:02:29.169210+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_008",
+          "duration_s": 7.3,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_009",
+          "timestamp": "2026-07-18T08:02:33.162712+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_009",
+          "latency_ms": 641.3,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.597,
+              0.1238,
+              0.0879,
+              0.0472,
+              0.1442
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_009",
+          "timestamp": "2026-07-18T08:02:42.574945+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_009",
+          "duration_s": 9.41,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_010",
+          "timestamp": "2026-07-18T08:02:47.560115+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_010",
+          "latency_ms": 559.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0278,
+              0.0142,
+              0.1575,
+              0.1742,
+              0.6262
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_010",
+          "timestamp": "2026-07-18T08:03:04.588159+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_010",
+          "duration_s": 17.03,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_011",
+          "timestamp": "2026-07-18T08:03:08.907853+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_011",
+          "latency_ms": 643.1,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0966,
+              0.1267,
+              0.0654,
+              0.6404,
+              0.0709
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_011",
+          "timestamp": "2026-07-18T08:03:42.979670+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_03_011",
+          "duration_s": 34.07,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_012",
+          "timestamp": "2026-07-18T08:03:48.081848+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_012",
+          "latency_ms": 431.7,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.008,
+              0.5787,
+              0.1361,
+              0.1289,
+              0.1483
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_012",
+          "timestamp": "2026-07-18T08:04:19.674069+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_03_012",
+          "duration_s": 31.59,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_013",
+          "timestamp": "2026-07-18T08:04:24.034791+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_013",
+          "latency_ms": 525.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.1397,
+              0.5648,
+              0.1404,
+              0.0707,
+              0.0845
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_013",
+          "timestamp": "2026-07-18T08:04:40.149005+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_013",
+          "duration_s": 16.11,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_014",
+          "timestamp": "2026-07-18T08:04:43.209096+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_014",
+          "latency_ms": 623.5,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.2703,
+              0.3799,
+              0.1724,
+              0.0348,
+              0.1425
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_014",
+          "timestamp": "2026-07-18T08:05:11.549654+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_03_014",
+          "duration_s": 28.34,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_015",
+          "timestamp": "2026-07-18T08:05:16.287252+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_015",
+          "latency_ms": 432.2,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.597,
+              0.0731,
+              0.0579,
+              0.023,
+              0.249
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_015",
+          "timestamp": "2026-07-18T08:05:48.884523+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_03_015",
+          "duration_s": 32.6,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_016",
+          "timestamp": "2026-07-18T08:05:54.069097+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_016",
+          "latency_ms": 366.1,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0193,
+              0.9114,
+              0.0247,
+              0.0096,
+              0.035
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_016",
+          "timestamp": "2026-07-18T08:06:11.164370+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_016",
+          "duration_s": 17.1,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_017",
+          "timestamp": "2026-07-18T08:06:15.896908+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_017",
+          "latency_ms": 483.9,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0526,
+              0.7938,
+              0.0616,
+              0.0245,
+              0.0674
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_017",
+          "timestamp": "2026-07-18T08:06:31.232678+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_017",
+          "duration_s": 15.34,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_018",
+          "timestamp": "2026-07-18T08:06:37.183285+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_018",
+          "latency_ms": 680.8,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0771,
+              0.3795,
+              0.2478,
+              0.1778,
+              0.1177
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_018",
+          "timestamp": "2026-07-18T08:07:17.167624+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_03_018",
+          "duration_s": 39.98,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_019",
+          "timestamp": "2026-07-18T08:07:23.138392+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_03_019",
+          "latency_ms": 551.2,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.7788,
+              0.0296,
+              0.0981,
+              0.066,
+              0.0275
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_03_019",
+          "timestamp": "2026-07-18T08:07:38.739585+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_03_019",
+          "duration_s": 15.6,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        }
+      ],
+      "interaction_data": {
+        "validation_data": {
+          "system_metrics": {
+            "accuracy": 0.7,
+            "precision": 0.875,
+            "recall": 0.7778
+          },
+          "processing_time_seconds": 0.5199,
+          "confidence_level": 0.689
+        },
+        "review_data": {
+          "false_positives": 2,
+          "false_negatives": 4,
+          "detections_confirmed": 14,
+          "time_spent_on_corrections_seconds": 186.67
+        }
+      }
+    },
+    {
+      "session_id": "radiology_chestnet-v1_session04",
+      "pilot_tag": "radiology_demo",
+      "ai_model_version": "chestnet-v1",
+      "meta": {
+        "task_parameters": {
+          "rt_max": 45.0,
+          "baseline_s": 340.0
+        }
+      },
+      "decisions": [
+        {
+          "interaction_id": "XR_chestnet-v1_04_000",
+          "timestamp": "2026-07-19T08:00:05.102964+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_000",
+          "latency_ms": 666.0,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0506,
+              0.1763,
+              0.0482,
+              0.0418,
+              0.6831
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_000",
+          "timestamp": "2026-07-19T08:00:38.992397+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_04_000",
+          "duration_s": 33.89,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_001",
+          "timestamp": "2026-07-19T08:00:42.228129+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_001",
+          "latency_ms": 576.2,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0212,
+              0.9114,
+              0.0279,
+              0.0352,
+              0.0043
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_001",
+          "timestamp": "2026-07-19T08:00:58.692861+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_001",
+          "duration_s": 16.46,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_002",
+          "timestamp": "2026-07-19T08:01:02.156291+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_002",
+          "latency_ms": 656.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0367,
+              0.8646,
+              0.0199,
+              0.012,
+              0.0668
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_002",
+          "timestamp": "2026-07-19T08:01:21.699668+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_002",
+          "duration_s": 19.54,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_003",
+          "timestamp": "2026-07-19T08:01:24.000865+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_003",
+          "latency_ms": 513.9,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.1062,
+              0.0318,
+              0.0953,
+              0.6717,
+              0.095
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_003",
+          "timestamp": "2026-07-19T08:02:00.144477+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_04_003",
+          "duration_s": 36.14,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_004",
+          "timestamp": "2026-07-19T08:02:03.618820+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_004",
+          "latency_ms": 393.3,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.2007,
+              0.4558,
+              0.0703,
+              0.1021,
+              0.1711
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_004",
+          "timestamp": "2026-07-19T08:02:35.489734+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_04_004",
+          "duration_s": 31.87,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_005",
+          "timestamp": "2026-07-19T08:02:37.742602+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_005",
+          "latency_ms": 427.5,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0957,
+              0.1056,
+              0.7161,
+              0.0351,
+              0.0474
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_005",
+          "timestamp": "2026-07-19T08:03:16.399140+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_04_005",
+          "duration_s": 38.66,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_006",
+          "timestamp": "2026-07-19T08:03:19.953723+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_006",
+          "latency_ms": 538.1,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0517,
+              0.1322,
+              0.097,
+              0.6439,
+              0.0752
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_006",
+          "timestamp": "2026-07-19T08:03:36.126111+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_006",
+          "duration_s": 16.17,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_007",
+          "timestamp": "2026-07-19T08:03:41.882323+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_007",
+          "latency_ms": 565.5,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.02,
+              0.0493,
+              0.0155,
+              0.8835,
+              0.0318
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_007",
+          "timestamp": "2026-07-19T08:03:52.959928+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_007",
+          "duration_s": 11.08,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_008",
+          "timestamp": "2026-07-19T08:03:56.552487+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_008",
+          "latency_ms": 475.5,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0069,
+              0.0045,
+              0.9411,
+              0.0309,
+              0.0166
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_008",
+          "timestamp": "2026-07-19T08:04:11.536350+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_008",
+          "duration_s": 14.98,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_009",
+          "timestamp": "2026-07-19T08:04:14.040046+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_009",
+          "latency_ms": 435.2,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.6647,
+              0.1179,
+              0.0143,
+              0.1598,
+              0.0433
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_009",
+          "timestamp": "2026-07-19T08:04:50.782432+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_04_009",
+          "duration_s": 36.74,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_010",
+          "timestamp": "2026-07-19T08:04:56.718545+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_010",
+          "latency_ms": 447.0,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0858,
+              0.7884,
+              0.0469,
+              0.0694,
+              0.0095
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_010",
+          "timestamp": "2026-07-19T08:05:04.563790+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_010",
+          "duration_s": 7.85,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_011",
+          "timestamp": "2026-07-19T08:05:07.260775+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_011",
+          "latency_ms": 463.3,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.009,
+              0.1274,
+              0.6452,
+              0.0904,
+              0.1281
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_011",
+          "timestamp": "2026-07-19T08:05:24.153014+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_011",
+          "duration_s": 16.89,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_012",
+          "timestamp": "2026-07-19T08:05:28.613441+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_012",
+          "latency_ms": 427.5,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0754,
+              0.0942,
+              0.0683,
+              0.0313,
+              0.7308
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_012",
+          "timestamp": "2026-07-19T08:05:35.049550+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_012",
+          "duration_s": 6.44,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_013",
+          "timestamp": "2026-07-19T08:05:40.688353+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_013",
+          "latency_ms": 521.6,
+          "correct": false,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0333,
+              0.0366,
+              0.2758,
+              0.0298,
+              0.6244
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_013",
+          "timestamp": "2026-07-19T08:06:11.515271+00:00",
+          "actor_type": "human",
+          "action": "override_diagnosis for XR_chestnet-v1_04_013",
+          "duration_s": 30.83,
+          "correct": false,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_014",
+          "timestamp": "2026-07-19T08:06:15.537475+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_014",
+          "latency_ms": 453.2,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0456,
+              0.084,
+              0.789,
+              0.0121,
+              0.0693
+            ],
+            "ai_suggested": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_014",
+          "timestamp": "2026-07-19T08:06:29.256168+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_014",
+          "duration_s": 13.72,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Cardiomegaly",
+            "final_label": "Cardiomegaly"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_015",
+          "timestamp": "2026-07-19T08:06:34.565845+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_015",
+          "latency_ms": 494.8,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0215,
+              0.9052,
+              0.0394,
+              0.0169,
+              0.0169
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_015",
+          "timestamp": "2026-07-19T08:06:53.916140+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_015",
+          "duration_s": 19.35,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_016",
+          "timestamp": "2026-07-19T08:06:56.302398+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_016",
+          "latency_ms": 382.6,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0322,
+              0.0354,
+              0.0242,
+              0.8827,
+              0.0255
+            ],
+            "ai_suggested": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_016",
+          "timestamp": "2026-07-19T08:07:06.917442+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_016",
+          "duration_s": 10.62,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Atelectasis",
+            "final_label": "Atelectasis"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_017",
+          "timestamp": "2026-07-19T08:07:10.609189+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_017",
+          "latency_ms": 679.4,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.8994,
+              0.0588,
+              0.0033,
+              0.0185,
+              0.02
+            ],
+            "ai_suggested": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_017",
+          "timestamp": "2026-07-19T08:07:23.712965+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_017",
+          "duration_s": 13.1,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pneumonia",
+            "final_label": "Pneumonia"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_018",
+          "timestamp": "2026-07-19T08:07:29.094459+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_018",
+          "latency_ms": 387.9,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0527,
+              0.6397,
+              0.1094,
+              0.0824,
+              0.1158
+            ],
+            "ai_suggested": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_018",
+          "timestamp": "2026-07-19T08:07:48.738111+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_018",
+          "duration_s": 19.64,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "Pleural Effusion",
+            "final_label": "Pleural Effusion"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_019",
+          "timestamp": "2026-07-19T08:07:54.454448+00:00",
+          "actor_type": "ai",
+          "action": "predict_finding for XR_chestnet-v1_04_019",
+          "latency_ms": 359.2,
+          "correct": true,
+          "payload": {
+            "classes": [
+              "Pneumonia",
+              "Pleural Effusion",
+              "Cardiomegaly",
+              "Atelectasis",
+              "No Finding"
+            ],
+            "probs": [
+              0.0808,
+              0.0261,
+              0.0176,
+              0.0685,
+              0.8071
+            ],
+            "ai_suggested": "No Finding"
+          }
+        },
+        {
+          "interaction_id": "XR_chestnet-v1_04_019",
+          "timestamp": "2026-07-19T08:08:05.211993+00:00",
+          "actor_type": "human",
+          "action": "confirm_diagnosis for XR_chestnet-v1_04_019",
+          "duration_s": 10.76,
+          "correct": true,
+          "payload": {
+            "ai_suggested": "No Finding",
+            "final_label": "No Finding"
+          }
+        }
+      ],
+      "interaction_data": {
+        "validation_data": {
+          "system_metrics": {
+            "accuracy": 0.7,
+            "precision": 0.8235,
+            "recall": 0.8235
+          },
+          "processing_time_seconds": 0.4932,
+          "confidence_level": 0.7574
+        },
+        "review_data": {
+          "false_positives": 3,
+          "false_negatives": 3,
+          "detections_confirmed": 14,
+          "time_spent_on_corrections_seconds": 208.13
+        }
+      }
+    }
+  ]
+}

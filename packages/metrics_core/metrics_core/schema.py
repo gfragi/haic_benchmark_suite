@@ -96,6 +96,9 @@ class SessionLog(BaseModel):
     session_ended_at: datetime | None = None
     meta: dict[str, Any] = Field(default_factory=dict)   # pass-through metadata (task_parameters etc.)
     extras: dict[str, Any] = Field(default_factory=dict)
+    # Pass-through for extended-metrics inputs (validation_data/review_data) -
+    # not read by core interaction metrics, only by metrics_adapter.compute_from_log.
+    interaction_data: dict[str, Any] = Field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------

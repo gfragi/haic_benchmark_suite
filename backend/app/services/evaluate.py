@@ -355,8 +355,28 @@ def _save_result_to_minio(bucket: str, config_id: int, result_data: dict) -> str
     )
     return result_file_path
 
-def _save_result_to_db(session, config_id: int, result_file_path: str, app_version_str: str, ai_model_version: str):
-    """Save evaluation result to database."""
+def _save_result_to_db(session, config_id: int, bucket: str, result_file_path: str, app_version_str: str, ai_model_version: str):
+    """
+    Save evaluation result to database, replacing any prior result for the
+    same (config, ai_model_version) rather than accumulating a new row every
+    time evaluation is re-triggered - re-running evaluation should update a
+    version's result in place, not multiply its tabs on the dashboard.
+    """
+    stale = (
+        session.query(EvaluationResult)
+        .filter(
+            EvaluationResult.configuration_id == config_id,
+            EvaluationResult.ai_model_version == ai_model_version,
+        )
+        .all()
+    )
+    for old in stale:
+        try:
+            _get_client().remove_object(bucket, old.result_minio_path)
+        except Exception as e:
+            logger.warning("Could not remove stale result object %s: %s", old.result_minio_path, repr(e))
+        session.delete(old)
+
     db_result = EvaluationResult(
         configuration_id=config_id,
         evaluation_date=datetime.now(timezone.utc),
@@ -463,7 +483,7 @@ def run_evaluation(config_id: int):
 
             # Save to MinIO and DB
             result_file_path = _save_result_to_minio(bucket, config.id, result_data)
-            _save_result_to_db(new_session, config.id, result_file_path, app_version_str, ai_model_version)
+            _save_result_to_db(new_session, config.id, bucket, result_file_path, app_version_str, ai_model_version)
 
             wrote_any_result = True
 
