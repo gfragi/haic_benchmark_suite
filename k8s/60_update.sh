@@ -4,7 +4,7 @@ set -e
 # HAIC Benchmark Update Script
 # Updates backend with new migrations
 
-NAMESPACE="haic-benchmark"
+NAMESPACE="benchmarking"
 TIMEOUT=300
 
 echo "=================================================="

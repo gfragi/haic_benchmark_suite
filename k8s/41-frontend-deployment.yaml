@@ -29,7 +29,7 @@ spec:
             # NOTE: VITE_KEYCLOAK_*/API base URL are NOT runtime env vars for
             # this image - Vite bakes them into the static JS bundle at
             # `docker build` time (from frontend-react/.env.production), so
-            # setting them here would have no effect. See k8s/DEPLOY.md.
+            # setting them here would have no effect. See k8s/README.md.
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:

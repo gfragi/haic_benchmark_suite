@@ -4,7 +4,7 @@ set -e
 # HAIC Benchmark Kubernetes Deployment Script
 # This script automates the deployment of HAIC Benchmark to Kubernetes
 
-NAMESPACE="haic-benchmark"
+NAMESPACE="benchmarking"
 TIMEOUT=300
 
 echo "=================================================="

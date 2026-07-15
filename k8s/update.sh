@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="haic-benchmark"
+NAMESPACE="benchmarking"
 TIMEOUT=300
 
 GREEN='\033[0;32m'
