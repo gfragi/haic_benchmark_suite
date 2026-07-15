@@ -647,34 +647,37 @@ export default function ResultsDashboardPage() {
         </div>
       )}
 
+      {/* Version filter — which results show on the quadrant plots, the version
+          comparison bar chart, and the extended-metrics pillar charts below
+          (pick any 2, 3, or all). Shared across Core HAIC and Extended Metrics
+          so both tabs behave the same way. */}
+      {results.length > 0 && (mode === 'core' || mode === 'extended') && [...new Set(versions)].length > 1 && (
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2.5">
+          <span className="text-xs font-medium text-gray-500">Show versions:</span>
+          {[...new Set(versions)].map((v, i) => (
+            <label key={v} className="flex items-center gap-1.5 text-xs text-gray-600">
+              <input
+                type="checkbox"
+                checked={!hiddenVersions.has(v)}
+                onChange={() => setHiddenVersions((prev) => {
+                  const next = new Set(prev)
+                  if (next.has(v)) next.delete(v); else next.add(v)
+                  return next
+                })}
+              />
+              <span
+                className="inline-block w-2 h-2 rounded-full"
+                style={{ backgroundColor: PALETTE[i % PALETTE.length] }}
+              />
+              {v}
+            </label>
+          ))}
+        </div>
+      )}
+
       {/* ── Core HAIC mode ── */}
       {results.length > 0 && mode === 'core' && (
         <div className="space-y-6">
-
-          {/* Version filter — which results' points show on the quadrant plots */}
-          {[...new Set(versions)].length > 1 && (
-            <div className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2.5">
-              <span className="text-xs font-medium text-gray-500">Show versions:</span>
-              {[...new Set(versions)].map((v, i) => (
-                <label key={v} className="flex items-center gap-1.5 text-xs text-gray-600">
-                  <input
-                    type="checkbox"
-                    checked={!hiddenVersions.has(v)}
-                    onChange={() => setHiddenVersions((prev) => {
-                      const next = new Set(prev)
-                      if (next.has(v)) next.delete(v); else next.add(v)
-                      return next
-                    })}
-                  />
-                  <span
-                    className="inline-block w-2 h-2 rounded-full"
-                    style={{ backgroundColor: PALETTE[i % PALETTE.length] }}
-                  />
-                  {v}
-                </label>
-              ))}
-            </div>
-          )}
 
           {/* Diagnostic quadrant — one plot at a time */}
           <div className="space-y-3">
@@ -865,10 +868,12 @@ export default function ResultsDashboardPage() {
             ))}
           </div>
 
-          {/* Version comparison (only if >1 version) */}
+          {/* Version comparison — honors the "Show versions" filter above, so
+              the user can compare any 2, 3, or all versions, not just all of
+              them at once. */}
           {results.length > 1 && (
             <VersionBarChart
-              results={results}
+              results={results.filter(r => !hiddenVersions.has(r.ai_model_version))}
               compMetric={compMetric}
               setCompMetric={setCompMetric}
             />
@@ -886,11 +891,8 @@ export default function ResultsDashboardPage() {
       {/* ── Extended metrics mode ── */}
       {results.length > 0 && mode === 'extended' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-700">Extended Metrics by Pillar</h2>
-            <VersionTabs versions={versions} selectedIdx={safeIdx} onSelect={setSelectedIdx} />
-          </div>
-          <ExtendedView results={results} selectedIdx={safeIdx} />
+          <h2 className="text-sm font-semibold text-gray-700">Extended Metrics by Pillar</h2>
+          <ExtendedView results={results.filter(r => !hiddenVersions.has(r.ai_model_version))} />
         </div>
       )}
 

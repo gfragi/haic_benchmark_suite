@@ -1,0 +1,106 @@
+{
+  "logs": [
+    {
+      "session_id": "neurosym_early_abandon",
+      "pilot_tag": "smart_healthcare_neurosymbolic",
+      "ai_model_version": "neurosymbolic-v0",
+      "decisions": [
+        {
+          "interaction_id": "neurosym_early_abandon",
+          "t": 6.855,
+          "actor_type": "human",
+          "action": "saved dataset description: domain=Medical breast cancer biopsy data from fine needle aspirate (FNA) analysis, target=Whether the tumor is malignant (1) or benign (0)",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": null,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "info"
+          }
+        },
+        {
+          "interaction_id": "neurosym_early_abandon",
+          "t": 17.602,
+          "actor_type": "human",
+          "action": "defined predicate: high_clump_thickness (feature=Clump Thickness, operator=Greater, threshold=3.0)",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": null,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "predicate_definition"
+          }
+        },
+        {
+          "interaction_id": "neurosym_early_abandon",
+          "t": 22.527,
+          "actor_type": "human",
+          "action": "defined predicate: low_mitoses (feature=Mitoses, operator=Less, threshold=1.5)",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": null,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "predicate_definition"
+          }
+        },
+        {
+          "interaction_id": "neurosym_early_abandon",
+          "t": 25.262,
+          "actor_type": "human",
+          "action": "authored rule: if the clump thickness is high but mitoses is low then the tumor is malignant",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": null,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "rule_authoring"
+          }
+        },
+        {
+          "interaction_id": "neurosym_early_abandon",
+          "t": 37.705,
+          "actor_type": "ai",
+          "action": "parsed 1 natural language rule(s) to LTN formula",
+          "latency_ms": 10979.8,
+          "duration_s": null,
+          "correct": true,
+          "payload": {
+            "agent": "RuleParser_AI",
+            "event_type": "decision"
+          }
+        },
+        {
+          "interaction_id": "neurosym_early_abandon",
+          "t": 39.593,
+          "actor_type": "ai",
+          "action": "evaluated model performance: LTN (F1=0.8846153846153846) vs MLP (F1=0.8846153846153846) vs Rules (F1=0.39316239316239315)",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": false,
+          "payload": {
+            "agent": "ModelEvaluator_AI",
+            "event_type": "ltn_outperforms",
+            "probs": {
+              "RULES": 0.39316239316239315,
+              "MLP": 0.8846153846153846,
+              "LTN": 0.8846153846153846
+            }
+          }
+        }
+      ],
+      "interaction_data": {
+        "validation_data": {
+          "processing_time_seconds": 10.9798,
+          "confidence_level": 0.8846,
+          "system_metrics": {
+            "accuracy": null,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "_note": "system_metrics.{accuracy,precision,recall} need to come from your own validation-set evaluation (F1 alone can't be decomposed into precision/recall). ground_truth/prediction (for Human-AI Agreement Rate) also need adding - the case's true label and the model's predicted label - not present in this log."
+      }
+    }
+  ]
+}

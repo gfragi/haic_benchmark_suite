@@ -8,7 +8,7 @@ export const PALETTE = [
   '#8b5cf6', '#0ea5e9', '#f97316', '#84cc16',
 ]
 
-const Q_LABEL = { fontSize: 10, fill: '#d1d5db', fontStyle: 'italic' }
+const Q_LABEL = { fontSize: 11, fill: '#d1d5db', fontStyle: 'italic' }
 
 function median(values) {
   const sorted = [...values].sort((a, b) => a - b)
@@ -104,18 +104,18 @@ export default function QuadrantPlot({ title, points, xLabel, yLabel, xRef, yRef
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
       <p className="text-sm font-semibold text-gray-700 mb-2">{title}</p>
-      <ResponsiveContainer width="100%" height={290}>
-        <ScatterChart margin={{ top: 10, right: 20, bottom: 32, left: 10 }}>
+      <ResponsiveContainer width="100%" height={300}>
+        <ScatterChart margin={{ top: 10, right: 20, bottom: 32, left: 14 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
           <XAxis
-            type="number" dataKey="x" domain={[xMin, xMax]} tick={{ fontSize: 10 }}
+            type="number" dataKey="x" domain={[xMin, xMax]} tick={{ fontSize: 11 }}
             tickFormatter={xTickFmt}
-            label={{ value: xLabel, position: 'insideBottom', offset: -10, style: { fontSize: 10, fill: '#9ca3af' } }}
+            label={{ value: xLabel, position: 'bottom', offset: 8, style: { fontSize: 11, fill: '#9ca3af' } }}
           />
           <YAxis
-            type="number" dataKey="y" domain={[yMin, yMax]} tick={{ fontSize: 10 }}
+            type="number" dataKey="y" domain={[yMin, yMax]} tick={{ fontSize: 11 }}
             tickFormatter={yTickFmt}
-            label={{ value: yLabel, angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 10, fill: '#9ca3af' } }}
+            label={{ value: yLabel, angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 11, fill: '#9ca3af' } }}
           />
 
           {/* Quadrant backgrounds — transparent, labels only */}
@@ -137,7 +137,7 @@ export default function QuadrantPlot({ title, points, xLabel, yLabel, xRef, yRef
           <ReferenceLine y={yRef} stroke="#e5e7eb" strokeDasharray="5 3" />
 
           <Tooltip content={(props) => <ScatterTooltip {...props} xLabel={xLabel} yLabel={yLabel} />} />
-          <Legend iconSize={8} wrapperStyle={{ fontSize: 11, paddingTop: 4 }} payload={legendPayload} />
+          <Legend iconSize={9} wrapperStyle={{ fontSize: 12, paddingTop: 12 }} payload={legendPayload} />
 
           {valid.map((point, i) => (
             <Scatter

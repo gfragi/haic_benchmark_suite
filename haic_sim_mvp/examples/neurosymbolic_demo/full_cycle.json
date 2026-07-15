@@ -1,0 +1,189 @@
+{
+  "logs": [
+    {
+      "session_id": "neurosym_full_cycle",
+      "pilot_tag": "smart_healthcare_neurosymbolic",
+      "ai_model_version": "neurosymbolic-v0",
+      "decisions": [
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8681.165,
+          "actor_type": "human",
+          "action": "defined predicate: abnormal_density (feature=abnormal_density, boolean=True)",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": null,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "predicate_definition"
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8685.744,
+          "actor_type": "human",
+          "action": "defined predicate: abnormal_mass (feature=abnormal_mass, boolean=True)",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": null,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "predicate_definition"
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8711.429,
+          "actor_type": "human",
+          "action": "authored rule: if an abnormal density or mass is present then the image has a tumor",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": null,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "rule_authoring"
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8727.548,
+          "actor_type": "ai",
+          "action": "parsed 1 natural language rule(s) to LTN formula",
+          "latency_ms": 12582.4,
+          "duration_s": null,
+          "correct": true,
+          "payload": {
+            "agent": "RuleParser_AI",
+            "event_type": "decision"
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8822.038,
+          "actor_type": "human",
+          "action": "triggered model training",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": null,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "info"
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8849.567,
+          "actor_type": "ai",
+          "action": "evaluated model performance: LTN (F1=0.8484848484848485) vs MLP (F1=0.8484848484848485) vs Rules (F1=0.6333333333333333)",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": false,
+          "payload": {
+            "agent": "ModelEvaluator_AI",
+            "event_type": "ltn_outperforms",
+            "probs": {
+              "RULES": 0.6333333333333333,
+              "MLP": 0.8484848484848485,
+              "LTN": 0.8484848484848485
+            }
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8888.5,
+          "actor_type": "human",
+          "action": "triggered prediction for sample_id=0",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": null,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "info"
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8895.634,
+          "actor_type": "ai",
+          "action": "classifying sample_id=0",
+          "latency_ms": 269.8,
+          "duration_s": 0.27,
+          "correct": null,
+          "payload": {
+            "agent": "LTN_Classifier_AI",
+            "event_type": "decision",
+            "probs": {
+              "RULES": 1.0,
+              "MLP": 0.4783,
+              "LTN": 0.4789
+            }
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8895.635,
+          "actor_type": "ai",
+          "action": "generated feature importance (top-3: location_within_brain, lesion_shape, irregular_shape)",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": null,
+          "payload": {
+            "agent": "SHAP_Explainer_AI",
+            "event_type": "info"
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8895.635,
+          "actor_type": "ai",
+          "action": "generated natural language explanation for prediction: no label",
+          "latency_ms": 6725.1,
+          "duration_s": 6.725,
+          "correct": null,
+          "payload": {
+            "agent": "XAI_RAG_AI",
+            "event_type": "decision"
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8896.07,
+          "actor_type": "human",
+          "action": "reviewed AI prediction and explanation for sample_id=0",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": true,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "decision"
+          }
+        },
+        {
+          "interaction_id": "neurosym_full_cycle",
+          "t": 8938.631,
+          "actor_type": "human",
+          "action": "approved model publish to MinIO",
+          "latency_ms": null,
+          "duration_s": null,
+          "correct": true,
+          "payload": {
+            "agent": "DomainExpert",
+            "event_type": "decision"
+          }
+        }
+      ],
+      "interaction_data": {
+        "validation_data": {
+          "processing_time_seconds": 6.5258,
+          "confidence_level": 0.9242,
+          "system_metrics": {
+            "accuracy": null,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "_note": "system_metrics.{accuracy,precision,recall} need to come from your own validation-set evaluation (F1 alone can't be decomposed into precision/recall). ground_truth/prediction (for Human-AI Agreement Rate) also need adding - the case's true label and the model's predicted label - not present in this log."
+      }
+    }
+  ]
+}
