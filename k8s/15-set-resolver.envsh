@@ -1,0 +1,14 @@
+# Sourced by the nginx image's docker-entrypoint.sh (not executed - .envsh
+# files are sourced so exports persist into the entrypoint's own shell,
+# which is what makes them visible to 20-envsubst-on-templates.sh next).
+#
+# Populates NGINX_LOCAL_RESOLVERS from /etc/resolv.conf ourselves instead of
+# relying on the base nginx:alpine image's own 15-local-resolvers.envsh. That
+# upstream script proved version-dependent: nginx:alpine is a floating tag,
+# and a build against a newer base image silently failed to populate
+# NGINX_LOCAL_RESOLVERS before the envsubst template step ran, leaving the
+# literal "${NGINX_LOCAL_RESOLVERS}" string in the generated config, which
+# makes nginx fail to start with "host not found in resolver". Doing it
+# ourselves removes the dependency on that upstream script's behavior/timing
+# entirely, so this doesn't drift again on the next base image pull.
+export NGINX_LOCAL_RESOLVERS="$(awk '/^nameserver/ { printf "%s ", $2 }' /etc/resolv.conf)"
