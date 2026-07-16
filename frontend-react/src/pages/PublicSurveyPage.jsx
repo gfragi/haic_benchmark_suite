@@ -9,6 +9,7 @@ import {
   ETHICS_QUESTIONS,
   SCALE_LABELS,
   computeSus,
+  computeEthics,
   makeAnonymousUserId,
 } from '../surveyConfig'
 
@@ -232,6 +233,7 @@ export default function PublicSurveyPage() {
   })
   const canSubmit = pilotTag.trim() && susAnswered === 10 && ethicsAnswered === 5 && !missingDomainQuestion
   const susScore = computeSus(sus)
+  const ethicsScore = computeEthics(ethics)
 
   const domainSpecificPayload = useMemo(() => {
     const payload = {}
@@ -266,7 +268,7 @@ export default function PublicSurveyPage() {
         ethics_responses: ethics,
         domain_specific: Object.keys(domainSpecificPayload).length ? domainSpecificPayload : undefined,
       })
-      setSubmitResult({ susScore })
+      setSubmitResult({ susScore, ethicsScore })
     } catch (error) {
       setSubmitError(error.message)
     } finally {
@@ -281,18 +283,34 @@ export default function PublicSurveyPage() {
           <CheckCircle2 className="mx-auto h-16 w-16 text-green-500" />
           <h1 className="mt-5 text-2xl font-semibold text-gray-900">Thank you for your feedback.</h1>
           <p className="mt-2 text-sm text-gray-500">Your response has been recorded.</p>
-          {submitResult.susScore != null && (
-            <div
-              className={clsx(
-                'mx-auto mt-8 max-w-sm rounded-2xl border px-4 py-5',
-                submitResult.susScore >= 70 ? 'border-green-200 bg-green-50 text-green-700'
-                  : submitResult.susScore >= 50 ? 'border-amber-200 bg-amber-50 text-amber-700'
-                  : 'border-red-200 bg-red-50 text-red-700',
-              )}
-            >
-              <p className="text-sm font-medium">Your usability score: {submitResult.susScore.toFixed(1)} / 100</p>
-            </div>
-          )}
+          <div className="mx-auto mt-8 flex max-w-sm flex-wrap justify-center gap-4">
+            {submitResult.susScore != null && (
+              <div
+                className={clsx(
+                  'flex-1 min-w-[160px] rounded-2xl border px-4 py-5',
+                  submitResult.susScore >= 70 ? 'border-green-200 bg-green-50 text-green-700'
+                    : submitResult.susScore >= 50 ? 'border-amber-200 bg-amber-50 text-amber-700'
+                    : 'border-red-200 bg-red-50 text-red-700',
+                )}
+              >
+                <p className="text-sm font-medium">Usability score</p>
+                <p className="text-lg font-semibold mt-1">{submitResult.susScore.toFixed(1)} / 100</p>
+              </div>
+            )}
+            {submitResult.ethicsScore != null && (
+              <div
+                className={clsx(
+                  'flex-1 min-w-[160px] rounded-2xl border px-4 py-5',
+                  submitResult.ethicsScore >= 70 ? 'border-green-200 bg-green-50 text-green-700'
+                    : submitResult.ethicsScore >= 50 ? 'border-amber-200 bg-amber-50 text-amber-700'
+                    : 'border-red-200 bg-red-50 text-red-700',
+                )}
+              >
+                <p className="text-sm font-medium">Ethics & Trust score</p>
+                <p className="text-lg font-semibold mt-1">{submitResult.ethicsScore.toFixed(1)} / 100</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -383,6 +401,19 @@ export default function PublicSurveyPage() {
                 />
               ))}
             </div>
+
+            {ethicsScore != null && (
+              <div
+                className={clsx(
+                  'mt-4 rounded-2xl border px-4 py-3 text-center text-sm font-medium',
+                  ethicsScore >= 70 ? 'border-green-200 bg-green-50 text-green-700'
+                    : ethicsScore >= 50 ? 'border-amber-200 bg-amber-50 text-amber-700'
+                    : 'border-red-200 bg-red-50 text-red-700',
+                )}
+              >
+                Your Ethics & Trust score: {ethicsScore.toFixed(1)} / 100
+              </div>
+            )}
           </div>
 
           {schemaId && (

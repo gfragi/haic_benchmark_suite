@@ -100,6 +100,8 @@ function scoreCellClass(value) {
 }
 
 function QuestionCompareTable({ title, questions, avgA, avgB, versionA, versionB }) {
+  // versionB/avgB are optional - when absent, renders as a single-version
+  // detail table instead of a two-column comparison.
   return (
     <div>
       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{title}</p>
@@ -109,7 +111,7 @@ function QuestionCompareTable({ title, questions, avgA, avgB, versionA, versionB
             <tr className="bg-gray-50 text-left text-gray-500">
               <th className="px-3 py-2 font-medium">Question</th>
               <th className="px-3 py-2 font-medium text-center">{versionA}</th>
-              <th className="px-3 py-2 font-medium text-center">{versionB}</th>
+              {versionB && <th className="px-3 py-2 font-medium text-center">{versionB}</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -122,9 +124,11 @@ function QuestionCompareTable({ title, questions, avgA, avgB, versionA, versionB
                   <td className={clsx('px-3 py-2 text-center font-mono', scoreCellClass(a))}>
                     {a == null ? '—' : Number(a).toFixed(2)}
                   </td>
-                  <td className={clsx('px-3 py-2 text-center font-mono', scoreCellClass(b))}>
-                    {b == null ? '—' : Number(b).toFixed(2)}
-                  </td>
+                  {versionB && (
+                    <td className={clsx('px-3 py-2 text-center font-mono', scoreCellClass(b))}>
+                      {b == null ? '—' : Number(b).toFixed(2)}
+                    </td>
+                  )}
                 </tr>
               )
             })}
@@ -159,18 +163,25 @@ export default function SurveyDetailPage() {
     enabled: !!pilotTag,
   })
 
-  const canCompare = !!versionA && !!versionB && versionA !== versionB
+  // Defaults to the first version so single-version pilots see their detail
+  // breakdown immediately, without having to manually select the only option
+  // available - comparison (picking a second version) stays opt-in via
+  // Version B. Derived at render time rather than via an effect+setState,
+  // since versionA itself only needs to change on an actual user selection.
+  const effectiveVersionA = versionA || versions?.[0] || ''
+
+  const canCompare = !!effectiveVersionA && !!versionB && effectiveVersionA !== versionB
 
   const { data: compareData } = useQuery({
-    queryKey: ['survey-compare', pilotTag, versionA, versionB],
-    queryFn: () => api.survey.compare(pilotTag, versionA, versionB),
+    queryKey: ['survey-compare', pilotTag, effectiveVersionA, versionB],
+    queryFn: () => api.survey.compare(pilotTag, effectiveVersionA, versionB),
     enabled: canCompare,
   })
 
   const { data: qaA } = useQuery({
-    queryKey: ['survey-question-averages', pilotTag, versionA],
-    queryFn: () => api.survey.questionAverages(pilotTag, versionA),
-    enabled: canCompare,
+    queryKey: ['survey-question-averages', pilotTag, effectiveVersionA],
+    queryFn: () => api.survey.questionAverages(pilotTag, effectiveVersionA),
+    enabled: !!effectiveVersionA,
   })
 
   const { data: qaB } = useQuery({
@@ -180,15 +191,21 @@ export default function SurveyDetailPage() {
   })
 
   const { data: dsA } = useQuery({
-    queryKey: ['survey-domain-specific', pilotTag, versionA],
-    queryFn: () => api.survey.domainSpecificAverages(pilotTag, versionA),
-    enabled: canCompare,
+    queryKey: ['survey-domain-specific', pilotTag, effectiveVersionA],
+    queryFn: () => api.survey.domainSpecificAverages(pilotTag, effectiveVersionA),
+    enabled: !!effectiveVersionA,
   })
 
   const { data: dsB } = useQuery({
     queryKey: ['survey-domain-specific', pilotTag, versionB],
     queryFn: () => api.survey.domainSpecificAverages(pilotTag, versionB),
     enabled: canCompare,
+  })
+
+  const { data: comments } = useQuery({
+    queryKey: ['survey-comments', pilotTag, effectiveVersionA],
+    queryFn: () => api.survey.comments(pilotTag, effectiveVersionA),
+    enabled: !!effectiveVersionA,
   })
 
   const chartData = useMemo(() => {
@@ -266,16 +283,16 @@ export default function SurveyDetailPage() {
             )}
           </div>
 
-          {/* Version comparison */}
+          {/* Version detail / comparison */}
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h2 className="text-sm font-semibold text-gray-700 mb-3">Compare two versions</h2>
+            <h2 className="text-sm font-semibold text-gray-700 mb-3">Version details</h2>
             <div className="flex flex-wrap gap-3 mb-4">
               <select
-                value={versionA}
+                value={effectiveVersionA}
                 onChange={(e) => setVersionA(e.target.value)}
                 className="rounded-md border border-gray-200 px-3 py-1.5 text-sm text-gray-700"
               >
-                <option value="">Version A…</option>
+                <option value="">Version…</option>
                 {(versions ?? []).map((v) => <option key={v} value={v}>{v}</option>)}
               </select>
               <select
@@ -283,41 +300,47 @@ export default function SurveyDetailPage() {
                 onChange={(e) => setVersionB(e.target.value)}
                 className="rounded-md border border-gray-200 px-3 py-1.5 text-sm text-gray-700"
               >
-                <option value="">Version B…</option>
+                <option value="">Compare against… (optional)</option>
                 {(versions ?? []).map((v) => <option key={v} value={v}>{v}</option>)}
               </select>
             </div>
 
-            {!canCompare && (
-              <p className="text-xs text-gray-400">Pick two different versions to compare.</p>
+            {!effectiveVersionA && (
+              <p className="text-xs text-gray-400">Pick a version to see its detail breakdown.</p>
             )}
 
-            {canCompare && compareData && (
-              <div className="space-y-5">
-                <div className="flex flex-wrap gap-3">
-                  <div className="rounded-md bg-indigo-50 px-3 py-2 text-xs text-indigo-700">
-                    {versionA}: SUS {compareData.A.avg_sus.toFixed(1)} · Ethics {compareData.A.avg_ethics.toFixed(1)} · n={compareData.A.count}
-                  </div>
-                  <div className="rounded-md bg-teal-50 px-3 py-2 text-xs text-teal-700">
-                    {versionB}: SUS {compareData.B.avg_sus.toFixed(1)} · Ethics {compareData.B.avg_ethics.toFixed(1)} · n={compareData.B.count}
-                  </div>
-                  <div className={clsx(
-                    'rounded-md px-3 py-2 text-xs font-medium',
-                    compareData.B.avg_sus >= compareData.A.avg_sus ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700',
-                  )}>
-                    Δ SUS {(compareData.B.avg_sus - compareData.A.avg_sus) >= 0 ? '+' : ''}
-                    {(compareData.B.avg_sus - compareData.A.avg_sus).toFixed(1)}
-                  </div>
-                  <div className={clsx(
-                    'rounded-md px-3 py-2 text-xs font-medium',
-                    compareData.B.avg_ethics >= compareData.A.avg_ethics ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700',
-                  )}>
-                    Δ Ethics {(compareData.B.avg_ethics - compareData.A.avg_ethics) >= 0 ? '+' : ''}
-                    {(compareData.B.avg_ethics - compareData.A.avg_ethics).toFixed(1)}
-                  </div>
-                </div>
+            {effectiveVersionA && versionB && !canCompare && (
+              <p className="text-xs text-gray-400 mb-3">Pick two different versions to compare.</p>
+            )}
 
-                {qaA && qaB && (
+            {effectiveVersionA && (
+              <div className="space-y-5">
+                {canCompare && compareData && (
+                  <div className="flex flex-wrap gap-3">
+                    <div className="rounded-md bg-indigo-50 px-3 py-2 text-xs text-indigo-700">
+                      {effectiveVersionA}: SUS {compareData.A.avg_sus.toFixed(1)} · Ethics {compareData.A.avg_ethics.toFixed(1)} · n={compareData.A.count}
+                    </div>
+                    <div className="rounded-md bg-teal-50 px-3 py-2 text-xs text-teal-700">
+                      {versionB}: SUS {compareData.B.avg_sus.toFixed(1)} · Ethics {compareData.B.avg_ethics.toFixed(1)} · n={compareData.B.count}
+                    </div>
+                    <div className={clsx(
+                      'rounded-md px-3 py-2 text-xs font-medium',
+                      compareData.B.avg_sus >= compareData.A.avg_sus ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700',
+                    )}>
+                      Δ SUS {(compareData.B.avg_sus - compareData.A.avg_sus) >= 0 ? '+' : ''}
+                      {(compareData.B.avg_sus - compareData.A.avg_sus).toFixed(1)}
+                    </div>
+                    <div className={clsx(
+                      'rounded-md px-3 py-2 text-xs font-medium',
+                      compareData.B.avg_ethics >= compareData.A.avg_ethics ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700',
+                    )}>
+                      Δ Ethics {(compareData.B.avg_ethics - compareData.A.avg_ethics) >= 0 ? '+' : ''}
+                      {(compareData.B.avg_ethics - compareData.A.avg_ethics).toFixed(1)}
+                    </div>
+                  </div>
+                )}
+
+                {qaA && (
                   <div className="space-y-4">
                     <p className="text-xs text-gray-400">
                       Per-question averages on a 1–5 scale (darker/greener = higher agreement).
@@ -326,17 +349,17 @@ export default function SurveyDetailPage() {
                       title="SUS questions"
                       questions={SUS_QUESTIONS}
                       avgA={qaA.sus}
-                      avgB={qaB.sus}
-                      versionA={versionA}
-                      versionB={versionB}
+                      avgB={canCompare ? qaB?.sus : undefined}
+                      versionA={effectiveVersionA}
+                      versionB={canCompare ? versionB : undefined}
                     />
                     <QuestionCompareTable
                       title="Ethics questions"
                       questions={ETHICS_QUESTIONS}
                       avgA={qaA.ethics}
-                      avgB={qaB.ethics}
-                      versionA={versionA}
-                      versionB={versionB}
+                      avgB={canCompare ? qaB?.ethics : undefined}
+                      versionA={effectiveVersionA}
+                      versionB={canCompare ? versionB : undefined}
                     />
                   </div>
                 )}
@@ -346,25 +369,57 @@ export default function SurveyDetailPage() {
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                       Domain-specific questions
                     </p>
-                    <p className="text-xs text-gray-400 mb-3">
-                      Each pilot version may use its own custom question set, so these are shown
-                      separately rather than in a shared table.
-                    </p>
-                    <div className="grid grid-cols-2 gap-4">
+                    {canCompare && (
+                      <p className="text-xs text-gray-400 mb-3">
+                        Each pilot version may use its own custom question set, so these are shown
+                        separately rather than in a shared table.
+                      </p>
+                    )}
+                    <div className={clsx('grid gap-4', canCompare ? 'grid-cols-2' : 'grid-cols-1')}>
                       <div>
-                        <p className="text-xs font-medium text-indigo-700 mb-2">{versionA}</p>
-                        <DomainSpecificBlock title={versionA} data={dsA} />
+                        {canCompare && <p className="text-xs font-medium text-indigo-700 mb-2">{effectiveVersionA}</p>}
+                        <DomainSpecificBlock title={effectiveVersionA} data={dsA} />
                       </div>
-                      <div>
-                        <p className="text-xs font-medium text-teal-700 mb-2">{versionB}</p>
-                        <DomainSpecificBlock title={versionB} data={dsB} />
-                      </div>
+                      {canCompare && (
+                        <div>
+                          <p className="text-xs font-medium text-teal-700 mb-2">{versionB}</p>
+                          <DomainSpecificBlock title={versionB} data={dsB} />
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
               </div>
             )}
           </div>
+
+          {/* Free-text comments — not aggregated (nothing numeric to average),
+              so shown as a plain list instead of folded into the domain-specific
+              breakdown above. No respondent identity attached, just the text. */}
+          {effectiveVersionA && (
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <h2 className="text-sm font-semibold text-gray-700 mb-3">
+                Comments {effectiveVersionA && <span className="text-gray-400 font-normal">— {effectiveVersionA}</span>}
+              </h2>
+              {!comments?.length && (
+                <p className="text-xs text-gray-400">No comments submitted for this version yet.</p>
+              )}
+              {!!comments?.length && (
+                <ul className="space-y-2">
+                  {comments.map((c, i) => (
+                    <li key={i} className="rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+                      {c.comment}
+                      {c.timestamp && (
+                        <span className="block text-xs text-gray-400 mt-1">
+                          {new Date(c.timestamp).toLocaleDateString()}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </>
       )}
 

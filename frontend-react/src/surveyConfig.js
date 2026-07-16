@@ -35,6 +35,17 @@ export function computeSus(sus) {
   return ((sumOdd - 5) + (25 - sumEven)) * 2.5
 }
 
+// Mirrors the backend's calculation exactly (survey_service.py:
+// `(mean(ethics_values) - 1) * 25`) - all 5 ethics questions are positively
+// worded (agreement = good), so unlike SUS there's no odd/even reverse-scoring.
+export function computeEthics(ethics) {
+  const keys = ETHICS_QUESTIONS.map((q) => q.key)
+  const allAnswered = keys.every((key) => ethics[key] != null)
+  if (!allAnswered) return null
+  const avg = keys.reduce((acc, key) => acc + ethics[key], 0) / keys.length
+  return (avg - 1) * 25
+}
+
 export function makeAnonymousUserId() {
   const bytes = new Uint8Array(4)
   crypto.getRandomValues(bytes)

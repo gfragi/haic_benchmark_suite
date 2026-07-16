@@ -111,6 +111,8 @@ export const api = {
       request(`/survey/question-averages?pilot_tag=${pilotTag}&app_version=${appVersion}`),
     domainSpecificAverages: (pilotTag, appVersion) =>
       request(`/survey/domain-specific-averages?pilot_tag=${pilotTag}&app_version=${appVersion}`),
+    comments: (pilotTag, appVersion) =>
+      request(`/survey/comments?pilot_tag=${pilotTag}${appVersion ? `&app_version=${appVersion}` : ''}`),
     schemas: {
       create: (body) =>
         request('/survey/schemas', { method: 'POST', body: JSON.stringify(body) }),

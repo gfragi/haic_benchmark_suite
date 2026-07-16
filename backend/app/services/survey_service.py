@@ -254,3 +254,33 @@ def domain_specific_averages(db: Session, pilot_tag: str, app_version: str):
         })
 
     return {"schemas": schemas_out}
+
+
+def list_comments(db: Session, pilot_tag: str, app_version: Optional[str] = None):
+    """
+    Raw free-text comments submitted alongside a survey response. Not
+    aggregated like domain_specific_averages() - "comment" is a synthetic
+    key (see PublicSurveyPage.jsx), not a real schema question, so it's
+    silently skipped by that aggregation. There's nothing numeric to average
+    for free text anyway, so this just lists it directly.
+
+    Deliberately excludes user_id - only comment text, app_version, and
+    timestamp, so this is safe to show in the UI without exposing respondent
+    identity.
+    """
+    query = db.query(Survey).filter(Survey.pilot_tag == pilot_tag)
+    if app_version:
+        query = query.filter(Survey.app_version == app_version)
+
+    comments = []
+    for s in query.all():
+        text_val = (s.domain_specific or {}).get("comment")
+        if text_val:
+            comments.append({
+                "app_version": s.app_version,
+                "comment": text_val,
+                "timestamp": s.timestamp.isoformat() if s.timestamp else None,
+            })
+
+    comments.sort(key=lambda c: c["timestamp"] or "", reverse=True)
+    return comments

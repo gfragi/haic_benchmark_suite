@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
-import { SUS_QUESTIONS, ETHICS_QUESTIONS, SCALE_LABELS, computeSus } from '../surveyConfig'
+import { SUS_QUESTIONS, ETHICS_QUESTIONS, SCALE_LABELS, computeSus, computeEthics } from '../surveyConfig'
 
 function RadioRow({ questionNum, text, qKey, value, onChange }) {
   return (
@@ -85,6 +85,7 @@ export default function SurveyPage() {
   }, [linkedConfig])
 
   const susScore = computeSus(sus)
+  const ethicsScore = computeEthics(ethics)
   const susAnswered = SUS_QUESTIONS.filter(q => sus[q.key] != null).length
   const ethicsAnswered = ETHICS_QUESTIONS.filter(q => ethics[q.key] != null).length
   const canSubmit = userId.trim() && pilotTag.trim() && susAnswered === 10 && ethicsAnswered === 5
@@ -103,7 +104,7 @@ export default function SurveyPage() {
         tam_sus_responses: sus,
         ethics_responses: ethics,
       })
-      setSubmitResult({ ...result, susScore })
+      setSubmitResult({ ...result, susScore, ethicsScore })
     } catch (e) {
       setSubmitError(e.message)
     } finally {
@@ -113,26 +114,44 @@ export default function SurveyPage() {
 
   if (submitResult) {
     const score = submitResult.susScore
+    const eScore = submitResult.ethicsScore
     return (
       <div className="max-w-xl mx-auto space-y-5 py-8">
         <div className="rounded-xl border border-green-200 bg-green-50 p-8 flex flex-col items-center gap-4 text-center">
           <CheckCircle2 size={36} className="text-green-500" />
-          <div>
-            <p className="text-base font-semibold text-green-800">Survey submitted — thank you!</p>
-            {score != null && (
-              <p className={clsx(
-                'text-3xl font-bold mt-3',
-                score >= 70 ? 'text-green-600' : score >= 50 ? 'text-amber-500' : 'text-red-500',
-              )}>
-                {score.toFixed(1)} / 100
-              </p>
-            )}
-            {score != null && (
-              <p className="text-xs text-gray-500 mt-1">
-                {score >= 70 ? 'Good usability' : score >= 50 ? 'Marginal usability' : 'Poor usability — consider UX improvements'}
-              </p>
+          <div className="flex items-start gap-8">
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">SUS</p>
+              {score != null && (
+                <p className={clsx(
+                  'text-3xl font-bold mt-1',
+                  score >= 70 ? 'text-green-600' : score >= 50 ? 'text-amber-500' : 'text-red-500',
+                )}>
+                  {score.toFixed(1)} / 100
+                </p>
+              )}
+              {score != null && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {score >= 70 ? 'Good usability' : score >= 50 ? 'Marginal usability' : 'Poor usability'}
+                </p>
+              )}
+            </div>
+            {eScore != null && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Ethics & Trust</p>
+                <p className={clsx(
+                  'text-3xl font-bold mt-1',
+                  eScore >= 70 ? 'text-green-600' : eScore >= 50 ? 'text-amber-500' : 'text-red-500',
+                )}>
+                  {eScore.toFixed(1)} / 100
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {eScore >= 70 ? 'High trust' : eScore >= 50 ? 'Moderate trust' : 'Low trust'}
+                </p>
+              </div>
             )}
           </div>
+          <p className="text-base font-semibold text-green-800">Survey submitted — thank you!</p>
           {selectedConfigId && (
             <Link
               to={`/config/${selectedConfigId}/results`}
@@ -283,6 +302,17 @@ export default function SurveyPage() {
               />
             ))}
           </div>
+
+          {ethicsScore != null && (
+            <div className={clsx(
+              'mt-4 px-4 py-2.5 rounded-lg text-sm font-semibold text-center',
+              ethicsScore >= 70 ? 'bg-green-50 text-green-700 border border-green-200'
+              : ethicsScore >= 50 ? 'bg-amber-50 text-amber-700 border border-amber-200'
+              : 'bg-red-50 text-red-700 border border-red-200',
+            )}>
+              Your Ethics & Trust score: {ethicsScore.toFixed(1)} / 100
+            </div>
+          )}
         </div>
 
         {/* Error */}

@@ -11,6 +11,7 @@ from app.services.survey_service import (
     aggregate_for_version,
     question_averages,
     domain_specific_averages,
+    list_comments,
 )
 
 router = APIRouter()
@@ -82,3 +83,11 @@ def domain_specific_averages_route(
     db: Session = Depends(get_db),
 ):
     return domain_specific_averages(db, pilot_tag, app_version)
+
+@router.get("/comments", summary="List free-text comments for a pilot (optionally filtered by app version)")
+def list_comments_route(
+    pilot_tag: str = Query(..., min_length=1),
+    app_version: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+):
+    return list_comments(db, pilot_tag, app_version)
