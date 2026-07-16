@@ -384,7 +384,7 @@ export default function ConfigListPage() {
       )}
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold text-gray-900">Configurations</h1>
+        <h1 className="text-xl font-semibold text-gray-900">Evaluations</h1>
         <div className="flex items-center gap-3">
           <span className="text-xs text-gray-400 tabular-nums">
             {configs.length} {configs.length === 1 ? 'config' : 'configs'}

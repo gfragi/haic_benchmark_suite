@@ -606,7 +606,7 @@ export default function ResultsDashboardPage() {
       <div className="flex items-center gap-2 text-sm">
         <Link to="/configs" className="flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors">
           <ArrowLeft size={14} />
-          Configurations
+          Evaluations
         </Link>
         <span className="text-gray-300">/</span>
         <span className="font-medium text-gray-700">

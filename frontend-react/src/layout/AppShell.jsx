@@ -4,16 +4,59 @@ import { Home, LayoutList, GitCompare, Upload, BookOpen, Activity, Compass, Help
 import clsx from 'clsx'
 import { api } from '../services/api'
 
-const NAV = [
-  { label: 'Home',              href: '/',                icon: Home,          exact: true },
-  { label: 'Getting Started',   href: '/getting-started', icon: HelpCircle                },
-  { label: 'Configurations',    href: '/configs',         icon: LayoutList                },
-  { label: 'New Pilot',         href: '/pilot/new',       icon: Compass                   },
-  { label: 'Compare Versions',  href: '/compare',         icon: GitCompare                },
-  { label: 'Ingest Logs',       href: '/ingest',          icon: Upload                    },
-  { label: 'Submit Survey',     href: '/survey',          icon: ClipboardList             },
-  { label: 'Metrics Reference', href: '/metrics',         icon: BookOpen                  },
+// Keep in sync with PUBLIC_PATHS in src/main.jsx - these are the only sidebar
+// items reachable without logging in.
+const NAV_TOP = [
+  { label: 'Home',              href: '/',                icon: Home,          exact: true, public: true },
+  { label: 'Getting Started',   href: '/getting-started', icon: HelpCircle,                 public: true },
 ]
+
+const NAV_SECTIONS = [
+  {
+    heading: 'Pilots',
+    items: [
+      { label: 'Evaluations',  href: '/configs',   icon: LayoutList },
+      { label: 'New Pilot',    href: '/pilot/new', icon: Compass    },
+      { label: 'Ingest Logs',  href: '/ingest',    icon: Upload     },
+    ],
+  },
+  {
+    heading: 'Analysis',
+    items: [
+      { label: 'Compare Versions',  href: '/compare', icon: GitCompare              },
+      { label: 'Submit Survey',     href: '/survey',  icon: ClipboardList           },
+      { label: 'Metrics Reference', href: '/metrics', icon: BookOpen, public: true  },
+    ],
+  },
+]
+
+function NavItem({ label, href, icon: Icon, exact, public: isPublic, location }) {
+  const active = exact
+    ? location.pathname === href
+    : location.pathname.startsWith(href)
+  return (
+    <Link
+      to={href}
+      className={clsx(
+        'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+        active
+          ? 'bg-indigo-50 text-indigo-700'
+          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+      )}
+    >
+      <Icon size={15} className={active ? 'text-indigo-600' : 'text-gray-400'} />
+      <span className="flex-1">{label}</span>
+      {isPublic && (
+        <span
+          className="text-[10px] font-medium text-gray-400 bg-gray-100 rounded px-1.5 py-0.5"
+          title="Accessible without logging in"
+        >
+          public
+        </span>
+      )}
+    </Link>
+  )
+}
 
 function HealthDot() {
   const { data, isError } = useQuery({
@@ -52,27 +95,20 @@ export default function AppShell({ children }) {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-52 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col pt-4 pb-4">
-          <nav className="px-3 space-y-0.5 flex-1">
-            {NAV.map(({ label, href, icon: Icon, exact }) => {
-              const active = exact
-                ? location.pathname === href
-                : location.pathname.startsWith(href)
-              return (
-                <Link
-                  key={href}
-                  to={href}
-                  className={clsx(
-                    'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors',
-                    active
-                      ? 'bg-indigo-50 text-indigo-700'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
-                  )}
-                >
-                  <Icon size={15} className={active ? 'text-indigo-600' : 'text-gray-400'} />
-                  {label}
-                </Link>
-              )
-            })}
+          <nav className="px-3 space-y-4 flex-1">
+            <div className="space-y-0.5">
+              {NAV_TOP.map((item) => <NavItem key={item.href} {...item} location={location} />)}
+            </div>
+            {NAV_SECTIONS.map(({ heading, items }) => (
+              <div key={heading}>
+                <p className="px-3 pb-1 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">
+                  {heading}
+                </p>
+                <div className="space-y-0.5">
+                  {items.map((item) => <NavItem key={item.href} {...item} location={location} />)}
+                </div>
+              </div>
+            ))}
           </nav>
 
           {/* Sidebar footer */}
