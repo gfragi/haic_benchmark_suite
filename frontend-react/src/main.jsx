@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
 
 // These stay public even when not authenticated — keep in sync with the
 // route wrapping in App.jsx.
-const PUBLIC_PATHS = ['/', '/getting-started', '/metrics', '/public/survey']
+const PUBLIC_PATHS = ['/', '/getting-started', '/metrics', '/public/survey', '/releases']
 const isPublicPath = () => PUBLIC_PATHS.includes(window.location.pathname)
 
 const publicRedirect = () =>

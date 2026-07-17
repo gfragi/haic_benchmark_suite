@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Home, LayoutList, GitCompare, Upload, BookOpen, Activity, Compass, HelpCircle, ClipboardList } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
+import { RELEASES } from '../releaseNotes'
 
 // Keep in sync with PUBLIC_PATHS in src/main.jsx - these are the only sidebar
 // items reachable without logging in.
@@ -85,8 +86,16 @@ export default function AppShell({ children }) {
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <Activity size={18} className="text-indigo-600" />
           <span className="font-semibold text-gray-900 text-sm">HAIC Benchmark Suite</span>
-          <span className="text-xs text-gray-400 font-mono ml-0.5">v2.0</span>
         </Link>
+        {RELEASES[0]?.version && (
+          <Link
+            to="/releases"
+            className="text-xs text-gray-400 hover:text-indigo-600 font-mono transition-colors"
+            title="Release notes"
+          >
+            {RELEASES[0].version}
+          </Link>
+        )}
         <div className="ml-auto">
           <HealthDot />
         </div>

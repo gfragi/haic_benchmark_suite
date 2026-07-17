@@ -12,6 +12,7 @@ import GettingStartedPage from './pages/GettingStartedPage'
 import SurveyPage from './pages/SurveyPage'
 import PublicSurveyPage from './pages/PublicSurveyPage'
 import SurveyDetailPage from './pages/SurveyDetailPage'
+import ReleaseNotesPage from './pages/ReleaseNotesPage'
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
               <Route path="/compare" element={<RequireAuth><CompareVersionsPage /></RequireAuth>} />
               <Route path="/ingest" element={<RequireAuth><LogWizardPage /></RequireAuth>} />
               <Route path="/metrics" element={<MetricsGlossaryPage />} />
+              <Route path="/releases" element={<ReleaseNotesPage />} />
               <Route path="/pilot/new" element={<RequireAuth><PilotOnboardingPage /></RequireAuth>} />
               <Route path="/getting-started" element={<GettingStartedPage />} />
               <Route path="/survey" element={<RequireAuth><SurveyPage /></RequireAuth>} />
