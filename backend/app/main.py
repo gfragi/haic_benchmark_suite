@@ -1,13 +1,16 @@
 # main.py
 import os
+import asyncio
 import logging
 from fastapi import FastAPI, APIRouter, Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
-from app.routers import logs, configuration, evaluate, log_generator, meta
+from app.routers import logs, configuration, evaluate, log_generator, meta, polled_sources
 from app.routers import fairness, env_builder, simulator, results, survey, survey_schema, env_catalog, analytics, reporting, collab, interpret, adapters, pilot
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.seed_core_metrics import seed_core_definitions
+from app.services.log_polling_service import poll_due_sources
+from app.utils.database import SessionLocal
 from app.utils.errors import ErrorEnvelope, ErrorDetail
 
 logger = logging.getLogger(__name__)
@@ -29,6 +32,27 @@ async def on_startup():
         except Exception as e:
             print(f"[core-metrics] Seed skipped due to error: {e}")
 
+# Ticks every 60s and polls whichever registered sources are due (each
+# source has its own poll_interval_seconds) - see log_polling_service.py.
+# Assumes a single backend process; running multiple uvicorn workers would
+# each start their own loop and poll the same sources redundantly.
+_POLL_LOOP_TICK_S = 60
+
+async def _log_polling_loop():
+    while True:
+        await asyncio.sleep(_POLL_LOOP_TICK_S)
+        db = SessionLocal()
+        try:
+            await asyncio.to_thread(poll_due_sources, db)
+        except Exception as e:
+            logger.error("Log polling loop error: %s", repr(e))
+        finally:
+            db.close()
+
+@app.on_event("startup")
+async def start_log_polling_loop():
+    asyncio.create_task(_log_polling_loop())
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -39,6 +63,7 @@ app.add_middleware(
 
 api = APIRouter(prefix="/api/v1", )
 
+api.include_router(polled_sources.router, prefix="/logs",           tags=["Log Polling"])
 api.include_router(logs.router,           prefix="/logs",           tags=["Logs"])
 api.include_router(configuration.router,  prefix="/configuration",  tags=["Configuration"])
 api.include_router(evaluate.router,       prefix="/evaluate",       tags=["Evaluation"])

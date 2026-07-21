@@ -76,6 +76,20 @@ export const api = {
       request(`/logs/${configId}/${encodeURIComponent(logName)}`, { method: 'DELETE' }),
   },
 
+  // Pull-based ingestion: register a partner-owned HTTP endpoint we poll on
+  // a schedule instead of requiring a manual upload every time. Separate
+  // from logs.register above, which pushes one already-complete session log.
+  polledSources: {
+    list: (configId) => request(`/logs/polled-sources?configuration_id=${configId}`),
+    register: (configId, body) =>
+      request(`/logs/polled-sources?configuration_id=${configId}`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    remove: (sourceId) => request(`/logs/polled-sources/${sourceId}`, { method: 'DELETE' }),
+    pollNow: (sourceId) => request(`/logs/polled-sources/${sourceId}/poll-now`, { method: 'POST' }),
+  },
+
   evaluate: {
     trigger: (configId) =>
       request(`/evaluate/${configId}`, { method: 'POST' }),

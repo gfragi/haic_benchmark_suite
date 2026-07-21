@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import {
   Upload, Link2, ChevronRight, CheckCircle2,
@@ -943,14 +943,35 @@ function Step2({ configId, onNext, onBack, skippedSetup }) {
   const [tab, setTab] = useState('upload')   // 'upload' | 'endpoint'
   const [file, setFile] = useState(null)
   const [uploadedFile, setUploadedFile] = useState(null)  // kept after upload for fairness
-  const [endpoint, setEndpoint] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadResult, setUploadResult] = useState(null)
   const [error, setError] = useState(null)
 
+  // Register-endpoint tab: a source we poll on a schedule instead of the
+  // partner uploading a file every time. Two kinds: their own HTTP endpoint,
+  // or a bucket on the same consortium MinIO this platform already reads
+  // from (most partners are on shared infra, so this needs no separate
+  // credentials - just a bucket name).
+  const [sourceType, setSourceType] = useState('minio_bucket') // 'minio_bucket' | 'http_endpoint'
+  const [endpoint, setEndpoint] = useState('')
+  const [authHeader, setAuthHeader] = useState('')
+  const [minioBucket, setMinioBucket] = useState('')
+  const [minioPrefix, setMinioPrefix] = useState('')
+  const [pollIntervalMin, setPollIntervalMin] = useState(5)
+  const [registering, setRegistering] = useState(false)
+  const [pollingSourceId, setPollingSourceId] = useState(null) // source id currently being poll-now'd/removed
+  const queryClient = useQueryClient()
+
   const { data: config } = useQuery({
     queryKey: ['config', configId],
     queryFn: () => api.configs.get(configId),
+  })
+
+  const { data: polledSources } = useQuery({
+    queryKey: ['polled-sources', configId],
+    queryFn: () => api.polledSources.list(configId),
+    enabled: tab === 'endpoint',
+    refetchInterval: tab === 'endpoint' ? 15_000 : false, // keep last-polled/error status fresh while the tab is open
   })
 
   if (!checklistConfirmed) {
@@ -983,24 +1004,59 @@ function Step2({ configId, onNext, onBack, skippedSetup }) {
     }
   }
 
-  async function handleRegister() {
-    if (!endpoint.trim()) return
-    setUploading(true)
+  const sourceFormValid = sourceType === 'minio_bucket' ? !!minioBucket.trim() : !!endpoint.trim()
+
+  async function handleRegisterSource() {
+    if (!sourceFormValid) return
+    setRegistering(true)
     setError(null)
-    setUploadResult(null)
     try {
-      const result = await api.logs.register(configId, { endpoint_url: endpoint.trim() })
-      setUploadResult(result)
+      await api.polledSources.register(configId, {
+        source_type: sourceType,
+        endpoint_url: sourceType === 'http_endpoint' ? endpoint.trim() : undefined,
+        auth_header: sourceType === 'http_endpoint' ? (authHeader.trim() || undefined) : undefined,
+        minio_bucket: sourceType === 'minio_bucket' ? minioBucket.trim() : undefined,
+        minio_prefix: sourceType === 'minio_bucket' ? (minioPrefix.trim() || undefined) : undefined,
+        poll_interval_seconds: Math.max(30, Math.round(pollIntervalMin * 60)),
+      })
+      setEndpoint('')
+      setAuthHeader('')
+      setMinioBucket('')
+      setMinioPrefix('')
+      queryClient.invalidateQueries({ queryKey: ['polled-sources', configId] })
     } catch (e) {
       setError(e.message)
     } finally {
-      setUploading(false)
+      setRegistering(false)
+    }
+  }
+
+  async function handlePollNow(sourceId) {
+    setPollingSourceId(sourceId)
+    setError(null)
+    try {
+      await api.polledSources.pollNow(sourceId)
+      queryClient.invalidateQueries({ queryKey: ['polled-sources', configId] })
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setPollingSourceId(null)
+    }
+  }
+
+  async function handleRemoveSource(sourceId) {
+    setError(null)
+    try {
+      await api.polledSources.remove(sourceId)
+      queryClient.invalidateQueries({ queryKey: ['polled-sources', configId] })
+    } catch (e) {
+      setError(e.message)
     }
   }
 
   // Normalize: upload returns schema_warnings (string[]), register returns validation_warnings ({metric,warning}[])
   const rawWarnings = uploadResult?.schema_warnings ?? uploadResult?.validation_warnings ?? []
-  const canProceed = uploadResult != null
+  const canProceed = uploadResult != null || (polledSources?.length ?? 0) > 0
 
   return (
     <div className="space-y-5 max-w-xl">
@@ -1095,15 +1151,80 @@ function Step2({ configId, onNext, onBack, skippedSetup }) {
 
       {/* Endpoint tab */}
       {tab === 'endpoint' && (
-        <div className="space-y-3">
-          {!uploadResult ? (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Log endpoint URL
-                </label>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
+        <div className="space-y-4">
+          <p className="text-xs text-gray-500">
+            Register a source and we'll poll it on a schedule for new session logs —
+            no manual upload needed once this is set up.
+          </p>
+
+          <div className="space-y-3 rounded-lg border border-gray-200 p-4">
+            <div className="flex gap-2">
+              {[['minio_bucket', 'MinIO Bucket'], ['http_endpoint', 'HTTP Endpoint']].map(([v, label]) => (
+                <button
+                  key={v}
+                  onClick={() => setSourceType(v)}
+                  className={clsx(
+                    'flex-1 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors',
+                    sourceType === v
+                      ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
+                      : 'border-gray-200 text-gray-500 hover:bg-gray-50',
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {sourceType === 'minio_bucket' ? (
+              <>
+                <p className="text-xs text-gray-400">
+                  For a bucket on the same consortium MinIO this platform already reads
+                  from — no separate credentials needed, just the bucket name (and
+                  optionally a prefix to scope it to a folder).
+                </p>
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      Bucket name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="smart-ticketing"
+                      value={minioBucket}
+                      onChange={e => setMinioBucket(e.target.value)}
+                      className="w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm
+                                 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      Prefix (optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="exports/"
+                      value={minioPrefix}
+                      onChange={e => setMinioPrefix(e.target.value)}
+                      className="w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm
+                                 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-xs text-gray-400">
+                  Your endpoint should respond to <code className="font-mono bg-gray-100 px-1 rounded">GET</code>{' '}
+                  (optionally with a <code className="font-mono bg-gray-100 px-1 rounded">?since=&lt;ISO8601&gt;</code>{' '}
+                  query param) with the same JSON shape the file upload accepts —{' '}
+                  <code className="font-mono bg-gray-100 px-1 rounded">{'{"logs": [...]}'}</code>,
+                  a bare list, or a single session object.
+                </p>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Endpoint URL
+                  </label>
+                  <div className="relative">
                     <Link2 size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                       type="url"
@@ -1114,26 +1235,99 @@ function Step2({ configId, onNext, onBack, skippedSetup }) {
                                  text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     />
                   </div>
-                  <button
-                    disabled={!endpoint.trim() || uploading}
-                    onClick={handleRegister}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium
-                               bg-indigo-600 text-white hover:bg-indigo-700 transition-colors
-                               disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-                  >
-                    {uploading
-                      ? <><Loader2 size={13} className="animate-spin" /> Registering…</>
-                      : 'Register'}
-                  </button>
                 </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                    Authorization header (optional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Bearer …"
+                    value={authHeader}
+                    onChange={e => setAuthHeader(e.target.value)}
+                    className="w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm
+                               text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="flex items-end gap-3">
+              <div className="w-36">
+                <label className="block text-xs font-medium text-gray-500 mb-1">
+                  Poll every
+                </label>
+                <select
+                  value={pollIntervalMin}
+                  onChange={e => setPollIntervalMin(Number(e.target.value))}
+                  className="w-full border border-gray-200 rounded-md px-2 py-1.5 text-sm text-gray-700"
+                >
+                  <option value={1}>1 minute</option>
+                  <option value={5}>5 minutes</option>
+                  <option value={15}>15 minutes</option>
+                  <option value={60}>1 hour</option>
+                </select>
               </div>
-            </>
-          ) : (
-            <UploadSummary
-              result={uploadResult}
-              rawWarnings={rawWarnings}
-              onReset={() => { setUploadResult(null); setEndpoint('') }}
-            />
+              <button
+                disabled={!sourceFormValid || registering}
+                onClick={handleRegisterSource}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium
+                           bg-indigo-600 text-white hover:bg-indigo-700 transition-colors
+                           disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {registering
+                  ? <><Loader2 size={13} className="animate-spin" /> Registering…</>
+                  : 'Register'}
+              </button>
+            </div>
+          </div>
+
+          {(polledSources?.length ?? 0) > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                Registered sources
+              </p>
+              {polledSources.map((s) => (
+                <div key={s.id} className="flex items-center justify-between gap-3 rounded-md border border-gray-200 px-3 py-2.5">
+                  <div className="min-w-0">
+                    <p className="text-sm text-gray-700 truncate font-mono">
+                      {s.source_type === 'minio_bucket'
+                        ? `${s.minio_bucket}${s.minio_prefix ? `/${s.minio_prefix}` : ''}`
+                        : s.endpoint_url}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      every {s.poll_interval_seconds >= 60 ? `${Math.round(s.poll_interval_seconds / 60)}m` : `${s.poll_interval_seconds}s`}
+                      {' · '}
+                      {s.last_success_at
+                        ? `last polled ${new Date(s.last_success_at).toLocaleString()}`
+                        : 'not polled yet'}
+                    </p>
+                    {s.last_error && (
+                      <p className="text-xs text-red-600 mt-1 flex items-start gap-1">
+                        <AlertTriangle size={11} className="mt-0.5 flex-shrink-0" /> {s.last_error}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button
+                      disabled={pollingSourceId === s.id}
+                      onClick={() => handlePollNow(s.id)}
+                      className="px-2.5 py-1.5 rounded-md text-xs font-medium border border-gray-200
+                                 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40"
+                    >
+                      {pollingSourceId === s.id ? <Loader2 size={12} className="animate-spin" /> : 'Poll now'}
+                    </button>
+                    <button
+                      onClick={() => handleRemoveSource(s.id)}
+                      className="px-2.5 py-1.5 rounded-md text-xs font-medium border border-gray-200
+                                 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
