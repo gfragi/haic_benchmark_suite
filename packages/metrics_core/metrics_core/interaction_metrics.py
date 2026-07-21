@@ -124,20 +124,35 @@ def _only_agent_rows(decisions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     ]
 
 
+# Minimum fraction of decisions that must carry a duration_s/latency_ms
+# value before the summed-durations total is trusted over the t-range/
+# timestamp span. Below this, too many events have no timing signal at all
+# (e.g. free-form authoring/definition steps that were never instrumented),
+# so the sum would badly undercount real elapsed effort instead of just
+# excluding genuine queue-wait time - the span becomes the more honest
+# estimate again once coverage is this sparse. Tune if real pilot data shows
+# this cutoff is too strict/loose.
+_DURATION_COVERAGE_THRESHOLD = 0.5
+
+
 def _total_time(
     decisions: List[Dict[str, Any]],
     explicit_t: Optional[float],
 ) -> float:
     """
     Prefer explicit_t; else sum of per-event active-processing durations
-    (duration_s/latency_ms, the same signal D uses); else t-range; else
-    fallback to timestamp span.
+    (duration_s/latency_ms, the same signal D uses) IF enough decisions
+    actually carry one; else t-range; else fallback to timestamp span.
 
     Summed durations are preferred over any timestamp-based span because a
     span measures wall-clock elapsed time, which can include time the case
     spent waiting for a human to become available (queueing/backlog) rather
     than actual effort - that queue-wait time isn't part of the AI-human
-    collaboration's own effort and shouldn't inflate EL or dilute F.
+    collaboration's own effort and shouldn't inflate EL or dilute F. But that
+    only holds if most events actually report a duration - when only a small
+    fraction do (sparse instrumentation), the sum undercounts real effort
+    instead, so the span is used instead once coverage drops below
+    _DURATION_COVERAGE_THRESHOLD.
     """
     if explicit_t is not None:
         return float(explicit_t)
@@ -145,7 +160,7 @@ def _total_time(
         return 0.0
 
     durs = _durations(decisions)
-    if durs:
+    if durs and (len(durs) / len(decisions)) >= _DURATION_COVERAGE_THRESHOLD:
         return max(0.0, sum(durs))
 
     # t-range (always present after normalization)
