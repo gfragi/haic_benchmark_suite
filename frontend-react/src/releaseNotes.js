@@ -6,6 +6,23 @@
 
 export const RELEASES = [
   {
+    version: 'v2.1',
+    date: '2026-07-22',
+    backend: [
+      'Fixed `pilot_tag`/`ai_model_version`/`app_version`/session timestamps not being read when a partner nests them under `meta.*` instead of the top level — was silently grouping everything under "Unknown".',
+      'Fixed a stale/orphaned result row being left behind whenever a version\'s label changes between evaluations (e.g. after the fix above) — re-evaluating now cleans up any version no longer present in the current logs, not just the ones being replaced.',
+      'Extended metrics (Confidence, Response Time, Human-AI Agreement Rate) now auto-derive directly from `decisions[]` payloads when a pilot doesn\'t send an explicit `interaction_data` block — no changes needed on partners\' side.',
+      'Fixed Human-AI Agreement Rate and Surrogate Similarity (S) both returning a false `0.0` instead of `null`/"not applicable" when there was no comparable data for that pilot.',
+      'Added per-session `metric_timeseries` data to evaluation results, powering the new "metric over time" view.',
+      'Added pull-based log ingestion: register a MinIO bucket (on the same consortium MinIO, no extra credentials needed) or a partner-owned HTTP endpoint per configuration, polled automatically on a schedule — no manual upload required once set up.',
+    ],
+    frontend: [
+      'Added a "Metric over time" chart to the results dashboard, with a metric picker — shows per-session trends (e.g. is Adaptability actually improving across sessions), not just version-level aggregates.',
+      'Version Comparison bar chart and quadrant plots now consistently respect the "Show versions" filter.',
+      'Rebuilt the Ingest Logs wizard\'s "Register Endpoint" tab (previously non-functional) into a working MinIO-bucket / HTTP-endpoint registration flow with live poll status, "poll now", and remove.',
+    ],
+  },
+  {
     version: 'v2.0',
     date: '2026-07-17',
     backend: [
