@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, Link } from 'react-router-dom'
-import { ChevronRight, AlertCircle, Loader2, Plus, X, HelpCircle, Link2, Trash2 } from 'lucide-react'
+import { ChevronRight, AlertCircle, Loader2, Plus, X, HelpCircle, Link2, Trash2, Eraser } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 import BuildSurveyLinkModal from '../components/BuildSurveyLinkModal'
@@ -320,6 +320,7 @@ export default function ConfigListPage() {
   const [showModal, setShowModal] = useState(false)
   const [linkConfig, setLinkConfig] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  const [purgingId, setPurgingId] = useState(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['configs'],
@@ -345,6 +346,28 @@ export default function ConfigListPage() {
       window.alert(`Failed to delete configuration ${cfg.id}: ${e.message}`)
     } finally {
       setDeletingId(null)
+    }
+  }
+
+  async function handlePurge(cfg) {
+    if (!window.confirm(
+      `Clear all logs, results, and uploaded data for "${cfg.application_name}" (config ${cfg.id})? ` +
+      `The configuration itself (name, settings, registered polling sources) is kept — only its ` +
+      `ingested data is wiped, e.g. to recover from stale MinIO data under a reused id. This cannot be undone.`
+    )) return
+    setPurgingId(cfg.id)
+    try {
+      const result = await api.configs.purge(cfg.id)
+      queryClient.invalidateQueries({ queryKey: ['configs'] })
+      window.alert(
+        `Purged config ${cfg.id}: removed ${result.deleted_log_entries} log entr${result.deleted_log_entries === 1 ? 'y' : 'ies'}, ` +
+        `${result.deleted_results} result${result.deleted_results === 1 ? '' : 's'}, ` +
+        `${result.deleted_minio_objects} MinIO object${result.deleted_minio_objects === 1 ? '' : 's'}.`
+      )
+    } catch (e) {
+      window.alert(`Failed to purge configuration ${cfg.id}: ${e.message}`)
+    } finally {
+      setPurgingId(null)
     }
   }
 
@@ -472,6 +495,16 @@ export default function ConfigListPage() {
                         className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                       >
                         View results <ChevronRight size={14} />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handlePurge(cfg) }}
+                        disabled={purgingId === cfg.id}
+                        className="inline-flex items-center gap-1 text-gray-400 hover:text-amber-600 text-sm font-medium disabled:opacity-50"
+                        title="Clear logs/results/MinIO data, keep the configuration"
+                      >
+                        {purgingId === cfg.id
+                          ? <Loader2 size={14} className="animate-spin" />
+                          : <Eraser size={14} />}
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDelete(cfg) }}

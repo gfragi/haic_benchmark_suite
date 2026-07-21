@@ -6,6 +6,16 @@
 
 export const RELEASES = [
   {
+    version: 'v2.1.1',
+    date: '2026-07-22',
+    backend: [
+      'Added `POST /configuration/{id}/purge` — clears a configuration\'s logs, results, and MinIO objects without deleting the configuration itself. Useful for recovering from stale/leftover MinIO data under a reused numeric config id (e.g. a fresh database pointed at old MinIO storage), without needing direct DB or MinIO access.',
+    ],
+    frontend: [
+      'Added a "Purge" action to the Evaluations list, alongside Delete — clears a configuration\'s data while keeping its name, settings, and registered polling sources.',
+    ],
+  },
+  {
     version: 'v2.1',
     date: '2026-07-22',
     backend: [

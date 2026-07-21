@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from app.models.configuration import EvaluationConfig
 from app.models.logs import LogEntry
+from app.models.results import EvaluationResult
 from app.schemas.configuration import EvaluationConfigSchema
 from app.utils.minio_utils import delete_all_files
 # Temporarily comment out metrics_core import
@@ -136,5 +137,46 @@ def delete_configuration(configuration_id: int, db: Session = Depends(get_db)):
     return {
         "message": f"Evaluation configuration with id {configuration_id} has been deleted.",
         "deleted_log_entries": deleted_log_count,
+        "deleted_minio_objects": deleted_object_count,
+    }
+
+# POST endpoint to clear all ingested data for a configuration (logs, results,
+# MinIO objects) WITHOUT deleting the configuration itself - e.g. for
+# recovering from stale/leftover MinIO data under a reused numeric config id
+# (a fresh DB pointed at old MinIO storage can collide on auto-incremented
+# ids), without needing direct DB/MinIO access or losing the config's own
+# settings.
+@router.post("/{configuration_id}/purge", response_model=dict)
+def purge_configuration(configuration_id: int, db: Session = Depends(get_db)):
+    config = db.query(EvaluationConfig).filter(EvaluationConfig.id == configuration_id).first()
+    if not config:
+        raise HTTPException(status_code=404, detail="Evaluation configuration not found")
+
+    deleted_log_count = db.query(LogEntry).filter(
+        LogEntry.configuration_id == configuration_id
+    ).delete()
+
+    deleted_result_count = db.query(EvaluationResult).filter(
+        EvaluationResult.configuration_id == configuration_id
+    ).delete()
+
+    try:
+        deleted_object_count = delete_all_files(configuration_id)
+    except Exception as e:
+        logger.warning(
+            "Failed to delete MinIO objects for configuration %s: %s",
+            configuration_id, repr(e),
+        )
+        deleted_object_count = 0
+
+    config.minio_path = None
+    config.evaluation_status = EvaluationConfig.STATUS_PENDING
+    db.add(config)
+    db.commit()
+
+    return {
+        "message": f"Purged all logs/results/MinIO data for configuration {configuration_id}. The configuration itself was kept.",
+        "deleted_log_entries": deleted_log_count,
+        "deleted_results": deleted_result_count,
         "deleted_minio_objects": deleted_object_count,
     }

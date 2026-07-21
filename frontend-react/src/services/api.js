@@ -31,6 +31,8 @@ export const api = {
       request(`/configuration/update/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
     delete: (id) =>
       request(`/configuration/delete/${id}`, { method: 'DELETE' }),
+    purge: (id) =>
+      request(`/configuration/${id}/purge`, { method: 'POST' }),
   },
 
   results: {

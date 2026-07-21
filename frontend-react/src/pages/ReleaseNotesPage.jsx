@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Server, Monitor } from 'lucide-react'
+import { ArrowLeft, Server, Monitor, ChevronDown } from 'lucide-react'
 import { RELEASES } from '../releaseNotes'
 
 function ChangeList({ icon: Icon, title, items }) {
@@ -34,18 +34,25 @@ export default function ReleaseNotesPage() {
         <p className="text-sm text-gray-400">No releases published yet.</p>
       )}
 
-      <div className="space-y-4">
-        {RELEASES.map((release) => (
-          <div key={release.version} className="bg-white rounded-lg border border-gray-200 p-5">
-            <div className="flex items-baseline gap-2 mb-4">
-              <h2 className="text-base font-semibold text-gray-900 font-mono">{release.version}</h2>
-              <span className="text-xs text-gray-400">{release.date}</span>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-6">
+      <div className="space-y-3">
+        {RELEASES.map((release, i) => (
+          <details
+            key={release.version}
+            open={i === 0}
+            className="group bg-white rounded-lg border border-gray-200"
+          >
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-5 py-4">
+              <div className="flex items-baseline gap-2">
+                <h2 className="text-base font-semibold text-gray-900 font-mono">{release.version}</h2>
+                <span className="text-xs text-gray-400">{release.date}</span>
+              </div>
+              <ChevronDown size={16} className="text-gray-400 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="grid sm:grid-cols-2 gap-6 px-5 pb-5">
               <ChangeList icon={Server} title="Backend" items={release.backend} />
               <ChangeList icon={Monitor} title="Frontend" items={release.frontend} />
             </div>
-          </div>
+          </details>
         ))}
       </div>
     </div>
