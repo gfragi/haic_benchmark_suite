@@ -74,12 +74,20 @@ def log_schema_to_session_log(raw: dict) -> tuple[SessionLog, list[str]]:
     """
     warnings: list[str] = []
 
+    # Some partners nest these under meta (e.g. meta.pilot_tag,
+    # meta.ai_system.model_name, meta.application.version) rather than at
+    # the top level - fall back there so those exports don't silently group
+    # under "Unknown" instead of raising a validation error.
+    _meta = raw.get("meta") or {}
+    _ai_system = _meta.get("ai_system") or {}
+    _application = _meta.get("application") or {}
+
     # Map LogSchema field names → SessionLog field names
     mapped = {
         "session_id":        raw.get("session_id"),
-        "pilot_tag":         raw.get("pilot_tag") or raw.get("app_version"),
-        "app_version":       raw.get("app_version"),
-        "ai_model_version":  raw.get("ai_model_version"),
+        "pilot_tag":         raw.get("pilot_tag") or raw.get("app_version") or _meta.get("pilot_tag"),
+        "app_version":       raw.get("app_version") or _application.get("version"),
+        "ai_model_version":  raw.get("ai_model_version") or _ai_system.get("model_name"),
         "meta":              raw.get("meta", {}),
         "extras":            raw.get("extras", {}),
         "interaction_data":  raw.get("interaction_data", {}),
