@@ -462,7 +462,7 @@ def compute_metrics_with_results(
     p_h = _aggregate_probs(agent_rows, "probs")
     p_s = _aggregate_probs(agent_rows, "surrogate_probs")
     if p_h and p_s:
-        s_val: float = math.exp(-_kl_divergence(p_h, p_s))
+        s_val: float | None = math.exp(-_kl_divergence(p_h, p_s))
         s_n = len(agent_rows)
     else:
         matches = compared = 0
@@ -472,9 +472,18 @@ def compute_metrics_with_results(
                 compared += 1
                 if e.get("action") == sa:
                     matches += 1
-        s_val = (matches / compared) if compared > 0 else 0.0
+        # None (not 0.0) when there's simply no surrogate signal to compare
+        # against - this task/pilot may not use a surrogate agent at all, and
+        # 0.0 would misleadingly read as "worst possible similarity" rather
+        # than "not applicable".
+        s_val = (matches / compared) if compared > 0 else None
         s_n = compared
-    s_mr = MetricResult(metric="S", value=_clip01(s_val), n_events=s_n)
+    s_mr = MetricResult(
+        metric="S",
+        value=_clip01(s_val) if s_val is not None else None,
+        n_events=s_n,
+        warning=None if s_val is not None else "no surrogate_probs/surrogate_action data available for this task",
+    )
 
     # ------------------------------------------------------------------
     # EL — effort loss vs baseline (BUG 2)
