@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query'
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip,
+  BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, Legend,
   ResponsiveContainer, Cell, CartesianGrid,
 } from 'recharts'
 import { AlertCircle, ArrowLeft, Loader2, Sparkles, X, AlertTriangle } from 'lucide-react'
@@ -298,6 +298,86 @@ function VersionBarChart({ results, compMetric, setCompMetric }) {
   )
 }
 
+function TimeSeriesTooltip({ active, payload, label, metric }) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="bg-white border border-gray-200 rounded shadow-sm text-xs p-2 space-y-0.5">
+      <p className="font-semibold text-gray-800">{new Date(label).toLocaleString()}</p>
+      {payload.map((p) => (
+        <p key={p.name} style={{ color: p.color }}>
+          {p.name}: <span className="font-mono">{p.value?.toFixed(3) ?? '—'}</span>
+        </p>
+      ))}
+      <p className="text-gray-400">{metric}</p>
+    </div>
+  )
+}
+
+function MetricTimeSeriesChart({ results, metric, setMetric }) {
+  // Each version's sessions land on their own real timestamps, not a shared
+  // set of x-values, so each gets its own <Line data=...> rather than one
+  // shared chart-level `data` array (recharts' standard pattern for
+  // multiple series that don't share x-axis points).
+  const series = results
+    .map((r, i) => ({
+      version: r.ai_model_version,
+      color: PALETTE[i % PALETTE.length],
+      points: (r.metric_timeseries || [])
+        .filter((p) => p[metric] != null)
+        .map((p) => ({ t: new Date(p.timestamp).getTime(), value: p[metric] })),
+    }))
+    .filter((s) => s.points.length > 0)
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold text-gray-700">Metric over time</h3>
+        <select
+          value={metric}
+          onChange={(e) => setMetric(e.target.value)}
+          className="text-sm border border-gray-200 rounded px-2 py-1 text-gray-700
+                     focus:outline-none focus:ring-2 focus:ring-indigo-300"
+        >
+          {CORE_METRICS.map((m) => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </select>
+      </div>
+      {!series.length && (
+        <div className="flex items-center justify-center h-40 text-sm text-gray-300">
+          No per-session {metric} data available for the selected versions.
+        </div>
+      )}
+      {!!series.length && (
+        <ResponsiveContainer width="100%" height={240}>
+          <LineChart margin={{ top: 10, right: 20, bottom: 4, left: 10 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+            <XAxis
+              dataKey="t" type="number" domain={['dataMin', 'dataMax']} tick={{ fontSize: 10 }}
+              tickFormatter={(t) => new Date(t).toLocaleDateString()}
+              allowDuplicatedCategory={false}
+            />
+            <YAxis dataKey="value" tick={{ fontSize: 10 }} />
+            <Tooltip content={(props) => <TimeSeriesTooltip {...props} metric={metric} />} />
+            <Legend wrapperStyle={{ fontSize: 11 }} />
+            {series.map((s) => (
+              <Line
+                key={s.version}
+                data={s.points}
+                dataKey="value"
+                name={s.version}
+                stroke={s.color}
+                dot={{ r: 3 }}
+                connectNulls
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      )}
+    </div>
+  )
+}
+
 function FairnessModal({ onClose, onSuccess }) {
   const fileRef = useRef(null)
   const [running, setRunning] = useState(false)
@@ -429,6 +509,7 @@ export default function ResultsDashboardPage() {
   const [audience, setAudience] = useState('researcher')
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [compMetric, setCompMetric] = useState('Tr')
+  const [tsMetric, setTsMetric] = useState('A')
   const [fairnessModalOpen, setFairnessModalOpen] = useState(false)
   const [surveyLinkOpen, setSurveyLinkOpen] = useState(false)
   const [hiddenVersions, setHiddenVersions] = useState(() => new Set())
@@ -878,6 +959,15 @@ export default function ResultsDashboardPage() {
               setCompMetric={setCompMetric}
             />
           )}
+
+          {/* Metric over time — per-session trend (e.g. is Adaptability
+              actually improving across sessions, not just within one), as
+              opposed to the version-level aggregates above. */}
+          <MetricTimeSeriesChart
+            results={results.filter(r => !hiddenVersions.has(r.ai_model_version))}
+            metric={tsMetric}
+            setMetric={setTsMetric}
+          />
 
           {/* AI Interpretation */}
           <InterpretationPanel

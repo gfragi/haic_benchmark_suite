@@ -414,6 +414,29 @@ def run_evaluation(config_id: int):
         # Group by AI model version
         logs_by_ai_version = split_logs_by_ai_model_version(entries)
 
+        # Clean up results for versions that no longer exist under this
+        # config - not just versions being re-evaluated this run. Without
+        # this, a version whose grouping key changes (e.g. a metadata-
+        # extraction fix that turns "Unknown" into a real model name, or
+        # logs simply being removed) leaves its old row behind forever,
+        # since _save_result_to_db only replaces a row when the same label
+        # re-evaluates, not when it disappears entirely.
+        current_versions = set(logs_by_ai_version.keys())
+        stale_query = new_session.query(EvaluationResult).filter(
+            EvaluationResult.configuration_id == config.id,
+        )
+        if current_versions:
+            stale_query = stale_query.filter(~EvaluationResult.ai_model_version.in_(current_versions))
+        stale_results = stale_query.all()
+        for old in stale_results:
+            try:
+                _get_client().remove_object(bucket, old.result_minio_path)
+            except Exception as e:
+                logger.warning("Could not remove stale result object %s: %s", old.result_minio_path, repr(e))
+            new_session.delete(old)
+        if stale_results:
+            new_session.commit()
+
         # Computed ONCE across all versions being compared in this run, not
         # per version-group - see _compute_derived_metrics docstring for why
         # a shared ceiling/baseline is required for cross-version comparability.
@@ -463,6 +486,32 @@ def run_evaluation(config_id: int):
                 and d.get("interaction", {}).get("_EffShapingFactor") is not None
             ]
 
+            # Per-session metric values with a timestamp, for plotting any
+            # metric against time (e.g. is Adaptability trending up across
+            # sessions, not just within one) - the aggregates above collapse
+            # sessions into a single mean, which hides that entirely.
+            # session_started_at falls back to the session's earliest
+            # decision timestamp when not set, so this still works for logs
+            # that never provide an explicit session start/end.
+            metric_timeseries = []
+            for log_entry, d in zip(logs, derived_list):
+                ts = log_entry.get("session_started_at")
+                if not ts:
+                    decision_ts = [
+                        ts_ for dec in (log_entry.get("decisions") or [])
+                        if (ts_ := dec.get("timestamp"))
+                    ]
+                    ts = min(decision_ts) if decision_ts else None
+                if not ts:
+                    continue
+                metrics = {k: v for k, v in d.get("interaction", {}).items() if not k.startswith("_")}
+                metric_timeseries.append({
+                    "timestamp": ts,
+                    "session_id": log_entry.get("session_id"),
+                    **metrics,
+                })
+            metric_timeseries.sort(key=lambda r: r["timestamp"])
+
             # Compose result data
             result_data = {
                 "configuration_id": config.id,
@@ -479,6 +528,7 @@ def run_evaluation(config_id: int):
                 },
                 "fairness": _compute_fairness(logs),
                 "el_recompute_sessions": el_recompute_sessions,
+                "metric_timeseries": metric_timeseries,
             }
 
             # Save to MinIO and DB

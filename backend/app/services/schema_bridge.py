@@ -93,11 +93,14 @@ def log_schema_to_session_log(raw: dict) -> tuple[SessionLog, list[str]]:
         "interaction_data":  raw.get("interaction_data", {}),
     }
 
-    # Timestamps: LogSchema uses start_time/end_time (str),
-    # SessionLog uses session_started_at/session_ended_at (datetime)
+    # Timestamps: LogSchema uses start_time/end_time (str) at the top level,
+    # or nested under meta.timestamps.{start_time,end_time} (same partners
+    # who nest pilot_tag/ai_model_version under meta tend to nest these too).
+    # SessionLog uses session_started_at/session_ended_at (datetime).
+    _timestamps = _meta.get("timestamps") or {}
     for src, dst in [("start_time", "session_started_at"),
                      ("end_time",   "session_ended_at")]:
-        raw_ts = raw.get(src)
+        raw_ts = raw.get(src) or _timestamps.get(src)
         if raw_ts is not None:
             mapped[dst] = _clean_ts(raw_ts)
         else:

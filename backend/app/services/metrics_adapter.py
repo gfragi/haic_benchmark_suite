@@ -6,9 +6,80 @@ from typing import Any, Dict, Iterable, List, Optional
 
 from metrics_core.interaction_metrics import compute_metrics_with_results
 from metrics_core.schema import MetricResult
-from metrics_core.outcome_metrics import Metrics as M
 
 Number = float | int
+
+# Known (predicted_key, actual_key) pairs used across pilots' decision payloads
+# to express "what the AI proposed" vs "what was finally decided" - there's no
+# single universal convention across partners, so each is checked in turn.
+# ai_decision/op_decision: Smart Cities / applications pilot (see pilot_guide.md)
+# ai_suggested/new_label, model_prediction/new_label: Rok's smart_ticketing pilot
+# ai_suggested/final_label: the radiology demo dataset
+_AGREEMENT_KEY_PAIRS = [
+    ("ai_decision", "op_decision"),
+    ("ai_suggested", "new_label"),
+    ("model_prediction", "new_label"),
+    ("ai_suggested", "final_label"),
+]
+
+
+def _payload_confidence(payload: Dict[str, Any]) -> Optional[float]:
+    """Max class probability from a decision's payload, whichever shape it's in."""
+    if not isinstance(payload, dict):
+        return None
+    probs = payload.get("probs")
+    if isinstance(probs, dict) and probs:
+        vals = [v for v in probs.values() if isinstance(v, (int, float))]
+        if vals:
+            return max(vals)
+    probabilities = payload.get("probabilities")
+    if isinstance(probabilities, list) and probabilities:
+        vals = [v for v in probabilities if isinstance(v, (int, float))]
+        if vals:
+            return max(vals)
+    return None
+
+
+def _derive_extended_from_decisions(decisions: List[Dict[str, Any]]) -> Dict[str, Optional[float]]:
+    """
+    Best-effort Confidence / Response Time / Human-AI Agreement Rate signals
+    extracted directly from decisions[] payloads, for pilots that don't send
+    an explicit interaction_data block. Only used as a fallback in
+    compute_from_log() - an explicit interaction_data value always wins over
+    this when present.
+    """
+    confidences: List[float] = []
+    response_times: List[float] = []
+    agree_total = 0
+    agree_matches = 0
+
+    for d in decisions or []:
+        if not isinstance(d, dict):
+            continue
+        payload = d.get("payload") or {}
+
+        if d.get("actor_type") == "ai":
+            conf = _payload_confidence(payload)
+            if conf is not None:
+                confidences.append(conf)
+            latency_ms = d.get("latency_ms")
+            if isinstance(latency_ms, (int, float)):
+                response_times.append(latency_ms / 1000.0)
+
+        for pred_key, actual_key in _AGREEMENT_KEY_PAIRS:
+            pred = payload.get(pred_key)
+            actual = payload.get(actual_key)
+            if pred is not None and actual is not None:
+                agree_total += 1
+                if str(pred).strip().lower() == str(actual).strip().lower():
+                    agree_matches += 1
+                break  # first matching convention wins - don't double count
+
+    return {
+        "confidence": _mean(confidences),
+        "response_time": _mean(response_times),
+        "agreement_rate": (agree_matches / agree_total) if agree_total else None,
+    }
 
 
 def _derive_baseline_s(
@@ -149,7 +220,7 @@ def compute_from_log(
     accs, precs, recs = [], [], []
     proc_times, confidences = [], []
     fps, fns, det_conf, corr_time = [], [], [], []
-    interaction_blocks = []
+    agreement_rates = []
     all_decisions = []
 
     for s in sessions:
@@ -162,25 +233,41 @@ def compute_from_log(
         if isinstance(sysm.get("precision"), (int, float)): precs.append(sysm["precision"])
         if isinstance(sysm.get("recall"), (int, float)):    recs.append(sysm["recall"])
 
-        if isinstance(v.get("processing_time_seconds"), (int, float)):
-            proc_times.append(v["processing_time_seconds"])
-
-        if isinstance(v.get("confidence_level"), (int, float)):
-            confidences.append(v["confidence_level"])
-
         if isinstance(r.get("false_positives"), (int, float)):          fps.append(r["false_positives"])
         if isinstance(r.get("false_negatives"), (int, float)):          fns.append(r["false_negatives"])
         if isinstance(r.get("detections_confirmed"), (int, float)):     det_conf.append(r["detections_confirmed"])
         if isinstance(r.get("time_spent_on_corrections_seconds"), (int, float)):
             corr_time.append(r["time_spent_on_corrections_seconds"])
 
-        # for legacy M.* calls that expect interaction_data
-        interaction_blocks.append(idata)
-
-        # collect decisions for core HAIC
+        # collect decisions for core HAIC (and the extended-metrics fallback below)
         ds = s.get("decisions")
-        if isinstance(ds, list):
-            all_decisions.extend(ds)
+        if not isinstance(ds, list):
+            ds = []
+        all_decisions.extend(ds)
+
+        # Confidence / Response Time / Human-AI Agreement Rate: prefer an
+        # explicit interaction_data value for this session; fall back to
+        # deriving directly from decisions[] payloads (see
+        # _derive_extended_from_decisions) when the pilot doesn't send one -
+        # e.g. Rok's smart_ticketing pilot has no interaction_data at all,
+        # but the signal is already present in each decision's payload.
+        fallback = _derive_extended_from_decisions(ds)
+
+        if isinstance(v.get("processing_time_seconds"), (int, float)):
+            proc_times.append(v["processing_time_seconds"])
+        elif fallback["response_time"] is not None:
+            proc_times.append(fallback["response_time"])
+
+        if isinstance(v.get("confidence_level"), (int, float)):
+            confidences.append(v["confidence_level"])
+        elif fallback["confidence"] is not None:
+            confidences.append(fallback["confidence"])
+
+        ground_truth, prediction = idata.get("ground_truth"), idata.get("prediction")
+        if ground_truth is not None and prediction is not None:
+            agreement_rates.append(1.0 if str(ground_truth).strip().lower() == str(prediction).strip().lower() else 0.0)
+        elif fallback["agreement_rate"] is not None:
+            agreement_rates.append(fallback["agreement_rate"])
 
     # ----------------- by_metric (raw values, None if missing) -----------------
     by_metric: Dict[str, Optional[float]] = {}
@@ -223,13 +310,13 @@ def compute_from_log(
     by_metric["Learning Efficiency"]         = None
     by_metric["Objective Fulfillment Rate"]  = None
 
-    # Collaboration & Interaction (some can come from M.* if needed)
+    # Collaboration & Interaction
     by_metric["AI Assistance Rate"]          = None
-    # Use metrics_core for Human-AI Agreement (works with your interaction_data)
-    try:
-        by_metric["Human-AI Agreement Rate"] = M.CollaborationAndInteraction.calculate_human_ai_agreement_rate(interaction_blocks)
-    except Exception:
-        by_metric["Human-AI Agreement Rate"] = None
+    # None (not 0.0) when no session had a determinable ground_truth/
+    # prediction pair - the previous implementation returned 0.0 whenever it
+    # found zero comparable pairs, making "no data" look identical to "0%
+    # agreement".
+    by_metric["Human-AI Agreement Rate"]     = _mean(agreement_rates)
     by_metric["Decision Effectiveness"]      = None
     by_metric["Time to Resolution"]          = None
     by_metric["Human Effort Saved"]          = None  # needs baseline_s (not wired yet)
