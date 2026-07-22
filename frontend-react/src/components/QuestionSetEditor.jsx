@@ -212,7 +212,7 @@ function validate(form) {
 
 export default function QuestionSetEditor({ pilotTag, onCreated }) {
   const [form, setForm] = useState({
-    name: '', pilotTag: pilotTag || '', version: 1, active: true, questions: [],
+    name: '', pilotTag: pilotTag || '', version: 1, active: true, questionPosition: 'last', questions: [],
   })
   const [expanded, setExpanded] = useState(new Set())
   const [saving, setSaving] = useState(false)
@@ -263,6 +263,7 @@ export default function QuestionSetEditor({ pilotTag, onCreated }) {
         pilot_tag: form.pilotTag || null,
         version: form.version || 1,
         active: form.active,
+        question_position: form.questionPosition || 'last',
         questions: form.questions.map((q) => ({
           id: q.id, label: q.label, type: q.type, required: q.required,
           group: q.group || null,
@@ -305,6 +306,7 @@ export default function QuestionSetEditor({ pilotTag, onCreated }) {
             pilotTag: obj.pilot_tag || form.pilotTag,
             version: obj.version || 1,
             active: obj.active ?? true,
+            questionPosition: obj.question_position || 'last',
             questions: (obj.questions || []).map((q) => ({
               _key: makeKey(),
               scale: { min: 1, max: 5, min_label: 'Strongly disagree', max_label: 'Strongly agree' },
@@ -369,6 +371,17 @@ export default function QuestionSetEditor({ pilotTag, onCreated }) {
         <label className="flex items-center gap-2 text-xs text-gray-600 mt-5">
           <input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} />
           Active
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-xs font-medium text-gray-600">Domain questions position</span>
+          <select
+            value={form.questionPosition}
+            onChange={(e) => setForm((f) => ({ ...f, questionPosition: e.target.value }))}
+            className="w-full rounded-md border border-gray-200 px-2.5 py-1.5 text-sm text-gray-700"
+          >
+            <option value="last">After SUS/Ethics</option>
+            <option value="first">Before SUS/Ethics</option>
+          </select>
         </label>
       </div>
 

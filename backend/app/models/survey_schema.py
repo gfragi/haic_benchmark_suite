@@ -16,6 +16,10 @@ class SurveyQuestionSet(Base):
     pilot_tag = Column(String, nullable=True, index=True)   # if null => generic/ad-hoc
     version = Column(Integer, nullable=False, default=1)
     questions = Column(JSON, nullable=False)                 # array of question dicts
+    # Where domain-specific questions render relative to SUS/Ethics on the
+    # survey form - "last" (default, matches pre-existing behavior for
+    # schemas created before this field existed) or "first".
+    question_position = Column(String, nullable=False, default="last")
     active = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     created_by = Column(String, nullable=True)

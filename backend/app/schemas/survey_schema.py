@@ -24,6 +24,7 @@ class SurveyQuestionSetIn(BaseModel):
     pilot_tag: Optional[str] = None
     version: Optional[int] = 1
     questions: List[Question]
+    question_position: Optional[str] = "last"  # "first" | "last" - domain questions relative to SUS/Ethics
     active: bool = True
     created_by: Optional[str] = None
 

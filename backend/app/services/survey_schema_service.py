@@ -27,6 +27,7 @@ def create_schema(db: Session, payload: SurveyQuestionSetIn) -> SurveyQuestionSe
         pilot_tag=payload.pilot_tag,
         version=payload.version or 1,
         questions=[q.model_dump() for q in payload.questions],
+        question_position=payload.question_position or "last",
         active=payload.active,
         created_by=payload.created_by,
     )

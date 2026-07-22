@@ -19,6 +19,7 @@ def create_schema_route(payload: SurveyQuestionSetIn, db: Session = Depends(get_
         pilot_tag=obj.pilot_tag,
         version=obj.version,
         questions=obj.questions,
+        question_position=obj.question_position,
         active=obj.active,
         created_by=obj.created_by,
     )
@@ -32,6 +33,7 @@ def get_schema(schema_id: str, db: Session = Depends(get_db)):
         pilot_tag=obj.pilot_tag,
         version=obj.version,
         questions=obj.questions,
+        question_position=obj.question_position,
         active=obj.active,
         created_by=obj.created_by,
     )
@@ -47,6 +49,7 @@ def get_latest_for_pilot(pilot_tag: str = Query(...), db: Session = Depends(get_
         pilot_tag=obj.pilot_tag,
         version=obj.version,
         questions=obj.questions,
+        question_position=obj.question_position,
         active=obj.active,
         created_by=obj.created_by,
     )

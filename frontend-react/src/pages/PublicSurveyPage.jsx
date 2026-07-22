@@ -234,6 +234,50 @@ export default function PublicSurveyPage() {
   const canSubmit = pilotTag.trim() && susAnswered === 10 && ethicsAnswered === 5 && !missingDomainQuestion
   const susScore = computeSus(sus)
   const ethicsScore = computeEthics(ethics)
+  const domainPosition = schema?.question_position === 'first' ? 'first' : 'last'
+
+  const domainQuestionsBlock = (
+    <div className="rounded-3xl border border-gray-200 bg-white px-5 py-6 shadow-sm sm:px-6">
+      <SectionHeader title="Additional Questions" subtitle={schema?.name || `Schema ${schemaId}`} />
+
+      {schemaLoading && (
+        <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
+          <Loader2 size={14} className="animate-spin" />
+          Loading extra questions…
+        </div>
+      )}
+
+      {schemaError && (
+        <div className="mt-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
+          <AlertTriangle size={15} className="mt-0.5 flex-shrink-0" />
+          {schemaError.message}
+        </div>
+      )}
+
+      {!!schema?.questions?.length && (
+        <div className="mt-4 space-y-4">
+          {schema.questions.map((question, index) => (
+            <div key={question.id} className="rounded-xl border border-gray-200 bg-white p-4">
+              <div className="mb-3">
+                <p className="text-sm font-medium text-gray-800">
+                  {index + 1}. {question.label}
+                  {question.required && <span className="ml-1 text-red-500">*</span>}
+                </p>
+                {question.group && (
+                  <p className="mt-1 text-xs text-gray-500">{question.group}</p>
+                )}
+              </div>
+              <DomainQuestion
+                question={question}
+                value={domainAnswers[question.id]}
+                onChange={(value) => setDomainAnswers((current) => ({ ...current, [question.id]: value }))}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 
   const domainSpecificPayload = useMemo(() => {
     const payload = {}
@@ -352,6 +396,8 @@ export default function PublicSurveyPage() {
             </div>
           </div>
 
+          {schemaId && domainPosition === 'first' && domainQuestionsBlock}
+
           <div className="rounded-3xl border border-gray-200 bg-white px-5 py-6 shadow-sm sm:px-6">
             <SectionHeader
               title="SUS"
@@ -416,48 +462,7 @@ export default function PublicSurveyPage() {
             )}
           </div>
 
-          {schemaId && (
-            <div className="rounded-3xl border border-gray-200 bg-white px-5 py-6 shadow-sm sm:px-6">
-              <SectionHeader title="Additional Questions" subtitle={schema?.name || `Schema ${schemaId}`} />
-
-              {schemaLoading && (
-                <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
-                  <Loader2 size={14} className="animate-spin" />
-                  Loading extra questions…
-                </div>
-              )}
-
-              {schemaError && (
-                <div className="mt-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
-                  <AlertTriangle size={15} className="mt-0.5 flex-shrink-0" />
-                  {schemaError.message}
-                </div>
-              )}
-
-              {!!schema?.questions?.length && (
-                <div className="mt-4 space-y-4">
-                  {schema.questions.map((question, index) => (
-                    <div key={question.id} className="rounded-xl border border-gray-200 bg-white p-4">
-                      <div className="mb-3">
-                        <p className="text-sm font-medium text-gray-800">
-                          {index + 1}. {question.label}
-                          {question.required && <span className="ml-1 text-red-500">*</span>}
-                        </p>
-                        {question.group && (
-                          <p className="mt-1 text-xs text-gray-500">{question.group}</p>
-                        )}
-                      </div>
-                      <DomainQuestion
-                        question={question}
-                        value={domainAnswers[question.id]}
-                        onChange={(value) => setDomainAnswers((current) => ({ ...current, [question.id]: value }))}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+          {schemaId && domainPosition === 'last' && domainQuestionsBlock}
 
           <div className="rounded-3xl border border-gray-200 bg-white px-5 py-6 shadow-sm sm:px-6">
             <SectionHeader title="Optional Comment" />
