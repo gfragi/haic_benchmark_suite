@@ -33,6 +33,8 @@ export const api = {
       request(`/configuration/delete/${id}`, { method: 'DELETE' }),
     purge: (id) =>
       request(`/configuration/${id}/purge`, { method: 'POST' }),
+    setSchema: (id, schemaId) =>
+      request(`/configuration/${id}/schema`, { method: 'PATCH', body: JSON.stringify({ schema_id: schemaId }) }),
   },
 
   results: {

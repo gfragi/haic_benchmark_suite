@@ -6,6 +6,19 @@
 
 export const RELEASES = [
   {
+    version: 'v2.1.2',
+    date: '2026-07-22',
+    backend: [
+      'Added `question_position` to survey question sets — domain-specific questions can now be placed before or after SUS/Ethics per schema, instead of a single hardcoded order for everyone.',
+      'Configurations now remember the `schema_id` of the question set attached to their survey link, so it stays fixed to what the link was built with instead of silently following "latest for this pilot_tag" if a newer schema is created later.',
+      'Added `PATCH /configuration/{id}/schema` to attach/detach a question set from a configuration.',
+    ],
+    frontend: [
+      'Question Set Editor: added a "Domain questions position" toggle (before/after SUS & Ethics), saved with the rest of the question set.',
+      'Added a one-click copy icon to each row in the Evaluations list — copies the public survey link without opening the "Build Link" modal.',
+    ],
+  },
+  {
     version: 'v2.1.1',
     date: '2026-07-22',
     backend: [

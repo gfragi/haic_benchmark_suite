@@ -4,19 +4,10 @@ import { QRCodeSVG } from 'qrcode.react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 import QuestionSetEditor from './QuestionSetEditor'
+import { buildSurveyUrl } from '../utils/surveyLink'
 
 function normalizeText(value) {
   return typeof value === 'string' ? value : ''
-}
-
-function buildSurveyUrl({ origin, pilotTag, configId, appVersion, aiModelVersion, schemaId }) {
-  const params = new URLSearchParams()
-  if (pilotTag.trim()) params.set('pilot_tag', pilotTag.trim())
-  if (configId != null) params.set('config_id', String(configId))
-  if (appVersion.trim()) params.set('app_version', appVersion.trim())
-  if (aiModelVersion.trim()) params.set('ai_model_version', aiModelVersion.trim())
-  if (schemaId) params.set('schema_id', String(schemaId))
-  return `${origin}/public/survey?${params.toString()}`
 }
 
 export default function BuildSurveyLinkModal({ config, schemaId: schemaIdProp, onClose }) {
@@ -27,14 +18,20 @@ export default function BuildSurveyLinkModal({ config, schemaId: schemaIdProp, o
     normalizeText(config?.ai_model_version || config?.ai_model_name),
   )
   const [copied, setCopied] = useState(false)
-  const [schemaId, setSchemaId] = useState(normalizeText(schemaIdProp))
-  const [autoAttach, setAutoAttach] = useState(true)
+  const [schemaId, setSchemaId] = useState(normalizeText(config?.schema_id || schemaIdProp))
+  // Only fall back to "latest for this pilot" when the config doesn't already
+  // have a question set attached to it - otherwise a newer schema created for
+  // the same pilot_tag would silently swap out the one this link was built with.
+  const [autoAttach, setAutoAttach] = useState(!config?.schema_id)
   const qrWrapperRef = useRef(null)
 
   useEffect(() => {
     setPilotTag(normalizeText(config?.pilot_tag))
     setAppVersion(normalizeText(config?.app_version))
     setAiModelVersion(normalizeText(config?.ai_model_version || config?.ai_model_name))
+    setSchemaId(normalizeText(config?.schema_id || schemaIdProp))
+    setAutoAttach(!config?.schema_id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config])
 
   // Auto-attach the latest active question set for this pilot, if any.
@@ -46,6 +43,16 @@ export default function BuildSurveyLinkModal({ config, schemaId: schemaIdProp, o
       .catch(() => { if (!cancelled) setSchemaId('') })
     return () => { cancelled = true }
   }, [autoAttach, pilotTag])
+
+  // Persist whichever schema ends up attached back onto the config, so
+  // reopening this modal later (or the inline copy button in the config
+  // list) keeps pointing at this exact question set.
+  useEffect(() => {
+    if (!config?.id) return
+    const normalized = schemaId || null
+    if (normalized === (config?.schema_id || null)) return
+    api.configs.setSchema(config.id, normalized).catch(() => {})
+  }, [config?.id, config?.schema_id, schemaId])
 
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const generatedUrl = useMemo(() => buildSurveyUrl({

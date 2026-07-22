@@ -7,7 +7,7 @@ from app.utils.database import get_db
 from app.models.configuration import EvaluationConfig
 from app.models.logs import LogEntry
 from app.models.results import EvaluationResult
-from app.schemas.configuration import EvaluationConfigSchema
+from app.schemas.configuration import EvaluationConfigSchema, SetConfigurationSchemaBody
 from app.utils.minio_utils import delete_all_files
 # Temporarily comment out metrics_core import
 # from metrics_core.outcome_metrics import Metrics
@@ -37,6 +37,7 @@ def create_configuration(config: EvaluationConfigSchema, db: Session = Depends(g
         evaluation_status=config.evaluation_status,
         pilot_tag=config.pilot_tag,
         baseline_s=config.baseline_s,
+        schema_id=config.schema_id,
     )
     db.add(new_config)
     db.commit()
@@ -101,11 +102,25 @@ def update_configuration(configuration_id: int, updated_config: EvaluationConfig
     config.metrics = updated_config.metrics
     config.pilot_tag = updated_config.pilot_tag
     config.baseline_s = updated_config.baseline_s
+    config.schema_id = updated_config.schema_id
 
     # Commit the changes to the database
     db.commit()
     db.refresh(config)
 
+    return config
+
+# PATCH endpoint to attach/detach the survey question set used for this
+# config's public survey link, without requiring the full config body.
+@router.patch("/{configuration_id}/schema", response_model=EvaluationConfigSchema)
+def set_configuration_schema(configuration_id: int, body: SetConfigurationSchemaBody, db: Session = Depends(get_db)):
+    config = db.query(EvaluationConfig).filter(EvaluationConfig.id == configuration_id).first()
+    if not config:
+        raise HTTPException(status_code=404, detail="Evaluation configuration not found")
+
+    config.schema_id = body.schema_id
+    db.commit()
+    db.refresh(config)
     return config
 
 # DELETE endpoint to delete an evaluation configuration and everything tied to it

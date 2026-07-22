@@ -24,6 +24,10 @@ class EvaluationConfig(Base):
     minio_path = Column(String, nullable=True)
     pilot_tag = Column(String, nullable=True)
     baseline_s = Column(Float, nullable=True)
+    # schema_id of the SurveyQuestionSet attached to this config's public survey link,
+    # so the link keeps pointing at the exact question set it was built with rather
+    # than whatever happens to be "latest" for the pilot_tag at link-open time.
+    schema_id = Column(String, nullable=True)
 
 
     # Relationship to associate with logs

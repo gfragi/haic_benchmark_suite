@@ -12,6 +12,7 @@ class EvaluationConfigSchema(BaseModel):
     metrics: List = Field(default_factory=list)
     pilot_tag: Optional[str] = None
     baseline_s: Optional[float] = None
+    schema_id: Optional[str] = None
     evaluation_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     description: Optional[str] = None
     config_type: str = Field(..., description="Either 'specific' or 'generic'")
@@ -20,3 +21,7 @@ class EvaluationConfigSchema(BaseModel):
     class Config:
         from_attributes = True
         populate_by_name = True
+
+
+class SetConfigurationSchemaBody(BaseModel):
+    schema_id: Optional[str] = None

@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, Link } from 'react-router-dom'
-import { ChevronRight, AlertCircle, Loader2, Plus, X, HelpCircle, Link2, Trash2, Eraser } from 'lucide-react'
+import { ChevronRight, AlertCircle, Loader2, Plus, X, HelpCircle, Link2, Copy, Check, Trash2, Eraser } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 import BuildSurveyLinkModal from '../components/BuildSurveyLinkModal'
+import { buildSurveyUrl } from '../utils/surveyLink'
 
 const STATUS = {
   completed: 'bg-green-100 text-green-800',
@@ -321,6 +322,7 @@ export default function ConfigListPage() {
   const [linkConfig, setLinkConfig] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
   const [purgingId, setPurgingId] = useState(null)
+  const [copiedId, setCopiedId] = useState(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['configs'],
@@ -347,6 +349,20 @@ export default function ConfigListPage() {
     } finally {
       setDeletingId(null)
     }
+  }
+
+  async function handleCopyLink(cfg) {
+    const url = buildSurveyUrl({
+      origin: window.location.origin,
+      pilotTag: cfg.pilot_tag,
+      configId: cfg.id,
+      appVersion: cfg.app_version,
+      aiModelVersion: cfg.ai_model_version || cfg.ai_model_name,
+      schemaId: cfg.schema_id,
+    })
+    await navigator.clipboard.writeText(url)
+    setCopiedId(cfg.id)
+    window.setTimeout(() => setCopiedId((current) => (current === cfg.id ? null : current)), 2000)
   }
 
   async function handlePurge(cfg) {
@@ -489,6 +505,13 @@ export default function ConfigListPage() {
                       >
                         <Link2 size={14} />
                         Build Link
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleCopyLink(cfg) }}
+                        className="inline-flex items-center gap-1 text-gray-400 hover:text-indigo-700 text-sm font-medium"
+                        title="Copy survey link"
+                      >
+                        {copiedId === cfg.id ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); navigate(`/config/${cfg.id}/results`) }}
