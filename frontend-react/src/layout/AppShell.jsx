@@ -4,6 +4,10 @@ import { Home, LayoutList, GitCompare, Upload, BookOpen, Activity, Compass, Help
 import clsx from 'clsx'
 import { api } from '../services/api'
 import { RELEASES } from '../releaseNotes'
+import humaineLogo from '../assets/humaine-logo.webp'
+import huaLogo from '../assets/hua-logo.png'
+import humaineIcon from '../assets/humaine-icon.png'
+import huaIcon from '../assets/hua-icon.png'
 
 // Keep in sync with PUBLIC_PATHS in src/main.jsx - these are the only sidebar
 // items reachable without logging in.
@@ -96,7 +100,9 @@ export default function AppShell({ children }) {
             {RELEASES[0].version}
           </Link>
         )}
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-3">
+          <img src={humaineIcon} alt="humAIne" className="h-7 w-7 object-contain" />
+          <img src={huaIcon} alt="Harokopio University" className="h-7 w-7 object-contain" />
           <HealthDot />
         </div>
       </header>
@@ -121,8 +127,10 @@ export default function AppShell({ children }) {
           </nav>
 
           {/* Sidebar footer */}
-          <div className="px-6 pt-3 border-t border-gray-100">
-            <p className="text-xs text-gray-400">© 2025 humAIne</p>
+          <div className="px-4 pt-4 border-t border-gray-100 space-y-3">
+            <img src={humaineLogo} alt="humAIne" className="h-10 w-auto max-w-full object-contain" />
+            <img src={huaLogo} alt="Harokopio University" className="h-10 w-auto max-w-full object-contain" />
+            <p className="text-xs text-gray-400">© 2026 humAIne</p>
           </div>
         </aside>
 
