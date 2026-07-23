@@ -26,8 +26,13 @@ function VersionBarTooltip({ active, payload, label }) {
   )
 }
 
+function csvCell(value) {
+  const s = value == null ? '' : String(value)
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+}
+
 function downloadCsv(filename, header, rows) {
-  const csv = [header, ...rows].map((r) => r.join(',')).join('\n')
+  const csv = [header, ...rows].map((r) => r.map(csvCell).join(',')).join('\n')
   const blob = new Blob([csv], { type: 'text/csv' })
   const link = document.createElement('a')
   link.href = URL.createObjectURL(blob)
@@ -64,6 +69,14 @@ function DomainSpecificBlock({ title, data }) {
                   <span className="font-mono text-gray-800">— avg {q.avg.toFixed(2)} (n={q.count})</span>
                 ) : q.distribution ? (
                   <span className="text-gray-500">— {distributionSummary(q.distribution)} (n={q.count})</span>
+                ) : q.answers?.length ? (
+                  <ul className="mt-1 space-y-1">
+                    {q.answers.map((a, i) => (
+                      <li key={i} className="rounded border border-gray-100 bg-gray-50 px-2 py-1 text-gray-700">
+                        “{a}”
+                      </li>
+                    ))}
+                  </ul>
                 ) : (
                   <span className="text-gray-400">— {q.count} responses</span>
                 )}
@@ -208,6 +221,23 @@ export default function SurveyDetailPage() {
     enabled: !!effectiveVersionA,
   })
 
+  async function handleExportRaw(appVersion) {
+    if (!pilotTag || !appVersion) return
+    const rows = await api.survey.raw(pilotTag, appVersion)
+    if (!rows.length) return
+
+    const fixedCols = ['respondent_id', 'timestamp', 'app_version', 'ai_model_version']
+    const varCols = new Set()
+    rows.forEach((r) => Object.keys(r).forEach((k) => { if (!fixedCols.includes(k)) varCols.add(k) }))
+    const header = [...fixedCols, ...Array.from(varCols).sort()]
+
+    downloadCsv(
+      `survey_${pilotTag}_${appVersion}_raw.csv`,
+      header,
+      rows.map((r) => header.map((col) => r[col])),
+    )
+  }
+
   const chartData = useMemo(() => {
     if (!aggregate) return []
     return Object.entries(aggregate).map(([version, stats]) => ({
@@ -285,7 +315,18 @@ export default function SurveyDetailPage() {
 
           {/* Version detail / comparison */}
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h2 className="text-sm font-semibold text-gray-700 mb-3">Version details</h2>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-gray-700">Version details</h2>
+              {effectiveVersionA && (
+                <button
+                  onClick={() => handleExportRaw(effectiveVersionA)}
+                  className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  title="One row per respondent, including free-text answers"
+                >
+                  <Download size={12} /> Export raw responses
+                </button>
+              )}
+            </div>
             <div className="flex flex-wrap gap-3 mb-4">
               <select
                 value={effectiveVersionA}

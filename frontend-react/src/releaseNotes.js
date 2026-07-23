@@ -6,6 +6,19 @@
 
 export const RELEASES = [
   {
+    version: 'v2.1.3',
+    date: '2026-07-23',
+    backend: [
+      'Fixed free-text domain-specific question answers being dropped from the results view — the aggregation endpoint computed them but only ever returned a count, discarding the actual text. Nothing was lost in storage; this only affected what was displayed.',
+      'Added `GET /survey/raw` — one row per survey submission (SUS/Ethics/domain-specific answers flattened into columns), for analytic export instead of the existing aggregated-only view.',
+    ],
+    frontend: [
+      'Survey detail page now shows free-text domain-specific answers instead of just a response count.',
+      'Added an "Export raw responses" CSV button (one row per respondent) alongside the existing aggregated CSV export.',
+      'Fixed CSV export not escaping commas/quotes/newlines in cell values — harmless for the old aggregate export, but would have corrupted the new raw export the moment a free-text answer contained a comma.',
+    ],
+  },
+  {
     version: 'v2.1.2',
     date: '2026-07-22',
     backend: [

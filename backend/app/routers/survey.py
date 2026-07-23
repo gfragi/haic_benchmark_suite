@@ -12,6 +12,7 @@ from app.services.survey_service import (
     question_averages,
     domain_specific_averages,
     list_comments,
+    raw_survey_responses,
 )
 
 router = APIRouter()
@@ -91,3 +92,11 @@ def list_comments_route(
     db: Session = Depends(get_db),
 ):
     return list_comments(db, pilot_tag, app_version)
+
+@router.get("/raw", summary="One row per survey submission, for an analytic (non-aggregated) CSV export")
+def raw_survey_responses_route(
+    pilot_tag: str = Query(..., min_length=1),
+    app_version: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+):
+    return raw_survey_responses(db, pilot_tag, app_version)

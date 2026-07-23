@@ -178,7 +178,7 @@ def domain_specific_averages(db: Session, pilot_tag: str, app_version: str):
             "questions": [
               {"id": "q1", "label": "...", "type": "likert", "avg": 4.2, "count": 12},
               {"id": "q2", "label": "...", "type": "single", "distribution": {"Yes": 8, "No": 4}, "count": 12},
-              {"id": "q3", "label": "...", "type": "text", "count": 5},
+              {"id": "q3", "label": "...", "type": "text", "answers": ["...", "..."], "count": 5},
             ] },
           ...
       ] }
@@ -239,10 +239,10 @@ def domain_specific_averages(db: Session, pilot_tag: str, app_version: str):
                     "id": qid, "label": q["label"], "type": qtype,
                     "distribution": dist, "count": len(answers),
                 })
-            else:  # text or unrecognized types: just count responses, no content
+            else:  # text or unrecognized types: nothing to average, list the actual answers
                 questions_out.append({
                     "id": qid, "label": q["label"], "type": qtype,
-                    "count": len(answers),
+                    "answers": answers, "count": len(answers),
                 })
 
         schemas_out.append({
@@ -284,3 +284,38 @@ def list_comments(db: Session, pilot_tag: str, app_version: Optional[str] = None
 
     comments.sort(key=lambda c: c["timestamp"] or "", reverse=True)
     return comments
+
+
+def raw_survey_responses(db: Session, pilot_tag: str, app_version: Optional[str] = None):
+    """
+    One row per survey submission, for an analytic (non-aggregated) CSV export.
+    Flattens tam_sus_responses/ethics_responses/domain_specific into prefixed
+    columns (sus_*/ethics_*/domain_*) since each is stored as a JSON blob per
+    row; different rows can have different domain_* keys (schema varies by
+    version), so callers should take the union of keys across rows for a CSV
+    header rather than assuming a fixed column set.
+
+    respondent_id is the client-generated anonymous id (see makeAnonymousUserId
+    in the frontend), not a real identity - safe to include for spotting
+    duplicate/repeat submissions.
+    """
+    query = db.query(Survey).filter(Survey.pilot_tag == pilot_tag)
+    if app_version:
+        query = query.filter(Survey.app_version == app_version)
+
+    rows = []
+    for s in query.order_by(Survey.timestamp).all():
+        row = {
+            "respondent_id": s.user_id,
+            "timestamp": s.timestamp.isoformat() if s.timestamp else None,
+            "app_version": s.app_version,
+            "ai_model_version": s.ai_model_version,
+        }
+        for k, v in (s.tam_sus_responses or {}).items():
+            row[f"sus_{k}"] = v
+        for k, v in (s.ethics_responses or {}).items():
+            row[f"ethics_{k}"] = v
+        for k, v in (s.domain_specific or {}).items():
+            row[f"domain_{k}"] = v
+        rows.append(row)
+    return rows
