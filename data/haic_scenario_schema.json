@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://haic-benchmark-suite/schemas/haic_scenario_schema.json",
+  "title": "HAIC Scenario",
+  "description": "Validates a scenario JSON produced by the composer UI or uploaded by a user, against the vocabulary in data/haic_ontology.json. The enums below (domain, agent role, persona, metric ids) mirror the ontology's current ids as of ontology schema haic.ontology.v1 1.0.0 - regenerate this file if the ontology's ids change.",
+  "type": "object",
+
+  "definitions": {
+    "agent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique identifier for this agent within the scenario"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["human_operator", "ai_system", "surrogate"],
+          "description": "Must match an id in haic_ontology.json agent_roles"
+        },
+        "persona": {
+          "type": "string",
+          "enum": ["high_trust", "skeptic", "expert", "novice", "from_data"],
+          "description": "Optional. Must match an id in haic_ontology.json persona_archetypes"
+        },
+        "fitted_model": {
+          "type": ["string", "null"],
+          "description": "Path to a fitted model file (e.g. data/sc_markov_model.json). Required on at least one surrogate agent when surrogate_tier >= 1."
+        }
+      },
+      "required": ["id", "role"],
+      "additionalProperties": true
+    }
+  },
+
+  "properties": {
+    "schema": {
+      "const": "haic.scenario.v1"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "domain": {
+      "type": "string",
+      "enum": ["smart_city", "healthcare", "energy", "rag"],
+      "description": "Must match an id in haic_ontology.json domains"
+    },
+    "surrogate_tier": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "description": "Must match an id in haic_ontology.json surrogate_tiers"
+    },
+    "rt_max_s": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "baseline_s": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0
+    },
+    "n_items": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "n_sessions": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["Tr", "HCL", "EL", "A", "F", "S"]
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Each entry must match an id in haic_ontology.json metric_families"
+    },
+    "agents": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/agent" },
+      "minItems": 2,
+      "allOf": [
+        {
+          "contains": {
+            "properties": { "role": { "const": "ai_system" } }
+          }
+        },
+        {
+          "contains": {
+            "properties": { "role": { "enum": ["human_operator", "surrogate"] } }
+          }
+        }
+      ]
+    },
+    "template": {
+      "type": "string",
+      "description": "Optional. Id of the haic_ontology.json template this scenario was derived from."
+    }
+  },
+
+  "required": [
+    "schema", "name", "domain", "surrogate_tier",
+    "rt_max_s", "n_items", "n_sessions", "metrics", "agents"
+  ],
+
+  "additionalProperties": true,
+
+  "if": {
+    "properties": {
+      "surrogate_tier": { "minimum": 1 }
+    },
+    "required": ["surrogate_tier"]
+  },
+  "then": {
+    "properties": {
+      "agents": {
+        "contains": {
+          "allOf": [
+            { "properties": { "role": { "const": "surrogate" } } },
+            { "required": ["fitted_model"] },
+            { "properties": { "fitted_model": { "type": "string", "minLength": 1 } } }
+          ]
+        }
+      }
+    }
+  }
+}

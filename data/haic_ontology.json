@@ -1,0 +1,277 @@
+{
+  "schema": "haic.ontology.v1",
+  "version": "1.0.0",
+
+  "domains": [
+    {
+      "id": "smart_city",
+      "label": "Smart City",
+      "description": "Permit processing, traffic, public admin workflows",
+      "example_task": "Parking permit application review",
+      "fitted_model": "data/sc_markov_model.json"
+    },
+    {
+      "id": "healthcare",
+      "label": "Healthcare",
+      "description": "Clinical decision support, diagnostic review",
+      "example_task": "CT scan triage",
+      "fitted_model": null
+    },
+    {
+      "id": "energy",
+      "label": "Smart Energy",
+      "description": "Grid state classification, forecast verification",
+      "example_task": "Grid operator decision support",
+      "fitted_model": null
+    },
+    {
+      "id": "rag",
+      "label": "RAG Chatbot",
+      "description": "Retrieval-augmented generation QA review",
+      "example_task": "Answer verification",
+      "fitted_model": null
+    }
+  ],
+
+  "action_types": [
+    {
+      "id": "accept",
+      "label": "Accept",
+      "description": "Human accepts AI suggestion without modification",
+      "correct": true,
+      "affects_metrics": ["Tr", "A"]
+    },
+    {
+      "id": "override",
+      "label": "Override",
+      "description": "Human rejects AI suggestion and acts differently",
+      "correct": false,
+      "affects_metrics": ["Tr", "A"]
+    },
+    {
+      "id": "modify",
+      "label": "Modify",
+      "description": "Human accepts but with modifications",
+      "correct": true,
+      "affects_metrics": ["Tr", "EL"]
+    },
+    {
+      "id": "flag",
+      "label": "Flag for review",
+      "description": "Human escalates for further verification",
+      "correct": null,
+      "affects_metrics": ["F", "HCL"]
+    },
+    {
+      "id": "request_info",
+      "label": "Request information",
+      "description": "Human requests additional context before deciding",
+      "correct": null,
+      "affects_metrics": ["F", "HCL"]
+    },
+    {
+      "id": "abstain",
+      "label": "Abstain",
+      "description": "Human defers decision entirely",
+      "correct": null,
+      "affects_metrics": ["F"]
+    }
+  ],
+
+  "agent_roles": [
+    {
+      "id": "human_operator",
+      "label": "Human operator",
+      "actor_type": "human",
+      "description": "Real human decision-maker"
+    },
+    {
+      "id": "ai_system",
+      "label": "AI system",
+      "actor_type": "ai",
+      "description": "AI model providing suggestions"
+    },
+    {
+      "id": "surrogate",
+      "label": "Surrogate agent",
+      "actor_type": "surrogate",
+      "description": "Probabilistic model emulating human behavior"
+    }
+  ],
+
+  "persona_archetypes": [
+    {
+      "id": "high_trust",
+      "label": "High-trust operator",
+      "description": "Tends to follow AI suggestions closely",
+      "accept_bias": 0.85,
+      "rt_multiplier": 0.9
+    },
+    {
+      "id": "skeptic",
+      "label": "Skeptical operator",
+      "description": "Frequently questions or overrides AI",
+      "accept_bias": 0.35,
+      "rt_multiplier": 1.2
+    },
+    {
+      "id": "expert",
+      "label": "Domain expert",
+      "description": "Fast, accurate, calibrated reliance on AI",
+      "accept_bias": 0.65,
+      "rt_multiplier": 0.7
+    },
+    {
+      "id": "novice",
+      "label": "Novice operator",
+      "description": "Slower, less certain, higher cognitive load",
+      "accept_bias": 0.60,
+      "rt_multiplier": 1.4
+    },
+    {
+      "id": "from_data",
+      "label": "Fitted from pilot data",
+      "description": "Persona derived from a real operator's transition matrix",
+      "accept_bias": null,
+      "rt_multiplier": null
+    }
+  ],
+
+  "surrogate_tiers": [
+    {
+      "id": 0,
+      "label": "Scripted",
+      "description": "Fixed step sequence, same script replayed with different seeds",
+      "status": "available"
+    },
+    {
+      "id": 1,
+      "label": "Markov chain",
+      "description": "First-order Markov chain fitted from real pilot logs",
+      "status": "available",
+      "requires": "fitted_model"
+    },
+    {
+      "id": 2,
+      "label": "HMM / DBN",
+      "description": "Hidden Markov Model with latent collaboration states",
+      "status": "planned"
+    },
+    {
+      "id": 3,
+      "label": "LLM persona",
+      "description": "LLM-driven agent with persona system prompt",
+      "status": "planned"
+    }
+  ],
+
+  "metric_families": [
+    {
+      "id": "Tr",
+      "label": "Trust proxy",
+      "description": "Behavioral reliance on AI — acceptance rate of AI suggestions",
+      "range": [0, 1],
+      "higher_is": "more trust",
+      "requires": ["correct"]
+    },
+    {
+      "id": "HCL",
+      "label": "Human-centeredness",
+      "description": "Normalized response time proxy for cognitive load",
+      "range": [0, 1],
+      "higher_is": "better (faster, less cognitive load)",
+      "requires": ["duration_s", "rt_max_s"]
+    },
+    {
+      "id": "EL",
+      "label": "Effort loss",
+      "description": "Overhead relative to baseline task time without AI",
+      "range": "unbounded",
+      "higher_is": "worse (more overhead)",
+      "requires": ["duration_s", "baseline_s"]
+    },
+    {
+      "id": "A",
+      "label": "Adaptability",
+      "description": "Change in accuracy over the session — learning or degradation",
+      "range": [-1, 1],
+      "higher_is": "improving over time",
+      "requires": ["correct", "sequence_order"]
+    },
+    {
+      "id": "F",
+      "label": "Interaction frequency",
+      "description": "Rate of human-AI interaction events per unit time",
+      "range": [0, null],
+      "higher_is": "context-dependent",
+      "requires": ["timestamps"]
+    },
+    {
+      "id": "S",
+      "label": "Surrogate similarity",
+      "description": "1 - sqrt(JSD) between surrogate and real action distributions",
+      "range": [0, 1],
+      "higher_is": "surrogate better matches real human",
+      "requires": ["surrogate_probs"]
+    }
+  ],
+
+  "templates": [
+    {
+      "id": "sc_permit_review",
+      "label": "Smart City — Permit review",
+      "domain": "smart_city",
+      "surrogate_tier": 1,
+      "rt_max_s": 300,
+      "baseline_s": 77.5,
+      "n_items": 164,
+      "n_sessions": 10,
+      "default_persona": "from_data",
+      "fitted_model": "data/sc_markov_model.json",
+      "metrics": ["Tr", "HCL", "EL", "F", "S"],
+      "description": "Validated on 566 Novoville parking permit applications. Uses operator-fitted Markov chain."
+    },
+    {
+      "id": "healthcare_ct_triage",
+      "label": "Healthcare — CT scan triage",
+      "domain": "healthcare",
+      "surrogate_tier": 0,
+      "rt_max_s": 120,
+      "baseline_s": 45,
+      "n_items": 50,
+      "n_sessions": 5,
+      "default_persona": "expert",
+      "fitted_model": null,
+      "metrics": ["Tr", "HCL", "EL", "F"],
+      "description": "Scripted surrogate radiologist. Fit from real data when available."
+    },
+    {
+      "id": "energy_grid_operator",
+      "label": "Smart Energy — Grid operator",
+      "domain": "energy",
+      "surrogate_tier": 0,
+      "rt_max_s": 60,
+      "baseline_s": 20,
+      "n_items": 100,
+      "n_sessions": 5,
+      "default_persona": "expert",
+      "fitted_model": null,
+      "metrics": ["Tr", "HCL", "F"],
+      "description": "Scripted surrogate operator for grid state classification."
+    },
+    {
+      "id": "rag_chatbot",
+      "label": "RAG Chatbot — Answer review",
+      "domain": "rag",
+      "surrogate_tier": 0,
+      "rt_max_s": 30,
+      "baseline_s": 10,
+      "n_items": 20,
+      "n_sessions": 3,
+      "default_persona": "high_trust",
+      "fitted_model": null,
+      "metrics": ["Tr", "HCL", "F"],
+      "description": "Based on validated RAG pilot (HCL=0.835, Tr=0.667)."
+    }
+  ]
+}
