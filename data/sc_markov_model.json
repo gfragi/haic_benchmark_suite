@@ -64,6 +64,11 @@
   },
   "aggregate": {
     "n": 164,
+    "ai_action_frequency": {
+      "ai_accept": 0.0,
+      "ai_reject": 0.8048780487804879,
+      "ai_flag": 0.1951219512195122
+    },
     "transition_matrix": {
       "ai_accept": null,
       "ai_reject": {
@@ -106,6 +111,11 @@
   "by_operator": {
     "1": {
       "n": 33,
+      "ai_action_frequency": {
+        "ai_accept": 0.0,
+        "ai_reject": 1.0,
+        "ai_flag": 0.0
+      },
       "transition_matrix": {
         "ai_accept": null,
         "ai_reject": {
@@ -133,6 +143,11 @@
     },
     "2": {
       "n": 33,
+      "ai_action_frequency": {
+        "ai_accept": 0.0,
+        "ai_reject": 1.0,
+        "ai_flag": 0.0
+      },
       "transition_matrix": {
         "ai_accept": null,
         "ai_reject": {
@@ -160,6 +175,11 @@
     },
     "3": {
       "n": 33,
+      "ai_action_frequency": {
+        "ai_accept": 0.0,
+        "ai_reject": 1.0,
+        "ai_flag": 0.0
+      },
       "transition_matrix": {
         "ai_accept": null,
         "ai_reject": {
@@ -187,6 +207,11 @@
     },
     "4": {
       "n": 33,
+      "ai_action_frequency": {
+        "ai_accept": 0.0,
+        "ai_reject": 1.0,
+        "ai_flag": 0.0
+      },
       "transition_matrix": {
         "ai_accept": null,
         "ai_reject": {
@@ -214,6 +239,11 @@
     },
     "5": {
       "n": 32,
+      "ai_action_frequency": {
+        "ai_accept": 0.0,
+        "ai_reject": 0.0,
+        "ai_flag": 1.0
+      },
       "transition_matrix": {
         "ai_accept": null,
         "ai_reject": null,

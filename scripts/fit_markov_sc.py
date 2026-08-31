@@ -135,10 +135,27 @@ def compute_duration_stats(records: list[dict]) -> dict[str, dict[str, float] | 
     return stats
 
 
+def compute_ai_action_frequency(records: list[dict]) -> dict[str, float]:
+    """
+    Empirical frequency of each AI action among records that reached
+    operator review. "ai_accept" is always 0.0 here since it never does
+    (see module docstring) - kept in the vocab for completeness so
+    callers don't need special-case handling for a missing key.
+    """
+    counts = Counter(r["ai_action"] for r in records)
+    total = len(records)
+    freq = {ai: 0.0 for ai in AI_VOCAB}
+    if total:
+        for ai_action, c in counts.items():
+            freq[ai_action] = c / total
+    return freq
+
+
 def fit(records: list[dict]) -> dict[str, Any]:
     """Bundle the transition matrix + duration stats for one group of records."""
     return {
         "n": len(records),
+        "ai_action_frequency": compute_ai_action_frequency(records),
         "transition_matrix": compute_transition_matrix(records),
         "duration_stats": compute_duration_stats(records),
     }
