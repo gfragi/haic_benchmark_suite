@@ -15,9 +15,16 @@ router = APIRouter()
 
 # ---------- project root detection ----------
 def _find_project_root() -> Path:
+    """
+    See the identical helper in routers/simulator.py for why this checks
+    haic_env_builder/+packages/ rather than backend/ - the backend/
+    wrapper directory doesn't exist inside the deployed container
+    (Dockerfile.backend copies backend/app -> ./app directly), which
+    silently broke config resolution there until fixed.
+    """
     here = Path(__file__).resolve()
     for cand in [*here.parents]:
-        if (cand / "backend").is_dir() and (cand / "haic_env_builder").is_dir():
+        if (cand / "haic_env_builder").is_dir() and (cand / "packages").is_dir():
             return cand
     # fallback: go up 3 if structure is standard: repo/backend/app/routers/...
     return here.parents[3] if len(here.parents) >= 4 else here.parents[-1]

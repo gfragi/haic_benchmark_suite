@@ -18,9 +18,21 @@ log_service = LogService()
 
 # ---------- project root detection ----------
 def _find_project_root() -> Path:
+    """
+    Walk up from this file looking for the directory that has both
+    haic_env_builder/ and packages/ as siblings. Deliberately does NOT
+    require a backend/ subdirectory: in a local repo checkout this file
+    lives at backend/app/routers/simulator.py (so "backend" is a real
+    sibling of haic_env_builder at the repo root), but Dockerfile.backend
+    copies only backend/app -> ./app, dropping the backend/ wrapper
+    entirely - inside the deployed container this file lives at
+    /app/app/routers/simulator.py with no backend/ directory anywhere,
+    which silently broke config resolution (fell through to the
+    filesystem root fallback below).
+    """
     here = Path(__file__).resolve()
     for cand in [*here.parents]:
-        if (cand / "backend").is_dir() and (cand / "haic_env_builder").is_dir():
+        if (cand / "haic_env_builder").is_dir() and (cand / "packages").is_dir():
             return cand
     return here.parents[3] if len(here.parents) >= 4 else here.parents[-1]
 

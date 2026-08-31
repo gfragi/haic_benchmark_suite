@@ -1,21 +1,41 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { PlayCircle, Loader2, CheckCircle2, AlertTriangle, ChevronRight } from 'lucide-react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { PlayCircle, Loader2, CheckCircle2, AlertTriangle, ChevronRight, Info, Wand2 } from 'lucide-react'
+import clsx from 'clsx'
 import { api } from '../services/api'
+import ScenarioEditor from '../components/ScenarioEditor'
+
+function basenameNoExt(path) {
+  const file = path.split('/').pop() || path
+  return file.replace(/\.ya?ml$/i, '')
+}
 
 export default function SimulatePage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const [tab, setTab] = useState('run') // 'run' | 'build'
 
-  const { data: scenarios, isLoading: scenariosLoading } = useQuery({
+  const { data: curated, isLoading: curatedLoading } = useQuery({
     queryKey: ['simulate-scenarios'],
     queryFn: () => api.simulate.scenarios(),
+  })
+
+  const { data: allConfigs, isLoading: allConfigsLoading } = useQuery({
+    queryKey: ['env-builder-configs'],
+    queryFn: () => api.envBuilder.listConfigs(),
   })
 
   const { data: configs, isLoading: configsLoading } = useQuery({
     queryKey: ['configs'],
     queryFn: () => api.configs.list(),
   })
+
+  const curatedList = curated?.scenarios ?? []
+  const curatedIds = new Set(curatedList.map((s) => s.id))
+  const customList = (allConfigs?.available_configs ?? [])
+    .filter((path) => !curatedIds.has(basenameNoExt(path)))
+    .map((path) => ({ id: path, label: basenameNoExt(path), custom: true }))
 
   const [scenarioId, setScenarioId] = useState('')
   const [configurationId, setConfigurationId] = useState('')
@@ -29,13 +49,20 @@ export default function SimulatePage() {
   const [result, setResult] = useState(null)
   const [evaluating, setEvaluating] = useState(false)
 
-  const scenarioList = scenarios?.scenarios ?? []
-  const selectedScenario = scenarioList.find((s) => s.id === scenarioId)
+  const selectedScenario = curatedList.find((s) => s.id === scenarioId)
+  const scenarioFileName = selectedScenario ? `${selectedScenario.id}.yaml` : scenarioId
 
   function handleScenarioChange(id) {
     setScenarioId(id)
-    const scenario = scenarioList.find((s) => s.id === id)
+    const scenario = curatedList.find((s) => s.id === id)
     if (scenario) setPilotTag(scenario.suggested_pilot_tag)
+    else if (id) setPilotTag(basenameNoExt(id).toLowerCase().replace(/[^a-z0-9]+/g, '_'))
+  }
+
+  function handleScenarioCreated(path) {
+    queryClient.invalidateQueries({ queryKey: ['env-builder-configs'] })
+    setTab('run')
+    handleScenarioChange(path)
   }
 
   const canRun = scenarioId && configurationId && pilotTag.trim() && runs >= 1
@@ -48,7 +75,7 @@ export default function SimulatePage() {
     try {
       const out = await api.simulate.run({
         configurationId: Number(configurationId),
-        name: `${scenarioId}.yaml`,
+        name: scenarioFileName,
         pilotTag: pilotTag.trim(),
         appVersion: appVersion.trim(),
         aiModelVersion: aiModelVersion.trim(),
@@ -77,150 +104,198 @@ export default function SimulatePage() {
     <div className="space-y-5 max-w-2xl">
       <div>
         <h1 className="text-lg font-semibold text-gray-900">Simulate</h1>
-        <p className="text-sm text-gray-500 mt-0.5">
-          Generate synthetic sessions from a scripted scenario and ingest them into a
-          configuration, the same way real pilot data is uploaded. Useful for populating a
-          pilot before real data arrives, or exercising the evaluation pipeline end-to-end.
+      </div>
+
+      <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <Info size={16} className="mt-0.5 flex-shrink-0" />
+        <p>
+          This generates synthetic session data from a scripted scenario and runs it through the
+          same ingest → evaluate → dashboard pipeline real pilot data uses. It's for populating a
+          pilot before real data arrives, or trying out what the metrics look like — it does{' '}
+          <strong>not</strong> evaluate your actual AI application. For that, use{' '}
+          <Link to="/ingest" className="underline hover:text-amber-900">Ingest Logs</Link> with
+          real session data.
         </p>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Scenario</label>
-          {scenariosLoading && (
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <Loader2 size={14} className="animate-spin" /> Loading scenarios…
-            </div>
-          )}
-          {!scenariosLoading && (
-            <select
-              value={scenarioId}
-              onChange={(e) => handleScenarioChange(e.target.value)}
-              className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white"
-            >
-              <option value="">Choose a scenario…</option>
-              {scenarioList.map((s) => (
-                <option key={s.id} value={s.id}>{s.label}</option>
-              ))}
-            </select>
-          )}
-          {selectedScenario && !selectedScenario.has_human_agent && (
-            <p className="mt-1.5 flex items-center gap-1 text-xs text-amber-600">
-              <AlertTriangle size={12} /> This scenario has no human agent — it's a
-              multi-AI-agent demo, not a human-AI collaboration scenario.
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Target configuration</label>
-          {configsLoading && (
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <Loader2 size={14} className="animate-spin" /> Loading configurations…
-            </div>
-          )}
-          {!configsLoading && (
-            <select
-              value={configurationId}
-              onChange={(e) => setConfigurationId(e.target.value)}
-              className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white"
-            >
-              <option value="">Choose a configuration…</option>
-              {(configs ?? []).map((c) => (
-                <option key={c.id} value={c.id}>
-                  #{c.id} — {c.application_name}{c.pilot_tag ? ` (${c.pilot_tag})` : ''}
-                </option>
-              ))}
-            </select>
-          )}
-          <Link to="/configs" className="mt-1 inline-flex items-center gap-0.5 text-xs text-indigo-600 hover:text-indigo-800">
-            Need a new one? Create it on the Evaluations page <ChevronRight size={12} />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Pilot tag</label>
-            <input
-              type="text"
-              value={pilotTag}
-              onChange={(e) => setPilotTag(e.target.value)}
-              className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Number of runs</label>
-            <input
-              type="number"
-              min={1}
-              max={200}
-              value={runs}
-              onChange={(e) => setRuns(e.target.value)}
-              className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">App version</label>
-            <input
-              type="text"
-              value={appVersion}
-              onChange={(e) => setAppVersion(e.target.value)}
-              className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">AI model version</label>
-            <input
-              type="text"
-              value={aiModelVersion}
-              onChange={(e) => setAiModelVersion(e.target.value)}
-              className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-            />
-          </div>
-        </div>
-
-        <p className="text-xs text-gray-400">
-          Each run currently replays the same scripted scenario with a different seed —
-          expect limited variance across sessions until parameterized/dataset-driven scenarios
-          are added.
-        </p>
-
+      <div className="flex gap-1 border-b border-gray-200">
         <button
-          onClick={handleRun}
-          disabled={!canRun || running}
-          className="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+          onClick={() => setTab('run')}
+          className={clsx(
+            'inline-flex items-center gap-1.5 rounded-t-md px-3 py-2 text-sm font-medium transition-colors',
+            tab === 'run' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500 hover:text-gray-700',
+          )}
         >
-          {running ? <Loader2 size={14} className="animate-spin" /> : <PlayCircle size={14} />}
-          {running ? 'Running…' : 'Generate & Ingest'}
+          <PlayCircle size={14} /> Run
         </button>
+        <button
+          onClick={() => setTab('build')}
+          className={clsx(
+            'inline-flex items-center gap-1.5 rounded-t-md px-3 py-2 text-sm font-medium transition-colors',
+            tab === 'build' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500 hover:text-gray-700',
+          )}
+        >
+          <Wand2 size={14} /> Build Scenario
+        </button>
+      </div>
 
-        {error && (
-          <div className="flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-            <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" /> {error}
-          </div>
-        )}
+      {tab === 'build' && (
+        <div className="bg-white rounded-lg border border-gray-200 p-5">
+          <ScenarioEditor onCreated={handleScenarioCreated} />
+        </div>
+      )}
 
-        {result && (
-          <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700 space-y-2">
-            <p className="flex items-center gap-1.5 font-medium">
-              <CheckCircle2 size={14} /> {result.detail}
-            </p>
-            {result.schema_warnings?.length > 0 && (
-              <p className="text-xs text-amber-700">
-                {result.schema_warnings.length} schema warning(s) — check the ingested data.
+      {tab === 'run' && (
+        <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Scenario</label>
+            {(curatedLoading || allConfigsLoading) && (
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <Loader2 size={14} className="animate-spin" /> Loading scenarios…
+              </div>
+            )}
+            {!curatedLoading && !allConfigsLoading && (
+              <select
+                value={scenarioId}
+                onChange={(e) => handleScenarioChange(e.target.value)}
+                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white"
+              >
+                <option value="">Choose a scenario…</option>
+                {curatedList.length > 0 && (
+                  <optgroup label="Curated demos">
+                    {curatedList.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                  </optgroup>
+                )}
+                {customList.length > 0 && (
+                  <optgroup label="Custom (Build Scenario tab)">
+                    {customList.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                  </optgroup>
+                )}
+              </select>
+            )}
+            {selectedScenario && !selectedScenario.has_human_agent && (
+              <p className="mt-1.5 flex items-center gap-1 text-xs text-amber-600">
+                <AlertTriangle size={12} /> This scenario has no human agent — it's a
+                multi-AI-agent demo, not a human-AI collaboration scenario.
               </p>
             )}
-            <button
-              onClick={handleEvaluate}
-              disabled={evaluating}
-              className="inline-flex items-center gap-1.5 rounded-md border border-green-300 bg-white px-3 py-1.5 text-xs font-medium text-green-700 transition-colors hover:bg-green-100 disabled:opacity-50"
-            >
-              {evaluating && <Loader2 size={12} className="animate-spin" />}
-              Run Evaluation & View Results
-            </button>
+            {!curatedLoading && !allConfigsLoading && curatedList.length === 0 && customList.length === 0 && (
+              <p className="mt-1.5 text-xs text-gray-400">
+                No scenarios yet — build one in the <button onClick={() => setTab('build')} className="text-indigo-600 hover:underline">Build Scenario</button> tab.
+              </p>
+            )}
           </div>
-        )}
-      </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Target configuration</label>
+            {configsLoading && (
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <Loader2 size={14} className="animate-spin" /> Loading configurations…
+              </div>
+            )}
+            {!configsLoading && (
+              <select
+                value={configurationId}
+                onChange={(e) => setConfigurationId(e.target.value)}
+                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white"
+              >
+                <option value="">Choose a configuration…</option>
+                {(configs ?? []).map((c) => (
+                  <option key={c.id} value={c.id}>
+                    #{c.id} — {c.application_name}{c.pilot_tag ? ` (${c.pilot_tag})` : ''}
+                  </option>
+                ))}
+              </select>
+            )}
+            <Link to="/configs" className="mt-1 inline-flex items-center gap-0.5 text-xs text-indigo-600 hover:text-indigo-800">
+              Need a new one? Create it on the Evaluations page <ChevronRight size={12} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Pilot tag</label>
+              <input
+                type="text"
+                value={pilotTag}
+                onChange={(e) => setPilotTag(e.target.value)}
+                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Number of runs</label>
+              <input
+                type="number"
+                min={1}
+                max={200}
+                value={runs}
+                onChange={(e) => setRuns(e.target.value)}
+                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">App version</label>
+              <input
+                type="text"
+                value={appVersion}
+                onChange={(e) => setAppVersion(e.target.value)}
+                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">AI model version</label>
+              <input
+                type="text"
+                value={aiModelVersion}
+                onChange={(e) => setAiModelVersion(e.target.value)}
+                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              />
+            </div>
+          </div>
+
+          <p className="text-xs text-gray-400">
+            Each run currently replays the same scripted scenario with a different seed —
+            expect limited variance across sessions until parameterized/dataset-driven scenarios
+            are added.
+          </p>
+
+          <button
+            onClick={handleRun}
+            disabled={!canRun || running}
+            className="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+          >
+            {running ? <Loader2 size={14} className="animate-spin" /> : <PlayCircle size={14} />}
+            {running ? 'Running…' : 'Generate & Ingest'}
+          </button>
+
+          {error && (
+            <div className="flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" /> {error}
+            </div>
+          )}
+
+          {result && (
+            <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700 space-y-2">
+              <p className="flex items-center gap-1.5 font-medium">
+                <CheckCircle2 size={14} /> {result.detail}
+              </p>
+              {result.schema_warnings?.length > 0 && (
+                <p className="text-xs text-amber-700">
+                  {result.schema_warnings.length} schema warning(s) — check the ingested data.
+                </p>
+              )}
+              <button
+                onClick={handleEvaluate}
+                disabled={evaluating}
+                className="inline-flex items-center gap-1.5 rounded-md border border-green-300 bg-white px-3 py-1.5 text-xs font-medium text-green-700 transition-colors hover:bg-green-100 disabled:opacity-50"
+              >
+                {evaluating && <Loader2 size={12} className="animate-spin" />}
+                Run Evaluation & View Results
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

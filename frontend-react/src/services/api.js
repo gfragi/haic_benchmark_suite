@@ -173,6 +173,13 @@ export const api = {
       request('/pilot/onboard', { method: 'POST', body: JSON.stringify(body) }),
   },
 
+  envBuilder: {
+    listConfigs: () => request('/env/list_configs'),
+    loadConfig: (name) => request(`/env/load_config?name=${encodeURIComponent(name)}`),
+    generateConfig: (body) =>
+      request('/env/generate_config', { method: 'POST', body: JSON.stringify(body) }),
+  },
+
   simulate: {
     scenarios: () => request('/simulator/scenarios'),
     run: ({ configurationId, name, pilotTag, appVersion, aiModelVersion, runs, seed }) => {
