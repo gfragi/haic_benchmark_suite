@@ -35,6 +35,7 @@ class Decision:
     effect: Dict[str, Any] = field(default_factory=dict)
     correct: Optional[bool] = None
     latency_ms: Optional[int] = None
+    duration_s: Optional[float] = None
     def to_json(self) -> Dict[str, Any]:
         return asdict(self)
 

@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Home, LayoutList, GitCompare, Upload, BookOpen, Activity, Compass, HelpCircle, ClipboardList } from 'lucide-react'
+import { Home, LayoutList, GitCompare, Upload, BookOpen, Activity, Compass, HelpCircle, ClipboardList, PlayCircle } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 import { RELEASES } from '../releaseNotes'
@@ -23,6 +23,7 @@ const NAV_SECTIONS = [
       { label: 'Evaluations',  href: '/configs',   icon: LayoutList },
       { label: 'New Pilot',    href: '/pilot/new', icon: Compass    },
       { label: 'Ingest Logs',  href: '/ingest',    icon: Upload     },
+      { label: 'Simulate',     href: '/simulate',  icon: PlayCircle },
     ],
   },
   {

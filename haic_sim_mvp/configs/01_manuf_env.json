@@ -7,7 +7,7 @@
   },
   "agents": [
     { "id": "SRL", "class": "base.Agent", "model": "ai",
-      "affordances": ["ai_proposal"] },                          // was: compute_confidence
+      "affordances": ["ai_proposal"] },
     { "id": "PM", "class": "base.Agent", "model": "human",
       "affordances": ["change_objectives", "bids_selected", "phase_selected"] },
     { "id": "WC", "class": "base.Agent", "model": "system",
@@ -62,6 +62,6 @@
     { "t": 50.5, "agent": "HMI", "action": "xr_evaluation_completed", "object": "App",
       "effect": {"phase":2,"bids":true,"decision_count":7,
                  "final_obj":{"throughput_weight":0.5,"energy_weight":0.2,"tardiness_weight":0.3}},
-      "duration_s": 780.5 }                                     // was: duration
+      "duration_s": 780.5 }
   ]
 }

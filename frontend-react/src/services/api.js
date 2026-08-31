@@ -173,6 +173,22 @@ export const api = {
       request('/pilot/onboard', { method: 'POST', body: JSON.stringify(body) }),
   },
 
+  simulate: {
+    scenarios: () => request('/simulator/scenarios'),
+    run: ({ configurationId, name, pilotTag, appVersion, aiModelVersion, runs, seed }) => {
+      const params = new URLSearchParams({
+        configuration_id: String(configurationId),
+        name,
+        pilot_tag: pilotTag,
+        app_version: appVersion,
+        ai_model_version: aiModelVersion,
+        runs: String(runs),
+        seed: String(seed ?? 0),
+      })
+      return request(`/simulator/simulate-and-ingest?${params.toString()}`, { method: 'POST' })
+    },
+  },
+
   health: () => fetch('/meta/health').then((r) => {
     if (!r.ok) throw new Error(`HTTP ${r.status}`)
     return r.json()

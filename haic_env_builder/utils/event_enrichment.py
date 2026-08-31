@@ -29,13 +29,19 @@ def enrich_decisions(
         nm = a.get("name") or ""
         if force_actor_type and nm in force_actor_type:
             t = "ai" if force_actor_type[nm] == "ai" else "human"
+        elif a.get("actor_type") in ("human", "ai"):
+            # An explicit actor_type on the agent always wins over the
+            # name-based guess below - otherwise an agent legitimately
+            # named "...Assistant"/"...Bot" but declared human (e.g. a
+            # human role using an assistive tool) gets silently forced
+            # to "ai" regardless of its own config.
+            t = a["actor_type"]
+        elif a.get("modality") == "human":
+            t = "human"
+        elif bot_re.search(nm):
+            t = "ai"
         else:
-            if bot_re.search(nm):
-                t = "ai"
-            elif a.get("modality") == "human":
-                t = "human"
-            else:
-                t = a.get("actor_type") or "ai"
+            t = "ai"
         agent_type[nm] = t
 
     # ---- Build name -> declared action space (optional) ----

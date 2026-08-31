@@ -11,6 +11,7 @@ task:
 agents:
   - name: RadiologistAssistant
     modality: policy
+    actor_type: human
     capabilities: [classify, highlight, summarize]
     action_space:
       - open_study
@@ -27,6 +28,7 @@ agents:
 
   - name: VoiceSupportBot
     modality: policy
+    actor_type: ai
     capabilities: [speak, respond]
     action_space:
       - speak_prompt

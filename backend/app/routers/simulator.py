@@ -1,14 +1,20 @@
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, HTTPException, Depends
 from pathlib import Path
 from urllib.parse import unquote
+from sqlalchemy.orm import Session
 import json
 import re
 
 from haic_env_builder.utils.simulation_runner import simulate_environment
 from app.models.api import SimulationEnvelope
+from app.models.configuration import EvaluationConfig
+from app.utils.database import get_db
 from app.utils.errors import ErrorEnvelope
+from app.services.log_service import LogService
+from app.services.sim_bridge import translate_sim_run
 
 router = APIRouter()
+log_service = LogService()
 
 # ---------- project root detection ----------
 def _find_project_root() -> Path:
@@ -118,3 +124,91 @@ def list_runs_by_task(prefix: str = Query(..., description="Task name/prefix (ca
     slug = re.sub(r"\s+", "_", prefix.strip()).lower()
     files = [f.name for f in RUNS_DIR.glob("*.json") if f.name.lower().startswith(slug)]
     return {"files": sorted(files)}
+
+
+# Curated, verified-runnable subset of haic_env_builder/configs/*.yaml.
+# Several bundled configs are currently broken and intentionally excluded:
+# Radiologist_-_Accept_env.yaml (empty agents:[]), Kitchen_Toy_env.yaml (no
+# task.parameters.environment key), My_Environment_v1.yaml/_ui_built.yaml
+# (a different, incompatible task_name/agent_definitions schema),
+# Overcooked-CrampedRoom_env.yaml (references the retired "overcooked_hcai"
+# adapter name - use the _v2 file instead, which uses the current name).
+CURATED_SCENARIOS = [
+    {
+        "id": "CT_Scan_Diagnosis_v2_env",
+        "label": "CT Scan Diagnosis (Radiologist + Voice Assistant)",
+        "suggested_pilot_tag": "ct_scan_sim",
+        "has_human_agent": True,
+    },
+    {
+        "id": "Overcooked-CrampedRoom_v2_env",
+        "label": "Overcooked - Cramped Room (two cooperating AI agents, no human)",
+        "suggested_pilot_tag": "overcooked_sim",
+        "has_human_agent": False,
+    },
+]
+
+
+@router.get("/scenarios", summary="List the curated, verified-runnable scenario configs")
+def list_scenarios():
+    return {"scenarios": CURATED_SCENARIOS}
+
+
+@router.post(
+    "/simulate-and-ingest",
+    summary="Run a scenario N times and ingest the results into a configuration",
+    description=(
+        "Runs the named scenario via simulate_environment() `runs` times "
+        "(one distinct seed per run), translates each into an adapter-ready "
+        "session, and ingests all of them into `configuration_id` through "
+        "the same pipeline real pilot uploads use - so the resulting data "
+        "shows up in that configuration's Results Dashboard like any other "
+        "upload. Does not trigger evaluation; call POST /evaluate/"
+        "{configuration_id} separately, same as after any other upload."
+    ),
+)
+def simulate_and_ingest(
+    configuration_id: int = Query(...),
+    name: str = Query(..., description="YAML config name or path"),
+    pilot_tag: str = Query(...),
+    app_version: str = Query("sim_v1.0.0"),
+    ai_model_version: str = Query("sim-1.0"),
+    runs: int = Query(1, ge=1, le=200),
+    seed: int = Query(0, description="Base seed - run i uses seed + i"),
+    db: Session = Depends(get_db),
+):
+    config = db.query(EvaluationConfig).filter(EvaluationConfig.id == configuration_id).first()
+    if not config:
+        raise HTTPException(status_code=404, detail=f"Configuration {configuration_id} not found")
+
+    config_path = resolve_config_path(name)
+
+    sessions = []
+    for i in range(runs):
+        run_result = simulate_environment(str(config_path), seed=seed + i)
+        sessions.append(translate_sim_run(
+            run_result,
+            pilot_tag=pilot_tag,
+            app_version=app_version,
+            ai_model_version=ai_model_version,
+        ))
+
+    merged_bytes = json.dumps({"logs": sessions}, ensure_ascii=False).encode("utf-8")
+    stem = re.sub(r"[^A-Za-z0-9._-]+", "_", Path(name).stem)
+
+    try:
+        results = log_service.process_uploaded_log(
+            configuration_id, sessions, f"{stem}.sim", merged_bytes, db,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Processing failed: {e}")
+
+    return {
+        "detail": f"Simulated and ingested {len(sessions)} session(s) for configuration {configuration_id}.",
+        "session_count": len(sessions),
+        "configuration_id": configuration_id,
+        "derived_by_version": results.get("derived_by_version", {}),
+        "schema_warnings": results.get("schema_warnings", []),
+    }

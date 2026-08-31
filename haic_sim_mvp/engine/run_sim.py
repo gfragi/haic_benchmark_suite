@@ -23,6 +23,7 @@ def run_from_config(cfg: Dict[str, Any], results_dir: str = "results") -> str: #
         decision = agent.act(step["action"], obj, effect=step.get("effect", {}), t=t)
         decision.correct = step.get("correct")
         decision.latency_ms = step.get("latency_ms")
+        decision.duration_s = step.get("duration_s")
         env.record(decision)
 
         if step.get("sleep_ms"): time.sleep(step["sleep_ms"]/1000) # Optional delay

@@ -6,6 +6,7 @@ import ConfigListPage from './pages/ConfigListPage'
 import ResultsDashboardPage from './pages/ResultsDashboardPage'
 import CompareVersionsPage from './pages/CompareVersionsPage'
 import LogWizardPage from './pages/LogWizardPage'
+import SimulatePage from './pages/SimulatePage'
 import MetricsGlossaryPage from './pages/MetricsGlossaryPage'
 import PilotOnboardingPage from './pages/PilotOnboardingPage'
 import GettingStartedPage from './pages/GettingStartedPage'
@@ -29,6 +30,7 @@ export default function App() {
               <Route path="/config/:id/survey-details" element={<RequireAuth><SurveyDetailPage /></RequireAuth>} />
               <Route path="/compare" element={<RequireAuth><CompareVersionsPage /></RequireAuth>} />
               <Route path="/ingest" element={<RequireAuth><LogWizardPage /></RequireAuth>} />
+              <Route path="/simulate" element={<RequireAuth><SimulatePage /></RequireAuth>} />
               <Route path="/metrics" element={<MetricsGlossaryPage />} />
               <Route path="/releases" element={<ReleaseNotesPage />} />
               <Route path="/pilot/new" element={<RequireAuth><PilotOnboardingPage /></RequireAuth>} />
