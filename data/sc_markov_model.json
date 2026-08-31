@@ -1,0 +1,243 @@
+{
+  "meta": {
+    "source": "haic_sim_mvp/examples/events_all_v0_patched.json",
+    "n_sessions": 566,
+    "n_valid": 164,
+    "action_vocab": {
+      "ai": [
+        "ai_accept",
+        "ai_reject",
+        "ai_flag"
+      ],
+      "op": [
+        "op_accept",
+        "op_reject",
+        "op_accept_verified",
+        "op_reject_verified",
+        "op_fix_accept"
+      ]
+    },
+    "derive_correct_rules": [
+      {
+        "when": {
+          "ai_decision": "Accepted"
+        },
+        "set": true
+      },
+      {
+        "when": {
+          "ai_decision": "Flagged for verification",
+          "op_decision": "Accepted after verification"
+        },
+        "set": true
+      },
+      {
+        "when": {
+          "ai_decision": "Flagged for verification",
+          "op_decision": "Rejected after verification"
+        },
+        "set": false
+      },
+      {
+        "when": {
+          "ai_decision": "Rejected",
+          "op_decision": "Fixed and accepted"
+        },
+        "set": true
+      },
+      {
+        "when": {
+          "ai_decision": "Rejected",
+          "op_decision": "Rejected"
+        },
+        "set": true
+      },
+      {
+        "when": {
+          "ai_decision": "Rejected",
+          "op_decision": "Accepted"
+        },
+        "set": false
+      }
+    ],
+    "note": "ai_accept never reaches operator review in this dataset (402 of its occurrences were auto-decided) - its transition_matrix and duration_stats entries are null rather than fabricated."
+  },
+  "aggregate": {
+    "n": 164,
+    "transition_matrix": {
+      "ai_accept": null,
+      "ai_reject": {
+        "op_accept": 0.3712121212121212,
+        "op_reject": 0.45454545454545453,
+        "op_accept_verified": 0.0,
+        "op_reject_verified": 0.0,
+        "op_fix_accept": 0.17424242424242425
+      },
+      "ai_flag": {
+        "op_accept": 0.0,
+        "op_reject": 0.0,
+        "op_accept_verified": 1.0,
+        "op_reject_verified": 0.0,
+        "op_fix_accept": 0.0
+      }
+    },
+    "duration_stats": {
+      "ai_accept": null,
+      "ai_reject": {
+        "mean": 77.4702065402521,
+        "std": 33.661472472507135,
+        "p5": 44.29760614209822,
+        "p25": 54.03349594922807,
+        "p50": 67.34339094849656,
+        "p75": 93.5451866087054,
+        "p95": 158.64009969209513
+      },
+      "ai_flag": {
+        "mean": 222.163238957359,
+        "std": 6.642543597820574,
+        "p5": 211.49072150316047,
+        "p25": 217.05505994157892,
+        "p50": 222.4979627953943,
+        "p75": 228.9661076315249,
+        "p95": 230.44666378863553
+      }
+    }
+  },
+  "by_operator": {
+    "1": {
+      "n": 33,
+      "transition_matrix": {
+        "ai_accept": null,
+        "ai_reject": {
+          "op_accept": 0.3939393939393939,
+          "op_reject": 0.24242424242424243,
+          "op_accept_verified": 0.0,
+          "op_reject_verified": 0.0,
+          "op_fix_accept": 0.36363636363636365
+        },
+        "ai_flag": null
+      },
+      "duration_stats": {
+        "ai_accept": null,
+        "ai_reject": {
+          "mean": 99.86468597462869,
+          "std": 42.75273952560205,
+          "p5": 53.57528254722261,
+          "p25": 67.09905352292455,
+          "p50": 95.53574083311418,
+          "p75": 118.64154604947028,
+          "p95": 168.3318030061096
+        },
+        "ai_flag": null
+      }
+    },
+    "2": {
+      "n": 33,
+      "transition_matrix": {
+        "ai_accept": null,
+        "ai_reject": {
+          "op_accept": 0.3939393939393939,
+          "op_reject": 0.6060606060606061,
+          "op_accept_verified": 0.0,
+          "op_reject_verified": 0.0,
+          "op_fix_accept": 0.0
+        },
+        "ai_flag": null
+      },
+      "duration_stats": {
+        "ai_accept": null,
+        "ai_reject": {
+          "mean": 67.09847467119027,
+          "std": 23.056521871054755,
+          "p5": 49.78520587561084,
+          "p25": 52.08584271855027,
+          "p50": 59.635090573386606,
+          "p75": 72.76603995683644,
+          "p95": 101.33133583260935
+        },
+        "ai_flag": null
+      }
+    },
+    "3": {
+      "n": 33,
+      "transition_matrix": {
+        "ai_accept": null,
+        "ai_reject": {
+          "op_accept": 0.3333333333333333,
+          "op_reject": 0.5454545454545454,
+          "op_accept_verified": 0.0,
+          "op_reject_verified": 0.0,
+          "op_fix_accept": 0.12121212121212122
+        },
+        "ai_flag": null
+      },
+      "duration_stats": {
+        "ai_accept": null,
+        "ai_reject": {
+          "mean": 80.27174080837942,
+          "std": 29.14577786885918,
+          "p5": 51.90492192458576,
+          "p25": 56.286937455958764,
+          "p50": 73.38990977936123,
+          "p75": 96.80869849711017,
+          "p95": 134.0239826611292
+        },
+        "ai_flag": null
+      }
+    },
+    "4": {
+      "n": 33,
+      "transition_matrix": {
+        "ai_accept": null,
+        "ai_reject": {
+          "op_accept": 0.36363636363636365,
+          "op_reject": 0.42424242424242425,
+          "op_accept_verified": 0.0,
+          "op_reject_verified": 0.0,
+          "op_fix_accept": 0.21212121212121213
+        },
+        "ai_flag": null
+      },
+      "duration_stats": {
+        "ai_accept": null,
+        "ai_reject": {
+          "mean": 62.64592470681002,
+          "std": 22.06375202727083,
+          "p5": 41.95462505519093,
+          "p25": 44.741852056825365,
+          "p50": 55.804151239796575,
+          "p75": 79.74127011157648,
+          "p95": 98.88847397493704
+        },
+        "ai_flag": null
+      }
+    },
+    "5": {
+      "n": 32,
+      "transition_matrix": {
+        "ai_accept": null,
+        "ai_reject": null,
+        "ai_flag": {
+          "op_accept": 0.0,
+          "op_reject": 0.0,
+          "op_accept_verified": 1.0,
+          "op_reject_verified": 0.0,
+          "op_fix_accept": 0.0
+        }
+      },
+      "duration_stats": {
+        "ai_accept": null,
+        "ai_reject": null,
+        "ai_flag": {
+          "mean": 222.163238957359,
+          "std": 6.642543597820574,
+          "p5": 211.49072150316047,
+          "p25": 217.05505994157892,
+          "p50": 222.4979627953943,
+          "p75": 228.9661076315249,
+          "p95": 230.44666378863553
+        }
+      }
+    }
+  }
+}
