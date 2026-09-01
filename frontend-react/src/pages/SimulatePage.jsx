@@ -5,6 +5,7 @@ import { PlayCircle, Loader2, CheckCircle2, AlertTriangle, ChevronRight, Info, W
 import clsx from 'clsx'
 import { api } from '../services/api'
 import ScenarioEditor from '../components/ScenarioEditor'
+import ProbabilisticRunForm from '../components/simulate/ProbabilisticRunForm'
 
 function basenameNoExt(path) {
   const file = path.split('/').pop() || path
@@ -15,6 +16,7 @@ export default function SimulatePage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [tab, setTab] = useState('run') // 'run' | 'build'
+  const [mode, setMode] = useState('scripted') // 'scripted' | 'probabilistic'
 
   const { data: curated, isLoading: curatedLoading } = useQuery({
     queryKey: ['simulate-scenarios'],
@@ -108,14 +110,23 @@ export default function SimulatePage() {
 
       <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
         <Info size={16} className="mt-0.5 flex-shrink-0" />
-        <p>
-          This generates synthetic session data from a scripted scenario and runs it through the
-          same ingest → evaluate → dashboard pipeline real pilot data uses. It's for populating a
-          pilot before real data arrives, or trying out what the metrics look like — it does{' '}
-          <strong>not</strong> evaluate your actual AI application. For that, use{' '}
-          <Link to="/ingest" className="underline hover:text-amber-900">Ingest Logs</Link> with
-          real session data.
-        </p>
+        {mode === 'scripted' ? (
+          <p>
+            This generates synthetic session data from a scripted scenario and runs it through the
+            same ingest → evaluate → dashboard pipeline real pilot data uses. It's for populating a
+            pilot before real data arrives, or trying out what the metrics look like — it does{' '}
+            <strong>not</strong> evaluate your actual AI application. For that, use{' '}
+            <Link to="/ingest" className="underline hover:text-amber-900">Ingest Logs</Link> with
+            real session data.
+          </p>
+        ) : (
+          <p>
+            This generates synthetic sessions using a probabilistic surrogate fitted from real
+            pilot data. Sessions are statistically similar to real interactions — not scripted
+            replays. Use <Link to="/compare" className="underline hover:text-amber-900">Compare
+            Versions</Link> to validate surrogate fidelity against real pilot results.
+          </p>
+        )}
       </div>
 
       <div className="flex gap-1 border-b border-gray-200">
@@ -147,6 +158,28 @@ export default function SimulatePage() {
 
       {tab === 'run' && (
         <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Simulation mode</label>
+            <div className="inline-flex rounded-md border border-gray-200 p-0.5">
+              {[
+                { id: 'scripted', label: 'Scripted' },
+                { id: 'probabilistic', label: 'Probabilistic' },
+              ].map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => setMode(m.id)}
+                  className={clsx(
+                    'rounded px-3 py-1.5 text-sm font-medium transition-colors',
+                    mode === m.id ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-700',
+                  )}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {mode === 'scripted' && (
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Scenario</label>
             {(curatedLoading || allConfigsLoading) && (
@@ -185,6 +218,7 @@ export default function SimulatePage() {
               </p>
             )}
           </div>
+          )}
 
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Target configuration</label>
@@ -212,6 +246,15 @@ export default function SimulatePage() {
             </Link>
           </div>
 
+          {mode === 'probabilistic' && (
+            <ProbabilisticRunForm
+              configurationId={configurationId}
+              onSuccess={() => queryClient.invalidateQueries({ queryKey: ['configs'] })}
+            />
+          )}
+
+          {mode === 'scripted' && (
+          <>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Pilot tag</label>
@@ -293,6 +336,8 @@ export default function SimulatePage() {
                 Run Evaluation & View Results
               </button>
             </div>
+          )}
+          </>
           )}
         </div>
       )}

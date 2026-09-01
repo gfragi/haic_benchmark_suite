@@ -194,6 +194,14 @@ export const api = {
       })
       return request(`/simulator/simulate-and-ingest?${params.toString()}`, { method: 'POST' })
     },
+    // POST /simulator/probabilistic - body matches SimulateProbabilisticRequest field-for-field
+    runProbabilistic: (body) =>
+      request('/simulator/probabilistic', { method: 'POST', body: JSON.stringify(body) }),
+  },
+
+  ontology: {
+    get: () => request('/ontology'),
+    templates: () => request('/ontology/templates'),
   },
 
   health: () => fetch('/meta/health').then((r) => {

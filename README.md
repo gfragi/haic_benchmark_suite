@@ -405,6 +405,103 @@ metrics = compute_metrics(decisions=decisions, rt_max=5.0)  # rt_max is a normal
 3. Implement complex interaction patterns
 4. Validate against real-world data
 
+## 🎲 Probabilistic Simulation
+
+An ontology-driven layer on top of the scripted simulator (`/simulate` page,
+Build Scenario tab): `data/haic_ontology.json` defines the shared vocabulary
+(domains, personas, surrogate tiers, metrics, templates) that both the
+composer UI and the backend validator read from, and `POST /simulator/
+probabilistic` generates and ingests sessions from a fitted probabilistic
+surrogate instead of a fixed script.
+
+### Quick start (3 ways to run a simulation)
+
+**Way 1 — Template (no config needed):**
+Open `/simulate` → toggle to **Probabilistic** mode → pick a template tile
+→ Generate & Ingest.
+
+**Way 2 — JSON upload:**
+Prepare a scenario JSON matching the `haic.scenario.v1` schema (see
+`data/haic_scenario_schema.json` for the full JSON Schema, or run
+`python scripts/validate_scenario.py path/to/scenario.json` to check one
+before uploading). Upload it via the "Or upload a scenario JSON" link on
+the Probabilistic tab.
+
+**Way 3 — API:**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/simulator/probabilistic \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "SC permit review",
+    "configuration_id": 9,
+    "domain": "smart_city",
+    "surrogate_tier": 1,
+    "n_items": 164,
+    "n_sessions": 10
+  }'
+```
+
+Note the real path is `/api/v1/simulator/probabilistic` - the router that
+hosts it is mounted at `/simulator`, and every route in this API sits
+under the `/api/v1` prefix. `configuration_id` is required (the target
+config to ingest the generated sessions into); evaluation is triggered
+automatically as a background task after ingestion.
+
+### Adding a new domain
+
+To add a new domain to the composer:
+
+1. Add an entry to `data/haic_ontology.json` under `"domains"`.
+2. Fit a Markov model: `python scripts/fit_markov_sc.py` (adapt the
+   script's action-vocabulary mapping for your domain's decision/outcome
+   values - see the module docstring for how the Smart City one works).
+3. Add a template entry under `"templates"` pointing at the fitted model
+   file.
+4. Restart the backend - the ontology is loaded once at import time
+   (`app/routers/ontology.py`), so a running process won't pick up an
+   edited `haic_ontology.json` without a restart.
+
+No frontend code changes are required - the composer, template tiles, and
+the backend validator all read the ontology file directly.
+
+### Extending to a new surrogate tier
+
+Tier 0 (scripted) and Tier 1 (Markov chain) are available today. Tiers 2
+(HMM/DBN) and 3 (LLM persona) are placeholders in the ontology
+(`surrogate_tiers[].status: "planned"`) with no runner behind them yet -
+requesting them from `POST /simulator/probabilistic` returns `501 Not
+Implemented`. To implement one:
+
+1. Create `packages/surrogate/surrogate/<tier_name>.py` implementing a
+   `generate_session()`/`generate_batch()` pair matching `MarkovSurrogateSC`
+   (`packages/surrogate/surrogate/markov_sc.py`)'s shape - returning a
+   `haic.decisions_artifact.v1` session dict.
+2. Add a branch for that tier in `simulate_probabilistic()`
+   (`backend/app/routers/simulator.py`), alongside the existing tier-0/
+   tier-1 branches.
+3. Flip that tier's `status` from `"planned"` to `"available"` in
+   `data/haic_ontology.json` - the composer's tier selector and template
+   tiles both read this field to decide what's clickable.
+
+### Surrogate fidelity
+
+After generating surrogate sessions, use **Compare Versions** to check
+them against real pilot data for the same domain. The metric built for
+exactly this is **S (Surrogate Similarity)**:
+`S = 1 - sqrt(JSD(p_surrogate, p_real))`, where JSD is the Jensen-Shannon
+divergence (log base 2) between the surrogate's sampled action
+distribution and the real empirical transition row for the same AI
+action. `S = 1.0` means a perfect distributional match; see `scripts/
+validate_surrogate.py` for a worked example comparing 20 aggregate-persona
+surrogate sessions against the 164 real sessions `data/
+sc_markov_model.json` was fitted from (Tr within ~12%, HCL/F within ~1%,
+S = 1.0 ± 0.0 by construction for the aggregate persona - see that
+script's own module docstring for the full comparison and why).
+
+**Known gap**: `POST /simulator/probabilistic`'s ingest → evaluate
+pipeline does not currently compute S automatically - see "Gaps" below.
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
