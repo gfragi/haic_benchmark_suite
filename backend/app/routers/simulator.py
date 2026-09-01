@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Query, HTTPException, Depends
+import asyncio
+import logging
+import os
+import sys
+import traceback
+from fastapi import APIRouter, Query, HTTPException, Depends, BackgroundTasks
 from pathlib import Path
 from urllib.parse import unquote
 from sqlalchemy.orm import Session
@@ -8,13 +13,17 @@ import re
 from haic_env_builder.utils.simulation_runner import simulate_environment
 from app.models.api import SimulationEnvelope
 from app.models.configuration import EvaluationConfig
+from app.routers.evaluate import _safe_evaluate
+from app.routers.ontology import _load_ontology
+from app.schemas.ontology import SimulateProbabilisticRequest, SimulateProbabilisticResponse
 from app.utils.database import get_db
-from app.utils.errors import ErrorEnvelope
+from app.utils.errors import ErrorEnvelope, http_error
 from app.services.log_service import LogService
 from app.services.sim_bridge import translate_sim_run
 
 router = APIRouter()
 log_service = LogService()
+logger = logging.getLogger(__name__)
 
 # ---------- project root detection ----------
 def _find_project_root() -> Path:
@@ -224,3 +233,162 @@ def simulate_and_ingest(
         "derived_by_version": results.get("derived_by_version", {}),
         "schema_warnings": results.get("schema_warnings", []),
     }
+
+
+# ---------- probabilistic (ontology-driven) simulation ----------
+
+_MARKOV_SURROGATE_PATH = str(PROJECT_ROOT / "packages" / "surrogate")
+if _MARKOV_SURROGATE_PATH not in sys.path:
+    sys.path.insert(0, _MARKOV_SURROGATE_PATH)
+
+_HAIC_DEBUG = os.getenv("HAIC_DEBUG", "false").lower() in {"1", "true", "yes", "on"}
+
+
+def _validate_probabilistic_request(request: SimulateProbabilisticRequest, ontology: dict) -> str | None:
+    """
+    Runs the pre-execution checks from the task spec. Returns the resolved
+    fitted_model path for tier 1 (or None for other tiers). Raises a 422
+    via http_error() on the first failing check.
+    """
+    domains_by_id = {d["id"]: d for d in ontology.get("domains", [])}
+    if request.domain not in domains_by_id:
+        http_error(422, "UNKNOWN_DOMAIN", f"Unknown domain '{request.domain}'",
+                   {"known_domains": list(domains_by_id.keys())})
+
+    if not (0 <= request.surrogate_tier <= 3):
+        http_error(422, "INVALID_TIER", "surrogate_tier must be between 0 and 3")
+
+    if request.n_items <= 0 or request.n_sessions <= 0:
+        http_error(422, "INVALID_COUNTS", "n_items and n_sessions must be positive")
+
+    known_metrics = {m["id"] for m in ontology.get("metric_families", [])}
+    unknown = set(request.metrics) - known_metrics
+    if unknown:
+        http_error(422, "UNKNOWN_METRICS", f"Unknown metric(s): {sorted(unknown)}",
+                   {"known_metrics": sorted(known_metrics)})
+
+    fitted_model = None
+    if request.surrogate_tier == 1:
+        fitted_model = request.fitted_model or domains_by_id[request.domain].get("fitted_model")
+        if not fitted_model:
+            http_error(422, "MISSING_FITTED_MODEL",
+                       f"surrogate_tier=1 requires a fitted_model - none provided and domain "
+                       f"'{request.domain}' has none in the ontology")
+    return fitted_model
+
+
+def _run_tier0_sync(request: SimulateProbabilisticRequest, db: Session) -> tuple[list[str], int]:
+    """Scripted (tier 0) path - same underlying mechanism as
+    POST /simulator/simulate-and-ingest, inlined here (rather than called
+    directly) so exact per-session decision counts can be reported back,
+    which that endpoint's response doesn't expose."""
+    config_path = resolve_config_path(request.name)
+    stem = re.sub(r"[^A-Za-z0-9._-]+", "_", Path(request.name).stem)
+
+    sessions, run_ids = [], []
+    for i in range(request.n_sessions):
+        seed = request.seed + i
+        run_result = simulate_environment(str(config_path), seed=seed)
+        sessions.append(translate_sim_run(
+            run_result, pilot_tag=request.pilot_tag,
+            app_version=request.app_version, ai_model_version=request.ai_model_version,
+        ))
+        run_ids.append(f"{stem}_{seed}")
+
+    n_decisions = sum(len(s["decisions"]) for s in sessions)
+    merged_bytes = json.dumps({"logs": sessions}, ensure_ascii=False).encode("utf-8")
+    log_service.process_uploaded_log(request.configuration_id, sessions, f"{stem}.sim", merged_bytes, db)
+    return run_ids, n_decisions
+
+
+def _run_tier1_sync(request: SimulateProbabilisticRequest, fitted_model: str, db: Session) -> tuple[list[str], int]:
+    """Markov-chain (tier 1) path: MarkovSurrogateSC.generate_batch() then
+    ingest through the same process_uploaded_log() real uploads use."""
+    from surrogate.markov_sc import MarkovSurrogateSC
+
+    if not Path(fitted_model).exists():
+        http_error(400, "FITTED_MODEL_NOT_FOUND", f"fitted_model file not found: {fitted_model}")
+
+    surrogate = MarkovSurrogateSC(model_path=fitted_model, persona=request.persona, seed=request.seed)
+    sessions = surrogate.generate_batch(
+        n_sessions=request.n_sessions, n_items=request.n_items,
+        rt_max_s=request.rt_max_s, baseline_s=request.baseline_s,
+    )
+
+    run_ids = [s["run_id"] for s in sessions]
+    n_decisions = sum(len(s["decisions"]) for s in sessions)
+
+    # MarkovSurrogateSC's own artifact bakes in its own static
+    # pilot_tag/app_version/ai_model_version under meta.* - override at the
+    # top level (schema_bridge checks top-level fields before falling back
+    # to meta.*) so the caller's requested values actually take effect,
+    # without needing to touch markov_sc.py itself.
+    for s in sessions:
+        s["pilot_tag"] = request.pilot_tag
+        s["app_version"] = request.app_version
+        s["ai_model_version"] = request.ai_model_version
+
+    stem = f"markov_{request.domain}_{request.persona}"
+    merged_bytes = json.dumps({"logs": sessions}, ensure_ascii=False).encode("utf-8")
+    log_service.process_uploaded_log(request.configuration_id, sessions, f"{stem}.sim", merged_bytes, db)
+    return run_ids, n_decisions
+
+
+@router.post(
+    "/probabilistic",
+    response_model=SimulateProbabilisticResponse,
+    responses={
+        422: {"model": ErrorEnvelope}, 400: {"model": ErrorEnvelope},
+        500: {"model": ErrorEnvelope}, 501: {"model": ErrorEnvelope},
+    },
+    summary="Run an ontology-driven probabilistic surrogate and ingest the results",
+    description=(
+        "Tier 0 delegates to the same scripted mechanism as "
+        "/simulator/simulate-and-ingest. Tier 1 runs MarkovSurrogateSC. "
+        "Tiers 2-3 are planned but not yet implemented (501). Ingestion "
+        "uses the same process_uploaded_log() pipeline as every other "
+        "upload; evaluation is then triggered as a background task, same "
+        "as POST /evaluate/{configuration_id}."
+    ),
+)
+async def simulate_probabilistic(
+    request: SimulateProbabilisticRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    ontology = _load_ontology()
+    fitted_model = _validate_probabilistic_request(request, ontology)
+
+    config = db.query(EvaluationConfig).filter(EvaluationConfig.id == request.configuration_id).first()
+    if not config:
+        http_error(400, "CONFIGURATION_NOT_FOUND", f"Configuration {request.configuration_id} not found")
+
+    if request.surrogate_tier >= 2:
+        http_error(501, "TIER_NOT_IMPLEMENTED",
+                   f"Tier {request.surrogate_tier} surrogate is planned but not yet available.")
+
+    loop = asyncio.get_event_loop()
+    try:
+        if request.surrogate_tier == 0:
+            run_ids, n_decisions = await loop.run_in_executor(None, _run_tier0_sync, request, db)
+        else:
+            run_ids, n_decisions = await loop.run_in_executor(None, _run_tier1_sync, request, fitted_model, db)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Probabilistic simulation failed for config %s: %s",
+                     request.configuration_id, repr(e), exc_info=True)
+        detail = f"Surrogate generation failed: {e}\n{traceback.format_exc()}" if _HAIC_DEBUG else "Surrogate generation failed."
+        http_error(500, "GENERATION_FAILED", detail)
+
+    background_tasks.add_task(_safe_evaluate, request.configuration_id)
+
+    return SimulateProbabilisticResponse(
+        status="success",
+        n_sessions_generated=request.n_sessions,
+        n_decisions_total=n_decisions,
+        surrogate_tier=request.surrogate_tier,
+        persona=request.persona,
+        run_ids=run_ids,
+        pilot_tag=request.pilot_tag,
+    )
