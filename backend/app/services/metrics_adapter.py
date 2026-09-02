@@ -23,6 +23,46 @@ _AGREEMENT_KEY_PAIRS = [
 ]
 
 
+def _map_surrogate_probs_to_reference(decisions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    For every human decision that carries surrogate_probs, also copy it
+    onto "probs".
+
+    interaction_metrics.py's S computation (lines 477-494) has two paths:
+    a primary one comparing "probs" (the real-human reference
+    distribution) against "surrogate_probs" via KL divergence, and a
+    fallback that string-compares "action" against "surrogate_action" -
+    which can never match for this surrogate, since "action" is always
+    the constant event-type string "operator_verified" while
+    surrogate_action holds outcome values like "op_accept". Without this
+    mapping, S silently fell through to that broken fallback (S=0.0) or,
+    before surrogate_probs/surrogate_action even survived validation,
+    to no-signal-at-all (S=None).
+
+    # Surrogate fix: map surrogate_probs -> probs for S metric primary
+    # path (interaction_metrics.py:477); avoids broken fallback that
+    # compares action vs surrogate_action strings.
+
+    For a Tier 1 surrogate, the surrogate's own emission distribution IS
+    the reference distribution for JSD/KL purposes - the same assumption
+    scripts/validate_surrogate.py already makes explicitly. Real pilot
+    decisions never set surrogate_probs, so this never touches them; AI
+    events and human events without surrogate_probs are left untouched
+    (S stays None for those, exactly as before).
+    """
+    mapped = []
+    for d in decisions:
+        if (
+            isinstance(d, dict)
+            and d.get("actor_type") == "human"
+            and isinstance(d.get("surrogate_probs"), dict)
+            and d["surrogate_probs"]
+        ):
+            d = {**d, "probs": d["surrogate_probs"]}
+        mapped.append(d)
+    return mapped
+
+
 def _payload_confidence(payload: Dict[str, Any]) -> Optional[float]:
     """Max class probability from a decision's payload, whichever shape it's in."""
     if not isinstance(payload, dict):
@@ -243,7 +283,10 @@ def compute_from_log(
         ds = s.get("decisions")
         if not isinstance(ds, list):
             ds = []
-        all_decisions.extend(ds)
+        # Surrogate fix: map surrogate_probs -> probs for S metric primary
+        # path (interaction_metrics.py:477); avoids broken fallback that
+        # compares action vs surrogate_action strings.
+        all_decisions.extend(_map_surrogate_probs_to_reference(ds))
 
         # Confidence / Response Time / Human-AI Agreement Rate: prefer an
         # explicit interaction_data value for this session; fall back to

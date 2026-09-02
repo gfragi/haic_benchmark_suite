@@ -1,57 +1,77 @@
-import json
-from pathlib import Path
 from typing import Any, Dict, List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
-from app.schemas.ontology import OntologyResponse
-from app.utils.errors import http_error
+from app.schemas.ontology import (
+    ENTITY_TYPES,
+    OntologyDeleteResponse,
+    OntologyEntityIn,
+    OntologyEntityOut,
+    OntologyEntityUpdate,
+    OntologyResponse,
+    OntologyUsageResponse,
+)
+from app.services import ontology_service
+from app.utils.database import get_db
 
 router = APIRouter()
 
-# Mirrors the project-root detection used by routers/simulator.py and
-# routers/env_builder.py: checks for haic_env_builder/+packages/ as
-# siblings rather than backend/, since the backend/ wrapper directory
-# doesn't exist inside the deployed container (Dockerfile.backend copies
-# backend/app -> ./app directly).
-def _find_project_root() -> Path:
-    here = Path(__file__).resolve()
-    for cand in [*here.parents]:
-        if (cand / "haic_env_builder").is_dir() and (cand / "packages").is_dir():
-            return cand
-    return here.parents[3] if len(here.parents) >= 4 else here.parents[-1]
+
+def _load_ontology(db: Session) -> Dict[str, Any]:
+    """Assembled from ontology_entities (DB-backed, 30s cache) - see
+    app.services.ontology_service.get_full_ontology(). Kept as a
+    module-level function since app.routers.simulator imports it directly."""
+    return ontology_service.get_full_ontology(db)
 
 
-PROJECT_ROOT = _find_project_root()
-ONTOLOGY_PATH = PROJECT_ROOT / "data" / "haic_ontology.json"
-
-# Read once at import time (module import happens at app startup) and
-# cached for the process lifetime - the ontology is a static data file,
-# not something that changes at runtime.
-_ontology_cache: Dict[str, Any] | None = None
-
-
-def _load_ontology() -> Dict[str, Any]:
-    global _ontology_cache
-    if _ontology_cache is None:
-        if not ONTOLOGY_PATH.exists():
-            http_error(500, "ONTOLOGY_NOT_FOUND", f"Ontology file not found at {ONTOLOGY_PATH}")
-        _ontology_cache = json.loads(ONTOLOGY_PATH.read_text(encoding="utf-8"))
-    return _ontology_cache
-
-
-# Loaded eagerly at import time (startup), per the task's "reads the file
-# at startup and caches it" - a lazy fallback in _load_ontology() above
-# still covers the (unlikely) case this module is imported before the
-# file exists on disk.
-_load_ontology()
+def _to_out(row) -> OntologyEntityOut:
+    return OntologyEntityOut(
+        id=row.entity_id, label=row.label, description=row.description,
+        status=row.status, properties=row.properties, version=row.version,
+    )
 
 
 @router.get("", response_model=OntologyResponse, summary="Full HAIC ontology (domains, action types, personas, metrics, templates)")
-def get_ontology():
-    return _load_ontology()
+def get_ontology(db: Session = Depends(get_db)):
+    return _load_ontology(db)
 
 
 @router.get("/templates", response_model=List[Dict[str, Any]], summary="Scenario templates only")
-def get_templates():
-    return _load_ontology().get("templates", [])
+def get_templates(db: Session = Depends(get_db)):
+    return _load_ontology(db).get("templates", [])
+
+
+@router.get("/{entity_type}", response_model=List[OntologyEntityOut], summary="List active entities of one type")
+def list_entities(entity_type: str, db: Session = Depends(get_db)):
+    rows = ontology_service.list_entities(db, entity_type)
+    return [_to_out(r) for r in rows]
+
+
+@router.get("/{entity_type}/{entity_id}/usage", response_model=OntologyUsageResponse, summary="Usage stats for one entity")
+def get_entity_usage(entity_type: str, entity_id: str, db: Session = Depends(get_db)):
+    return ontology_service.get_usage(db, entity_type, entity_id)
+
+
+@router.get("/{entity_type}/{entity_id}", response_model=OntologyEntityOut, summary="Get one entity")
+def get_entity(entity_type: str, entity_id: str, db: Session = Depends(get_db)):
+    row = ontology_service.get_entity(db, entity_type, entity_id)
+    return _to_out(row)
+
+
+@router.post("/{entity_type}", response_model=OntologyEntityOut, status_code=201, summary="Create an entity")
+def create_entity(entity_type: str, payload: OntologyEntityIn, db: Session = Depends(get_db)):
+    row = ontology_service.create_entity(db, entity_type, payload)
+    return _to_out(row)
+
+
+@router.put("/{entity_type}/{entity_id}", response_model=OntologyEntityOut, summary="Update an entity")
+def update_entity(entity_type: str, entity_id: str, payload: OntologyEntityUpdate, db: Session = Depends(get_db)):
+    row = ontology_service.update_entity(db, entity_type, entity_id, payload)
+    return _to_out(row)
+
+
+@router.delete("/{entity_type}/{entity_id}", response_model=OntologyDeleteResponse, summary="Deprecate an entity (soft delete)")
+def delete_entity(entity_type: str, entity_id: str, db: Session = Depends(get_db)):
+    ontology_service.deprecate_entity(db, entity_type, entity_id)
+    return OntologyDeleteResponse(message="Entity deprecated", entity_id=entity_id)

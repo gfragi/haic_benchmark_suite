@@ -20,6 +20,7 @@ from app.utils.database import get_db
 from app.utils.errors import ErrorEnvelope, http_error
 from app.services.log_service import LogService
 from app.services.sim_bridge import translate_sim_run
+from app.services import ontology_service
 
 router = APIRouter()
 log_service = LogService()
@@ -425,7 +426,7 @@ async def simulate_probabilistic(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    ontology = _load_ontology()
+    ontology = _load_ontology(db)
     fitted_model = _validate_probabilistic_request(request, ontology)
 
     config = db.query(EvaluationConfig).filter(EvaluationConfig.id == request.configuration_id).first()
@@ -453,6 +454,10 @@ async def simulate_probabilistic(
                      request.configuration_id, repr(e), exc_info=True)
         detail = f"Surrogate generation failed: {e}\n{traceback.format_exc()}" if _HAIC_DEBUG else "Surrogate generation failed."
         http_error(500, "GENERATION_FAILED", detail)
+
+    for run_id in run_ids:
+        ontology_service.record_usage(db, run_id, "domain", request.domain, "domain")
+        ontology_service.record_usage(db, run_id, "persona_archetype", request.persona, "persona")
 
     background_tasks.add_task(_safe_evaluate, request.configuration_id)
 

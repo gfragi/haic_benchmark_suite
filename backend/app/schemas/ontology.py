@@ -1,5 +1,15 @@
-from pydantic import BaseModel, Field
-from typing import Any, List, Optional
+import re
+from datetime import datetime
+
+from pydantic import BaseModel, Field, field_validator
+from typing import Any, Dict, List, Optional
+
+ENTITY_TYPES = (
+    "domain", "action_type", "agent_role", "persona_archetype",
+    "surrogate_tier", "metric_family", "template",
+)
+ENTITY_STATUSES = ("active", "draft", "deprecated")
+_ENTITY_ID_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
 class OntologyResponse(BaseModel):
@@ -48,3 +58,74 @@ class SimulateProbabilisticResponse(BaseModel):
     run_ids: List[str]
     pilot_tag: str
     warnings: List[str] = []
+
+
+class OntologyEntityIn(BaseModel):
+    entity_id: str
+    label: str
+    description: Optional[str] = None
+    properties: Dict[str, Any]
+    status: str = "active"
+
+    @field_validator("entity_id")
+    @classmethod
+    def _valid_entity_id(cls, v: str) -> str:
+        if not _ENTITY_ID_RE.match(v):
+            raise ValueError("entity_id must match ^[a-z][a-z0-9_]*$")
+        return v
+
+    @field_validator("properties")
+    @classmethod
+    def _non_empty_properties(cls, v: Dict[str, Any]) -> Dict[str, Any]:
+        if not v:
+            raise ValueError("properties must be a non-empty dict")
+        return v
+
+    @field_validator("status")
+    @classmethod
+    def _valid_status(cls, v: str) -> str:
+        if v not in ENTITY_STATUSES:
+            raise ValueError(f"status must be one of {ENTITY_STATUSES}")
+        return v
+
+
+class OntologyEntityUpdate(BaseModel):
+    label: str
+    description: Optional[str] = None
+    properties: Dict[str, Any]
+    status: str = "active"
+
+    @field_validator("properties")
+    @classmethod
+    def _non_empty_properties(cls, v: Dict[str, Any]) -> Dict[str, Any]:
+        if not v:
+            raise ValueError("properties must be a non-empty dict")
+        return v
+
+    @field_validator("status")
+    @classmethod
+    def _valid_status(cls, v: str) -> str:
+        if v not in ENTITY_STATUSES:
+            raise ValueError(f"status must be one of {ENTITY_STATUSES}")
+        return v
+
+
+class OntologyEntityOut(BaseModel):
+    id: str
+    label: str
+    description: Optional[str] = None
+    status: str
+    properties: Dict[str, Any]
+    version: int
+
+
+class OntologyDeleteResponse(BaseModel):
+    message: str
+    entity_id: str
+
+
+class OntologyUsageResponse(BaseModel):
+    entity_type: str
+    entity_id: str
+    usage_count: int
+    recent_scenarios: List[str]
