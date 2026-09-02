@@ -1,4 +1,40 @@
 {
+  "schema": "haic.markov_model.v1",
+  "domain": "smart_city",
+  "ai_actions": [
+    "ai_accept",
+    "ai_reject",
+    "ai_flag"
+  ],
+  "op_actions": [
+    "op_accept",
+    "op_reject",
+    "op_accept_verified",
+    "op_reject_verified",
+    "op_fix_accept"
+  ],
+  "accept_actions": [
+    "op_accept",
+    "op_accept_verified",
+    "op_fix_accept"
+  ],
+  "ai_action_frequency": {
+    "ai_accept": 0.0,
+    "ai_reject": 0.8048780487804879,
+    "ai_flag": 0.1951219512195122
+  },
+  "ai_action_original_strings": {
+    "ai_accept": "Accepted",
+    "ai_reject": "Rejected",
+    "ai_flag": "Flagged for verification"
+  },
+  "op_action_original_strings": {
+    "op_accept": "Accepted",
+    "op_reject": "Rejected",
+    "op_accept_verified": "Accepted after verification",
+    "op_reject_verified": "Rejected after verification",
+    "op_fix_accept": "Fixed & accepted"
+  },
   "meta": {
     "source": "haic_sim_mvp/examples/events_all_v0_patched.json",
     "n_sessions": 566,

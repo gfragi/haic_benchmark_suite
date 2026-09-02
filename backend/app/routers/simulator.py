@@ -372,12 +372,12 @@ def _run_tier1_sync(
 ) -> tuple[list[str], int]:
     """Markov-chain (tier 1) path: MarkovSurrogateSC.generate_batch() then
     ingest through the same process_uploaded_log() real uploads use."""
-    from surrogate.markov_sc import MarkovSurrogateSC
+    from surrogate.markov import MarkovSurrogate
 
     if not Path(fitted_model).exists():
         http_error(400, "FITTED_MODEL_NOT_FOUND", f"fitted_model file not found: {fitted_model}")
 
-    surrogate = MarkovSurrogateSC(model_path=fitted_model, persona=request.persona, seed=request.seed)
+    surrogate = MarkovSurrogate(model_path=fitted_model, persona=request.persona, seed=request.seed)
     sessions = surrogate.generate_batch(
         n_sessions=request.n_sessions, n_items=request.n_items,
         rt_max_s=request.rt_max_s, baseline_s=request.baseline_s,
