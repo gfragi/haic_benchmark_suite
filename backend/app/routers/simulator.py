@@ -282,8 +282,8 @@ def _compute_sc_weighted_baseline(model_path: str) -> float | None:
     """
     Weighted-mean 'no-AI baseline' approximation: sum over ai_action of
     ai_action_frequency * duration_stats[ai_action].mean (ai_accept
-    contributes 0 - its frequency is always 0, see fit_markov_sc.py, so it
-    doesn't need special-casing here).
+    contributes 0 - its frequency is always 0 in data/sc_markov_model.json,
+    see scripts/fit_markov.py, so it doesn't need special-casing here).
 
     Same caveat as the identical formula in scripts/validate_surrogate.py:
     this actually averages the WITH-AI operator review time, not a genuine

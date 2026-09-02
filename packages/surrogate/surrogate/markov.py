@@ -3,7 +3,7 @@ markov.py
 
 MarkovSurrogate: a domain-agnostic first-order Markov surrogate operator,
 fitted from real pilot data (see e.g. data/sc_markov_model.json, produced by
-scripts/fit_markov_sc.py). All domain-specific action vocabulary - the AI/
+scripts/fit_markov.py). All domain-specific action vocabulary - the AI/
 operator action sets, which op actions count as "accepted", and the
 original display strings for each - lives in the model JSON file (schema
 "haic.markov_model.v1"); this class holds none of it.

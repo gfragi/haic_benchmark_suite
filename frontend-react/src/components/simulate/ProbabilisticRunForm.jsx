@@ -5,6 +5,7 @@ import { Loader2, CheckCircle2, AlertTriangle, Upload, Download, ChevronRight } 
 import clsx from 'clsx'
 import { api } from '../../services/api'
 import InfoTooltip from './InfoTooltip'
+import FitAndSimulateFlow from './FitAndSimulateFlow'
 
 const TIER_BADGE = {
   0: 'bg-gray-100 text-gray-600',
@@ -31,6 +32,8 @@ export default function ProbabilisticRunForm({ configurationId, onSuccess }) {
     queryKey: ['ontology'],
     queryFn: () => api.ontology.get(),
   })
+
+  const [entryMode, setEntryMode] = useState('template') // 'template' | 'byod'
 
   const [selectedTemplateId, setSelectedTemplateId] = useState('')
   const [uploadError, setUploadError] = useState(null)
@@ -196,6 +199,29 @@ export default function ProbabilisticRunForm({ configurationId, onSuccess }) {
 
   return (
     <div className="space-y-4">
+      <div className="inline-flex rounded-md border border-gray-200 bg-gray-50 p-0.5 text-xs font-medium">
+        {[
+          { id: 'template', label: 'Use a template' },
+          { id: 'byod', label: 'Bring your own data' },
+        ].map((m) => (
+          <button
+            key={m.id} type="button" onClick={() => setEntryMode(m.id)}
+            className={clsx(
+              'rounded px-3 py-1.5 transition-colors',
+              entryMode === m.id ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-700',
+            )}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
+
+      {entryMode === 'byod' && (
+        <FitAndSimulateFlow configurationId={configurationId} ontology={ontology} onSuccess={onSuccess} />
+      )}
+
+      {entryMode === 'template' && (
+      <>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* LEFT: templates */}
         <div className="space-y-3">
@@ -410,6 +436,8 @@ export default function ProbabilisticRunForm({ configurationId, onSuccess }) {
             Compare Versions <ChevronRight size={12} />
           </Link>
         </div>
+      )}
+      </>
       )}
     </div>
   )

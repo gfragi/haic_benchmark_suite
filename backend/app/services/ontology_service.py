@@ -133,6 +133,34 @@ def update_entity(db: Session, entity_type: str, entity_id: str, payload: Ontolo
     return row
 
 
+def upsert_entity(db: Session, entity_type: str, entity_id: str, label: str, properties: Dict[str, Any],
+                   status: str = "active") -> OntologyEntity:
+    """Create-or-update by (entity_type, entity_id), bumping version and
+    invalidating the cache either way. Used by the fit-model upload flow,
+    which doesn't know in advance whether a domain/template entity already
+    exists."""
+    _check_entity_type(entity_type)
+    row = (
+        db.query(OntologyEntity)
+        .filter(OntologyEntity.entity_type == entity_type, OntologyEntity.entity_id == entity_id)
+        .first()
+    )
+    if row is None:
+        row = OntologyEntity(entity_type=entity_type, entity_id=entity_id, label=label,
+                              properties=properties, status=status)
+        db.add(row)
+    else:
+        row.label = label
+        row.properties = properties
+        row.status = status
+        row.version += 1
+        row.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(row)
+    invalidate_cache()
+    return row
+
+
 def deprecate_entity(db: Session, entity_type: str, entity_id: str) -> OntologyEntity:
     row = get_entity(db, entity_type, entity_id)
     row.status = "deprecated"

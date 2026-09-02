@@ -26,6 +26,7 @@ COPY packages/metrics_core ./packages/metrics_core
 COPY packages/surrogate ./packages/surrogate
 COPY haic_sim_mvp/configs ./haic_sim_mvp/configs
 COPY data ./data
+COPY scripts ./scripts
 COPY backend/app ./app
 COPY backend/tests ./tests
 COPY backend/pytest.ini ./pytest.ini

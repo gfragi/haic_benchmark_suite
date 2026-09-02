@@ -12,10 +12,14 @@ async function request(path, options = {}) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }))
     const detail = err.detail
+    // ErrorEnvelope shape from app.utils.errors.http_error():
+    // {"detail": {"error": {"code": ..., "message": ...}}}
     const msg = Array.isArray(detail)
       ? detail.map(e => `${e.loc?.slice(-1)[0] ?? ''}: ${e.msg}`).join('; ')
-      : (detail ?? `HTTP ${res.status}`)
-    throw new Error(msg)
+      : (detail?.error?.message ?? (typeof detail === 'string' ? detail : null) ?? `HTTP ${res.status}`)
+    const thrown = new Error(msg)
+    thrown.code = Array.isArray(detail) ? undefined : detail?.error?.code
+    throw thrown
   }
   return res.json()
 }
@@ -202,6 +206,25 @@ export const api = {
   ontology: {
     get: () => request('/ontology'),
     templates: () => request('/ontology/templates'),
+    // POST /ontology/fit-model - multipart. formData is built by the
+    // caller (file + domain + label + mapping fields), same pattern as
+    // logs.upload/logs.uploadZip above.
+    fitModel: (formData) =>
+      fetch(`${BASE}/ontology/fit-model`, { method: 'POST', body: formData }).then((r) => {
+        if (!r.ok) return r.json().then((e) => {
+          const detail = e.detail
+          const msg = Array.isArray(detail)
+            ? detail.map((d) => `${d.loc?.slice(-1)[0] ?? ''}: ${d.msg}`).join('; ')
+            : (detail?.error?.message ?? detail ?? `HTTP ${r.status}`)
+          const err = new Error(msg)
+          // preserve the backend's error code (e.g. NO_VALID_PAIRS,
+          // INSUFFICIENT_DATA) so callers can branch on it instead of
+          // matching against message text
+          err.code = Array.isArray(detail) ? undefined : detail?.error?.code
+          return Promise.reject(err)
+        })
+        return r.json()
+      }),
   },
 
   health: () => fetch('/meta/health').then((r) => {
