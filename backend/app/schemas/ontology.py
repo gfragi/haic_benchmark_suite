@@ -47,3 +47,4 @@ class SimulateProbabilisticResponse(BaseModel):
     persona: str
     run_ids: List[str]
     pilot_tag: str
+    warnings: List[str] = []

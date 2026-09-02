@@ -12,6 +12,7 @@ real pilot logs use, so they pass through the existing ingest -> evaluate
 from __future__ import annotations
 
 import json
+import logging
 import time
 import uuid
 from pathlib import Path
@@ -19,6 +20,8 @@ from typing import Any
 
 import numpy as np
 from scipy.stats import truncnorm
+
+logger = logging.getLogger(__name__)
 
 # Reverse mapping: canonical action -> original string, for the payload
 # fields real partner logs use. Note "Fixed & accepted" uses an ampersand,
@@ -39,8 +42,17 @@ OP_ORIGINAL = {
 OP_STATES = ["op_accept", "op_reject", "op_accept_verified", "op_reject_verified", "op_fix_accept"]
 CORRECT_OP_ACTIONS = {"op_accept", "op_accept_verified", "op_fix_accept"}
 
+# Same set as CORRECT_OP_ACTIONS - kept as a separate name because the two
+# concepts (persona accept_bias vs. Tr's "correct") are conceptually
+# distinct even though they happen to share the exact same op-state set in
+# this domain's simplified correctness model.
+_ACCEPT_FAMILY = CORRECT_OP_ACTIONS
+
 _MIN_PERSONA_SAMPLES = 10
 _DURATION_MIN_S = 5.0
+
+# packages/surrogate/surrogate/markov_sc.py -> project root is 3 parents up.
+_ONTOLOGY_PATH = Path(__file__).resolve().parents[3] / "data" / "haic_ontology.json"
 
 
 class MarkovSurrogateSC:
@@ -57,29 +69,121 @@ class MarkovSurrogateSC:
         """
         Load the fitted Markov model and configure the surrogate persona.
 
-        persona: "aggregate" or an operator id "1".."5". Falls back to
-            "aggregate" if the requested operator has fewer than
-            _MIN_PERSONA_SAMPLES records.
+        persona:
+          - "aggregate" - the fitted aggregate transition matrix, as-is.
+          - an operator id "1".."5" - that operator's own fit. Falls back
+            to "aggregate" if it has fewer than _MIN_PERSONA_SAMPLES records.
+          - an archetype id from haic_ontology.json's persona_archetypes
+            (e.g. "high_trust", "skeptic", "expert", "novice", "from_data") -
+            the aggregate matrix with that archetype's accept_bias/
+            rt_multiplier applied (see _init_from_archetype()). Falls back
+            to "aggregate" (with a logged warning) if the id isn't found
+            in the ontology, or if the ontology file itself is missing.
         smooth_epsilon: Laplace smoothing added to each of the 5 op-state
             cells in every non-null transition row before renormalizing,
             so sparse rows (ai_flag in particular, n=32) aren't degenerate.
+            Archetype bias is applied on top of the already-smoothed
+            aggregate matrix, not before, so it isn't diluted twice.
         """
         self.model_path = model_path
         self.seed = seed
         self.smooth_epsilon = smooth_epsilon
+        self.rt_multiplier = 1.0
 
         model = json.loads(Path(model_path).read_text(encoding="utf-8"))
-        group = self._select_group(model, persona)
-        self.persona = group["_persona_used"]
 
-        self.ai_action_frequency: dict[str, float] = group["ai_action_frequency"]
-        self.duration_stats: dict[str, dict | None] = group["duration_stats"]
-        self.transition_matrix: dict[str, dict[str, float] | None] = {
-            ai_action: self._smooth_row(row)
-            for ai_action, row in group["transition_matrix"].items()
-        }
+        if persona == "aggregate" or str(persona).isdigit():
+            group = self._select_group(model, persona)
+            self.persona = group["_persona_used"]
+            self.ai_action_frequency: dict[str, float] = group["ai_action_frequency"]
+            self.duration_stats: dict[str, dict | None] = group["duration_stats"]
+            self.transition_matrix: dict[str, dict[str, float] | None] = {
+                ai_action: self._smooth_row(row)
+                for ai_action, row in group["transition_matrix"].items()
+            }
+        else:
+            self._init_from_archetype(model, str(persona))
 
         np.random.seed(self.seed)
+
+    def _init_from_archetype(self, model: dict, persona: str) -> None:
+        """
+        Resolve a persona_archetypes id (from haic_ontology.json) into a
+        biased variant of the aggregate transition matrix. Sets self.persona,
+        self.ai_action_frequency, self.duration_stats, self.transition_matrix,
+        and self.rt_multiplier.
+        """
+        base = self._select_group(model, "aggregate")
+        self.ai_action_frequency = base["ai_action_frequency"]
+        self.duration_stats = base["duration_stats"]
+        self.transition_matrix = {
+            ai_action: self._smooth_row(row)
+            for ai_action, row in base["transition_matrix"].items()
+        }
+
+        archetype = self._load_persona_archetype(persona)
+        if archetype is None:
+            logger.warning(
+                "Unknown persona '%s' (not 'aggregate', not an operator id "
+                "1-5, not a persona_archetypes id in %s) - falling back to "
+                "aggregate.", persona, _ONTOLOGY_PATH,
+            )
+            self.persona = "aggregate"
+            return
+
+        # Report the archetype id even when it carries no bias (e.g.
+        # "from_data", whose accept_bias/rt_multiplier are both null in the
+        # ontology) - the point is to never silently relabel a recognized,
+        # deliberate persona choice as "aggregate".
+        self.persona = persona
+
+        if archetype.get("accept_bias") is not None:
+            self.transition_matrix = {
+                ai_action: self._apply_accept_bias(row, archetype["accept_bias"])
+                for ai_action, row in self.transition_matrix.items()
+            }
+        if archetype.get("rt_multiplier") is not None:
+            self.rt_multiplier = archetype["rt_multiplier"]
+
+    def _load_persona_archetype(self, persona_id: str) -> dict | None:
+        """Look up one persona_archetypes entry by id in haic_ontology.json."""
+        if not _ONTOLOGY_PATH.exists():
+            logger.warning("Ontology file not found at %s - cannot resolve persona '%s'.",
+                            _ONTOLOGY_PATH, persona_id)
+            return None
+        ontology = json.loads(_ONTOLOGY_PATH.read_text(encoding="utf-8"))
+        for p in ontology.get("persona_archetypes", []):
+            if p["id"] == persona_id:
+                return p
+        return None
+
+    def _apply_accept_bias(self, row: dict[str, float] | None, target_accept_mass: float) -> dict[str, float] | None:
+        """
+        Rescale one (already-smoothed) transition row so its accept-family
+        mass (op_accept + op_accept_verified + op_fix_accept) matches
+        target_accept_mass, redistributing the rest proportionally across
+        the remaining states, then renormalizing.
+        """
+        if row is None:
+            return None
+
+        current_accept_mass = sum(row[k] for k in _ACCEPT_FAMILY)
+        if current_accept_mass <= 0:
+            return row  # nothing to scale from - leave the row as-is
+
+        reject_mass = 1.0 - current_accept_mass
+        remaining = 1.0 - target_accept_mass
+        scale = target_accept_mass / current_accept_mass
+
+        new_probs = {}
+        for k, v in row.items():
+            if k in _ACCEPT_FAMILY:
+                new_probs[k] = v * scale
+            else:
+                new_probs[k] = v * (remaining / reject_mass) if reject_mass > 0 else v
+
+        total = sum(new_probs.values())
+        return {k: v / total for k, v in new_probs.items()}
 
     def _select_group(self, model: dict, persona: str) -> dict:
         """Pick the aggregate or per-operator fit, falling back to aggregate
@@ -136,13 +240,15 @@ class MarkovSurrogateSC:
 
     def _sample_duration(self, ai_action: str, rt_max_s: float) -> float:
         """Sample a response time from a truncated normal fitted to this
-        ai_action's real duration_s stats, bounded to [_DURATION_MIN_S, rt_max_s]."""
+        ai_action's real duration_s stats, bounded to [_DURATION_MIN_S, rt_max_s].
+        The mean is scaled by self.rt_multiplier (1.0 unless an archetype
+        persona set a different value) - std is left unscaled, per spec."""
         stats = self.duration_stats.get(ai_action)
         if stats is None:
             # No fitted duration data - fall back to the midpoint of the bounds.
             return (_DURATION_MIN_S + rt_max_s) / 2.0
 
-        mean, std = stats["mean"], stats["std"]
+        mean, std = stats["mean"] * self.rt_multiplier, stats["std"]
         if not std:
             return float(np.clip(mean, _DURATION_MIN_S, rt_max_s))
 
@@ -264,3 +370,30 @@ if __name__ == "__main__":
         assert 5.0 <= d["duration_s"] <= 300.0, f"duration_s out of bounds: {d}"
 
     print("Smoke test passed")
+
+    print()
+    print("--- Persona archetype bias test ---")
+    archetype_bounds = [
+        ("high_trust", 0.75, 0.95),
+        ("skeptic", 0.25, 0.50),
+    ]
+    for persona_id, lo, hi in archetype_bounds:
+        s = MarkovSurrogateSC(model_path="data/sc_markov_model.json", persona=persona_id, seed=0)
+        assert s.persona == persona_id, f"persona was silently relabeled: got '{s.persona}', expected '{persona_id}'"
+
+        sess = s.generate_session(n_items=500)
+        human = [d for d in sess["decisions"] if d["actor_type"] == "human"]
+        accept_rate = sum(1 for d in human if d["correct"]) / len(human)
+
+        status = "OK" if lo < accept_rate < hi else "FAIL"
+        print(f"  {persona_id:<12} empirical accept rate = {accept_rate:.3f}  (expected {lo}-{hi})  [{status}]")
+        assert lo < accept_rate < hi, (
+            f"{persona_id}: empirical accept rate {accept_rate:.3f} outside expected ({lo}, {hi})"
+        )
+
+    unknown = MarkovSurrogateSC(model_path="data/sc_markov_model.json", persona="not_a_real_persona", seed=0)
+    assert unknown.persona == "aggregate", f"unknown persona should fall back to aggregate, got '{unknown.persona}'"
+    print(f"  unknown persona -> falls back to '{unknown.persona}' with a logged warning  [OK]")
+
+    print()
+    print("Persona archetype bias test passed")

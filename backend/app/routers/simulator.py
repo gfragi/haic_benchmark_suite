@@ -277,7 +277,70 @@ def _validate_probabilistic_request(request: SimulateProbabilisticRequest, ontol
     return fitted_model
 
 
-def _run_tier0_sync(request: SimulateProbabilisticRequest, db: Session) -> tuple[list[str], int]:
+def _compute_sc_weighted_baseline(model_path: str) -> float | None:
+    """
+    Weighted-mean 'no-AI baseline' approximation: sum over ai_action of
+    ai_action_frequency * duration_stats[ai_action].mean (ai_accept
+    contributes 0 - its frequency is always 0, see fit_markov_sc.py, so it
+    doesn't need special-casing here).
+
+    Same caveat as the identical formula in scripts/validate_surrogate.py:
+    this actually averages the WITH-AI operator review time, not a genuine
+    without-AI baseline - there's no real without-AI measurement in this
+    dataset. Treat it as a rough approximation, not ground truth.
+    """
+    try:
+        model = json.loads(Path(model_path).read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    agg = model.get("aggregate", {})
+    freq = agg.get("ai_action_frequency") or {}
+    stats = agg.get("duration_stats") or {}
+    total = 0.0
+    for ai_action, f in freq.items():
+        d = stats.get(ai_action)
+        if d and d.get("mean") is not None:
+            total += f * d["mean"]
+    return total if total > 0 else None
+
+
+def _resolve_baseline(request: SimulateProbabilisticRequest, fitted_model: str | None) -> tuple[float | None, list[str]]:
+    """
+    Resolve the baseline_s to thread through to evaluation, plus any
+    warnings about metrics that won't be computable as a result.
+
+    Priority: caller-supplied > Smart-City-tier-1 weighted-mean fallback
+    (the only domain with a fitted model today, so the only one this can
+    compute anything for) > none, with a warning noting EL will be null.
+    """
+    if request.baseline_s is not None:
+        return request.baseline_s, []
+    if request.domain == "smart_city" and request.surrogate_tier == 1:
+        baseline = _compute_sc_weighted_baseline(fitted_model or "data/sc_markov_model.json")
+        if baseline is not None:
+            return baseline, []
+    return None, [f"EL not computed: baseline_s not provided for domain {request.domain}"]
+
+
+def _apply_metric_meta(sessions: list[dict], rt_max_s: float, baseline_s: float | None) -> None:
+    """
+    Thread rt_max_s/baseline_s into each session's meta.task_parameters -
+    the existing per-session override channel _derive_rt_max()/
+    _derive_baseline_s() (backend/app/services/metrics_adapter.py) already
+    check ahead of P95 auto-derivation. Reusing that channel means the
+    evaluate endpoint itself needs no changes and non-surrogate uploads
+    are entirely unaffected.
+    """
+    for s in sessions:
+        tp = s.setdefault("meta", {}).setdefault("task_parameters", {})
+        tp["rt_max"] = rt_max_s
+        if baseline_s is not None:
+            tp["baseline_s"] = baseline_s
+
+
+def _run_tier0_sync(
+    request: SimulateProbabilisticRequest, baseline_s: float | None, db: Session,
+) -> tuple[list[str], int]:
     """Scripted (tier 0) path - same underlying mechanism as
     POST /simulator/simulate-and-ingest, inlined here (rather than called
     directly) so exact per-session decision counts can be reported back,
@@ -295,13 +358,17 @@ def _run_tier0_sync(request: SimulateProbabilisticRequest, db: Session) -> tuple
         ))
         run_ids.append(f"{stem}_{seed}")
 
+    _apply_metric_meta(sessions, request.rt_max_s, baseline_s)
+
     n_decisions = sum(len(s["decisions"]) for s in sessions)
     merged_bytes = json.dumps({"logs": sessions}, ensure_ascii=False).encode("utf-8")
     log_service.process_uploaded_log(request.configuration_id, sessions, f"{stem}.sim", merged_bytes, db)
     return run_ids, n_decisions
 
 
-def _run_tier1_sync(request: SimulateProbabilisticRequest, fitted_model: str, db: Session) -> tuple[list[str], int]:
+def _run_tier1_sync(
+    request: SimulateProbabilisticRequest, fitted_model: str, baseline_s: float | None, db: Session,
+) -> tuple[list[str], int]:
     """Markov-chain (tier 1) path: MarkovSurrogateSC.generate_batch() then
     ingest through the same process_uploaded_log() real uploads use."""
     from surrogate.markov_sc import MarkovSurrogateSC
@@ -327,6 +394,8 @@ def _run_tier1_sync(request: SimulateProbabilisticRequest, fitted_model: str, db
         s["pilot_tag"] = request.pilot_tag
         s["app_version"] = request.app_version
         s["ai_model_version"] = request.ai_model_version
+
+    _apply_metric_meta(sessions, request.rt_max_s, baseline_s)
 
     stem = f"markov_{request.domain}_{request.persona}"
     merged_bytes = json.dumps({"logs": sessions}, ensure_ascii=False).encode("utf-8")
@@ -367,12 +436,16 @@ async def simulate_probabilistic(
         http_error(501, "TIER_NOT_IMPLEMENTED",
                    f"Tier {request.surrogate_tier} surrogate is planned but not yet available.")
 
+    effective_baseline_s, warnings = _resolve_baseline(request, fitted_model)
+
     loop = asyncio.get_event_loop()
     try:
         if request.surrogate_tier == 0:
-            run_ids, n_decisions = await loop.run_in_executor(None, _run_tier0_sync, request, db)
+            run_ids, n_decisions = await loop.run_in_executor(None, _run_tier0_sync, request, effective_baseline_s, db)
         else:
-            run_ids, n_decisions = await loop.run_in_executor(None, _run_tier1_sync, request, fitted_model, db)
+            run_ids, n_decisions = await loop.run_in_executor(
+                None, _run_tier1_sync, request, fitted_model, effective_baseline_s, db,
+            )
     except HTTPException:
         raise
     except Exception as e:
@@ -391,4 +464,5 @@ async def simulate_probabilistic(
         persona=request.persona,
         run_ids=run_ids,
         pilot_tag=request.pilot_tag,
+        warnings=warnings,
     )

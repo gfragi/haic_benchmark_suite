@@ -58,6 +58,18 @@ class DecisionEvent(BaseModel):
     latency_ms: float | None = Field(None, ge=0)
     duration_s: float | None = Field(None, ge=0)
     correct: bool | None = None
+    # Pass-through for S (Surrogate Similarity) - models.DecisionEvent (the
+    # computation-facing model compute_metrics() actually reads) has always
+    # declared these, but this storage-facing model never did, so
+    # log_schema_to_session_log()'s DecisionEvent.model_validate(nd) call
+    # silently dropped them on every reload (both the upload-time preview
+    # and, critically, evaluate.py's _load_logs_from_minio(), which
+    # re-validates raw MinIO bytes through this same model on every
+    # evaluation run) - S came back None/no-warning-explained for any
+    # surrogate-generated data even though the surrogate always attached
+    # both fields.
+    surrogate_probs: dict[str, float] | None = None
+    surrogate_action: str | None = None
 
     @field_validator("timestamp", mode="before")
     @classmethod
