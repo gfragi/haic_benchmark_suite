@@ -13,6 +13,7 @@ import re
 from haic_env_builder.utils.simulation_runner import simulate_environment
 from app.models.api import SimulationEnvelope
 from app.models.configuration import EvaluationConfig
+from app.models.experiments import ExperimentModel, ExperimentRun
 from app.routers.evaluate import _safe_evaluate
 from app.routers.ontology import _load_ontology
 from app.schemas.ontology import SimulateProbabilisticRequest, SimulateProbabilisticResponse
@@ -404,6 +405,38 @@ def _run_tier1_sync(
     return run_ids, n_decisions
 
 
+def _link_experiment_model_status(db: Session, fitted_model_path: str | None) -> None:
+    """
+    Wires this run to the experiment feature (Step 1-3): the request has no
+    model_id field to check against experiment_models directly, so
+    fitted_model_path is used as the correlating field instead - it's the
+    one concrete value both sides actually share. Informational only: if
+    the path matches a still-'registered' experiment_models row (for a
+    non-cancelled experiment), bump it to 'fitted' as a marker that this
+    model's surrogate has now actually been exercised by a real run.
+    Never raises - a failure here must never affect the simulation result.
+    """
+    if not fitted_model_path:
+        return
+    try:
+        matched = (
+            db.query(ExperimentModel)
+            .join(ExperimentRun, ExperimentRun.id == ExperimentModel.experiment_id)
+            .filter(
+                ExperimentModel.fitted_model_path == fitted_model_path,
+                ExperimentModel.status == "registered",
+                ExperimentRun.status != "cancelled",
+            )
+            .all()
+        )
+        for m in matched:
+            m.status = "fitted"
+        if matched:
+            db.commit()
+    except Exception:
+        logger.warning("Could not update experiment_models status for fitted_model_path=%s", fitted_model_path, exc_info=True)
+
+
 @router.post(
     "/probabilistic",
     response_model=SimulateProbabilisticResponse,
@@ -458,6 +491,8 @@ async def simulate_probabilistic(
     for run_id in run_ids:
         ontology_service.record_usage(db, run_id, "domain", request.domain, "domain")
         ontology_service.record_usage(db, run_id, "persona_archetype", request.persona, "persona")
+
+    _link_experiment_model_status(db, request.fitted_model)
 
     background_tasks.add_task(_safe_evaluate, request.configuration_id)
 

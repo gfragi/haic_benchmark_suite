@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.experiments import ExperimentModel, ExperimentRun
+from app.models.experiments import ExperimentModel, ExperimentResult, ExperimentRun
 from app.schemas.experiments import ExperimentModelIn, ExperimentRunIn
 from app.utils.errors import http_error
 
@@ -67,3 +67,30 @@ def cancel_experiment(db: Session, experiment_id: UUID) -> ExperimentRun:
     db.commit()
     db.refresh(row)
     return row
+
+
+def get_model_row(db: Session, experiment_id: UUID, model_id: str) -> ExperimentModel:
+    row = (
+        db.query(ExperimentModel)
+        .filter(ExperimentModel.experiment_id == experiment_id, ExperimentModel.model_id == model_id)
+        .first()
+    )
+    if not row:
+        http_error(404, "MODEL_NOT_FOUND", f"Model '{model_id}' not registered in experiment {experiment_id}")
+    return row
+
+
+def get_all_models(db: Session, experiment_id: UUID) -> List[ExperimentModel]:
+    return db.query(ExperimentModel).filter(ExperimentModel.experiment_id == experiment_id).all()
+
+
+def get_target_models(db: Session, experiment_id: UUID) -> List[ExperimentModel]:
+    return (
+        db.query(ExperimentModel)
+        .filter(ExperimentModel.experiment_id == experiment_id, ExperimentModel.role == "target")
+        .all()
+    )
+
+
+def get_result_rows(db: Session, experiment_id: UUID) -> List[ExperimentResult]:
+    return db.query(ExperimentResult).filter(ExperimentResult.experiment_id == experiment_id).all()

@@ -130,6 +130,33 @@ class ExperimentDetail(ExperimentRunOut):
 
 class ExperimentCreateResponse(BaseModel):
     experiment_id: UUID
+    status: str
+
+
+class ExtractRequest(BaseModel):
+    model_id: str
+
+    class Config:
+        protected_namespaces = ()
+
+
+class PredictRequest(BaseModel):
+    target_model_id: Optional[str] = None
+
+
+class RevealRequest(BaseModel):
+    model_id: Optional[str] = None
+
+    class Config:
+        protected_namespaces = ()
+
+
+class CompareRequest(BaseModel):
+    model_a_id: Optional[str] = None
+    model_b_id: Optional[str] = None
+
+    class Config:
+        protected_namespaces = ()
 
 
 class ExperimentDeleteResponse(BaseModel):
