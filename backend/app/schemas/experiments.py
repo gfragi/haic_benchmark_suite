@@ -31,6 +31,13 @@ class ExperimentModelIn(BaseModel):
             raise ValueError(f"role must be one of {MODEL_ROLES}")
         return v
 
+    class Config:
+        # model_id/model_label collide with Pydantic v2's reserved "model_"
+        # attribute prefix (model_dump(), model_validate(), etc.) - this is
+        # just a naming collision warning, not an actual conflict, since
+        # these are real domain fields (an AI model's id/label).
+        protected_namespaces = ()
+
 
 class ExperimentModelOut(BaseModel):
     id: UUID
@@ -48,6 +55,7 @@ class ExperimentModelOut(BaseModel):
 
     class Config:
         from_attributes = True
+        protected_namespaces = ()
 
 
 class ExperimentResultOut(BaseModel):
@@ -89,6 +97,7 @@ class ExperimentResultOut(BaseModel):
 
     class Config:
         from_attributes = True
+        protected_namespaces = ()
 
 
 class ExperimentRunOut(BaseModel):
@@ -107,6 +116,7 @@ class ExperimentRunOut(BaseModel):
 
     class Config:
         from_attributes = True
+        protected_namespaces = ()
 
 
 class ExperimentSummary(ExperimentRunOut):
