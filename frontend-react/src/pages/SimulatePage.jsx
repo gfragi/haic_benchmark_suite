@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { PlayCircle, Loader2, CheckCircle2, AlertTriangle, ChevronRight, Info, Wand2, FileText, GitBranch } from 'lucide-react'
+import { PlayCircle, Loader2, CheckCircle2, AlertTriangle, ChevronRight, Info, Wand2, FileText, GitBranch, GitCompare } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
 import ScenarioEditor from '../components/ScenarioEditor'
 import ProbabilisticRunForm from '../components/simulate/ProbabilisticRunForm'
+import MultiModelExperiment from '../components/simulate/MultiModelExperiment'
 
 function basenameNoExt(path) {
   const file = path.split('/').pop() || path
@@ -16,7 +17,7 @@ export default function SimulatePage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [tab, setTab] = useState('run') // 'run' | 'build'
-  const [mode, setMode] = useState('scripted') // 'scripted' | 'probabilistic'
+  const [mode, setMode] = useState('scripted') // 'scripted' | 'probabilistic' | 'multimodel'
 
   const { data: curated, isLoading: curatedLoading } = useQuery({
     queryKey: ['simulate-scenarios'],
@@ -108,6 +109,7 @@ export default function SimulatePage() {
         <h1 className="text-lg font-semibold text-gray-900">Simulate</h1>
       </div>
 
+      {mode !== 'multimodel' && (
       <div className={clsx(
         'flex items-start gap-2 rounded-lg border px-4 py-3 text-sm',
         mode === 'scripted' ? 'border-amber-200 bg-amber-50 text-amber-800' : 'border-[#2E7D7B]/30 bg-[#E8F5F4] text-gray-700',
@@ -130,6 +132,7 @@ export default function SimulatePage() {
           </p>
         )}
       </div>
+      )}
 
       <div className="flex gap-1 border-b border-gray-200">
         <button
@@ -162,7 +165,7 @@ export default function SimulatePage() {
         <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1.5">Simulation mode</label>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <button
                 type="button"
                 onClick={() => setMode('scripted')}
@@ -203,6 +206,24 @@ export default function SimulatePage() {
                   Recommended &middot; Requires fitted model
                 </span>
                 <p className="mt-1.5 text-[10px] text-gray-400">SC pilot: validated on 566 sessions</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setMode('multimodel')}
+                className={clsx(
+                  'rounded-lg border p-3.5 text-left transition-colors',
+                  mode === 'multimodel' ? 'border-gray-300 bg-white shadow-sm' : 'border-gray-200 bg-gray-50 hover:border-gray-300',
+                )}
+              >
+                <div className="mb-1.5 flex items-center gap-2">
+                  <GitCompare size={16} className="text-gray-500" />
+                  <p className="text-sm font-bold text-gray-900">Multi-model experiment</p>
+                </div>
+                <p className="text-xs text-gray-500">Blind-predict, then reveal and compare a source model's surrogate against one or more target models.</p>
+                <span className="mt-2 inline-block rounded-full border border-gray-200 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                  Advanced &middot; Cross-model comparison
+                </span>
               </button>
             </div>
           </div>
@@ -248,6 +269,7 @@ export default function SimulatePage() {
           </div>
           )}
 
+          {mode !== 'multimodel' && (
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Target configuration</label>
             {configsLoading && (
@@ -273,6 +295,9 @@ export default function SimulatePage() {
               Need a new one? Create it on the Evaluations page <ChevronRight size={12} />
             </Link>
           </div>
+          )}
+
+          {mode === 'multimodel' && <MultiModelExperiment />}
 
           {mode === 'probabilistic' && (
             <ProbabilisticRunForm

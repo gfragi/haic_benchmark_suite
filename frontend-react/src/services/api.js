@@ -227,6 +227,30 @@ export const api = {
       }),
   },
 
+  experiments: {
+    create: (body) => request('/experiments', { method: 'POST', body: JSON.stringify(body) }),
+    registerModel: (experimentId, body) =>
+      request(`/experiments/${experimentId}/models`, { method: 'POST', body: JSON.stringify(body) }),
+    get: (experimentId) => request(`/experiments/${experimentId}`),
+    extract: (experimentId, modelId) =>
+      request(`/experiments/${experimentId}/run/extract`, { method: 'POST', body: JSON.stringify({ model_id: modelId }) }),
+    predict: (experimentId, targetModelId) =>
+      request(`/experiments/${experimentId}/run/predict`, {
+        method: 'POST', body: JSON.stringify(targetModelId ? { target_model_id: targetModelId } : {}),
+      }),
+    reveal: (experimentId, modelId) =>
+      request(`/experiments/${experimentId}/run/reveal`, {
+        method: 'POST', body: JSON.stringify(modelId ? { model_id: modelId } : {}),
+      }),
+    compare: (experimentId, modelAId, modelBId) =>
+      request(`/experiments/${experimentId}/run/compare`, {
+        method: 'POST',
+        body: JSON.stringify(modelAId && modelBId ? { model_a_id: modelAId, model_b_id: modelBId } : {}),
+      }),
+    results: (experimentId) => request(`/experiments/${experimentId}/results`),
+    resultsExport: (experimentId) => request(`/experiments/${experimentId}/results/export`),
+  },
+
   health: () => fetch('/meta/health').then((r) => {
     if (!r.ok) throw new Error(`HTTP ${r.status}`)
     return r.json()
