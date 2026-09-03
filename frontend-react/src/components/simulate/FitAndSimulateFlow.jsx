@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { Upload, CheckCircle2, AlertTriangle, Loader2, ChevronRight, ChevronLeft } from 'lucide-react'
+import { Upload, CheckCircle2, AlertTriangle, Loader2, ChevronRight, ChevronLeft, Settings2, GitBranch, PlayCircle } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../../services/api'
 
@@ -15,6 +15,13 @@ import { api } from '../../services/api'
 const AI_ACTION_FIELD = 'payload.ai_decision'
 const HUMAN_ACTION_FIELD = 'payload.op_decision'
 const FIT_MODEL_MIN_VALID = 10
+
+// Pure orientation content for Stage 1 - not interactive.
+const NEXT_STEPS = [
+  { step: '2', icon: Settings2, title: 'Map fields', desc: 'Point us to your AI action, human action, and response time fields' },
+  { step: '3', icon: GitBranch, title: 'Fit model', desc: 'We estimate a Markov chain from your data' },
+  { step: '→', icon: PlayCircle, title: 'Simulate', desc: 'Generate sessions with your fitted surrogate' },
+]
 
 const INPUT = 'w-full rounded-md border border-gray-200 px-2.5 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300'
 const LABEL = 'mb-1 block text-xs font-medium text-gray-600'
@@ -165,6 +172,23 @@ function UploadStage({ onContinue }) {
           ref={inputRef} type="file" accept="application/json,.json" className="hidden"
           onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) processFile(f) }}
         />
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 rounded-md border border-gray-100 bg-gray-50 p-3 sm:grid-cols-3">
+        <p className="col-span-full text-[11px] font-semibold uppercase tracking-wide text-gray-400">What happens next</p>
+        {NEXT_STEPS.map((s) => (
+          <div key={s.title} className="flex items-start gap-2">
+            <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-[10px] font-semibold text-gray-500">
+              {s.step}
+            </div>
+            <div>
+              <p className="flex items-center gap-1 text-xs font-medium text-gray-600">
+                <s.icon size={12} className="text-gray-400" /> {s.title}
+              </p>
+              <p className="mt-0.5 text-[11px] text-gray-400">{s.desc}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
       {error && (

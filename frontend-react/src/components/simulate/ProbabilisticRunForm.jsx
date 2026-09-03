@@ -7,12 +7,54 @@ import { api } from '../../services/api'
 import InfoTooltip from './InfoTooltip'
 import FitAndSimulateFlow from './FitAndSimulateFlow'
 
-const TIER_BADGE = {
-  0: 'bg-gray-100 text-gray-600',
-  1: 'bg-green-100 text-green-700',
-  2: 'bg-amber-100 text-amber-700',
-  3: 'bg-amber-100 text-amber-700',
+function tierBadgeClass(surrogateTier, planned) {
+  if (planned) return 'border border-amber-300 bg-white text-amber-700'
+  if (surrogateTier === 1) return 'bg-[#2E7D7B] text-white'
+  return 'border border-gray-300 bg-white text-gray-600'
 }
+
+// Only the seeded SC pilot template has the validated-566-sessions
+// provenance - any other tier-1 template was produced via the Bring Your
+// Own Data fit-model flow, so it's a "custom fit," not (yet) independently
+// validated the way SC's is.
+function templateProvenance(t) {
+  if (t.surrogate_tier === 1) {
+    return t.id === 'sc_permit_review' ? 'Fitted on 566 sessions · 5 operators' : 'Custom fit · Markov chain'
+  }
+  if (t.surrogate_tier === 0) return 'No fitted model · upload your data to enable Markov'
+  return null
+}
+
+// Hardcoded empirical persona preview values (not from the API) - see
+// Change 3 in the UX task this came from. aggregate/high_trust/skeptic/
+// expert/novice accept rates mirror the ontology's accept_bias fields
+// rounded to the values the task specified; from_data has no fixed number
+// since it's fitted per-upload.
+const PERSONA_PREVIEW = {
+  aggregate: { rate: 62, speed: 'From data', desc: 'Average of all real SC operators' },
+  high_trust: { rate: 85, speed: '10% faster', desc: 'Tends to follow AI closely' },
+  skeptic: { rate: 35, speed: '20% slower', desc: 'Frequently overrides AI' },
+  expert: { rate: 65, speed: '30% faster', desc: 'Fast, calibrated reliance' },
+  novice: { rate: 60, speed: '40% slower', desc: 'Higher cognitive load' },
+  from_data: { rate: null, rateLabel: 'From your data', speed: 'Varies', desc: 'Fitted from pilot logs' },
+}
+
+function accentColorForRate(rate) {
+  if (rate == null) return '#9CA3AF'
+  if (rate > 70) return '#2E7D7B'
+  if (rate >= 50) return '#B86E00'
+  return '#8B0000'
+}
+
+// Empirical validation results from scripts/validate_surrogate.py's last
+// run against the real SC pilot data - hardcoded constants, not live
+// computed values, and only meaningful for the one domain they were
+// measured on.
+const SC_FIDELITY_ROWS = [
+  { metric: 'HCL', surrogate: '0.650', real: '0.648', status: 'ok', note: '<1% error' },
+  { metric: 'F', surrogate: '0.801', real: '0.797', status: 'ok', note: '<1% error' },
+  { metric: 'Tr', surrogate: '0.616', real: '0.701', status: 'gap', note: '12% gap — characterised' },
+]
 
 function formatRange(range, higherIs) {
   let r
@@ -56,6 +98,7 @@ export default function ProbabilisticRunForm({ configurationId, onSuccess }) {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState(null)
   const [result, setResult] = useState(null)
+  const [fidelityInfoOpen, setFidelityInfoOpen] = useState(false)
 
   if (isLoading) {
     return (
@@ -246,12 +289,20 @@ export default function ProbabilisticRunForm({ configurationId, onSuccess }) {
                     <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
                       {domainsById[t.domain]?.label || t.domain}
                     </span>
-                    <span className={clsx('rounded px-1.5 py-0.5 text-[10px] font-medium', TIER_BADGE[t.surrogate_tier])}>
-                      {tier?.label || `Tier ${t.surrogate_tier}`}{planned && ' · planned'}
+                    <span className={clsx('rounded-full px-1.5 py-0.5 text-[10px] font-medium', tierBadgeClass(t.surrogate_tier, planned))}>
+                      {planned && '⏳ '}{tier?.label || `Tier ${t.surrogate_tier}`}
                     </span>
                   </div>
                   <p className="text-sm font-semibold text-gray-800">{t.label}</p>
                   <p className="mt-0.5 text-xs text-gray-500">{t.description}</p>
+                  {templateProvenance(t) && (
+                    <p className={clsx(
+                      'mt-1 text-[10px] font-medium',
+                      t.surrogate_tier === 1 ? 'text-[#2E7D7B]/80' : 'text-gray-400',
+                    )}>
+                      {templateProvenance(t)}
+                    </p>
+                  )}
                 </button>
               )
             })}
@@ -309,18 +360,56 @@ export default function ProbabilisticRunForm({ configurationId, onSuccess }) {
           </div>
 
           <div>
-            <label className={LABEL}>Persona</label>
+            <div className="mb-1 flex items-center gap-1">
+              <label className="text-xs font-medium text-gray-600">Persona</label>
+              <InfoTooltip
+                label="Persona"
+                description="Personas rescale the same aggregate Markov fit toward each archetype's accept_bias and rt_multiplier - they aren't separately fitted data. A higher accept rate moves Tr up directly; the speed multiplier shifts HCL and EL."
+              />
+            </div>
             <select value={persona} onChange={(e) => setPersona(e.target.value)} className={INPUT}>
               {(ontology.persona_archetypes ?? []).map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
             </select>
             {personasById[persona]?.description && (
               <p className="mt-1 text-xs text-gray-400">{personasById[persona].description}</p>
             )}
+            {PERSONA_PREVIEW[persona] && (
+              <div className="mt-2 space-y-1.5 rounded-md bg-gray-50 p-2.5 text-xs">
+                <p className="font-medium text-gray-700">{personasById[persona]?.label || persona}</p>
+                <div className="flex items-center gap-2">
+                  <span className="w-16 flex-shrink-0 text-gray-400">Accept rate</span>
+                  {PERSONA_PREVIEW[persona].rate != null ? (
+                    <>
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-200">
+                        <div
+                          className="h-2 rounded-full transition-all"
+                          style={{
+                            width: `${PERSONA_PREVIEW[persona].rate}%`,
+                            backgroundColor: accentColorForRate(PERSONA_PREVIEW[persona].rate),
+                          }}
+                        />
+                      </div>
+                      <span className="w-9 flex-shrink-0 text-right font-medium text-gray-700">{PERSONA_PREVIEW[persona].rate}%</span>
+                    </>
+                  ) : (
+                    <span className="font-medium text-gray-700">{PERSONA_PREVIEW[persona].rateLabel}</span>
+                  )}
+                </div>
+                <p className="text-gray-500"><span className="w-16 inline-block text-gray-400">Speed</span> {PERSONA_PREVIEW[persona].speed}</p>
+                <p className="text-gray-500">{PERSONA_PREVIEW[persona].desc}</p>
+              </div>
+            )}
           </div>
 
           {surrogateTier >= 1 && (
             <div>
-              <label className={LABEL}>Fitted model path</label>
+              <div className="mb-1 flex items-center gap-1">
+                <label className="text-xs font-medium text-gray-600">Fitted model path</label>
+                <InfoTooltip
+                  label="Fitted model path"
+                  description="A server-side path to a haic.markov_model.v1 JSON file, produced by scripts/fit_markov.py or the Bring Your Own Data wizard. Only used for the Markov chain tier. Leave blank to use the selected domain's own registered model - if it has none, generation fails until you provide one. Currently available: data/sc_markov_model.json (the validated SC pilot fit), plus any data/<domain>_markov_model.json you've fitted via Bring Your Own Data."
+                />
+              </div>
               <input
                 type="text" value={fittedModel} onChange={(e) => setFittedModel(e.target.value)}
                 placeholder={domainsById[domain]?.fitted_model || 'none for this domain yet'}
@@ -399,6 +488,39 @@ export default function ProbabilisticRunForm({ configurationId, onSuccess }) {
             <p>&bull; Metrics: {metrics.join(', ') || 'none selected'}</p>
             <p>&bull; Estimated runtime: ~{runtimeEstimateS}s</p>
           </div>
+
+          {domain === 'smart_city' && (
+            <div className="rounded-md border-l-4 border-[#2E7D7B] bg-[#E8F5F4] p-3 text-xs">
+              <p className="mb-1.5 font-bold text-[#2E7D7B]">Surrogate fidelity (SC pilot)</p>
+              <div className="space-y-1">
+                {SC_FIDELITY_ROWS.map((row) => (
+                  <div key={row.metric} className="grid grid-cols-[2rem_1fr_auto] items-center gap-1.5 text-gray-700">
+                    <span className="font-mono font-medium">{row.metric}</span>
+                    <span>{row.surrogate} &asymp; real ({row.real})</span>
+                    <span className={row.status === 'ok' ? 'text-[#2E7D7B]' : 'text-amber-600'}>
+                      {row.status === 'ok' ? '✓' : '⚠'} {row.note}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="relative mt-2 inline-block">
+                <button
+                  type="button"
+                  onClick={() => setFidelityInfoOpen((o) => !o)}
+                  className="text-[11px] font-medium text-[#2E7D7B] underline hover:text-[#235f5e]"
+                >
+                  What does this mean? &rarr;
+                </button>
+                {fidelityInfoOpen && (
+                  <div className="absolute left-0 top-full z-20 mt-1.5 w-56 rounded-md border border-gray-200 bg-white p-2.5 text-left text-[11px] font-normal text-gray-600 shadow-lg">
+                    The ~12% Tr gap is caused by sparse data in one AI action category (n=32), not a
+                    modelling error. It is documented and expected.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <button
             onClick={handleExport}
             className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"

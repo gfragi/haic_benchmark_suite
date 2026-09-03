@@ -6,7 +6,7 @@ from fastapi import FastAPI, APIRouter, Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from app.routers import logs, configuration, evaluate, log_generator, meta, polled_sources
-from app.routers import fairness, env_builder, simulator, results, survey, survey_schema, env_catalog, analytics, reporting, collab, interpret, adapters, pilot, ontology
+from app.routers import fairness, env_builder, simulator, results, survey, survey_schema, env_catalog, analytics, reporting, collab, interpret, adapters, pilot, ontology, experiments
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.seed_core_metrics import seed_core_definitions
 from app.services.log_polling_service import poll_due_sources
@@ -83,6 +83,7 @@ api.include_router(env_catalog.router,   prefix="/envs", tags=["Environment Cata
 api.include_router(interpret.router,     prefix="",           tags=["Interpretation"])
 api.include_router(adapters.router,      prefix="/adapters",   tags=["Adapters"])
 api.include_router(pilot.router,         prefix="/pilot",       tags=["Pilot"])
+api.include_router(experiments.router,   prefix="/experiments", tags=["Experiments"])
 
 app.include_router(meta.router,           prefix="/meta", tags=["Meta"])
 
