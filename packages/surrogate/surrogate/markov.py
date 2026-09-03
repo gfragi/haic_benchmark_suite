@@ -185,11 +185,13 @@ class MarkovSurrogate:
         total = sum(smoothed.values())
         return {op: v / total for op, v in smoothed.items()}
 
-    def _sample_ai_action(self) -> str:
-        """Sample an AI action from the model's empirical frequency
-        distribution. Actions with zero frequency are never drawn."""
-        actions = [a for a, p in self.ai_freq.items() if p > 0]
-        weights = [self.ai_freq[a] for a in actions]
+    def _sample_ai_action(self, ai_freq: dict[str, float] | None = None) -> str:
+        """Sample an AI action from the given frequency distribution
+        (defaults to self.ai_freq - see generate_session's ai_freq_override).
+        Actions with zero frequency are never drawn."""
+        freq = ai_freq if ai_freq is not None else self.ai_freq
+        actions = [a for a, p in freq.items() if p > 0]
+        weights = [freq[a] for a in actions]
         weights = np.array(weights) / sum(weights)
         return str(np.random.choice(actions, p=weights))
 
@@ -234,10 +236,26 @@ class MarkovSurrogate:
         rt_max_s: float = 300.0,
         baseline_s: float | None = None,
         ai_latency_ms: float = 45000.0,
+        ai_freq_override: dict[str, float] | None = None,
     ) -> dict[str, Any]:
         """Generate one complete surrogate session as a decisions artifact
         (haic.decisions_artifact.v1) - n_items interactions, each producing
-        an AI event followed by a human (operator) event."""
+        an AI event followed by a human (operator) event.
+
+        ai_freq_override: sample AI actions from this distribution instead
+        of self.ai_freq (the model's own fitted frequency) - used by the
+        experiment engine to run a source model's fitted transition/duration
+        behavior against a *different* model's AI action frequency, to
+        predict what that other model's HAIC metrics would look like.
+        Everything else (transition matrix, duration stats, persona bias)
+        still comes from this instance. Must sum to ~1.0 (checked to within
+        0.001) - it's a probability distribution, not raw counts.
+        """
+        if ai_freq_override is not None:
+            total = sum(ai_freq_override.values())
+            if abs(total - 1.0) > 0.001:
+                raise ValueError(f"ai_freq_override must sum to ~1.0, got {total}")
+
         np.random.seed(self.seed)
 
         decisions: list[dict[str, Any]] = []
@@ -246,7 +264,7 @@ class MarkovSurrogate:
         for i in range(n_items):
             interaction_id = f"SIM_{i + 1:04d}"
 
-            ai_action = self._sample_ai_action()
+            ai_action = self._sample_ai_action(ai_freq_override)
             decisions.append({
                 "interaction_id": interaction_id,
                 "actor_type": "ai",
@@ -310,7 +328,8 @@ class MarkovSurrogate:
     def generate_batch(self, n_sessions: int = 10, n_items: int = 10, **kwargs) -> list[dict[str, Any]]:
         """
         Generate n_sessions surrogate sessions, each with an incrementing
-        seed for reproducibility.
+        seed for reproducibility. kwargs (including ai_freq_override) are
+        forwarded to generate_session() unchanged for every session.
         """
         base_seed = self.seed
         sessions = []
