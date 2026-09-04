@@ -6,6 +6,58 @@
 
 export const RELEASES = [
   {
+    version: 'v3.0',
+    date: '2026-09-04',
+    backend: [
+      'Added the blind-prediction multi-model experiment methodology: extract a target model\'s AI-action frequency only (operator responses stay untouched), predict its HAIC metrics using a source model\'s fitted surrogate, seal the predictions with a timestamp before any real data is used, then reveal the target\'s real operator log and compare — with cross-model surrogate similarity (S) and three hypothesis verdicts (H1 frequency transfer, H2 matrix stability, H3 regime decomposition).',
+      'Added `experiment_runs`, `experiment_models`, and `experiment_results` tables, and a standalone `HAICExperimentEngine` package with no dependency on the backend app, so the same engine can run outside the API.',
+      'Added the full `/experiments` REST surface: create an experiment, register models (by path or direct log upload), extract, predict, reveal, compare, and an assembled results report with a JSON export. Predictions are enforced immutable once sealed — re-predicting an already-sealed model returns 409.',
+    ],
+    frontend: [
+      'Added a third "Multi-model experiment" mode to the Simulate page: a 3-panel stepper (setup → blind predict → reveal & compare) with per-model extraction status chips, a prominently displayed seal timestamp as the experiment\'s scientific-integrity marker, and a predicted-vs-real comparison table with hypothesis verdicts, exportable as JSON.',
+    ],
+  },
+  {
+    version: 'v2.4',
+    date: '2026-09-03',
+    backend: [
+      'Migrated the ontology from a static JSON file to Postgres (`ontology_entities`, `scenario_entity_usage`), with full CRUD (`GET/POST/PUT/DELETE /ontology/{entity_type}[/{entity_id}]`), soft-delete only (deprecate, never hard-delete), and per-entity usage tracking recorded automatically on every probabilistic run.',
+      'Replaced the Smart-City-only `MarkovSurrogateSC` with a domain-agnostic `MarkovSurrogate` — all action vocabulary now comes from the fitted model file, not hardcoded Python constants.',
+      'Added `scripts/fit_markov.py`, a generic Markov-model fitter for any HAIC-format log (configurable field mappings, not hardcoded to the Smart City pilot), and `POST /ontology/fit-model` — upload an interaction log, auto-discover its action vocabulary, and get a fitted surrogate plus a new domain/template registered in the ontology, ready to simulate from immediately.',
+    ],
+    frontend: [
+      'Added a "Bring your own data" flow inside Probabilistic mode: a 3-stage wizard (upload → map fields → fit & simulate) with a live field-mapping preview before anything is submitted.',
+      'Simulate page redesigned to surface the platform\'s research grounding: mode cards explaining Scripted vs. Probabilistic, template provenance ("Fitted on 566 sessions · 5 operators" vs. "Custom fit"), a persona accept-rate visualization, and a fidelity callout (predicted vs. real Tr/HCL/F) shown for the validated Smart City domain.',
+    ],
+  },
+  {
+    version: 'v2.3',
+    date: '2026-09-02',
+    backend: [
+      'Added `MarkovSurrogateSC`, a first-order Markov surrogate fitted from the real 566-session Smart City pilot log — samples AI/operator decision sequences and response times from the real fitted transition matrix and duration stats, not a scripted replay.',
+      'Added the HAIC ontology (`data/haic_ontology.json`): domains, action types, agent roles, persona archetypes, surrogate tiers, metric families, and scenario templates, plus a JSON scenario schema.',
+      'Added `POST /simulator/probabilistic` (Tier 0 scripted / Tier 1 Markov chain), with persona archetypes (accept-bias and response-time bias applied on top of the aggregate fit) and automatic baseline resolution for Effort Loss.',
+      'Validated the surrogate against the real pilot data it was fitted from: HCL and F land within 1% of real; Tr is ~12% low, traced to sparse data in one AI-action category (n=32) rather than a modelling error.',
+    ],
+    frontend: [
+      'Added a "Probabilistic" mode to the Simulate page\'s Run tab, alongside the existing Scripted mode: template tiles, an ontology-driven configuration form (domain, tier, persona, metrics), a live preview, and scenario JSON export/import.',
+    ],
+  },
+  {
+    version: 'v2.2',
+    date: '2026-08-31',
+    backend: [
+      'Added `POST /simulator/simulate-and-ingest` — runs a curated scenario N times via `simulate_environment()`, translates each run into the standard session-log format through a new `sim_bridge` service, and ingests it into a configuration through the same pipeline real pilot uploads use.',
+      'Added `GET /simulator/scenarios` — a curated, verified-runnable subset of the bundled scenario configs.',
+      'Added scenario-authoring endpoints backing the new "Build Scenario" tab.',
+      'Fixed project-root detection for config resolution inside the deployed container, where the `backend/` wrapper directory doesn\'t exist.',
+    ],
+    frontend: [
+      'Added a `/simulate` page: a "Run" tab (pick a scenario, target configuration, and run count; generate & ingest) and a "Build Scenario" tab (define custom scenarios — agents, scripted steps, timings, outcomes — from scratch).',
+      'Ingested synthetic sessions evaluate through the same dashboard as real pilot data.',
+    ],
+  },
+  {
     version: 'v2.1.3',
     date: '2026-07-23',
     backend: [
