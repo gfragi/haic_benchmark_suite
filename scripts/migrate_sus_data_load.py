@@ -10,25 +10,22 @@ validation and gives a clean per-row error instead of a raw SQL failure.
 configuration_id is a plain autoincrement int (not portable across
 environments as-is) - CONFIG_ID_MAP below remaps it per row before POSTing.
 
-WHERE TO RUN THIS: inside the PROD backend pod, since that's the access
-you have (kubectl exec) and it already has python3 and a live connection to
-its own API on localhost - no port-forward, no ingress URL, no networking
-questions.
+WHERE TO RUN THIS: your own machine, or anywhere with network access to
+prod's API - prod is directly reachable, so no kubectl/pod-exec needed for
+this step (or the extract step, now that GET /survey/export exists).
 
-  kubectl cp surveys_dev_export.json <prod-ns>/<prod-backend-pod>:/tmp/surveys_dev_export.json
-  kubectl cp scripts/migrate_sus_data_load.py <prod-ns>/<prod-backend-pod>:/tmp/migrate_sus_data_load.py
-  kubectl exec -n <prod-ns> <prod-backend-pod> -- python3 /tmp/migrate_sus_data_load.py --dry-run
-  kubectl exec -n <prod-ns> <prod-backend-pod> -- python3 /tmp/migrate_sus_data_load.py
+  python3 scripts/migrate_sus_data_extract.sh https://dev-api.example.org
+  python3 scripts/migrate_sus_data_load.py https://prod-api.example.org --dry-run
+  python3 scripts/migrate_sus_data_load.py https://prod-api.example.org
 
-Stdlib only (json/urllib) - nothing to install in the pod.
+Stdlib only (json/urllib) - nothing to install.
 """
 import json
 import sys
 import urllib.error
 import urllib.request
 
-API_BASE = "http://localhost:8000/api/v1"  # same pod as the API - loopback
-EXPORT_FILE = "/tmp/surveys_dev_export.json"
+EXPORT_FILE = "surveys_dev_export.json"
 
 # ---- TODO: fill this in --------------------------------------------------
 # dev configuration_id -> prod configuration_id. Every dev id present in
@@ -47,7 +44,9 @@ UNMAPPED_ACTION = "null"
 # schema_id links to survey_question_sets. Only carry it across if that
 # same schema_id already exists in prod's survey_question_sets - otherwise
 # the submission fails schema validation. Default: drop it (submit as
-# null), since the raw SUS/ethics answers don't depend on it.
+# null), since the raw SUS/ethics answers don't depend on it. Note:
+# schema_id has no DB-level foreign key (see backend/app/models/survey.py) -
+# the risk is app-level validation at POST time, not a constraint violation.
 DROP_SCHEMA_ID = True
 
 
@@ -63,13 +62,13 @@ def remap_config_id(dev_id):
     raise SystemExit(f"Unmapped configuration_id {dev_id} and UNMAPPED_ACTION='fail' - aborting.")
 
 
-def post_survey(payload):
+def post_survey(api_base, payload):
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
-        f"{API_BASE}/survey", data=data, headers={"Content-Type": "application/json"}, method="POST",
+        f"{api_base.rstrip('/')}/survey", data=data, headers={"Content-Type": "application/json"}, method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=10) as r:
+        with urllib.request.urlopen(req, timeout=15) as r:
             return True, json.loads(r.read())
     except urllib.error.HTTPError as e:
         return False, e.read().decode("utf-8", errors="replace")
@@ -78,6 +77,10 @@ def post_survey(payload):
 
 
 def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    if not args:
+        raise SystemExit(f"Usage: {sys.argv[0]} <prod-api-base-url, e.g. https://prod-api.example.org/api/v1> [--dry-run]")
+    api_base = args[0]
     dry_run = "--dry-run" in sys.argv
 
     with open(EXPORT_FILE) as f:
@@ -110,7 +113,7 @@ def main():
             ok += 1
             continue
 
-        success, result = post_survey(payload)
+        success, result = post_survey(api_base, payload)
         if success:
             ok += 1
         else:
