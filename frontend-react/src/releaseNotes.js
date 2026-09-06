@@ -6,6 +6,16 @@
 
 export const RELEASES = [
   {
+    version: 'v2.1.4',
+    date: '2026-09-06',
+    backend: [
+      'Added `GET /survey/export` — a full-fidelity, row-per-submission export that includes `survey_id`, `configuration_id`, and `schema_id` (the existing `/raw` export deliberately flattens those away for its analytics-only shape). Each row is shaped to be POSTed back as-is to `POST /survey` on another environment.',
+      'Added `GET /survey/pilots` — an overview of every `pilot_tag` with survey data: response count, a per-`app_version` breakdown, and first/last submission timestamps. Every other pilot-scoped survey endpoint requires already knowing the pilot_tag; this is the discovery step before that.',
+      'Added `scripts/migrate_sus_data_extract.sh` / `migrate_sus_data_load.py` — a two-step, API-based flow for migrating survey (SUS/Ethics) data between environments: export via `GET /survey/export`, then re-submit each row through `POST /survey` on the target, with per-row `configuration_id` remapping since that id isn\'t portable across environments.',
+    ],
+    frontend: [],
+  },
+  {
     version: 'v2.1.3',
     date: '2026-07-23',
     backend: [
