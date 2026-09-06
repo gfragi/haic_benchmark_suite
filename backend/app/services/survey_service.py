@@ -34,6 +34,41 @@ def create_survey(db: Session, survey_data: SurveyCreate):
     return db_survey
 
 
+def list_pilots_overview(db: Session) -> List[Dict[str, Any]]:
+    """
+    One row per distinct pilot_tag: total response count, a per-app_version
+    breakdown, and first/last submission timestamps. Every other
+    pilot-scoped endpoint (aggregate/summary/raw/export/...) requires
+    already knowing the pilot_tag - this is the discovery step before that,
+    e.g. to see what's actually there before an export/migration.
+    """
+    surveys = db.query(Survey).order_by(Survey.timestamp).all()
+
+    by_pilot: Dict[str, List[Survey]] = {}
+    for s in surveys:
+        by_pilot.setdefault(s.pilot_tag, []).append(s)
+
+    out = []
+    for pilot_tag, rows in sorted(by_pilot.items()):
+        by_version: Dict[str, int] = {}
+        for r in rows:
+            key = r.app_version or "Unknown"
+            by_version[key] = by_version.get(key, 0) + 1
+        timestamps = [r.timestamp for r in rows if r.timestamp]
+
+        out.append({
+            "pilot_tag": pilot_tag,
+            "response_count": len(rows),
+            "versions": [
+                {"app_version": v, "response_count": c}
+                for v, c in sorted(by_version.items(), key=lambda kv: -kv[1])
+            ],
+            "first_response_at": min(timestamps).isoformat() if timestamps else None,
+            "last_response_at": max(timestamps).isoformat() if timestamps else None,
+        })
+    return out
+
+
 def calculate_sus_score(sus: dict) -> float:
     total = 0
     for i in range(1, 11):

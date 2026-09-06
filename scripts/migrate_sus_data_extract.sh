@@ -18,15 +18,22 @@
 #
 #   ./scripts/migrate_sus_data_extract.sh https://dev-api.example.org
 #
-# Optionally restrict to one pilot: add ?pilot_tag=... to DEV_API_BASE, or
-# just edit the curl line below.
+# Optionally restrict to one pilot (matches GET /survey/export's own
+# pilot_tag query param - same convention as /raw, /aggregate, /comments):
+#   ./scripts/migrate_sus_data_extract.sh https://dev-api.example.org radiology_demo
 
 set -euo pipefail
 
-DEV_API_BASE="${1:?Usage: $0 <dev-api-base-url, e.g. https://dev-api.example.org/api/v1>}"
+DEV_API_BASE="${1:?Usage: $0 <dev-api-base-url, e.g. https://dev-api.example.org/api/v1> [pilot_tag]}"
+PILOT_TAG="${2:-}"
 OUT_FILE="surveys_dev_export.json"
 
-curl -sf "${DEV_API_BASE%/}/survey/export" -o "$OUT_FILE"
+URL="${DEV_API_BASE%/}/survey/export"
+if [[ -n "$PILOT_TAG" ]]; then
+  URL="${URL}?pilot_tag=${PILOT_TAG}"
+fi
+
+curl -sf "$URL" -o "$OUT_FILE"
 
 count=$(python3 -c "import json; print(len(json.load(open('$OUT_FILE'))))")
 echo "Wrote $count rows to $OUT_FILE"
