@@ -14,6 +14,7 @@ from app.services.survey_service import (
     list_comments,
     raw_survey_responses,
     full_survey_export,
+    list_pilots_overview,
 )
 
 router = APIRouter()
@@ -25,6 +26,20 @@ async def submit_survey(survey: SurveyCreate, db: Session = Depends(get_db)):
         return {"status": "success", "message": "Survey response saved", "survey_id": db_survey.survey_id}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.get(
+    "/pilots",
+    summary="Overview of which pilots have survey data",
+    description=(
+        "One row per distinct pilot_tag - total response count, a "
+        "per-app_version breakdown, and first/last submission timestamps. "
+        "Every other pilot-scoped endpoint (aggregate/summary/raw/export/...) "
+        "requires already knowing the pilot_tag - this is the discovery step "
+        "before that."
+    ),
+)
+def list_pilots_overview_route(db: Session = Depends(get_db)):
+    return list_pilots_overview(db)
 
 @router.get("/aggregate", summary="Get aggregated survey metrics")
 def get_aggregated_metrics(
