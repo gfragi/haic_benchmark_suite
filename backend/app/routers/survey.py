@@ -13,6 +13,7 @@ from app.services.survey_service import (
     domain_specific_averages,
     list_comments,
     raw_survey_responses,
+    full_survey_export,
 )
 
 router = APIRouter()
@@ -100,3 +101,20 @@ def raw_survey_responses_route(
     db: Session = Depends(get_db),
 ):
     return raw_survey_responses(db, pilot_tag, app_version)
+
+@router.get(
+    "/export",
+    summary="Full-fidelity survey export for migrating data between environments",
+    description=(
+        "One row per survey submission, including survey_id/configuration_id/schema_id "
+        "(GET /survey/raw deliberately drops those for its flattened analytics shape). "
+        "Each row is shaped to be POSTed back as-is to POST /survey on another "
+        "environment - the intended use is exporting from one deployment and "
+        "importing into another, not display."
+    ),
+)
+def full_survey_export_route(
+    pilot_tag: Optional[str] = Query(None, description="Restrict to one pilot; omit for all pilots"),
+    db: Session = Depends(get_db),
+):
+    return full_survey_export(db, pilot_tag)
