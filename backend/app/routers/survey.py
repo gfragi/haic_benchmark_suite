@@ -1,8 +1,8 @@
 # app/routers/survey.py
 from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
-from app.schemas.survey import SurveyCreate
+from app.schemas.survey import SurveyCreate, SurveyImportRequest
 from app.utils.database import get_db
 from app.services.survey_service import (
     create_survey,
@@ -15,6 +15,7 @@ from app.services.survey_service import (
     raw_survey_responses,
     full_survey_export,
     list_pilots_overview,
+    import_surveys,
 )
 
 router = APIRouter()
@@ -123,9 +124,9 @@ def raw_survey_responses_route(
     description=(
         "One row per survey submission, including survey_id/configuration_id/schema_id "
         "(GET /survey/raw deliberately drops those for its flattened analytics shape). "
-        "Each row is shaped to be POSTed back as-is to POST /survey on another "
-        "environment - the intended use is exporting from one deployment and "
-        "importing into another, not display."
+        "Feed the result straight into POST /survey/import on the target environment - "
+        "the intended use is exporting from one deployment and importing into "
+        "another, not display."
     ),
 )
 def full_survey_export_route(
@@ -133,3 +134,39 @@ def full_survey_export_route(
     db: Session = Depends(get_db),
 ):
     return full_survey_export(db, pilot_tag)
+
+@router.post(
+    "/import",
+    summary="Bulk-import survey rows exported from another environment",
+    description=(
+        "Takes the array GET /survey/export produces (on a source platform, e.g. "
+        "dev) and imports it here. Accepts either that array pasted in directly "
+        "(exactly what /export returns, no wrapping needed), or the full "
+        "{rows, pilot_tag_config_overrides, drop_schema_id, dry_run} object when "
+        "you need those extra options. configuration_id is never taken from the "
+        "source row - a raw config id isn't portable across environments - it's "
+        "resolved by matching each row's pilot_tag against THIS platform's own "
+        "configurations. A pilot_tag that matches exactly one configuration "
+        "here resolves automatically; one that matches zero or several is left "
+        "unlinked (configuration_id null) and reported in unmatched_pilot_tags / "
+        "ambiguous_pilot_tags, unless resolved via pilot_tag_config_overrides. "
+        "Set use_row_configuration_id=true to instead trust each row's own "
+        "configuration_id as-is (for rows where it's non-null) - only for "
+        "deliberately testing an import against one specific config, not a real "
+        "migration, since a raw configuration_id from elsewhere may not exist "
+        "here or may mean something else entirely. "
+        "Set dry_run to see how everything would resolve without writing anything."
+    ),
+)
+async def import_surveys_route(request: Request, db: Session = Depends(get_db)):
+    body = await request.json()
+    if not isinstance(body, (list, dict)):
+        raise HTTPException(status_code=422, detail="Body must be a JSON array of rows, or an object with a 'rows' field.")
+    try:
+        payload = SurveyImportRequest(rows=body) if isinstance(body, list) else SurveyImportRequest(**body)
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    return import_surveys(
+        db, payload.rows, payload.pilot_tag_config_overrides, payload.drop_schema_id,
+        payload.dry_run, payload.use_row_configuration_id,
+    )

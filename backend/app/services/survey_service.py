@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text, func
 from app.schemas.survey import SurveyCreate
 from app.models.survey import Survey
+from app.models.configuration import EvaluationConfig
 import uuid
 from math import sqrt
 from statistics import mean, pstdev
@@ -67,6 +68,102 @@ def list_pilots_overview(db: Session) -> List[Dict[str, Any]]:
             "last_response_at": max(timestamps).isoformat() if timestamps else None,
         })
     return out
+
+
+def import_surveys(
+    db: Session,
+    rows: List[Dict[str, Any]],
+    pilot_tag_overrides: Optional[Dict[str, int]] = None,
+    drop_schema_id: bool = True,
+    dry_run: bool = False,
+    use_row_configuration_id: bool = False,
+) -> Dict[str, Any]:
+    """
+    Bulk-imports survey rows (the shape full_survey_export() / GET
+    /survey/export produces) into THIS platform. By default,
+    configuration_id is never taken from the source row - a raw config id
+    isn't portable across environments - it's resolved by matching the
+    row's pilot_tag against this platform's own `configurations.pilot_tag`.
+    pilot_tag isn't unique per configuration in practice, so:
+      - exactly one match here -> use it
+      - zero or multiple matches -> configuration_id left null, reported in
+        unmatched_pilot_tags / ambiguous_pilot_tags, unless the caller
+        supplied an explicit override for that pilot_tag.
+    use_row_configuration_id skips all of that (for rows where the row's
+    own configuration_id is non-null) and uses it as-is - for deliberately
+    testing an import against one specific config, not for a real
+    cross-environment migration.
+
+    Each row is inserted independently (via create_survey(), so it gets the
+    same schema validation POST /survey does) - one bad row is reported and
+    skipped rather than aborting the whole batch. dry_run resolves and
+    reports without writing anything.
+    """
+    overrides = pilot_tag_overrides or {}
+
+    configs = (
+        db.query(EvaluationConfig.id, EvaluationConfig.pilot_tag)
+        .filter(EvaluationConfig.pilot_tag.isnot(None))
+        .all()
+    )
+    by_tag: Dict[str, List[int]] = {}
+    for config_id, tag in configs:
+        by_tag.setdefault(tag, []).append(config_id)
+
+    imported = 0
+    failed: List[Dict[str, Any]] = []
+    unmatched_pilot_tags = set()
+    ambiguous_pilot_tags: Dict[str, List[int]] = {}
+
+    for row in rows:
+        if use_row_configuration_id and row.get("configuration_id") is not None:
+            resolved_config_id = row["configuration_id"]
+        else:
+            tag = row.get("pilot_tag")
+            if tag in overrides:
+                resolved_config_id = overrides[tag]
+            else:
+                matches = by_tag.get(tag, [])
+                if len(matches) == 1:
+                    resolved_config_id = matches[0]
+                elif len(matches) == 0:
+                    resolved_config_id = None
+                    unmatched_pilot_tags.add(tag)
+                else:
+                    resolved_config_id = None
+                    ambiguous_pilot_tags[tag] = matches
+
+        if dry_run:
+            imported += 1
+            continue
+
+        try:
+            payload = SurveyCreate(
+                survey_id=row["survey_id"],
+                user_id=row["user_id"],
+                timestamp=row["timestamp"],
+                pilot_tag=row["pilot_tag"],
+                app_version=row.get("app_version"),
+                ai_model_version=row.get("ai_model_version"),
+                tam_sus_responses=row["tam_sus_responses"],
+                ethics_responses=row["ethics_responses"],
+                domain_specific=row.get("domain_specific"),
+                configuration_id=resolved_config_id,
+                schema_id=None if drop_schema_id else row.get("schema_id"),
+            )
+            create_survey(db, payload)
+            imported += 1
+        except Exception as e:
+            db.rollback()
+            failed.append({"survey_id": row.get("survey_id"), "error": str(e)})
+
+    return {
+        "dry_run": dry_run,
+        "imported": imported,
+        "failed": failed,
+        "unmatched_pilot_tags": sorted(unmatched_pilot_tags),
+        "ambiguous_pilot_tags": ambiguous_pilot_tags,
+    }
 
 
 def calculate_sus_score(sus: dict) -> float:

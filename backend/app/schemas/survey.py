@@ -1,6 +1,6 @@
 # app/schemas/survey.py
 from pydantic import BaseModel, Field
-from typing import Any, Optional, Dict
+from typing import Any, List, Optional, Dict
 from datetime import datetime
 import uuid
 
@@ -39,4 +39,41 @@ class SurveyCreate(BaseModel):
     )
     configuration_id: Optional[int] = Field(
         None, description="ID of the EvaluationConfig this survey belongs to"
+    )
+
+
+class SurveyImportRequest(BaseModel):
+    rows: List[Dict[str, Any]] = Field(
+        ..., description="Rows as produced by GET /survey/export on the source platform"
+    )
+    pilot_tag_config_overrides: Optional[Dict[str, int]] = Field(
+        None,
+        description=(
+            "pilot_tag -> configuration_id on THIS platform, for pilot_tags that "
+            "match zero or more than one configuration here and so can't be "
+            "resolved automatically."
+        ),
+    )
+    use_row_configuration_id: bool = Field(
+        False,
+        description=(
+            "Trust each row's own configuration_id as-is instead of resolving it "
+            "via pilot_tag (only for rows where it's non-null - pilot_tag "
+            "resolution still applies to the rest). Off by default because a raw "
+            "configuration_id from the source platform isn't portable - it may "
+            "not exist here, or mean something else entirely. Turn this on only "
+            "when you've deliberately set configuration_id on the rows yourself, "
+            "e.g. testing an import against one specific config."
+        ),
+    )
+    drop_schema_id: bool = Field(
+        True,
+        description=(
+            "Submit schema_id as null instead of the source row's value. Only set "
+            "False if that exact schema_id already exists in this platform's "
+            "survey_question_sets - otherwise the row fails schema validation."
+        ),
+    )
+    dry_run: bool = Field(
+        False, description="Resolve configuration_id for every row and report the outcome, without writing anything."
     )
