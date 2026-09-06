@@ -3,40 +3,31 @@
 #
 # Step 1 of 2 (see migrate_sus_data_load.py for step 2).
 #
-# Extracts every row from DEV's `surveys` table as a JSON file, including
-# survey_id/configuration_id/schema_id - fields GET /api/v1/survey/raw does
-# NOT expose (it's an analytics export, not a data round-trip). This still
-# needs a direct SQL read against dev, whatever form that takes for you.
+# Extracts every survey row from DEV via the new GET /survey/export
+# endpoint (backend/app/routers/survey.py) - a plain HTTP GET, no DB
+# credentials or kubectl access needed. Unlike GET /survey/raw (analytics
+# export), this includes survey_id/configuration_id/schema_id, so each row
+# can be POSTed back as-is by migrate_sus_data_load.py.
 #
-# WHERE TO RUN THIS: wherever you can reach dev's postgres - your own
-# machine (port-forward or a direct connection string), or `kubectl exec`
-# into dev's postgres pod if you have that. Not prod - this only reads dev.
+# Requires the new /export endpoint to actually be deployed to the dev
+# cluster first - it doesn't exist there until this branch's backend image
+# is rolled out.
 #
-# Fill in DEV_PSQL below, then run:
-#   ./scripts/migrate_sus_data_extract.sh
-# It writes surveys_dev_export.json in the current directory.
+# WHERE TO RUN THIS: wherever you can reach dev's API over HTTP (your own
+# machine is fine if dev is reachable, same as prod).
+#
+#   ./scripts/migrate_sus_data_extract.sh https://dev-api.example.org
+#
+# Optionally restrict to one pilot: add ?pilot_tag=... to DEV_API_BASE, or
+# just edit the curl line below.
 
 set -euo pipefail
 
-# ---- TODO: fill this in --------------------------------------------------
-# However you connect to DEV's postgres. Examples:
-#   psql "postgresql://haic_user:PASSWORD@localhost:5432/haic_benchmark"   (after: kubectl port-forward svc/postgres 5432:5432 -n benchmarking, against your DEV context)
-#   -- or, if you do have exec on dev too, replace this whole array with:
-#   kubectl exec -n benchmarking <dev-postgres-pod> -- psql -U haic_user -d haic_benchmark
-DEV_PSQL=(psql "postgresql://TODO_USER:TODO_PASSWORD@TODO_HOST:5432/TODO_DB")
-
+DEV_API_BASE="${1:?Usage: $0 <dev-api-base-url, e.g. https://dev-api.example.org/api/v1>}"
 OUT_FILE="surveys_dev_export.json"
 
-"${DEV_PSQL[@]}" -t -A -c "
-  SELECT json_agg(row_to_json(t))
-  FROM (
-    SELECT survey_id, user_id, timestamp, pilot_tag, app_version, ai_model_version,
-           schema_id, tam_sus_responses, ethics_responses, domain_specific, configuration_id
-    FROM surveys
-    ORDER BY timestamp
-  ) t;
-" > "$OUT_FILE"
+curl -sf "${DEV_API_BASE%/}/survey/export" -o "$OUT_FILE"
 
 count=$(python3 -c "import json; print(len(json.load(open('$OUT_FILE'))))")
 echo "Wrote $count rows to $OUT_FILE"
-echo "Next: kubectl cp $OUT_FILE <prod-namespace>/<prod-backend-pod>:/tmp/surveys_dev_export.json"
+echo "Next: python3 scripts/migrate_sus_data_load.py <prod-api-base-url> [--dry-run]"

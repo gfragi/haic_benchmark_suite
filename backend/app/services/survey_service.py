@@ -319,3 +319,34 @@ def raw_survey_responses(db: Session, pilot_tag: str, app_version: Optional[str]
             row[f"domain_{k}"] = v
         rows.append(row)
     return rows
+
+
+def full_survey_export(db: Session, pilot_tag: Optional[str] = None) -> List[Dict[str, Any]]:
+    """
+    Full-fidelity row-per-submission export, including survey_id,
+    configuration_id, and schema_id - unlike raw_survey_responses() (GET
+    /survey/raw), which is analytics-oriented and deliberately drops those
+    three for a flattened CSV shape. Each row here is shaped to be POSTed
+    back as-is to POST /survey (see SurveyCreate) on another environment,
+    for migrating survey data between deployments.
+    """
+    query = db.query(Survey)
+    if pilot_tag:
+        query = query.filter(Survey.pilot_tag == pilot_tag)
+
+    rows = []
+    for s in query.order_by(Survey.timestamp).all():
+        rows.append({
+            "survey_id": str(s.survey_id),
+            "user_id": s.user_id,
+            "timestamp": s.timestamp.isoformat() if s.timestamp else None,
+            "pilot_tag": s.pilot_tag,
+            "app_version": s.app_version,
+            "ai_model_version": s.ai_model_version,
+            "schema_id": str(s.schema_id) if s.schema_id else None,
+            "tam_sus_responses": s.tam_sus_responses,
+            "ethics_responses": s.ethics_responses,
+            "domain_specific": s.domain_specific,
+            "configuration_id": s.configuration_id,
+        })
+    return rows
