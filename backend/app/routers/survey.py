@@ -157,6 +157,62 @@ def full_survey_export_route(
         "here or may mean something else entirely. "
         "Set dry_run to see how everything would resolve without writing anything."
     ),
+    openapi_extra={
+        # The handler takes a raw Request (to accept both an array and an
+        # object body), so FastAPI can't derive a schema from a parameter
+        # type the way it does everywhere else - this fills that back in by
+        # hand so Swagger still shows a real schema/example instead of
+        # "No parameters" / a bare "string" placeholder.
+        "requestBody": {
+            "required": True,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "oneOf": [
+                            {"type": "array", "items": {"type": "object"}, "title": "Rows array"},
+                            SurveyImportRequest.model_json_schema() | {"title": "Full options object"},
+                        ]
+                    },
+                    "examples": {
+                        "bare_array": {
+                            "summary": "Paste GET /survey/export's output directly",
+                            "value": [
+                                {
+                                    "survey_id": "f5a65a02-74f4-45f0-a9b9-6aba40b5c94d",
+                                    "user_id": "anon_9265",
+                                    "timestamp": "2026-03-27T12:30:23.944872",
+                                    "pilot_tag": "applications",
+                                    "app_version": "apps_v2.0.0",
+                                    "ai_model_version": "apps-model-v1",
+                                    "schema_id": None,
+                                    "tam_sus_responses": {
+                                        "sus_q1": 4, "sus_q2": 1, "sus_q3": 5, "sus_q4": 1, "sus_q5": 4,
+                                        "sus_q6": 1, "sus_q7": 5, "sus_q8": 2, "sus_q9": 4, "sus_q10": 1,
+                                    },
+                                    "ethics_responses": {
+                                        "q_fairness": 5, "q_transparency": 5, "q_privacy": 3,
+                                        "q_accountability": 5, "q_trust": 5,
+                                    },
+                                    "domain_specific": {"user_type": "senior_operator", "experience_months": 35},
+                                    "configuration_id": 3,
+                                },
+                            ],
+                        },
+                        "full_object": {
+                            "summary": "With options (overrides, dry_run, ...)",
+                            "value": {
+                                "rows": [],
+                                "pilot_tag_config_overrides": {"applications": 8},
+                                "drop_schema_id": True,
+                                "dry_run": True,
+                                "use_row_configuration_id": False,
+                            },
+                        },
+                    },
+                }
+            },
+        }
+    },
 )
 async def import_surveys_route(request: Request, db: Session = Depends(get_db)):
     body = await request.json()
