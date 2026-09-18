@@ -34,6 +34,15 @@ fi
 echo "Got token: ${TOKEN:0:20}...(truncated)"
 echo
 
+echo "== Step 1b: decoding JWT claims (policy/role granted to this account) =="
+JWT_PAYLOAD=$(echo "$TOKEN" | cut -d. -f2)
+case $(( ${#JWT_PAYLOAD} % 4 )) in
+  2) JWT_PAYLOAD="${JWT_PAYLOAD}==" ;;
+  3) JWT_PAYLOAD="${JWT_PAYLOAD}=" ;;
+esac
+echo "$JWT_PAYLOAD" | base64 -d 2>/dev/null | python3 -m json.tool 2>/dev/null || echo "(could not decode JWT payload)"
+echo
+
 echo "== Step 2: listing bucket '$BUCKET' with that token =="
 curl -s -H "Authorization: Bearer $TOKEN" \
   "${S3_ENDPOINT}/${BUCKET}?list-type=2" | tee /tmp/minio_bucket_test_response.xml
