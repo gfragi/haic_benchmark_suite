@@ -6,6 +6,15 @@
 
 export const RELEASES = [
   {
+    version: 'v2.1.5',
+    date: '2026-09-18',
+    backend: [
+      'Fixed `POST /survey/schemas` silently accepting any string as a question\'s `type` — it\'s now restricted to the six values the survey form actually renders (`likert`, `single`, `multi`, `text`, `number`, `boolean`). A typo\'d or unsupported type used to save without error and only surface later as a domain-specific question rendering as a plain textarea, regardless of its intended widget.',
+      'Added validation that `single`/`multi` questions have a non-empty `options` list, and that a `likert` question\'s `scale.min` is less than `scale.max`, both at schema-creation time instead of failing later.',
+    ],
+    frontend: [],
+  },
+  {
     version: 'v2.1.4',
     date: '2026-09-06',
     backend: [
