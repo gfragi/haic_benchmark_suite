@@ -30,6 +30,8 @@ def create_schema(db: Session, payload: SurveyQuestionSetIn) -> SurveyQuestionSe
         question_position=payload.question_position or "last",
         active=payload.active,
         created_by=payload.created_by,
+        intro_title=payload.intro_title,
+        intro_description=payload.intro_description,
     )
     db.add(obj)
     db.commit()

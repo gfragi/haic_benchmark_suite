@@ -54,6 +54,8 @@ function toFormState(schema, fallbackPilotTag) {
     version: schema.version || 1,
     active: schema.active ?? true,
     questionPosition: schema.question_position || 'last',
+    introTitle: schema.intro_title || '',
+    introDescription: schema.intro_description || '',
     questions: (schema.questions || []).map(toFormQuestion),
   }
 }
@@ -237,7 +239,8 @@ function validate(form) {
 
 export default function QuestionSetEditor({ pilotTag, schemaId, onCreated }) {
   const [form, setForm] = useState({
-    name: '', pilotTag: pilotTag || '', version: 1, active: true, questionPosition: 'last', questions: [],
+    name: '', pilotTag: pilotTag || '', version: 1, active: true, questionPosition: 'last',
+    introTitle: '', introDescription: '', questions: [],
   })
   const [expanded, setExpanded] = useState(new Set())
   const [saving, setSaving] = useState(false)
@@ -317,6 +320,8 @@ export default function QuestionSetEditor({ pilotTag, schemaId, onCreated }) {
         version: form.version || 1,
         active: form.active,
         question_position: form.questionPosition || 'last',
+        intro_title: form.introTitle.trim() || null,
+        intro_description: form.introDescription.trim() || null,
         questions: form.questions.map((q) => ({
           id: q.id, label: q.label, type: q.type, required: q.required,
           group: q.group || null,
@@ -443,6 +448,33 @@ export default function QuestionSetEditor({ pilotTag, schemaId, onCreated }) {
             <option value="last">After SUS/Ethics</option>
             <option value="first">Before SUS/Ethics</option>
           </select>
+        </label>
+      </div>
+
+      <div className="grid gap-3">
+        <label className="block">
+          <span className="mb-1 block text-xs font-medium text-gray-600">
+            Survey page title <span className="text-gray-400">(optional — defaults to "Help us evaluate the platform")</span>
+          </span>
+          <input
+            type="text"
+            value={form.introTitle}
+            onChange={(e) => setForm((f) => ({ ...f, introTitle: e.target.value }))}
+            placeholder="Help us evaluate the platform"
+            className="w-full rounded-md border border-gray-200 px-2.5 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-xs font-medium text-gray-600">
+            Survey page description <span className="text-gray-400">(optional — defaults to "Anonymous · takes ~3 minutes")</span>
+          </span>
+          <textarea
+            value={form.introDescription}
+            onChange={(e) => setForm((f) => ({ ...f, introDescription: e.target.value }))}
+            placeholder="Anonymous · takes ~3 minutes"
+            rows={2}
+            className="w-full rounded-md border border-gray-200 px-2.5 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
         </label>
       </div>
 

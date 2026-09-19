@@ -6,6 +6,16 @@
 
 export const RELEASES = [
   {
+    version: 'v2.1.7',
+    date: '2026-09-19',
+    backend: [
+      'Added optional `intro_title`/`intro_description` fields to survey question sets, letting a pilot-specific question set override the public survey form\'s default heading ("Help us evaluate the platform") and subtitle ("Anonymous · takes ~3 minutes"). Falls back to those defaults when unset, so existing schemas are unaffected.',
+    ],
+    frontend: [
+      'Question Set Editor: added "Survey page title" and "Survey page description" fields to customize the intro shown at the top of the public survey form for that pilot.',
+    ],
+  },
+  {
     version: 'v2.1.6',
     date: '2026-09-19',
     backend: [],

@@ -10,9 +10,7 @@ from app.services.survey_schema_service import (
 
 router = APIRouter()
 
-@router.post("", response_model=SurveyQuestionSetOut)
-def create_schema_route(payload: SurveyQuestionSetIn, db: Session = Depends(get_db)):
-    obj = create_schema(db, payload)
+def _to_out(obj) -> SurveyQuestionSetOut:
     return SurveyQuestionSetOut(
         schema_id=str(obj.schema_id),
         name=obj.name,
@@ -22,34 +20,23 @@ def create_schema_route(payload: SurveyQuestionSetIn, db: Session = Depends(get_
         question_position=obj.question_position,
         active=obj.active,
         created_by=obj.created_by,
+        intro_title=obj.intro_title,
+        intro_description=obj.intro_description,
     )
+
+@router.post("", response_model=SurveyQuestionSetOut)
+def create_schema_route(payload: SurveyQuestionSetIn, db: Session = Depends(get_db)):
+    obj = create_schema(db, payload)
+    return _to_out(obj)
 
 @router.get("/{schema_id}", response_model=SurveyQuestionSetOut)
 def get_schema(schema_id: str, db: Session = Depends(get_db)):
     obj = fetch_schema_by_id(db, schema_id)
-    return SurveyQuestionSetOut(
-        schema_id=str(obj.schema_id),
-        name=obj.name,
-        pilot_tag=obj.pilot_tag,
-        version=obj.version,
-        questions=obj.questions,
-        question_position=obj.question_position,
-        active=obj.active,
-        created_by=obj.created_by,
-    )
+    return _to_out(obj)
 
 @router.get("", response_model=Optional[SurveyQuestionSetOut])
 def get_latest_for_pilot(pilot_tag: str = Query(...), db: Session = Depends(get_db)):
     obj = fetch_latest_for_pilot(db, pilot_tag)
     if not obj:
         return None
-    return SurveyQuestionSetOut(
-        schema_id=str(obj.schema_id),
-        name=obj.name,
-        pilot_tag=obj.pilot_tag,
-        version=obj.version,
-        questions=obj.questions,
-        question_position=obj.question_position,
-        active=obj.active,
-        created_by=obj.created_by,
-    )
+    return _to_out(obj)

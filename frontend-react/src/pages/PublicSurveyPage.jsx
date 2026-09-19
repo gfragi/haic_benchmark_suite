@@ -364,8 +364,12 @@ export default function PublicSurveyPage() {
     <div className="min-h-screen bg-gray-50 px-4 py-6 sm:py-10">
       <div className="mx-auto max-w-[600px] space-y-6">
         <div className="rounded-3xl border border-gray-200 bg-white px-5 py-6 shadow-sm sm:px-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Help us evaluate the platform</h1>
-          <p className="mt-2 text-sm text-gray-500">Anonymous · takes ~3 minutes</p>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            {schema?.intro_title || 'Help us evaluate the platform'}
+          </h1>
+          <p className="mt-2 whitespace-pre-line text-sm text-gray-500">
+            {schema?.intro_description || 'Anonymous · takes ~3 minutes'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

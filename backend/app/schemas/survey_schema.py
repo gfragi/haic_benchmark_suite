@@ -43,6 +43,10 @@ class SurveyQuestionSetIn(BaseModel):
     question_position: Optional[str] = "last"  # "first" | "last" - domain questions relative to SUS/Ethics
     active: bool = True
     created_by: Optional[str] = None
+    # Override the public survey form's default heading/subtitle - null on
+    # either means the form falls back to its hardcoded default for that one.
+    intro_title: Optional[str] = None
+    intro_description: Optional[str] = None
 
 class SurveyQuestionSetOut(SurveyQuestionSetIn):
     schema_id: str

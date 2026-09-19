@@ -16,6 +16,10 @@ class SurveyQuestionSet(Base):
     pilot_tag = Column(String, nullable=True, index=True)   # if null => generic/ad-hoc
     version = Column(Integer, nullable=False, default=1)
     questions = Column(JSON, nullable=False)                 # array of question dicts
+    # Override the public survey form's default heading/subtitle for this
+    # question set - null falls back to the form's hardcoded defaults.
+    intro_title = Column(String, nullable=True)
+    intro_description = Column(String, nullable=True)
     # Where domain-specific questions render relative to SUS/Ethics on the
     # survey form - "last" (default, matches pre-existing behavior for
     # schemas created before this field existed) or "first".
