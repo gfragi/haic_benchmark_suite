@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Plus, Copy, Trash2, ChevronDown, Download, Upload, Loader2 } from 'lucide-react'
 import clsx from 'clsx'
 import { api } from '../services/api'
@@ -30,6 +30,31 @@ function newQuestion() {
     group: '',
     scale: { min: 1, max: 5, min_label: 'Strongly disagree', max_label: 'Strongly agree' },
     options: [],
+  }
+}
+
+// Normalizes a question as returned by the API (or imported from a JSON file)
+// into the shape QuestionCard/newQuestion expect - the API omits `scale` for
+// non-likert questions and `options` for non-choice ones (both come back null).
+function toFormQuestion(q) {
+  return {
+    _key: makeKey(),
+    scale: { min: 1, max: 5, min_label: 'Strongly disagree', max_label: 'Strongly agree' },
+    options: [],
+    group: '',
+    required: false,
+    ...q,
+  }
+}
+
+function toFormState(schema, fallbackPilotTag) {
+  return {
+    name: schema.name || '',
+    pilotTag: schema.pilot_tag || fallbackPilotTag || '',
+    version: schema.version || 1,
+    active: schema.active ?? true,
+    questionPosition: schema.question_position || 'last',
+    questions: (schema.questions || []).map(toFormQuestion),
   }
 }
 
@@ -210,13 +235,41 @@ function validate(form) {
   return { globalError, errors }
 }
 
-export default function QuestionSetEditor({ pilotTag, onCreated }) {
+export default function QuestionSetEditor({ pilotTag, schemaId, onCreated }) {
   const [form, setForm] = useState({
     name: '', pilotTag: pilotTag || '', version: 1, active: true, questionPosition: 'last', questions: [],
   })
   const [expanded, setExpanded] = useState(new Set())
   const [saving, setSaving] = useState(false)
   const [saveResult, setSaveResult] = useState(null) // { type: 'success'|'error', text }
+  const [loading, setLoading] = useState(!!schemaId)
+  const [loadError, setLoadError] = useState('')
+  const [editingSchemaId, setEditingSchemaId] = useState('')
+
+  // Load the currently-attached question set for editing. Saving never
+  // mutates it in place (there's no update endpoint, by design - configs
+  // pin an exact schema_id so they don't drift) - it creates a new version
+  // instead, prefilled with these contents plus a bumped version number.
+  useEffect(() => {
+    if (!schemaId) { setEditingSchemaId(''); return }
+    let cancelled = false
+    setLoading(true)
+    setLoadError('')
+    api.survey.schemas.get(schemaId)
+      .then((schema) => {
+        if (cancelled) return
+        setForm({ ...toFormState(schema, pilotTag), version: (schema.version || 1) + 1 })
+        setEditingSchemaId(schemaId)
+      })
+      .catch((e) => {
+        if (cancelled) return
+        setLoadError(e.message || 'Failed to load question set.')
+        setEditingSchemaId('')
+      })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schemaId])
 
   function addQuestion() {
     const q = newQuestion()
@@ -301,21 +354,8 @@ export default function QuestionSetEditor({ pilotTag, onCreated }) {
       reader.onload = () => {
         try {
           const obj = JSON.parse(reader.result)
-          setForm({
-            name: obj.name || '',
-            pilotTag: obj.pilot_tag || form.pilotTag,
-            version: obj.version || 1,
-            active: obj.active ?? true,
-            questionPosition: obj.question_position || 'last',
-            questions: (obj.questions || []).map((q) => ({
-              _key: makeKey(),
-              scale: { min: 1, max: 5, min_label: 'Strongly disagree', max_label: 'Strongly agree' },
-              options: [],
-              group: '',
-              required: false,
-              ...q,
-            })),
-          })
+          setForm(toFormState(obj, form.pilotTag))
+          setEditingSchemaId('')
         } catch {
           setSaveResult({ type: 'error', text: 'Invalid JSON file.' })
         }
@@ -325,12 +365,33 @@ export default function QuestionSetEditor({ pilotTag, onCreated }) {
     input.click()
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 py-8 text-sm text-gray-500">
+        <Loader2 size={14} className="animate-spin" /> Loading question set…
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4">
       <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-xs text-sky-800">
-        Create a pilot-specific question set. Saving returns a <code className="rounded bg-white px-1">schema_id</code> that
-        gets auto-attached to the survey link.
+        {editingSchemaId ? (
+          <>
+            Editing <code className="rounded bg-white px-1">{editingSchemaId}</code>. There's no in-place update -
+            saving creates a new version (bumped to <strong>v{form.version}</strong> below) with a new{' '}
+            <code className="rounded bg-white px-1">schema_id</code>, which replaces this one on the survey link.
+          </>
+        ) : (
+          <>
+            Create a pilot-specific question set. Saving returns a <code className="rounded bg-white px-1">schema_id</code> that
+            gets auto-attached to the survey link.
+          </>
+        )}
       </div>
+      {loadError && (
+        <div className="rounded-md bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700">{loadError}</div>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <label className="block">
@@ -424,7 +485,7 @@ export default function QuestionSetEditor({ pilotTag, onCreated }) {
           className="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
         >
           {saving && <Loader2 size={14} className="animate-spin" />}
-          Save question set
+          {editingSchemaId ? 'Save as new version' : 'Save question set'}
         </button>
         <button onClick={handleExport} className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700">
           <Download size={12} /> Export JSON

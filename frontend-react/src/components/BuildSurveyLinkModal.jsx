@@ -136,6 +136,7 @@ export default function BuildSurveyLinkModal({ config, schemaId: schemaIdProp, o
           <div className="max-h-[70vh] overflow-y-auto px-6 py-5">
             <QuestionSetEditor
               pilotTag={pilotTag}
+              schemaId={schemaId}
               onCreated={(schema) => { setSchemaId(schema.schema_id); setAutoAttach(false); setTab('link') }}
             />
           </div>

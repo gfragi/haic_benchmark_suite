@@ -6,6 +6,14 @@
 
 export const RELEASES = [
   {
+    version: 'v2.1.6',
+    date: '2026-09-19',
+    backend: [],
+    frontend: [
+      'Fixed the "Edit" button on an attached question set (Build Survey Link → Question Set) opening a blank form instead of the current one — it now loads the existing question set\'s contents. Since there\'s no update-in-place endpoint by design (configs pin an exact `schema_id` so they don\'t silently drift), saving creates a new version rather than mutating the old one, and the button now reads "Save as new version" to reflect that.',
+    ],
+  },
+  {
     version: 'v2.1.5',
     date: '2026-09-18',
     backend: [
