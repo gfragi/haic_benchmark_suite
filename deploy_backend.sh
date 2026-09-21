@@ -5,7 +5,7 @@ set -e
 
 # Set these variables
 IMAGE="ghcr.io/gfragi/haic-backend:latest"
-NAMESPACE="benchmarking"
+NAMESPACE="humaine-benchmarking"
 DEPLOYMENT="backend"
 DOCKERFILE="Dockerfile.backend"
 CONTEXT="."  # path to your backend root

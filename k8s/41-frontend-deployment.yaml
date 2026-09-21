@@ -18,7 +18,11 @@ spec:
       containers:
         - name: frontend
           image: ghcr.io/gfragi/haic-frontend-react:latest
-          imagePullPolicy: IfNotPresent
+          # Was IfNotPresent - with a floating :latest tag that meant a node
+          # with any previously-cached "latest" image would never re-pull on
+          # rollout restart, silently running stale code. See the same fix
+          # on the backend Deployment (31-backend-deployment.yaml).
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
               name: http

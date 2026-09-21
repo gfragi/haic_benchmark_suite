@@ -49,7 +49,11 @@ spec:
       containers:
         - name: backend
           image: ghcr.io/gfragi/haic-backend:latest
-          imagePullPolicy: IfNotPresent
+          # Was IfNotPresent - with a floating :latest tag that meant a node
+          # with any previously-cached "latest" image would never re-pull on
+          # rollout restart, silently running stale code. Matches the
+          # initContainer above, which already used Always.
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
               name: http

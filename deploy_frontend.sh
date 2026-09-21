@@ -3,7 +3,7 @@ set -e
 
 # Set these variables
 IMAGE="ghcr.io/gfragi/haic-frontend-react:latest"
-NAMESPACE="benchmarking"
+NAMESPACE="humaine-benchmarking"
 DEPLOYMENT="frontend"
 CONTEXT="."  # project root
 
