@@ -1,8 +1,10 @@
 # app/routers/survey.py
+import uuid
 from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 from app.schemas.survey import SurveyCreate, SurveyImportRequest
+from app.models.survey import Survey
 from app.utils.database import get_db
 from app.services.survey_service import (
     create_survey,
@@ -226,3 +228,52 @@ async def import_surveys_route(request: Request, db: Session = Depends(get_db)):
         db, payload.rows, payload.pilot_tag_config_overrides, payload.drop_schema_id,
         payload.dry_run, payload.use_row_configuration_id,
     )
+
+@router.delete(
+    "/version",
+    summary="Delete all survey responses for one pilot_tag + app_version",
+    description=(
+        "Bulk-deletes every response matching pilot_tag and app_version. "
+        "app_version is nullable, so the 'Unknown' bucket shown in the UI "
+        "isn't a real string to filter on - pass unknown=true instead of "
+        "app_version to target those null-version rows."
+    ),
+)
+def delete_survey_version_route(
+    pilot_tag: str = Query(..., min_length=1),
+    app_version: Optional[str] = Query(None),
+    unknown: bool = Query(False, description="Delete responses with no app_version instead of a named version."),
+    db: Session = Depends(get_db),
+):
+    if (app_version is not None) == unknown:
+        raise HTTPException(
+            status_code=422,
+            detail="Provide exactly one of: app_version, or unknown=true.",
+        )
+
+    query = db.query(Survey).filter(Survey.pilot_tag == pilot_tag)
+    query = query.filter(Survey.app_version.is_(None)) if unknown else query.filter(Survey.app_version == app_version)
+    deleted_count = query.delete(synchronize_session=False)
+    db.commit()
+
+    return {
+        "message": f"Deleted {deleted_count} survey response(s)",
+        "pilot_tag": pilot_tag,
+        "app_version": "Unknown" if unknown else app_version,
+        "deleted_count": deleted_count,
+    }
+
+@router.delete("/{survey_id}", summary="Delete a single survey response")
+def delete_survey_response_route(survey_id: str, db: Session = Depends(get_db)):
+    try:
+        sid = uuid.UUID(survey_id)
+    except ValueError:
+        raise HTTPException(status_code=422, detail=f"'{survey_id}' is not a valid survey_id (expected a UUID).")
+
+    survey = db.query(Survey).filter(Survey.survey_id == sid).first()
+    if not survey:
+        raise HTTPException(status_code=404, detail="Survey response not found")
+
+    db.delete(survey)
+    db.commit()
+    return {"message": "Survey response deleted", "survey_id": str(sid)}
