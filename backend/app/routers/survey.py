@@ -124,8 +124,9 @@ def raw_survey_responses_route(
     "/export",
     summary="Full-fidelity survey export for migrating data between environments",
     description=(
-        "One row per survey submission, including survey_id/configuration_id/schema_id "
-        "(GET /survey/raw deliberately drops those for its flattened analytics shape). "
+        "One row per survey submission, including configuration_id/schema_id "
+        "(GET /survey/raw deliberately drops those for its flattened analytics "
+        "shape, though it does include survey_id for DELETE /survey/{survey_id}). "
         "Feed the result straight into POST /survey/import on the target environment - "
         "the intended use is exporting from one deployment and importing into "
         "another, not display."

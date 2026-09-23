@@ -430,6 +430,10 @@ def raw_survey_responses(db: Session, pilot_tag: str, app_version: Optional[str]
     respondent_id is the client-generated anonymous id (see makeAnonymousUserId
     in the frontend), not a real identity - safe to include for spotting
     duplicate/repeat submissions.
+
+    survey_id is the row's own UUID primary key (not personally identifying)
+    - included so a row found here can be targeted directly at
+    DELETE /survey/{survey_id} without a separate call to GET /survey/export.
     """
     query = db.query(Survey).filter(Survey.pilot_tag == pilot_tag)
     if app_version:
@@ -438,6 +442,7 @@ def raw_survey_responses(db: Session, pilot_tag: str, app_version: Optional[str]
     rows = []
     for s in query.order_by(Survey.timestamp).all():
         row = {
+            "survey_id": str(s.survey_id),
             "respondent_id": s.user_id,
             "timestamp": s.timestamp.isoformat() if s.timestamp else None,
             "app_version": s.app_version,
